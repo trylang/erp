@@ -1,6 +1,6 @@
 <template>
   <con-head title="收款管理">
-    <el-button type="primary" slot="append" @click="linkTo('collectMoney')">收取</el-button>
+    <el-button type="primary" slot="append" @click="linkTo('payManagement/collectMoney')">收取</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
@@ -91,7 +91,8 @@ export default {
         {
           label: "更新时间",
           name: "update_time",
-          type: "time"
+          type: "time",
+          filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
           label: "操作",

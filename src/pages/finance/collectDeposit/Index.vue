@@ -79,7 +79,8 @@ export default {
         {
           label: "更新时间",
           name: "update_time",
-          type: "time"
+          type: "time",
+          filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
           label: "操作",

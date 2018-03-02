@@ -10,7 +10,7 @@
             <div class="main">
                 <erp-header></erp-header>
                 <div class="wrapper">
-                     <router-view></router-view>
+                    <router-view></router-view>
                 </div>
             </div>
         </div>

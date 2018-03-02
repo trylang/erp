@@ -1,10 +1,11 @@
 <template>
     <div class="sub-menu">
-        <el-menu :default-active="$route.path"
+        <el-menu :default-active="activeMenu"
                  :default-openeds="menuOpeneds"
                  class="el-menu-vertical-demo"
                  router>
             <menu-item v-for="(item,index) in menu" :item="item" :index="index" :key="index"></menu-item>
+            
         </el-menu>
     </div>
 </template>
@@ -122,7 +123,7 @@ export default {
             title: "不规则费用",
             children: [
               {
-                path: "/finance/IrregularCost",
+                path: "/finance/irregularCost",
                 title: "不规则费用管理"
               },
               {
@@ -370,6 +371,19 @@ export default {
           return menuData.system;
           break;
       }
+    },
+    activeMenu() {
+      let activeMenu = this.$route.path;
+      for(let i = 0; i < this.menu.length; i++) {
+        let index = this.menu[i].children.find(child => {
+          return this.$route.path.indexOf(child.path) >= 0;
+        });
+        if (index) {
+          activeMenu = index.path;
+          break; 
+        } 
+      }
+      return activeMenu;
     }
   },
   created() {},

@@ -1,6 +1,6 @@
 <template>
   <con-head title="结算单调整管理">
-    <el-button type="primary" slot="append" @click="linkTo('addAdjustment')">调整</el-button>
+    <el-button type="primary" slot="append" @click="linkTo('accountAdjust/addAdjustment')">调整</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">

@@ -1,7 +1,7 @@
 <template>
   <con-head title="保证金收取管理">
-    <el-button type="primary" slot="append" @click="linkTo('collectEarnest')">诚意金收取</el-button>
-    <el-button type="primary" slot="append" @click="linkTo('collectDeposit')">租赁保证金收取</el-button>
+    <el-button type="primary" slot="append" @click="linkTo('takeMargin/collectEarnest')">诚意金收取</el-button>
+    <el-button type="primary" slot="append" @click="linkTo('takeMargin/collectDeposit')">租赁保证金收取</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">

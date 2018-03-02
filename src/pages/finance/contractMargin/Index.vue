@@ -1,85 +1,77 @@
 <template>
-  <div>
-    <con-head title="诚意金收取">
-      <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">收取</el-button>
-      <el-row slot="preappend">
-        <el-col :span="9">
-          <div class="searchselect">
-              <span class="inputname">商户</span>
-              <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
-                <el-option
-                  v-for="item in selects.expenses"
-                  :key="item.id"
-                  :value="item.label">
-                </el-option>
-              </el-select>
-          </div>
-        </el-col>
-        <el-col :span="9" :offset="6">
-          <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.id"
-                :value="item.label">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-    </con-head>
-    
-    <blank-head title="店铺租赁诚意金">
-      <cash-card :cash="[{name:'haha', id:1000}, {name: 'heihie', id:2000}, {name: 'enenen', id:3000}]"></cash-card>
-    </blank-head>
-  
+  <con-head title="合同保证金">
+    <el-row slot="preappend">
+      <el-col :span="9">
+        <div class="searchbox">
+            <input type="text" placeholder="请输入合同编号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+        </div>
+      </el-col>
+      <el-col :span="9" :offset="6">
+        <div class="texttitle">
+            <span class="inputname">合同阶段：</span>
+            <div class="line-nav">
+                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
+                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
+            </div>
+        </div>
+      </el-col>
+    </el-row>
     <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改诚意金': '诚意金收取'" :dialog="dialog"></erp-dialog>
-  </div>
-  
+    <erp-dialog title='保证金处理' :dialog="dialog"></erp-dialog>
+  </con-head>
+
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
-import blankHead from "../../../components/BlankHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import cashCard from "../../../components/CashCard";
 export default {
   name: "account-group",
   components: {
     conHead,
-    blankHead,
     erpTable,
-    erpDialog,
-    cashCard
+    erpDialog
   },
   data() {
     return {
       header: [
         {
-          label: "编码",
+          label: "合同编号",
           type: "text",
           name: "id"
         },
         {
-          label: "名称",
+          label: "阶段",
           type: "text",
           name: "name"
         },
         {
-          label: "备注",
+          label: "店铺",
           type: "text",
           name: "desc"
         },
         {
-          label: "更新时间",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          label: "商户",
+          type: "text",
+          name: "desc"
+        },
+        {
+          label: "应收",
+          type: "text",
+          name: "desc"
+        },
+        {
+          label: "已收",
+          type: "text",
+          name: "desc"
+        },
+        {
+          label: "剩余",
+          type: "text",
+          name: "desc"
         },
         {
           label: "操作",
@@ -90,11 +82,11 @@ export default {
           },
           operations: [
             {
-              label: "编辑",
+              label: "罚没",
               name: "edit",
               type: "",
               style: {
-                color: "#902323"
+                // color: "#902323"
               },
               class: "edit",
               click: (item) => {
@@ -103,11 +95,11 @@ export default {
               }
             },
             {
-              label: "删除",
+              label: "归还",
               name: "delete",
               type: "",
               style: {
-                color: "#093216"
+                // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
@@ -117,32 +109,34 @@ export default {
           ]
         }
       ],
+      selects: {
+        status: [{
+          isStatus:true,
+          label: '全部'
+        }, {
+          isStatus:false,
+          label: '意向'
+        }, {
+          isStatus:false,
+          label: '正式'
+        }]
+      },
       dialog: {
         models: [{
-          label: '收款方式',
+          label: '编码',
           name: 'id',
-          type: 'select',
-          options: [{
-            id: '1',
-            label: '工商银行'
-          }, {
-            id: '2',
-            label: '招商银行'
-          }, {
-            id: '3',
-            label: '中信银行'
-          }],
-          placeholder: ''
+          type: 'text',
+          placeholder: '请输入编号'
         }, {
-          label: '收款金额',
+          label: '名称',
           name: 'name',
           type: 'text',
-          placeholder: '请输入收款金额'
+          placeholder: '请输入名称'
         }, {
           label: '备注',
           name: 'desc',
-          type: 'textarea',
-          placeholder: '请输入...'
+          type: 'text',
+          placeholder: '请输入备注'
         }],
         dialogVisible: false,
         param: {
@@ -170,35 +164,6 @@ export default {
           click: () => {
             this.cancelDialog();
           }
-        }]
-      },
-      selects: {
-        shops: [{
-          id: 1,
-          label: '商铺1'
-        }, {
-          id: 2,
-          label: '商铺2'
-        }],
-        expenses: [{
-          id: 11,
-          label: '费用11'
-        }, {
-          id: 22,
-          label: '费用22'
-        }],
-        status: [{
-          isStatus:true,
-          label: '全部'
-        }, {
-          isStatus:false,
-          label: '新增'
-        }, {
-          isStatus:false,
-          label: '已确认'
-        }, {
-          isStatus:false,
-          label: '取消'
         }]
       },
       query: {
@@ -285,3 +250,22 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
+</style>

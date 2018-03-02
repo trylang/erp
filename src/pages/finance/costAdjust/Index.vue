@@ -1,23 +1,38 @@
 <template>
-  <div>
-    <con-head title="诚意金收取">
-      <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">收取</el-button>
-      <el-row slot="preappend">
+  <con-head title="费用调整管理">
+    <el-button type="primary" slot="append" @click="linkTo('costAdjust/addCostAdjust')">录入</el-button>
+    <el-row slot="preappend">
+      <el-col :span="9">
+        <div class="searchbox">
+            <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+        </div>
+      </el-col>
+      <el-col :span="9" :offset="6">
+        <div class="searchselect">
+            <span class="inputname">商户</span>
+            <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
+              <el-option
+                v-for="item in selects.expenses"
+                :key="item.id"
+                :value="item.label">
+              </el-option>
+            </el-select>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row slot="preappend">
         <el-col :span="9">
-          <div class="searchselect">
-              <span class="inputname">商户</span>
-              <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
-                <el-option
-                  v-for="item in selects.expenses"
-                  :key="item.id"
-                  :value="item.label">
-                </el-option>
-              </el-select>
-          </div>
-        </el-col>
-        <el-col :span="9" :offset="6">
-          <div class="searchselect">
-            <span class="inputname">合同</span>
+        <div class="texttitle">
+            <span class="inputname">状态：</span>
+            <div class="line-nav">
+                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
+                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
+            </div>
+        </div>
+      </el-col>
+      <el-col :span="9" :offset="6">
+        <div class="searchselect">
+            <span class="inputname">物业性质</span>
             <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
@@ -25,41 +40,43 @@
                 :value="item.label">
               </el-option>
             </el-select>
-          </div>
-        </el-col>
-      </el-row>
-    </con-head>
-    
-    <blank-head title="店铺租赁诚意金">
-      <cash-card :cash="[{name:'haha', id:1000}, {name: 'heihie', id:2000}, {name: 'enenen', id:3000}]"></cash-card>
-    </blank-head>
-  
+        </div>
+      </el-col>
+    </el-row>
+		<el-row slot="preappend">
+			<div class="global-block">
+				<button class="global-btn">确 定</button>	
+				<button class="global-btn">删 除</button>	
+			</div>
+		</el-row>
     <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改诚意金': '诚意金收取'" :dialog="dialog"></erp-dialog>
-  </div>
-  
+
+    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+  </con-head>
+
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
-import blankHead from "../../../components/BlankHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import cashCard from "../../../components/CashCard";
 export default {
   name: "account-group",
   components: {
     conHead,
-    blankHead,
     erpTable,
-    erpDialog,
-    cashCard
+    erpDialog
   },
   data() {
     return {
       header: [
+        {
+          label: "",
+          name: "state",
+          type: "checkbox"
+        },
         {
           label: "编码",
           type: "text",
@@ -94,7 +111,7 @@ export default {
               name: "edit",
               type: "",
               style: {
-                color: "#902323"
+                // color: "#902323"
               },
               class: "edit",
               click: (item) => {
@@ -107,7 +124,7 @@ export default {
               name: "delete",
               type: "",
               style: {
-                color: "#093216"
+                // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
@@ -119,30 +136,20 @@ export default {
       ],
       dialog: {
         models: [{
-          label: '收款方式',
+          label: '编码',
           name: 'id',
-          type: 'select',
-          options: [{
-            id: '1',
-            label: '工商银行'
-          }, {
-            id: '2',
-            label: '招商银行'
-          }, {
-            id: '3',
-            label: '中信银行'
-          }],
-          placeholder: ''
+          type: 'text',
+          placeholder: '请输入编号'
         }, {
-          label: '收款金额',
+          label: '名称',
           name: 'name',
           type: 'text',
-          placeholder: '请输入收款金额'
+          placeholder: '请输入名称'
         }, {
           label: '备注',
           name: 'desc',
-          type: 'textarea',
-          placeholder: '请输入...'
+          type: 'text',
+          placeholder: '请输入备注'
         }],
         dialogVisible: false,
         param: {
@@ -210,6 +217,9 @@ export default {
     console.log(this);
   },
   methods: {
+    linkTo(path) {
+      this.$router.push({ path });
+    },
     statusHandler(status){
 			this.selects.status.forEach(function(obj){
 					obj.isStatus = false;
@@ -285,3 +295,26 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+    .line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
+		.global-block {
+			margin-top: 1rem;
+		}
+		
+</style>

@@ -1,23 +1,22 @@
 <template>
-  <div>
-    <con-head title="诚意金收取">
-      <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">收取</el-button>
-      <el-row slot="preappend">
-        <el-col :span="9">
-          <div class="searchselect">
-              <span class="inputname">商户</span>
-              <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
-                <el-option
-                  v-for="item in selects.expenses"
-                  :key="item.id"
-                  :value="item.label">
-                </el-option>
-              </el-select>
-          </div>
-        </el-col>
-        <el-col :span="9" :offset="6">
-          <div class="searchselect">
-            <span class="inputname">合同</span>
+  <con-head title="费用调整">
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+    <el-row slot="preappend">
+      <el-col :span="9">
+        <div class="searchselect">
+            <span class="inputname">费用类型</span>
+            <el-select v-model="query.name" placeholder="固定费用" class="dialogselect">
+              <el-option
+                v-for="item in selects.expenses"
+                :key="item.id"
+                :value="item.label">
+              </el-option>
+            </el-select>
+        </div>
+      </el-col>
+      <el-col :span="9" :offset="6">
+        <div class="searchselect">
+            <span class="inputname">物业性质</span>
             <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
@@ -25,61 +24,51 @@
                 :value="item.label">
               </el-option>
             </el-select>
-          </div>
-        </el-col>
-      </el-row>
-    </con-head>
-    
-    <blank-head title="店铺租赁诚意金">
-      <cash-card :cash="[{name:'haha', id:1000}, {name: 'heihie', id:2000}, {name: 'enenen', id:3000}]"></cash-card>
-    </blank-head>
-  
+        </div>
+      </el-col>
+    </el-row>
     <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改诚意金': '诚意金收取'" :dialog="dialog"></erp-dialog>
-  </div>
-  
+
+    <erp-dialog :title="dialog.param.id? '修改费用调整': '添加费用调整'" :dialog="dialog"></erp-dialog>
+  </con-head>
+
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
-import blankHead from "../../../components/BlankHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import cashCard from "../../../components/CashCard";
 export default {
   name: "account-group",
   components: {
     conHead,
-    blankHead,
     erpTable,
-    erpDialog,
-    cashCard
+    erpDialog
   },
   data() {
     return {
       header: [
         {
-          label: "编码",
+          label: "费用项目",
           type: "text",
           name: "id"
         },
         {
-          label: "名称",
+          label: "费用金额",
           type: "text",
           name: "name"
+        },
+        {
+          label: "费用日期",
+          type: "text",
+          name: "desc"
         },
         {
           label: "备注",
           type: "text",
           name: "desc"
-        },
-        {
-          label: "更新时间",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
           label: "操作",
@@ -119,31 +108,34 @@ export default {
       ],
       dialog: {
         models: [{
-          label: '收款方式',
+          label: '编码',
           name: 'id',
-          type: 'select',
-          options: [{
-            id: '1',
-            label: '工商银行'
-          }, {
-            id: '2',
-            label: '招商银行'
-          }, {
-            id: '3',
-            label: '中信银行'
-          }],
-          placeholder: ''
+          type: 'text',
+          placeholder: '请输入编码'
         }, {
-          label: '收款金额',
+          label: '名称',
           name: 'name',
           type: 'text',
-          placeholder: '请输入收款金额'
+          placeholder: '请输入名称'
+        },{
+          label: '结算组别',
+          name: 'name',
+          type: 'select',
+          placeholder: '请选择组别'
+        },{
+          label: '费用类型',
+          name: 'name',
+          type: 'select',
+          placeholder: '请选择费用类型'
         }, {
-          label: '备注',
+          label: '物业性质',
           name: 'desc',
-          type: 'textarea',
-          placeholder: '请输入...'
+          type: 'select',
+          placeholder: '请选择物业性质'
         }],
+        // handleClose: () => {
+        //   this.handleClose();
+        // },
         dialogVisible: false,
         param: {
           id: "",
@@ -186,19 +178,6 @@ export default {
         }, {
           id: 22,
           label: '费用22'
-        }],
-        status: [{
-          isStatus:true,
-          label: '全部'
-        }, {
-          isStatus:false,
-          label: '新增'
-        }, {
-          isStatus:false,
-          label: '已确认'
-        }, {
-          isStatus:false,
-          label: '取消'
         }]
       },
       query: {
@@ -210,11 +189,14 @@ export default {
     console.log(this);
   },
   methods: {
-    statusHandler(status){
-			this.selects.status.forEach(function(obj){
-					obj.isStatus = false;
-			});
-			status.isStatus = !status.isStatus
+    handleClose(done) {
+      let _this = this;
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          _this.dialog.param = {};
+          done();
+        })
+        .catch(_ => {});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -285,3 +267,7 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+</style>
