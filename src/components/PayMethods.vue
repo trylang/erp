@@ -31,15 +31,23 @@
       <div v-if="variables.isActive==='cash'" class="pay_content">
         <small-collection :title="variables.title">
           <ul slot="cash" class="cash_methods">
-            <li class="active">
-              <i class="iconfont icon-xianjin" style="{color: #457fcf}"></i>
-              <span>现金</span>
-            </li>
-            <li v-for="(item, index) in payMethods.icons" :key="index">
+            <li v-for="(item, index) in payMethods.icons" :key="index" :class="{active: item.id === variables.isSelected}" @click="variables.isSelected = item.id">
               <i class="iconfont" :class="item.icon" :style="{color: item.color}"></i>
               <span>{{item.label}}</span>
             </li>
           </ul>
+          <div slot="cash" class="cash_table">
+            <p>
+              <span>预存款</span>
+              <strong>￥20,000</strong>
+            </p>
+            <textarea name="" id="" rows="3" placeholder="请输入备注"></textarea>
+                       
+          </div>
+          <div slot="cash" class="cash_store">
+            <el-checkbox v-model="variables.checked"></el-checkbox>
+            <span>存入找零：</span><strong>￥1,000</strong>
+          </div>
         </small-collection>
       </div>
     </section>
@@ -72,6 +80,8 @@ export default {
       },
       variables: {
         isActive: "prepaid",
+        isSelected: "xianjin",
+        checked: false,
         title: {
           label: "收款方式",
           title_style: {
@@ -170,6 +180,11 @@ export default {
           overflow-y: hidden;
         }
       }
+      .cash_store {
+        strong {
+          color: #ff8a59;
+        }
+      }
       .cash_methods {
         display: flex;
         flex-wrap: wrap;
@@ -198,7 +213,7 @@ export default {
             position: absolute;
             right: -1px;
             top: -1px;
-            visibility:hidden;
+            visibility: hidden;
           }
           &::before {
             content: "\2714";
@@ -210,7 +225,7 @@ export default {
             font-size: 10px;
             -webkit-transform: rotate(45deg);
             transform: rotate(15deg);
-            visibility:hidden;
+            visibility: hidden;
           }
           &.active {
             border: 1px solid #b5ccec;

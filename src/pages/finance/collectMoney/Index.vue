@@ -31,12 +31,12 @@
                     <p class="all_info">共 <span>6</span> 项，合计 <strong>$231.000.00</strong></p>
                   </el-col>
                   <el-col :span="5">
-                    <el-button class="global-btn" @click="dialogVisible = true">收款</el-button>
+                    <el-button class="global-btn" @click="dialogVisible = true"><i class="iconfont icon-shoukuan" style="margin-right:.5rem"></i>收款</el-button>
                   </el-col>
                 </el-row>
                 <el-row class="tab_content" :gutter="8">
                   <el-col :span="12">
-                    <small-collection title="固定租金">
+                    <small-collection :title="defaultProps.title">
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
                         <p><span>已收金额</span><strong>￥40,000.00</strong></p>
@@ -88,7 +88,7 @@
                     </small-collection>
                   </el-col>
                   <el-col :span="12">
-                    <small-collection title="固定租金">
+                    <small-collection :title="defaultProps.title">
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
                         <p><span>已收金额</span><strong>￥40,000.00</strong></p>
@@ -101,7 +101,7 @@
               <el-tab-pane label="部分收取" name="part">
                 <el-row class="tab_content" :gutter="8">
                   <el-col :span="12">
-                    <small-collection title="POS租金">
+                    <small-collection :title="defaultProps.title">
                       <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="dialogVisible = true">收款</el-button>
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
@@ -111,7 +111,7 @@
                     </small-collection>
                   </el-col>
                   <el-col :span="12">
-                    <small-collection title="POS租金">
+                    <small-collection :title="defaultProps.title">
                       <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="dialogVisible = true">收款</el-button>
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
@@ -207,7 +207,11 @@ export default {
       ],
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
+        title: {
+          ifBorder: true,
+          label: 'POS租金'
+        }
       },
       selects: {
         methods: [
