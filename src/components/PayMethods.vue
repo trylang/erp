@@ -20,13 +20,7 @@
       <div v-if="variables.isActive==='prepaid'" class="pay_content">
         <span>账户余额</span>
         <strong>￥20,000</strong>
-        <div class="cash_table">
-          <p>
-            <span>预存款</span>
-            <strong>￥20,000</strong>
-          </p>
-          <textarea name="" id="" rows="3" placeholder="请输入备注"></textarea>
-        </div>
+        <cash-table slot="cash" :cash="payMethods.cash"></cash-table>
       </div>
       <div v-if="variables.isActive==='cash'" class="pay_content">
         <small-collection :title="variables.title">
@@ -36,14 +30,7 @@
               <span>{{item.label}}</span>
             </li>
           </ul>
-          <div slot="cash" class="cash_table">
-            <p>
-              <span>预存款</span>
-              <strong>￥20,000</strong>
-            </p>
-            <textarea name="" id="" rows="3" placeholder="请输入备注"></textarea>
-                       
-          </div>
+          <cash-table slot="cash" :cash="payMethods.cash"></cash-table>
           <div slot="cash" class="cash_store">
             <el-checkbox v-model="variables.checked"></el-checkbox>
             <span>存入找零：</span><strong>￥1,000</strong>
@@ -56,12 +43,14 @@
 
 <script>
 import SmallCollection from "@/components/SmallCollection";
+import CashTable from "@/components/CashTable";
 import { getPayMethods } from "@/utils/rest/local";
 export default {
   name: "pay-methods",
   props: ["data"],
   components: {
-    SmallCollection
+    SmallCollection,
+    CashTable
   },
   data() {
     return {
@@ -76,7 +65,11 @@ export default {
         }
       ],
       payMethods: {
-        icons: []
+        icons: [],
+        cash: {
+          title: '预付款',
+          money: '$23232'
+        }
       },
       variables: {
         isActive: "prepaid",
@@ -157,28 +150,6 @@ export default {
         color: #457fcf;
         font-size: 1rem;
         margin-left: 2.2rem;
-      }
-      .cash_table {
-        margin: 1.5rem 0;
-        border: 0.8rem solid #f5f5f5;
-        p {
-          display: flex;
-          justify-content: space-between;
-          padding: 0.5rem;
-          border-bottom: 0.8rem solid #f5f5f5;
-          strong {
-            color: #666;
-          }
-        }
-        textarea {
-          width: 100%;
-          border: none;
-          padding: 0.5rem;
-          font-family: inherit;
-          resize: none;
-          overflow-x: hidden;
-          overflow-y: hidden;
-        }
       }
       .cash_store {
         strong {

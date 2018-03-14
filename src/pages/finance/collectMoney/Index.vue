@@ -102,7 +102,7 @@
                 <el-row class="tab_content" :gutter="8">
                   <el-col :span="12">
                     <small-collection :title="defaultProps.title">
-                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="dialogVisible = true">收款</el-button>
+                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="part_dialogVisible = true">收款</el-button>
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
                         <p><span>已收金额</span><strong>￥40,000.00</strong></p>
@@ -112,7 +112,7 @@
                   </el-col>
                   <el-col :span="12">
                     <small-collection :title="defaultProps.title">
-                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="dialogVisible = true">收款</el-button>
+                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="part_dialogVisible = true">收款</el-button>
                       <div slot="cash" class="cash_item">
                         <p><span>应收金额</span><strong>￥50,000.00</strong></p>
                         <p><span>已收金额</span><strong>￥40,000.00</strong></p>
@@ -136,6 +136,18 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="收费"
+      :visible.sync="part_dialogVisible"
+      width="42%"
+      :before-close="handleClose">
+      <pay-methods></pay-methods>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="part_dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="part_dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>  
@@ -260,7 +272,8 @@ export default {
       query: {
         name: ""
       },
-      dialogVisible: false
+      dialogVisible: false,
+      part_dialogVisible: false
     };
   },
   mounted() {
