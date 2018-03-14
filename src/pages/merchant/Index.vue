@@ -1,5 +1,5 @@
 <template>
-    <div style="min-height: 500px; text-align: center; font-weight: bold;line-height: 400px;">敬请期待</div>
+    <div style="text-align: center; font-weight: bold;line-height: 500px; color: #4A99FB;font-size: 20px;">敬请期待...</div>
 </template>
 
 <script>

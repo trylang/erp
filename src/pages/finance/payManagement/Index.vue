@@ -75,7 +75,9 @@ export default {
         },
         {
           label: "编码",
-          type: "text",
+          linkStyle: {color: "#457fcf"},
+          type: 'link',
+          basehref: '#/finance/payManagement/id/',
           name: "id"
         },
         {

@@ -17,6 +17,7 @@
           <td v-for="(header,key) in header" :key="key">
             <div class="cell">
               <span v-if="header.type==='text'">{{content[header.name]}}</span>
+              <a v-if="header.type==='link'" :style="header.linkStyle" :href="header.basehref+content[header.name]">{{content[header.name]}}</a>
               <span v-if="header.type==='time'">{{content[header.name]|formatDate(header.filter)}}</span>
               <input v-if="header.type==='checkbox'" type="checkbox" :id="index" v-model="content[header.name]">
               <label v-if="header.type==='checkbox'" :for="index"></label>
@@ -30,13 +31,13 @@
             </div>
           </td>
 				</tr>
-        <tr v-if="content.length<1" class="table_empty-block">
+        <tr v-if="content && content.length<1" class="table_empty-block">
           <td colspan="7" class="table_empty-text">暂无数据</td>
         </tr>
 			</tbody>
       
 	  </table>
-    <div v-if="content.length>0" class="table_page">
+    <div v-if="!noPage && content && content.length>0" class="table_page">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -54,7 +55,7 @@
 <script>
 export default {
   name: "erp-table",
-  props: ["header", "content"],
+  props: ["header", "content", "noPage"],
   data() {
     return {
       currentPage: 1

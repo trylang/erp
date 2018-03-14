@@ -30,3 +30,10 @@ export function deleteAccountgroup(id) {
     method: 'delete'
   })
 }
+
+export function getPayManagementById(id) {
+  return request({
+    url: '/payManagement/' + id,
+    method: 'get'
+  })
+}

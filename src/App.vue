@@ -11,6 +11,22 @@ export default {
 </script>
 
 <style>
+    @import url('assets/iconfont/iconfont.css');
+    @font-face {font-family: 'iconfont';
+        src: url('assets/iconfont/iconfont.eot');
+        src: url('assets/iconfont/iconfont.eot?#iefix') format('embedded-opentype'),
+        url('assets/iconfont/iconfont.woff') format('woff'),
+        url('assets/iconfont/iconfont.ttf') format('truetype'),
+        url('assets/iconfont/iconfont.svg#iconfont') format('svg');
+    }
+    .iconfont{
+        font-family:"iconfont" !important;
+        font-size:16px;font-style:normal;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-stroke-width: 0.2px;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
     html,body{
         height: 100%;
     }
@@ -90,36 +106,49 @@ export default {
         border-radius: 10px;
         background: #fff;
     }
+    .wrapper .savebox{
+        height: 100%;
+        background: #eee;
+    }
+    .wrapper .savebox .savecont{
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+    }
     /******** end ********/
     /*导航*/
     .sub-menu .el-menu{
-        color: #818181;
-        background: #30354e;
+        background: #353c5f;
         border-right: none;
-    }
-    .sub-menu .el-menu .el-menu-item{
-        background: #30354e;
-    }
-    /*.sub-menu .el-menu li.el-menu-item:hover{
-        background: #30354e;
-    }*/
-    .sub-menu .el-menu-item-group__title{
-        display: none;
     }
     .sub-menu .el-submenu__title{
         color: #fff;
-        background: #30354e;
+        background: #353c5f;
     }
     .sub-menu .el-submenu__title i{
         color: #fff;
     }
-    .sub-menu .el-menu-item>li{
-        color: #fff;
-        padding-left: 18px;
-    }
     .sub-menu .el-menu-item.is-active{
         color: #fff;
         background: url(./assets/sanjiao.png) center right no-repeat #30354e;
+    }
+    .sub-menu .el-menu .is-opened{
+        background: #30354e;
+    }
+    .sub-menu .el-menu .is-opened .el-menu-item{
+        background: #30354e;
+    }
+    .sub-menu .is-opened .el-submenu__title{
+        color: #fff;
+        background: #30354e;
+    }
+    .sub-menu .is-opened .el-menu-item.is-active{
+        color: #fff;
+        background: url(./assets/sanjiao.png) center right no-repeat #30354e;
+    }
+    .sub-menu .el-menu-item>li{
+        color: #fff;
+        padding-left: 18px;
     }
     .sub-menu .el-menu-item.is-active .menutitle{
         padding: 2px 0;
@@ -132,9 +161,29 @@ export default {
         border-color: #ff5400;
         font-size: 14px;
     }
-    .header .el-button a{
+    .header a.el-button{
         text-decoration: none;
         color: #fff;
+    }
+    .header a.el-button span{
+        margin-left: 5px;
+    }
+    /*底部保存按钮*/
+    .savebtn{
+        text-align: right;
+    }
+    .savebtn button{
+        padding: 10px 0;
+        background: #ff5400;
+        border-color: #ff5400;
+        font-size: 14px;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        line-height: 1;
+        width: 140px;
+        border: none;
+        margin-top: 10px;
     }
     /*正文盒子*/
     .mainbox{
@@ -191,6 +240,10 @@ export default {
         line-height: 30px;
         display: inline-block;
     }
+    .dialoginput .textcount{
+        line-height: 30px;
+        color: #ccc;
+    }
     .dialoginput .inputnameWidth{
         width:104px;
         display: inline-block;
@@ -203,9 +256,9 @@ export default {
     .dialoginput .inputtext .el-radio{
         line-height: 30px;
     }
-    .dialoginput .inputtext::-webkit-input-placeholder{color:#ccc}
-    .dialoginput .inputtext:-ms-input-placeholder{color:#ccc}
-    .dialoginput .inputtext::placeholder{color:#ccc}
+    ::-webkit-input-placeholder{color:#ccc}
+    :-ms-input-placeholder{color:#ccc}
+    ::placeholder{color:#ccc}
     .dialoginput .el-input__inner{
         border:none;
         font-size: 16px;
@@ -218,6 +271,9 @@ export default {
     }
     .dialogbox .noline{
         border:none;
+    }
+    .commonbox{
+        margin: 30px 10px;
     }
     /*选择按钮重写*/
     .el-radio__input.is-checked .el-radio__inner{
@@ -235,6 +291,7 @@ export default {
     .el-checkbox__inner{
         width: 16px;
         height: 16px;
+        border-radius: 4px;
     }
     .el-checkbox__inner::after{
         border: 2px solid #457fcf;
@@ -375,7 +432,55 @@ export default {
         border: none;
         cursor: pointer;
     }
-
+    /*表单及文本域*/
+    .textareabox{
+        height: 60px;
+        padding: 5px;
+        line-height: 18px;
+        border: 1px solid #e5e5e5;
+        resize:none;
+        overflow-x: hidden;
+    }
+    /*步骤条*/
+    .el-tabs--card>.el-tabs__header{
+        border:none;
+    }
+    .el-tabs__header{
+        margin: 0;
+        background: #eee;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__item{
+        border: none;
+    }
+    .el-tabs__nav-scroll{
+        display: flex;
+    }
+    .el-tabs--card>.el-tabs__header .el-tabs__nav{
+        border: none;
+        height:40px;
+        align-items: center;
+        display: table;
+        margin: 0 auto;
+    }
+    .el-tabs__content{
+        border-radius: 10px;
+        background: #fff;
+        min-height: 300px;
+        padding: 20px 0;
+    }
+    .el-tabs__item{
+        height: 30px;
+        line-height: 30px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        box-shadow: 0px -2px 5px #dadada;
+        margin:10px 2px 0;
+    }
+    .el-tabs__item.is-active{
+        background: #fff;
+        color: #457fcf;
+    }
+    
     /*多选按钮样式*/
     .global-btn {
        width: 5.6rem;
@@ -388,9 +493,33 @@ export default {
         color: #fff;
     }
     .global-btn:hover {
+        color: #fff;
         background: #4a92e4;
     }
     .font12 {
         font-size: 12px;
+    }
+    .small-btn {
+        width: 100%;
+        height: 1.6rem;
+        border-radius: .8rem;
+        padding: 0;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .small-btn:hover {
+        color: #519ef7;
+    }
+
+    .pay_date_picker.dialoginput .el-input__inner {
+        margin-left: -9rem;
+        color: #d3d3d3;
+        font-size: .9rem;
+    }
+    .pay_date_picker .el-input__prefix {
+        left: 10rem;
+    }
+    .pay_date_picker .el-input__icon.el-icon-circle-close {
+        margin-left: -12rem;
     }
 </style>

@@ -3,7 +3,7 @@
         <con-head title="部门管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
             <el-row slot="preappend">
-                <el-col :span="10">
+                <el-col :span="9">
                     <div class="searchbox">
                         <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
                     </div>

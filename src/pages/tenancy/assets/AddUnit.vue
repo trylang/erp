@@ -1,21 +1,15 @@
 <template>
     <div class="savebox">
         <div class="savecont">
-            <con-head title="创建用户"></con-head>
+            <con-head title="添加单元"></con-head>
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">用户名</span>
-                    <input class="inputtext" type="text" placeholder="请输入用户名">
-                    <span class="textcount">0/20</span>
+                    <span class="inputname">单元号</span>
+                    <input class="inputtext" type="text" placeholder="请输入单元号">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">密码</span>
-                    <input class="inputtext" type="text" placeholder="请输入6-20位字母加数字组合">
-                    <span class="textcount">0/20</span>
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">角色</span>
+                    <span class="inputname">购物中心</span>
                     <el-select v-model="value" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"
@@ -25,7 +19,7 @@
                     </el-select>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">所属部门</span>
+                    <span class="inputname">楼宇</span>
                     <el-select v-model="value" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"
@@ -35,7 +29,7 @@
                     </el-select>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">职位</span>
+                    <span class="inputname">楼层</span>
                     <el-select v-model="value" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"
@@ -44,48 +38,32 @@
                         </el-option>
                     </el-select>
                 </div>
-                </el-col>
-            </el-row>
-            <blank-head title="员工信息"></blank-head>
-            <el-row class="commonbox">
-                <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">员工姓名</span>
-                    <input class="inputtext" type="text" placeholder="请输入员工姓名">
-                    <span class="textcount">0/10</span>
+                    <span class="inputname">建筑面积</span>
+                    <input class="inputtext" type="text" placeholder="请输入建筑面积">
+                    <span>㎡</span>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">手机号</span>
-                    <input class="inputtext" type="text" placeholder="请输入手机号">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">邮箱</span>
-                    <input class="inputtext" type="text" placeholder="(选填)">
-                </div>
-                <div class="dialoginput noline">
-                    <span class="inputname">性别</span>
-                    <div class="inputtext">
-                        <el-radio v-model="radio" label="1">男</el-radio>
-                        <el-radio v-model="radio" label="2">女</el-radio>
-                    </div>
+                    <span class="inputname">使用面积</span>
+                    <input class="inputtext" type="text" placeholder="请输入使用面积">
+                    <span>㎡</span>
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="选填"></textarea>
-                    <span class="textcount">0/20</span>
+                    <textarea class="textareabox" placeholder="请输入"></textarea>
                 </div>
-                <el-button type="primary" class="submitbtn">提交</el-button>
                 </el-col>
             </el-row>
         </div>
+        <div class="savebtn"><button>提交</button></div>
     </div>
 </template>
 
 <script>
-    import ConHead from '../../components/ConHead'
-    import BlankHead from '../../components/BlankHead'
+    import ConHead from '../../../components/ConHead'
+    import BlankHead from '../../../components/BlankHead'
     export default {
         name: "add-user",
         data(){

@@ -1,9 +1,9 @@
 <template>
     <div>
         <con-head title="用户管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append"><router-link to="/system/adduser">添加</router-link></el-button>
+            <router-link to="/system/adduser" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
-                <el-col :span="10">
+                <el-col :span="9">
                     <div class="searchbox">
                         <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
                     </div>
@@ -52,13 +52,13 @@
                     value: '中粮公司'
                 }],
                 columnData:[
-                    { prop: 'number', label: '用户名'},
-                    { prop: 'name', label: '姓名' },
-                    { prop: 'superior1', label: '性别' },
-                    { prop: 'number', label: '手机号' },
-                    { prop: 'name', label: '部门' },
-                    { prop: 'name', label: '职位' },
-                    { prop: 'name', label: '角色' }
+                    { prop: 'name', label: '用户名', link:'/system/userinfo', param:'id'},
+                    { prop: 'name', label: '姓名'},
+                    { prop: 'superior1', label: '性别'},
+                    { prop: 'number', label: '手机号'},
+                    { prop: 'name', label: '部门'},
+                    { prop: 'name', label: '职位'},
+                    { prop: 'name', label: '角色'}
                 ]
             }
         },

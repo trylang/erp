@@ -1,17 +1,17 @@
 <template>
     <div>
-        <con-head title="意向合同管理">
-            <router-link class="el-button" slot="append" to="/inner/contract">录入</router-link>
+        <con-head title="单元管理">
+            <router-link to="/inner/addunit" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入单元号"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
-                            <span class="inputname">商户</span>
+                            <span class="inputname">楼层</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
@@ -31,35 +31,44 @@
                             </div>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
-                        <div class="searchselect">
-                            <span class="inputname">店铺</span>
-                            <el-select v-model="value" placeholder="请选择" class="dialogselect">
-                                <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                    </el-col>
                 </el-row>
             </div>
         </con-head>
         <con-head>
+            <div class="btn"><button @click="auditbtn">确定</button></div>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
+                <data-table :tableData="datalist" :colConfigs="columnData" @listSelected="childData">
                     <el-table-column
                             label="操作"
-                            width="70"
+                            width="110"
                             slot="operation">
                         <template slot-scope="scope">
                             <button class="btn_text">编辑</button>
+                            <button class="btn_text">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
         </con-head>
+        <el-dialog
+                title="添加楼宇类型"
+                :visible.sync="dialogVisible"
+                custom-class="customdialog">
+            <div class="dialogbox">
+                <div class="dialoginput">
+                    <span class="inputname">编码</span>
+                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="add.number">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">名称</span>
+                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="add.name">
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleClose">取 消</el-button>
+                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -68,24 +77,26 @@
     import PageContent from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
-        name: "index",
+        name: "unit",
         data(){
             return{
-                activeName: 'first',
                 dialogVisible:false,
                 datalist:[],
                 add:{
                     number:"",
                     name:""
                 },
-                value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
+                columnData:[
+                    { type: 'selection', width:'50'},
+                    { prop: 'number', label: '单元号'},
+                    { prop: 'name', label: '楼宇' },
+                    { prop: 'number', label: '楼层'},
+                    { prop: 'number', label: '建筑面积'},
+                    { prop: 'name', label: '使用面积' },
+                    { prop: 'name', label: '状态' },
+                    { prop: 'number', label: '备注'},
+                    { prop: 'datetime', label: '更新时间', width:'180'}
+                ],
                 statusData:[{
                     name:"全部",
                     isStatus:true
@@ -93,25 +104,27 @@
                     name:"新增",
                     isStatus:false
                 },{
-                    name:"已确认",
+                    name:"空置",
                     isStatus:false
                 },{
-                    name:"取消",
+                    name:"预定",
                     isStatus:false
                 },{
-                    name:"退租",
+                    name:"使用中",
+                    isStatus:false
+                },{
+                    name:"失效",
                     isStatus:false
                 }],
-                columnData:[
-                    { prop: 'number', label: '合同号'},
-                    { prop: 'name', label: '商户名称' },
-                    { prop: 'name', label: '店铺名称' },
-                    { prop: 'superior1', label: '经营品牌' },
-                    { prop: 'superior1', label: '物业性质' },
-                    { prop: 'number', label: '签约日期' },
-                    { prop: 'number', label: '合同有效期' },
-                    { prop: 'name', label: '状态' }
-                ]
+                value: '',
+                options: [{
+                    value: 'F1'
+                }, {
+                    value: 'F2'
+                }, {
+                    value: 'F3'
+                }],
+                multipleSelection:[]
             }
         },
         mounted(){
@@ -139,6 +152,12 @@
                 };
                 await this.$api.addBuilding(params);
                 this.getbuilding();
+            },
+            childData(data){
+                this.multipleSelection = data;
+            },
+            auditbtn(){
+                console.log(this.multipleSelection)
             }
         },
         components:{
@@ -165,5 +184,16 @@
     .line-nav a.active{
         color: #457fcf;
         border-bottom: 2px solid #457fcf;
+    }
+    .btn{
+        padding: 0 20px;
+    }
+    .btn button{
+        background: #457fcf;
+        border: none;
+        color: #fff;
+        padding: 5px 28px;
+        border-radius: 15px;
+        cursor: pointer;
     }
 </style>

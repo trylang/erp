@@ -1,14 +1,34 @@
 <template>
     <div>
-        <con-head title="区域管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
-            <el-row slot="preappend">
-                <el-col :span="9">
-                    <div class="searchbox">
-                        <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
-                    </div>
-                </el-col>
-            </el-row>
+        <con-head title="店铺管理">
+            <div slot="preappend">
+                <el-row>
+                    <el-col :span="9">
+                        <div class="searchbox">
+                            <input type="text" placeholder="请输入编码"><i class="iconfont icon-sousuo"></i>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="6">
+                        <div class="searchbox">
+                            <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="9">
+                        <div class="searchselect">
+                            <span class="inputname">业态</span>
+                            <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                                <el-option
+                                        v-for="item in options"
+                                        :key="item.value"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
         </con-head>
         <con-head>
             <div class="mainbox">
@@ -25,46 +45,13 @@
                 </data-table>
             </div>
         </con-head>
-        <el-dialog
-                :title="listid?'编辑区域':'添加区域'"
-                :visible.sync="dialogVisible"
-                custom-class="customdialog">
-            <div class="dialogbox">
-                <div class="dialoginput">
-                    <span class="inputname">区域编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">区域名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">英文名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文名称" v-model="add.superior1">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">上级区域</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
-    import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
-    import DataTable from '../../components/DataTable'
+    import ConHead from '../../../components/ConHead'
+    import PageContent from '../../../components/Pagination'
+    import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){
@@ -86,9 +73,14 @@
                 }],
                 columnData:[
                     { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '区域名称' },
-                    { prop: 'superior1', label: '英文缩写' },
-                    { prop: 'superior2', label: '上级区域' },
+                    { prop: 'name', label: '名称' },
+                    { prop: 'number', label: '经营品牌'},
+                    { prop: 'name', label: '主品牌' },
+                    { prop: 'superior1', label: '商户名称' },
+                    { prop: 'name', label: '店铺类型' },
+                    { prop: 'superior2', label: '中央收银' },
+                    { prop: 'superior2', label: '主力店' },
+                    { prop: 'number', label: '状态'},
                     { prop: 'datetime', label: '更新时间' }
                 ],
                 oneData:{},

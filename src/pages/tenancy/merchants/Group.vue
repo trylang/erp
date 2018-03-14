@@ -1,11 +1,18 @@
 <template>
     <div>
-        <con-head title="区域管理">
+        <con-head title="货品组别管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
-                    <div class="searchbox">
-                        <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                    <div class="searchselect">
+                        <span class="inputname">业态</span>
+                        <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                            <el-option
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
                     </div>
                 </el-col>
             </el-row>
@@ -26,24 +33,20 @@
             </div>
         </con-head>
         <el-dialog
-                :title="listid?'编辑区域':'添加区域'"
+                :title="listid?'编辑货品组别':'添加货品组别'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">区域编码</span>
+                    <span class="inputname">编码</span>
                     <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">区域名称</span>
+                    <span class="inputname">名称</span>
                     <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">英文名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文名称" v-model="add.superior1">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">上级区域</span>
+                    <span class="inputname">上级组别</span>
                     <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"
@@ -62,9 +65,9 @@
 </template>
 
 <script>
-    import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
-    import DataTable from '../../components/DataTable'
+    import ConHead from '../../../components/ConHead'
+    import PageContent from '../../../components/Pagination'
+    import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){
@@ -86,9 +89,8 @@
                 }],
                 columnData:[
                     { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '区域名称' },
-                    { prop: 'superior1', label: '英文缩写' },
-                    { prop: 'superior2', label: '上级区域' },
+                    { prop: 'name', label: '名称' },
+                    { prop: 'superior2', label: '上级组别' },
                     { prop: 'datetime', label: '更新时间' }
                 ],
                 oneData:{},

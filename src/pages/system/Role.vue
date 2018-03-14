@@ -1,9 +1,9 @@
 <template>
     <div>
         <con-head title="角色管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true"><router-link to="/system/addrole">添加</router-link></el-button>
+            <router-link to="/system/addrole" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
-                <el-col :span="10">
+                <el-col :span="9">
                     <div class="searchbox">
                         <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
                     </div>

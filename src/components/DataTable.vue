@@ -1,11 +1,24 @@
 <template>
-    <el-table :data="tableData" stripe>
+    <el-table :data="tableData" stripe @selection-change="handleSelectionChange">
         <el-table-column
-                v-for="{ prop, label, width, index } in colConfigs"
+                v-for="{ prop, label, width, type, link, param, index } in colConfigs"
                 :key="index"
                 :prop="prop"
                 :label="label"
-                :width="width">
+                :width="width"
+                :type="type"
+                v-if="!link">
+        </el-table-column>
+        <el-table-column
+                :key="index"
+                :prop="prop"
+                :label="label"
+                :width="width"
+                :type="type"
+                v-else>
+            <template slot-scope="scope">
+                <router-link :to="link+'/'+scope.row[param]">{{ scope.row[prop] }}</router-link>
+            </template>
         </el-table-column>
         <slot name="operation"></slot>
     </el-table>
@@ -14,7 +27,12 @@
 <script>
     export default {
         name: "data-table",
-        props:['tableData','colConfigs']
+        props:['tableData','colConfigs'],
+        methods:{
+            handleSelectionChange(val){
+                this.$emit('listSelected',val);
+            }
+        }
     }
 </script>
 

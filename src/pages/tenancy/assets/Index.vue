@@ -21,21 +21,29 @@
         <el-dialog
                 title="添加楼宇类型"
                 :visible.sync="dialogVisible"
-                width="50%"
-                :before-close="handleClose">
-            <span>这是一段信息</span>
+                custom-class="customdialog">
+            <div class="dialogbox">
+                <div class="dialoginput">
+                    <span class="inputname">编码</span>
+                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="add.number">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">名称</span>
+                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="add.name">
+                </div>
+            </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button @click="handleClose">取 消</el-button>
+                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 
 <script>
-    import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
-    import DataTable from '../../components/DataTable'
+    import ConHead from '../../../components/ConHead'
+    import PageContent from '../../../components/Pagination'
+    import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){

@@ -1,30 +1,34 @@
 <template>
-    <div>
-        <con-head title="创建角色"></con-head>
-        <div class="dialogbox userbox">
-            <div class="dialoginput">
-                <span class="inputname">用户名</span>
-                <input class="inputtext" type="text" placeholder="请输入用户名">
-                <span>0/20</span>
-            </div>
-            <div class="dialoginput noline" style="flex-direction: column;">
-                <div>
-                    <span class="inputname">备注</span>
-                    <span class="inputtext" style="line-height: 30px;color:#ccc;">(选填)</span>
+    <div class="savebox">
+        <div class="savecont">
+            <con-head title="创建角色"></con-head>
+            <el-row class="commonbox">
+                <el-col :span="12" class="dialogbox">
+                <div class="dialoginput">
+                    <span class="inputname">用户名</span>
+                    <input class="inputtext" type="text" placeholder="请输入用户名">
+                    <span class="textcount">0/20</span>
                 </div>
-                <textarea class="textareabox"></textarea>
-            </div>
-            <div class="treetitle">功能权限</div>
-            <div class="treecontent">
-                <el-tree
-                        :data="data2"
-                        show-checkbox
-                        node-key="id"
-                        :props="defaultProps">
-                </el-tree>
-            </div>
-            <el-button type="primary" class="submitbtn">提交</el-button>
+                <div class="dialoginput noline" style="flex-direction: column;">
+                    <div>
+                        <span class="inputname">备注</span>
+                    </div>
+                    <textarea class="textareabox" placeholder="选填"></textarea>
+                    <span class="textcount">0/20</span>
+                </div>
+                <div class="treetitle">功能权限</div>
+                <div class="treecontent">
+                    <el-tree
+                            :data="data2"
+                            show-checkbox
+                            node-key="id"
+                            :props="defaultProps">
+                    </el-tree>
+                </div>
+                </el-col>
+            </el-row>
         </div>
+        <div class="savebtn"><button>提交</button></div>
     </div>
 </template>
 
@@ -82,24 +86,6 @@
 </script>
 
 <style scoped>
-    .userbox{
-        width:50%;
-        margin:30px 10px;
-    }
-    .textareabox{
-        height: 60px;
-        padding: 5px;
-        line-height: 18px;
-        border: 1px solid #e5e5e5;
-        resize:none;
-    }
-    .submitbtn{
-        padding: 6px 30px;
-        float: right;
-        margin-right: 10px;
-        margin-top: 20px;
-    }
-
     .treetitle{
         padding: 5px 10px;
     }

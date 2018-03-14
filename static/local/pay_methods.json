@@ -1,0 +1,38 @@
+{
+  "icons": [{
+    "id": "xianjin",
+    "icon": "icon-xianjin",
+    "label": "现金",
+    "color": "#457fcf"
+  }, {
+    "id": "gongshang",
+    "icon": "icon-gongshang",
+    "label": "工商银行",
+    "color": "#e60012"
+  }, {
+    "id": "jianshe",
+    "icon": "icon-jianshe",
+    "label": "建设银行",
+    "color": "#003b90"
+  }, {
+    "id": "nongye",
+    "icon": "icon-nongye",
+    "label": "农业银行",
+    "color": "#368972"
+  }, {
+    "id": "zhaoshang",
+    "icon": "icon-zhaoshang",
+    "label": "招商银行",
+    "color": "#a61f23"
+  }, {
+    "id": "huaxia",
+    "icon": "icon-huaxia",
+    "label": "华夏银行",
+    "color": "#e60012"
+  }, {
+    "id": "youzheng",
+    "icon": "icon-youzheng",
+    "label": "邮政银行",
+    "color": "#007f3e"
+  }]
+}
