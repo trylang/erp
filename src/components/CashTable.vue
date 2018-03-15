@@ -2,7 +2,8 @@
   <div class="cash_table">
     <p>
       <span>{{cash.title}}</span>
-      <strong>{{cash.money}}</strong>
+      <strong v-if="type==='text'">{{cash.money}}</strong>
+      <input v-if="type==='input'" type="number" v-model="cash.money" placeholder="请输入金额">
     </p>
     <textarea name="" id="" rows="3" placeholder="请输入备注"></textarea>                       
   </div>
@@ -11,7 +12,7 @@
 <script>
 export default {
   name: "cash-table",
-  props: ["cash"]
+  props: ["cash", "type"]
 };
 </script>
 
@@ -26,6 +27,11 @@ export default {
     border-bottom: 0.8rem solid #f5f5f5;
     strong {
       color: #666;
+    }
+    input {
+      border: 0;
+      border-bottom: 1px solid #eee;
+      padding-left: .5rem;
     }
   }
   textarea {

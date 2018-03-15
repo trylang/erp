@@ -500,7 +500,7 @@ export default {
         font-size: 12px;
     }
     .small-btn {
-        width: 100%;
+        width: 90%;
         height: 1.6rem;
         border-radius: .8rem;
         padding: 0;

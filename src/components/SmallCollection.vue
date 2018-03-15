@@ -4,7 +4,7 @@
       <el-col :span="15">
         <h3 :style="title.title_style" class="sleeping_rent">{{title.label}}<i v-if="title.ifIcon===true" class="iconfont icon-cir-qian icon-qian"></i></h3>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="9">
         <slot name="btn"></slot>
       </el-col>
     </el-row>
@@ -37,6 +37,8 @@ $cardsDeepColor: (
 );
 
 .card_header {
+  display: flex;
+  align-items: center;
   margin: 1.2rem 0;
   h3 {
     color: #353c5f;

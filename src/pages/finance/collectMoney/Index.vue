@@ -132,7 +132,7 @@
       :visible.sync="dialogVisible"
       width="42%"
       :before-close="handleClose">
-      <pay-methods></pay-methods>
+      <pay-methods type="singleSelected"></pay-methods>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -144,7 +144,7 @@
       :visible.sync="part_dialogVisible"
       width="42%"
       :before-close="handleClose">
-      <pay-methods></pay-methods>
+      <pay-methods type="mulSelected"></pay-methods>
       <span slot="footer" class="dialog-footer">
         <el-button @click="part_dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="part_dialogVisible = false">确 定</el-button>
