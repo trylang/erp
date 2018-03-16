@@ -42,10 +42,8 @@ const TaxRate2cost = r => require.ensure([], () => r(require('../pages/finance/t
 const CollectionAccount = r => require.ensure([], () => r(require('../pages/finance/collectionAccount/Index')), 'finance');
 const AccountAdjust = r => require.ensure([], () => r(require('../pages/finance/accountAdjust/Index')), 'finance');
 const AddAdjustment = r => require.ensure([], () => r(require('../pages/finance/addAdjustment/Index')), 'finance');
-const CollectionMethods = r => require.ensure([], () => r(require('../pages/finance/collectionMethods/Index')), 'finance');
 const ContractMargin = r => require.ensure([], () => r(require('../pages/finance/contractMargin/Index')), 'finance');
 const DealMargin = r => require.ensure([], () => r(require('../pages/finance/dealMargin/Index')), 'finance');
-const AdvancePayMethods = r => require.ensure([], () => r(require('../pages/finance/advancePayMethods/Index')), 'finance');
 const TakeadvancePay = r => require.ensure([], () => r(require('../pages/finance/TakeadvancePay/Index')), 'finance');
 const MerchantAdvancePay = r => require.ensure([], () => r(require('../pages/finance/MerchantAdvancePay/Index')), 'finance');
 const DealAdvancePay = r => require.ensure([], () => r(require('../pages/finance/dealAdvancePay/Index')), 'finance');
@@ -57,8 +55,8 @@ const RentFree = r => require.ensure([], () => r(require('../pages/finance/rentF
 const AddRentFree = r => require.ensure([], () => r(require('../pages/finance/addRentFree/Index')), 'finance');
 const GenerateAccount = r => require.ensure([], () => r(require('../pages/finance/generateAccount/Index')), 'finance');
 const AccountManagement = r => require.ensure([], () => r(require('../pages/finance/accountManagement/Index')), 'finance');
+const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration/Index')), 'finance');
 const AccountAdjustType = r => require.ensure([], () => r(require('../pages/finance/accountAdjustType/Index')), 'finance');
-const PayMethods = r => require.ensure([], () => r(require('../pages/finance/payMethods/Index')), 'finance');
 const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/finance/importIrregularCost/Index')), 'finance');
 
 const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')),'sales');
@@ -230,11 +228,6 @@ const router = new Router({
                     component: AddAdjustment
                 },
                 {
-                    path: 'collectionMethods',
-                    name: 'finance',
-                    component: CollectionMethods
-                },
-                {
                     path: 'contractMargin',
                     name: 'finance',
                     component: ContractMargin
@@ -243,11 +236,6 @@ const router = new Router({
                     path: 'dealMargin',
                     name: 'finance',
                     component: DealMargin
-                },
-                {
-                    path: 'advancePayMethods',
-                    name: 'finance',
-                    component: AdvancePayMethods
                 },
                 {
                     path: 'takeadvancePay',
@@ -298,13 +286,13 @@ const router = new Router({
                     name: 'finance',
                     component: AccountManagement
                 },{
+                    path: 'billGeneration',
+                    name: 'finance',
+                    component: BillGeneration
+                },{
                     path: 'accountAdjustType',
                     name: 'finance',
                     component: AccountAdjustType
-                },{
-                    path: 'payMethods',
-                    name: 'finance',
-                    component: PayMethods
                 },{
                     path: 'importIrregularCost',
                     name: 'finance',

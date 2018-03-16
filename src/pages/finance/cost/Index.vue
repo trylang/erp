@@ -1,21 +1,21 @@
 <template>
-  <con-head title="费用项目">
+  <con-head title="合同费用项目">
     <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入费用项目编码" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入合同费用项目编码" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchbox">
-            <input type="text" placeholder="请输入费用项目名称" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入合同费用项目名称" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
       <el-col :span="9">
         <div class="searchselect">
             <span class="inputname">费用类型</span>
-            <el-select v-model="query.name" placeholder="固定费用" class="dialogselect">
+            <el-select v-model="query.name" placeholder="固定合同费用" class="dialogselect">
               <el-option
                 v-for="item in selects.expenses"
                 :key="item.id"
@@ -144,10 +144,10 @@ export default {
           type: 'select',
           placeholder: '请选择组别'
         },{
-          label: '费用类型',
+          label: '合同费用类型',
           name: 'name',
           type: 'select',
-          placeholder: '请选择费用类型'
+          placeholder: '请选择合同费用类型'
         }, {
           label: '物业性质',
           name: 'desc',
@@ -195,10 +195,10 @@ export default {
         }],
         expenses: [{
           id: 11,
-          label: '费用11'
+          label: '合同费用11'
         }, {
           id: 22,
-          label: '费用22'
+          label: '合同费用22'
         }]
       },
       query: {

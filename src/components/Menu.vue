@@ -105,7 +105,7 @@
                             },
                             {
                                 path:'/finance/cost',
-                                title:'费用项目'
+                                title:'合同费用项目'
                             },
                             {
                                 path:'/finance/taxRate2cost',
@@ -120,10 +120,6 @@
                     {
                         title:'履约保证金管理',
                         children:[
-                            {
-                                path:'/finance/collectionMethods',
-                                title:'收款方式'
-                            },
                             {
                                 path:'/finance/takeMargin',
                                 title:'履约保证金收取'
@@ -140,10 +136,6 @@
                     }, {
                         title:'预付款管理',
                         children:[
-                            {
-                                path:'/finance/advancePayMethods',
-                                title:'收款方式'
-                            },
                             {
                                 path:'/finance/takeadvancePay',
                                 title:'预付款收取'
@@ -186,7 +178,7 @@
                             }
                         ]
                     }, {
-            title: "账单管理",
+            title: "结算单管理",
                         children:[
                             {
                                 path:'/finance/generateAccount',
@@ -194,10 +186,10 @@
                             },
                             {
                                 path:'/finance/accountManagement',
-                title: '账单管理'
+                title: '结算单管理'
               },
               {
-                path: '/finance/accountManagement',
+                path: '/finance/billGeneration',
                 title: '账单生成任务'
                             }
                         ]
@@ -216,10 +208,6 @@
                     }, {
                         title:'收款管理',
                         children:[
-                            {
-                                path:'/finance/payMethods',
-                                title:'收款方式'
-                            },
                             {
                                 path:'/finance/payManagement',
                                 title:'收款管理'

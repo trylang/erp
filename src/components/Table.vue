@@ -13,7 +13,7 @@
 				</tr>
 			</thead>
 			<tbody class="table_body">
-				<tr v-for="(content,index) in content" :key="index">
+				<tr v-for="(content,index) in content" :key="index" :style="[index%2 === 0 ? '': oddColor]">
           <td v-for="(header,key) in header" :key="key">
             <div class="cell">
               <span v-if="header.type==='text'">{{content[header.name]}}</span>
@@ -34,6 +34,7 @@
         <tr v-if="content && content.length<1" class="table_empty-block">
           <td colspan="7" class="table_empty-text">暂无数据</td>
         </tr>
+        <slot name="lastTr"></slot>
 			</tbody>
       
 	  </table>
@@ -55,7 +56,7 @@
 <script>
 export default {
   name: "erp-table",
-  props: ["header", "content", "noPage"],
+  props: ["header", "content", "noPage", "oddColor"],
   data() {
     return {
       currentPage: 1

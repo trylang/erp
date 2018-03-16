@@ -511,6 +511,7 @@ export default {
         color: #519ef7;
     }
 
+    /* 收款页面对于时间选择框的样式修改 */
     .pay_date_picker.dialoginput .el-input__inner {
         margin-left: -9rem;
         color: #d3d3d3;
@@ -521,5 +522,42 @@ export default {
     }
     .pay_date_picker .el-input__icon.el-icon-circle-close {
         margin-left: -12rem;
+    }
+
+    /* 结算单收款中对于tab栏的样式修改 */
+    .collect_money_tabs.el-tabs.el-tabs--top.el-tabs--border-card {
+        box-shadow: 0 0 0 0;
+    }
+    .collect_money_tabs.el-tabs__header.is-top {
+        border-bottom: 0;
+        background: #eee;
+    }
+    .collect_money_tabs .el-tabs__item.is-top.is-active {
+        box-shadow: 0 0 0;
+        margin: 10px -1px 0;
+        color: #457fcf;
+        font-weight: 600;
+    }
+
+    .collect_money_tabs .el-tabs__header.is-top {
+        border: 0;
+    }
+    .collect_money_tabs .el-tabs__item.is-top {
+        box-shadow: 0 0;
+        margin: 0;
+        border: 0;
+    }
+    .collect_money_tabs .el-tabs__item.is-top:hover,
+    .collect_money_tabs .el-tabs__item.is-top.is-active:hover {
+        color: #457fcf;
+        font-weight: 600; 
+    }
+    .collect_money_tabs .el-tabs__item.is-top {        
+        margin: 10px -1px 0;
+    }
+    .collect_money_tabs .el-tabs--border-card>.el-tabs__header.el-tabs__item.is-active {
+        color: #457fcf;
+        font-weight: 600;
+        margin: 10px -1px 0;
     }
 </style>

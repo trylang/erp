@@ -1,8 +1,19 @@
 <template>
-  <con-head title="预付款收款方式">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+  <con-head title="账单处理任务">
+    <el-row slot="preappend">
+        <el-col :span="9">
+        <div class="texttitle">
+            <span class="inputname">状态：</span>
+            <div class="line-nav">
+                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
+                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
+            </div>
+        </div>
+      </el-col>
+    </el-row>
     <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改收款方式': '添加收款方式'" :dialog="dialog"></erp-dialog>
+
+    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -24,19 +35,24 @@ export default {
     return {
       header: [
         {
-          label: "收款方式编码",
+          label: "任务名称",
           type: "text",
           name: "id"
         },
         {
-          label: "收款方式",
+          label: "开始时间",
           type: "text",
           name: "name"
         },
         {
-          label: "备注",
-          type: "text",
-          name: "desc"
+          label: "运行时间",
+          name: "update_time",
+          type: "time",
+          filter: "yyyy-MM-dd hh:mm:ss.S"
+        },
+        {
+          label: "运行状态",
+          name: "text"
         },
         {
           label: "操作",
@@ -47,7 +63,7 @@ export default {
           },
           operations: [
             {
-              label: "编辑",
+              label: "处理结果",
               name: "edit",
               type: "",
               style: {
@@ -57,18 +73,6 @@ export default {
               click: (item) => {
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
-              }
-            },
-            {
-              label: "删除",
-              name: "delete",
-              type: "",
-              style: {
-                // color: "#093216"
-              },
-              class: "delete",
-              click: (item, data) => {
-                this.deleteDialog(item, data);
               }
             }
           ]
@@ -119,6 +123,21 @@ export default {
           }
         }]
       },
+      selects: {
+        status: [{
+          isStatus:true,
+          label: '全部'
+        }, {
+          isStatus:false,
+          label: '成功'
+        }, {
+          isStatus:false,
+          label: '进行中'
+        }, {
+          isStatus:false,
+          label: '失败'
+        }]
+      },
       query: {
         name: ""
       }
@@ -128,6 +147,15 @@ export default {
     console.log(this);
   },
   methods: {
+    linkTo(path) {
+      this.$router.push({ path });
+    },
+    statusHandler(status){
+			this.selects.status.forEach(function(obj){
+					obj.isStatus = false;
+			});
+			status.isStatus = !status.isStatus
+    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -198,6 +226,25 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+    .line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
+		.global-block {
+			margin-top: 1rem;
+		}
+		
 </style>

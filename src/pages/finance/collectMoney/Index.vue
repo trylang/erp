@@ -24,7 +24,7 @@
         </el-col>
         <el-col :span="12">
           <div class="marg_top_3rem">
-            <el-tabs v-model="params.name" type="border-card">
+            <el-tabs class="collect_money_tabs" v-model="params.name" type="border-card">
               <el-tab-pane label="一次性全部收取" name="all">
                 <el-row class="all_tab_head">
                   <el-col :span="19">
