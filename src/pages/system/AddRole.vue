@@ -5,7 +5,7 @@
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">用户名</span>
+                    <span class="inputname inputnameauto">用户名</span>
                     <input class="inputtext" type="text" placeholder="请输入用户名">
                     <span class="textcount">0/20</span>
                 </div>

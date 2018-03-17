@@ -24,18 +24,18 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">编码</span>
+                    <span class="inputname inputnameauto">编码</span>
                     <input class="inputtext" type="text" placeholder="请输入编号" v-model="add.number">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">名称</span>
+                    <span class="inputname inputnameauto">名称</span>
                     <input class="inputtext" type="text" placeholder="请输入名称" v-model="add.name">
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="请输入"></textarea>
+                    <textarea class="textareabox" placeholder="选填"></textarea>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">

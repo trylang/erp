@@ -1,17 +1,17 @@
 <template>
     <div>
         <con-head title="意向合同管理">
-            <router-link class="el-button" slot="append" to="/inner/contract">录入</router-link>
+            <router-link class="el-button" icon="el-icon-plus" slot="append" to="/inner/addcontract">录入</router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入合同号"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
-                            <span class="inputname">商户</span>
+                            <span class="inputname inputnameauto">商户</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
@@ -33,7 +33,7 @@
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
-                            <span class="inputname">店铺</span>
+                            <span class="inputname inputnameauto">店铺</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
@@ -80,9 +80,9 @@
                 },
                 value: '',
                 options: [{
-                    value: '中粮集团'
+                    value: 'IC062018030600001（00000600000622 | 优衣库）'
                 }, {
-                    value: '中粮中粮'
+                    value: 'IC062018030600001（00000600000622 | 北京朝阳大悦城麦当劳分店）'
                 }, {
                     value: '中粮公司'
                 }],
@@ -97,9 +97,6 @@
                     isStatus:false
                 },{
                     name:"取消",
-                    isStatus:false
-                },{
-                    name:"退租",
                     isStatus:false
                 }],
                 columnData:[

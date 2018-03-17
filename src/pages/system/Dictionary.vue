@@ -25,15 +25,15 @@
                         <el-col :span="24">
                             <div class="listbox">
                                 <div class="listcont" v-for="(lists,index) in list">
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>名称：</span>
                                         {{lists.name}}
                                     </div>
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>编码：</span>
                                         {{lists.number}}
                                     </div>
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>顺序：</span>
                                         {{index+1}}
                                         <span v-if="index!==0"><img src="../../assets/up.png" alt=""></span>
@@ -49,15 +49,15 @@
                                     </div>
                                 </div>
                                 <div class="listcont" v-show="isadditem">
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>名称：</span>
                                         <input type="text">
                                     </div>
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>编码：</span>
                                         <input type="text">
                                     </div>
-                                    <div class="listcolum">
+                                    <div class="listcolum listskin">
                                         <span>顺序：</span>
                                         {{list.length+1}}
                                         <!--<span><img src="../../assets/up.png" alt=""></span>
@@ -121,7 +121,7 @@
         flex-direction: row;
     }
     .maincontL{
-        width: 318px;
+        width: 260px;
         height: auto;
         border: 1px solid #e6e6e6;
         padding: 15px;
@@ -146,37 +146,6 @@
         font-size: 16px;
         font-weight: bold;
     }
-    .listbox{
-        display: flex;
-        flex-direction: column;
-        margin: 10px 0;
-    }
-    .listcont{
-        flex: 1;
-        display: flex;
-        flex-direction:row;
-        line-height: 30px;
-        border-left: 2px solid #e5e5e5;
-        margin: 12px 0;
-        padding-left: 10px;
-    }
-    .listcont span{
-        color: #999;
-    }
-    .listcont img{
-        width: 10px;
-        height: 12px;
-        cursor: pointer;
-    }
-    .listcont .listcolum{
-        flex: 1;
-        flex-direction: row;
-    }
-    .listcont .listcolum input{
-        width: 50%;
-        height: 24px;
-        border: 1px solid #e6e6e6;
-    }
     .statusbtn button{
         background: none;
         border: none;
@@ -191,11 +160,5 @@
     }
     .statusbtn button.btndisable{
         color: #ff5400;
-    }
-    .listcont .el-button{
-        background: #457fcf;
-        color: #fff;
-        border: none;
-        border-radius: 15px;
     }
 </style>

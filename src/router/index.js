@@ -8,16 +8,16 @@ const Home = r => require.ensure([], () => r(require('../pages/Home')),'main');
 const Inner = r => require.ensure([], () => r(require('../pages/Web')),'main');
 const BlankPage = r => require.ensure([], () => r(require('../pages/Blank')),'main');
 //租务管理
-//租务管理-资产管理
+//1.资产管理
 const Building = r => require.ensure([], () => r(require('../pages/tenancy/assets/Index')),'assets');
-const FloorManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/Index')),'assets');
+const FloorManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/FloorManage')),'assets');
 const Unit = r => require.ensure([], () => r(require('../pages/tenancy/assets/Unit')),'assets');
 const AddUnit = r => require.ensure([], () => r(require('../pages/tenancy/assets/AddUnit')),'assets');
 const Site = r => require.ensure([], () => r(require('../pages/tenancy/assets/Site')),'assets');
 const AdType = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdType')),'assets');
 const AdManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdManage')),'assets');
 const Office = r => require.ensure([], () => r(require('../pages/tenancy/assets/Office')),'assets');
-//租务管理-招商投资管理
+//2.招商投资管理
 const Operation = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Index')),'merchants');
 const Brand = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Brand')),'merchants');
 const Merchants = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Merchant')),'merchants');
@@ -25,9 +25,17 @@ const AddMerchant = r => require.ensure([], () => r(require('../pages/tenancy/me
 const Shop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Shop')),'merchants');
 const Group = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Group')),'merchants');
 const Goods = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Goods')),'merchants');
-//租务管理-合同管理
+//3.合同管理
 const Intention = r => require.ensure([], () => r(require('../pages/tenancy/contract/Index')),'contract');
-const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contract/intention/Contract')),'contract');
+const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexAdd')),'contract');
+const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract/Shops')),'contract');
+const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')),'contract');
+const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')),'contract');
+const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')),'contract');
+const AdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AdPosition')),'contract');
+const AddAdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddAdPosition')),'contract');
+const cOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/Office')),'contract');
+const AddOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddOffice')),'contract');
 //财务管理
 const AccountGroup = r => require.ensure([], () => r(require('../pages/finance/account-group/Index')), 'finance');
 const Cost = r => require.ensure([], () => r(require('../pages/finance/cost/Index')), 'finance');
@@ -55,12 +63,17 @@ const RentFree = r => require.ensure([], () => r(require('../pages/finance/rentF
 const AddRentFree = r => require.ensure([], () => r(require('../pages/finance/addRentFree/Index')), 'finance');
 const GenerateAccount = r => require.ensure([], () => r(require('../pages/finance/generateAccount/Index')), 'finance');
 const AccountManagement = r => require.ensure([], () => r(require('../pages/finance/accountManagement/Index')), 'finance');
-const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration/Index')), 'finance');
 const AccountAdjustType = r => require.ensure([], () => r(require('../pages/finance/accountAdjustType/Index')), 'finance');
 const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/finance/importIrregularCost/Index')), 'finance');
+const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration')), 'finance');
 
+//销售管理
 const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')),'sales');
+//销售返款
 const Terminal = r => require.ensure([], () => r(require('../pages/rebates/Index')),'rebates');
+const Poundage = r => require.ensure([], () => r(require('../pages/rebates/Poundage')),'rebates');
+const ZhxNumber = r => require.ensure([], () => r(require('../pages/rebates/ZhxNumber')),'rebates');
+
 const Visualization = r => require.ensure([], () => r(require('../pages/visual/Index')),'visual');
 const Merchant = r => require.ensure([], () => r(require('../pages/merchant/Index')),'merchant');
 const Dataview = r => require.ensure([], () => r(require('../pages/database/Index')),'database');
@@ -144,7 +157,7 @@ const router = new Router({
                     path:'group',
                     component:Group
                 },
-                ,{
+                {
                     path:'goods',
                     component:Goods
                 },
@@ -153,8 +166,40 @@ const router = new Router({
                     component:Intention
                 },
                 {
-                    path:'contract',
-                    component:Contract,
+                    path:'addcontract',
+                    component:Contract
+                },
+                {
+                    path:'shops',
+                    component:Shops
+                },
+                {
+                    path:'addshops',
+                    component:AddShops
+                },
+                {
+                    path:'field',
+                    component:Field
+                },
+                {
+                    path:'addfidle',
+                    component:AddField
+                },
+                {
+                    path:'adposition',
+                    component:AdPosition
+                },
+                {
+                    path:'addadposition',
+                    component:AddAdPosition
+                },
+                {
+                    path:'coffice',
+                    component:cOffice
+                },
+                {
+                    path:'addoffice',
+                    component:AddOffice
                 }
             ]
         },
@@ -169,134 +214,109 @@ const router = new Router({
                 },
                 {
                     path: 'cost',
-                    name: 'finance',
                     component: Cost
                 },
                 {
                     path: 'takeMargin',
-                    name: 'finance',
                     component: TakeMargin
                 },
                 {
                     path: 'takeMargin/collectDeposit',
-                    name: 'finance',
                     component: CollectDeposit
                 },
                 {
                     path: 'takeMargin/collectEarnest',
-                    name: 'finance',
                     component: CollectEarnest
                 },
                 {
                     path: 'payManagement',
-                    name: 'finance',
                     component: PayManagement
                 },
                 {
                     path: 'payManagement/id/:payManagement_id',
-                    name: 'finance',
                     component: PayManagementDetail
                 },
                 {
                     path: 'payManagement/collectMoney',
-                    name: 'finance',
                     component: CollectMoney
                 },
                 {
                     path: 'taxRate',
-                    name: 'finance',
                     component: TaxRate
                 },
                 {
                     path: 'taxRate2cost',
-                    name: 'finance',
                     component: TaxRate2cost
                 },
                 {
                     path: 'collectionAccount',
-                    name: 'finance',
                     component: CollectionAccount
                 },
                 {
                     path: 'accountAdjust',
-                    name: 'finance',
                     component: AccountAdjust
                 },
                 {
                     path: 'accountAdjust/addAdjustment',
-                    name: 'finance',
                     component: AddAdjustment
                 },
                 {
                     path: 'contractMargin',
-                    name: 'finance',
                     component: ContractMargin
                 },
                 {
                     path: 'dealMargin',
-                    name: 'finance',
                     component: DealMargin
                 },
                 {
                     path: 'takeadvancePay',
-                    name: 'finance',
                     component: TakeadvancePay
                 },
                 {
                     path: 'merchantAdvancePay',
-                    name: 'finance',
                     component: MerchantAdvancePay
                 },
                 {
                     path: 'dealAdvancePay',
-                    name: 'finance',
                     component: DealAdvancePay
                 },
                 {
                     path: 'irregularCost',
-                    name: 'finance',
                     component: IrregularCost
                 },
                 {
                     path: 'irregularCost/entering',
-                    name: 'finance',
                     component: Entering
                 },{
                     path: 'costAdjust',
-                    name: 'finance',
                     component: CostAdjust
                 },{
                     path: 'costAdjust/addCostAdjust',
-                    name: 'finance',
                     component: AddCostAdjust
                 },{
                     path: 'rentFree',
-                    name: 'finance',
                     component: RentFree
                 },{
                     path: 'rentFree/addRentFree',
-                    name: 'finance',
                     component: AddRentFree
                 },{
                     path: 'generateAccount',
-                    name: 'finance',
                     component: GenerateAccount
                 },{
                     path: 'accountManagement',
-                    name: 'finance',
                     component: AccountManagement
                 },{
                     path: 'billGeneration',
-                    name: 'finance',
                     component: BillGeneration
                 },{
                     path: 'accountAdjustType',
-                    name: 'finance',
                     component: AccountAdjustType
                 },{
                     path: 'importIrregularCost',
-                    name: 'finance',
                     component: ImportIrregularCost
+                },{
+                    path: 'billGeneration ',
+                    component: BillGeneration 
                 }
             ]
         },
@@ -313,10 +333,19 @@ const router = new Router({
         {
             path:'/rebates',
             component:Inner,
+            redirect:'/rebates/terminal',
             children:[
                 {
                     path:'terminal',
                     component:Terminal
+                },
+                {
+                    path:'poundage',
+                    component:Poundage
+                },
+                {
+                    path:'zhxnumber',
+                    component:ZhxNumber
                 }
             ]
         },

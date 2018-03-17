@@ -89,6 +89,22 @@
                             {
                                 path:'/inner/intention',
                                 title:'意向合同管理'
+                            },
+                            {
+                                path:'/inner/shops',
+                                title:'商铺合同管理'
+                            },
+                            {
+                                path:'/inner/field',
+                                title:'场地合同管理'
+                            },
+                            {
+                                path:'/inner/adposition',
+                                title:'广告位合同管理'
+                            },
+                            {
+                                path:'/inner/coffice',
+                                title:'写字楼合同管理'
                             }
                         ]
                     }],
@@ -233,16 +249,42 @@
                         ]
                     }],
                     rebates:[{
-                        title:'资产管理',
+                        title:'参数设置',
                         children:[
                             {
-                                path:'/inner/building',
-                                title:'楼宇管理'
+                                path:'/rebates/terminal',
+                                title:'终端号管理'
+                            },
+                            {
+                                path:'/rebates/zhxnumber',
+                                title:'资和信终端'
+                            },
+                            {
+                                path:'/rebates/poundage',
+                                title:'手续费设置'
                             }
                         ]
                     },
                     {
-                        title:'招商资源管理',
+                        title:'对账文件管理',
+                        children:[
+                            {
+                                path:'/',
+                                title:'物业性质'
+                            }
+                        ]
+                    },
+                    {
+                        title:'对账报表',
+                        children:[
+                            {
+                                path:'/',
+                                title:'物业性质'
+                            }
+                        ]
+                    },
+                    {
+                        title:'任务中心',
                         children:[
                             {
                                 path:'/',

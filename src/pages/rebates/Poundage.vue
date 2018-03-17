@@ -1,20 +1,12 @@
 <template>
     <div>
-        <con-head title="银行终端号管理">
+        <con-head title="手续费设置">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入合同号"><i class="iconfont icon-sousuo"></i>
-                        </div>
-                    </el-col>
-                    <el-col :span="9" :offset="6" style="display: none">
-                        <div class="texttitle">
-                            <span class="inputname">类型：</span>
-                            <div class="line-nav">
-                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
-                            </div>
+                            <input type="text" placeholder="请输入店铺号"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
@@ -120,10 +112,8 @@
                     isStatus:false
                 }],
                 columnData:[
-                    { prop: 'number', label: '店铺号'},
-                    { prop: 'name', label: '店铺' },
-                    { prop: 'name', label: 'POS机号' },
-                    { prop: 'superior1', label: '终端号' },
+                    { prop: 'number', label: '渠道'},
+                    { prop: 'superior1', label: '手续费率' },
                     { prop: 'superior1', label: '有效期' },
                     { prop: 'datetime', label: '更新时间' }
                 ]

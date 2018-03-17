@@ -11,7 +11,7 @@
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
-                            <span class="inputname">楼层</span>
+                            <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
@@ -75,17 +75,19 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">建筑面积</span>
-                    <input class="inputtext" type="text" placeholder="请输入" v-model="add.number">
+                    <input class="inputtext" type="text" placeholder="请输入建筑面积" v-model="add.number">
+                    <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">使用面积</span>
-                    <input class="inputtext" type="text" placeholder="请输入" v-model="add.name">
+                    <input class="inputtext" type="text" placeholder="请输入使用面积" v-model="add.name">
+                    <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="请输入"></textarea>
+                    <textarea class="textareabox" placeholder="选填"></textarea>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">

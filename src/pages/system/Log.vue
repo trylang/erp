@@ -10,7 +10,7 @@
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchinput">
-                            <span class="inputname">操作时间：</span>
+                            <span class="inputname inputnameauto">操作时间：</span>
                             <el-date-picker
                                     v-model="datevalue"
                                     type="daterange"
@@ -25,7 +25,7 @@
                 <el-row>
                     <el-col :span="9">
                         <div class="searchselect">
-                            <span class="inputname">操作类型</span>
+                            <span class="inputname inputnameauto">操作类型</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"

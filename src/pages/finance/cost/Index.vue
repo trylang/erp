@@ -144,7 +144,7 @@ export default {
           type: 'select',
           placeholder: '请选择组别'
         },{
-          label: '合同费用类型',
+          label: '费用类型',
           name: 'name',
           type: 'select',
           placeholder: '请选择合同费用类型'

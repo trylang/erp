@@ -18,7 +18,7 @@
                 <el-row>
                     <el-col :span="9">
                         <div class="searchselect">
-                            <span class="inputname">业态</span>
+                            <span class="inputname inputnameauto">业态</span>
                             <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
@@ -52,15 +52,15 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">编码</span>
+                    <span class="inputname inputnameauto">编码</span>
                     <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">名称</span>
+                    <span class="inputname inputnameauto">名称</span>
                     <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">业态</span>
+                    <span class="inputname inputnameauto">业态</span>
                     <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"
@@ -70,7 +70,7 @@
                     </el-select>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">国别</span>
+                    <span class="inputname inputnameauto">国别</span>
                     <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in options"

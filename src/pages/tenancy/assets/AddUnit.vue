@@ -41,18 +41,18 @@
                 <div class="dialoginput">
                     <span class="inputname">建筑面积</span>
                     <input class="inputtext" type="text" placeholder="请输入建筑面积">
-                    <span>㎡</span>
+                    <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">使用面积</span>
                     <input class="inputtext" type="text" placeholder="请输入使用面积">
-                    <span>㎡</span>
+                    <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="请输入"></textarea>
+                    <textarea class="textareabox" placeholder="选填"></textarea>
                 </div>
                 </el-col>
             </el-row>

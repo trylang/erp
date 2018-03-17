@@ -17,7 +17,7 @@
                 <el-row>
                     <el-col :span="9">
                         <div class="searchselect">
-                            <span class="inputname">业态</span>
+                            <span class="inputname inputnameauto">业态</span>
                             <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
