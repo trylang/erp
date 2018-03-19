@@ -20,6 +20,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import api from '@/utils/rest';
 export default {
   name: "account-group",
   components: {
@@ -212,6 +213,7 @@ export default {
   },
   created() {
     this.$store.dispatch("getAccountGroups");
+    console.log(api)
   }
 };
 </script>

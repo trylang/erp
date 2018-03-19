@@ -12,7 +12,7 @@
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
+                <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
                             width="190"
@@ -38,7 +38,7 @@
         data(){
             return{
                 dialogVisible:false,
-                datalist:[],
+                dataList:[],
                 add:{
                     number:"",
                     name:""
@@ -52,28 +52,35 @@
                     value: '中粮公司'
                 }],
                 columnData:[
-                    { prop: 'name', label: '用户名', link:'/system/userinfo', param:'id'},
-                    { prop: 'name', label: '姓名'},
-                    { prop: 'superior1', label: '性别'},
-                    { prop: 'number', label: '手机号'},
-                    { prop: 'name', label: '部门'},
-                    { prop: 'name', label: '职位'},
-                    { prop: 'name', label: '角色'}
+                    { prop: 'realname', label: '用户名', link:'/system/userinfo', param:'id'},
+                    { prop: 'realname', label: '姓名'},
+                    { prop: 'realname', label: '性别'},
+                    { prop: 'realname', label: '手机号'},
+                    { prop: 'realname', label: '部门'},
+                    { prop: 'realname', label: '职位'},
+                    { prop: 'realname', label: '角色'}
                 ]
             }
         },
+        created(){
+            this.getUserList();
+        },
         mounted(){
-            this.getbuilding();
         },
         methods:{
             handleClose(){
                 this.dialogVisible = false;
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            async getUserList(){
+                let paramData = {
+                    pageNum:1,
+                    pageSize:10,
+                    name:''
+                };
+                let userList = await this.$api.getUserListData(paramData);
+                this.dataList = userList.data.list;
             },
-            async addbuilding(){
+            /*async addbuilding(){
                 let params = {
                     number:this.add.number,
                     name:this.add.name,
@@ -81,7 +88,7 @@
                 };
                 await this.$api.addBuilding(params);
                 this.getbuilding();
-            }
+            }*/
         },
         components:{
             ConHead,

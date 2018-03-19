@@ -11,7 +11,7 @@
           <el-button type="primary" v-if="variables.isActive === 'first'">取消确认</el-button>
           <el-button v-if="variables.isActive === 'second'" type="primary">确认</el-button>
           <el-button v-if="variables.isActive === 'third'" type="primary">发布</el-button>
-          <el-button type="primary">打印</el-button>          
+          <el-button type="primary" @click="printContent">打印</el-button>          
           <el-button type="primary" v-if="variables.isActive === 'first'">删除</el-button>         
         </el-col>
       </el-row>
@@ -89,7 +89,7 @@
             </div>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <el-row :gutter="20" id="subOutputRank-print">
           <account-tree :header="header" :content="content"></account-tree>  
         </el-row>
       </section>
@@ -344,6 +344,29 @@ export default {
     handleClick() {
       console.log(23);
     },
+    printContent() {
+      // this.$emit('print');
+    //   // 1.设置要打印的区域 div的className
+    //   var newstr = document.getElementById('printOrder-data')[0].innerHTML
+    //   // 2. 复制给body，并执行window.print打印功能
+    //   document.body.innerHTML = newstr
+    //   // 3. 还原：将旧的页面储存起来，当打印完成后返给给页面。
+    //   var oldstr = document.body.innerHTML
+    //   window.print()
+    //   document.body.innerHTML = oldstr
+    //   return false
+
+
+      let subOutputRankPrint = document.getElementById('subOutputRank-print');  
+      console.log(subOutputRankPrint.innerHTML);  
+      let newContent =subOutputRankPrint.innerHTML;  
+      let oldContent = document.body.innerHTML;  
+      document.body.innerHTML = newContent;  
+      window.print();  
+      window.location.reload();  
+      document.body.innerHTML = oldContent;  
+      return false;
+    },
     statusHandler(status) {
       this.selects.status.forEach(function(obj) {
         obj.isStatus = false;
@@ -459,4 +482,5 @@ export default {
   margin: 0 0 15px;
   background: url(../../../assets/yuan-long.png) left center repeat-x;
 }
+
 </style>

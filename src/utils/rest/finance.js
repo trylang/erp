@@ -37,3 +37,21 @@ export function getPayManagementById(id) {
     method: 'get'
   })
 }
+
+// 不规则费用管理（列表）
+export function queryIrregularList(query) {
+  return request({
+    url: '/irregular/cost/list/',
+    method: 'get'
+  })
+}
+
+// 不规则费用管理（删除）
+export function deleteIrregularList(query) {
+  return request({
+    url: '/irregular/cost/del/',
+    method: 'delete'
+  })
+}
+
+

@@ -34,6 +34,15 @@ module.exports = {
     cacheBusting: true,
 
     cssSourceMap: true,
+    // proxyTable: {
+    //   '/api': {
+    //     target: 'http://192.168.1.235:8111/',
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': '/'
+    //     }
+    //   }
+    // }
   },
 
   build: {

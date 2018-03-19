@@ -1,6 +1,6 @@
 import $axios from './index'
 
-export const getBuiding = () => {
+/*export const getBuiding = () => {
     return $axios.get('/api/building')
 };
 export const getOneData = (id) => {
@@ -14,4 +14,7 @@ export const deleteData = (data) => {
 };
 export const updateData = (id,data) => {
     return $axios.post(`/api/update?id=${id}`,data)
-}
+};*/
+export const getUserListData = (data) => {
+    return $axios.get('/sys/user/list',data)
+};

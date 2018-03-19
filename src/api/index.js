@@ -4,7 +4,8 @@ import qs from 'qs'
 let cancel;
 let promiseArr = {};
 const CancelToken = axios.CancelToken;
-axios.defaults.baseURL = process.env.API_ROOT;
+//axios.defaults.baseURL = process.env.API_ROOT;
+axios.defaults.baseURL = '/api';
 axios.defaults.timeout = 5000;
 //请求时拦截
 axios.interceptors.request.use(config=>{
@@ -47,7 +48,55 @@ export default{
             axios({
                 method:'post',
                 url,
-                data:param,
+                data:qs.stringify(param),
+                cancelToken:new CancelToken(c => {
+                    cancel = c
+                })
+            }).then(res => {
+                resolve(res)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
+    delete(url,param){
+        return new Promise((resolve,reject) => {
+            axios({
+                method:'delete',
+                url,
+                params:qs.stringify(param),
+                cancelToken:new CancelToken(c => {
+                    cancel = c
+                })
+            }).then(res => {
+                resolve(res)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
+    put(url,param){
+        return new Promise((resolve,reject) => {
+            axios({
+                method:'put',
+                url,
+                data:qs.stringify(param),
+                cancelToken:new CancelToken(c => {
+                    cancel = c
+                })
+            }).then(res => {
+                resolve(res)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
+    patch(url,param){
+        return new Promise((resolve,reject) => {
+            axios({
+                method:'patch',
+                url,
+                data:qs.stringify(param),
                 cancelToken:new CancelToken(c => {
                     cancel = c
                 })

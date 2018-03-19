@@ -6,7 +6,7 @@
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入合同号"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入店铺号/店铺/终端号"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6" style="display: none">

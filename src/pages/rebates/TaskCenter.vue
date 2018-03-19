@@ -1,12 +1,22 @@
 <template>
     <div>
-        <con-head title="资和信终端号管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
+        <con-head title="任务中心">
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
-                        <div class="searchbox">
-                            <input type="text" placeholder="请输入店铺号/店铺/终端号"><i class="iconfont icon-sousuo"></i>
+                        <div class="texttitle">
+                            <span class="inputname">类型：</span>
+                            <div class="line-nav">
+                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="6">
+                        <div class="texttitle">
+                            <span class="inputname">类型：</span>
+                            <div class="line-nav">
+                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
+                            </div>
                         </div>
                     </el-col>
                 </el-row>
@@ -17,11 +27,10 @@
                 <data-table :tableData="datalist" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
-                            width="110"
+                            width="70"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
+                            <button class="btn_text">下载</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -105,20 +114,18 @@
                     name:"全部",
                     isStatus:true
                 },{
-                    name:"银行",
+                    name:"返款计算",
                     isStatus:false
                 },{
-                    name:"资和信",
+                    name:"数据导出",
                     isStatus:false
                 }],
                 columnData:[
-                    { prop: 'number', label: '店铺号'},
-                    { prop: 'name', label: '店铺' },
-                    { prop: 'name', label: 'POS机号' },
-                    { prop: 'superior1', label: '终端号' },
-                    { prop: 'name', label: '类型' },
-                    { prop: 'superior1', label: '有效期' },
-                    { prop: 'datetime', label: '更新时间' }
+                    { prop: 'number', label: '任务名称'},
+                    { prop: 'name', label: '任务类型' },
+                    { prop: 'datetime', label: '开始时间' },
+                    { prop: 'superior1', label: '运行时间' },
+                    { prop: 'name', label: '运行状态' }
                 ]
             }
         },

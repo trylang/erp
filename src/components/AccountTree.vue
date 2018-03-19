@@ -1,7 +1,7 @@
 <template>
   <section class="account_tree">
     <el-row>
-      <el-col :span="10">
+      <el-col :span="10" class="not-print">
         <div class="erp_container">
           <el-tree
             :data="data2"
@@ -13,8 +13,8 @@
           </el-tree>
         </div>
       </el-col>
-      <el-col :span="14">
-        <div class="erp_container">
+      <el-col :span="14" class="full_width">
+        <div class="erp_container" @print="selectedPrint">
           <notice-template :header="header" :content="content"></notice-template>
         </div>
       </el-col>   
@@ -95,6 +95,17 @@ export default {
   methods: {
     handleCheckChange(data, checked, indeterminate) {
       console.log(data, checked, indeterminate)
+    },
+    selectedPrint() {
+      let subOutputRankPrint = document.getElementById('subOutputRank-print');  
+      console.log(subOutputRankPrint.innerHTML);  
+      let newContent =subOutputRankPrint.innerHTML;  
+      let oldContent = document.body.innerHTML;  
+      document.body.innerHTML = newContent;  
+      window.print();  
+      window.location.reload();  
+      document.body.innerHTML = oldContent;  
+      return false;
     }
   }
 };
@@ -107,6 +118,15 @@ export default {
       border: 1px solid #eee;
       padding: 1rem;
       margin: 0 .6rem;
+    }
+  }
+
+  @media print {
+    .not-print {
+      display: none;
+    }
+    .full_width {
+      width: 100%;
     }
   }
 </style>

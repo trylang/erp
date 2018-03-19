@@ -1,12 +1,26 @@
 <template>
     <div>
-        <con-head title="资和信终端号管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
+        <con-head title="银行账单">
+            <el-button type="primary" slot="append" @click="dialogVisible = true">导出</el-button>
+            <el-button type="primary" slot="append" @click="dialogVisible = true">打印</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入店铺号/店铺/终端号"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入店铺号"><i class="iconfont icon-sousuo"></i>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="6">
+                        <div class="dialoginput rentcontent searchbox">
+                            <span class="inputname">消费时间</span>
+                            <el-date-picker
+                                    class="inputtext datetext"
+                                    v-model="datevalue"
+                                    type="daterange"
+                                    range-separator="-"
+                                    start-placeholder="选择日期"
+                                    end-placeholder="选择日期">
+                            </el-date-picker>
                         </div>
                     </el-col>
                 </el-row>
@@ -15,15 +29,6 @@
         <con-head>
             <div class="mainbox">
                 <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="110"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
-                        </template>
-                    </el-table-column>
                 </data-table>
             </div>
         </con-head>
@@ -113,12 +118,12 @@
                 }],
                 columnData:[
                     { prop: 'number', label: '店铺号'},
-                    { prop: 'name', label: '店铺' },
-                    { prop: 'name', label: 'POS机号' },
-                    { prop: 'superior1', label: '终端号' },
-                    { prop: 'name', label: '类型' },
-                    { prop: 'superior1', label: '有效期' },
-                    { prop: 'datetime', label: '更新时间' }
+                    { prop: 'name', label: '店铺名称' },
+                    { prop: 'name', label: '购买金额' },
+                    { prop: 'superior1', label: '手续费(银行)' },
+                    { prop: 'superior1', label: '手续费(商场)' },
+                    { prop: 'superior1', label: '手续费(合计)' },
+                    { prop: 'number', label: '租户返款' }
                 ]
             }
         },

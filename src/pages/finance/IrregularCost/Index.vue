@@ -62,6 +62,8 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import { queryIrregularList, deleteIrregularList } from '@/utils/rest/finance';
+import { _returnPromise } from '@/utils';
 export default {
   name: "account-group",
   components: {
@@ -226,6 +228,18 @@ export default {
 			});
 			status.isStatus = !status.isStatus
     },
+    async getIrregulars(query) {
+      await _returnPromise(queryIrregularList, {}, (returnObj)=> {
+        console.log(returnObj);
+      });
+    },
+    async deleteIrregular(ids) {
+      await _returnPromise(deleteIrregularList, {
+        param: ids,
+      }, (returnObj)=> {
+        console.log(returnObj);
+      });
+    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -267,22 +281,19 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+          this.deleteIrregular([123, 789]);
+          // this.$store
+          //   .dispatch("delAccountGroup", item.id)
+          //   .then(() => {
+          //     $message("success", "删除成功!");
+          //   })
+          //   .catch(() => {
+          //     $message("error", "无法删除，请重试!");
+          //   });
         })
         .catch(() => {
           $message("info", "已取消删除!");
         });
-    },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
     }
   },
   computed: {
@@ -291,6 +302,7 @@ export default {
     })
   },
   created() {
+    // this.getIrregulars();
     this.$store.dispatch("getAccountGroups");
   }
 };

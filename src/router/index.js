@@ -4,38 +4,38 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 //主页面
-const Home = r => require.ensure([], () => r(require('../pages/Home')),'main');
-const Inner = r => require.ensure([], () => r(require('../pages/Web')),'main');
-const BlankPage = r => require.ensure([], () => r(require('../pages/Blank')),'main');
+const Home = r => require.ensure([], () => r(require('../pages/Home')), 'main');
+const Inner = r => require.ensure([], () => r(require('../pages/Web')), 'main');
+const BlankPage = r => require.ensure([], () => r(require('../pages/Blank')), 'main');
 //租务管理
 //1.资产管理
-const Building = r => require.ensure([], () => r(require('../pages/tenancy/assets/Index')),'assets');
-const FloorManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/FloorManage')),'assets');
-const Unit = r => require.ensure([], () => r(require('../pages/tenancy/assets/Unit')),'assets');
-const AddUnit = r => require.ensure([], () => r(require('../pages/tenancy/assets/AddUnit')),'assets');
-const Site = r => require.ensure([], () => r(require('../pages/tenancy/assets/Site')),'assets');
-const AdType = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdType')),'assets');
-const AdManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdManage')),'assets');
-const Office = r => require.ensure([], () => r(require('../pages/tenancy/assets/Office')),'assets');
+const Building = r => require.ensure([], () => r(require('../pages/tenancy/assets/Index')), 'assets');
+const FloorManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/FloorManage')), 'assets');
+const Unit = r => require.ensure([], () => r(require('../pages/tenancy/assets/Unit')), 'assets');
+const AddUnit = r => require.ensure([], () => r(require('../pages/tenancy/assets/AddUnit')), 'assets');
+const Site = r => require.ensure([], () => r(require('../pages/tenancy/assets/Site')), 'assets');
+const AdType = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdType')), 'assets');
+const AdManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdManage')), 'assets');
+const Office = r => require.ensure([], () => r(require('../pages/tenancy/assets/Office')), 'assets');
 //2.招商投资管理
-const Operation = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Index')),'merchants');
-const Brand = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Brand')),'merchants');
-const Merchants = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Merchant')),'merchants');
-const AddMerchant = r => require.ensure([], () => r(require('../pages/tenancy/merchants/AddMerchant')),'merchants');
-const Shop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Shop')),'merchants');
-const Group = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Group')),'merchants');
-const Goods = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Goods')),'merchants');
+const Operation = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Index')), 'merchants');
+const Brand = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Brand')), 'merchants');
+const Merchants = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Merchant')), 'merchants');
+const AddMerchant = r => require.ensure([], () => r(require('../pages/tenancy/merchants/AddMerchant')), 'merchants');
+const Shop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Shop')), 'merchants');
+const Group = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Group')), 'merchants');
+const Goods = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Goods')), 'merchants');
 //3.合同管理
-const Intention = r => require.ensure([], () => r(require('../pages/tenancy/contract/Index')),'contract');
-const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexAdd')),'contract');
-const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract/Shops')),'contract');
-const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')),'contract');
-const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')),'contract');
-const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')),'contract');
-const AdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AdPosition')),'contract');
-const AddAdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddAdPosition')),'contract');
-const cOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/Office')),'contract');
-const AddOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddOffice')),'contract');
+const Intention = r => require.ensure([], () => r(require('../pages/tenancy/contract/Index')), 'contract');
+const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexAdd')), 'contract');
+const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract/Shops')), 'contract');
+const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')), 'contract');
+const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')), 'contract');
+const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')), 'contract');
+const AdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AdPosition')), 'contract');
+const AddAdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddAdPosition')), 'contract');
+const cOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/Office')), 'contract');
+const AddOffice = r => require.ensure([], () => r(require('../pages/tenancy/contract/AddOffice')), 'contract');
 //财务管理
 const AccountGroup = r => require.ensure([], () => r(require('../pages/finance/account-group/Index')), 'finance');
 const Cost = r => require.ensure([], () => r(require('../pages/finance/cost/Index')), 'finance');
@@ -68,28 +68,32 @@ const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/fi
 const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration')), 'finance');
 
 //销售管理
-const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')),'sales');
+const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')), 'sales');
 //销售返款
-const Terminal = r => require.ensure([], () => r(require('../pages/rebates/Index')),'rebates');
-const Poundage = r => require.ensure([], () => r(require('../pages/rebates/Poundage')),'rebates');
-const ZhxNumber = r => require.ensure([], () => r(require('../pages/rebates/ZhxNumber')),'rebates');
+const Terminal = r => require.ensure([], () => r(require('../pages/rebates/Index')), 'rebates');
+const Poundage = r => require.ensure([], () => r(require('../pages/rebates/Poundage')), 'rebates');
+const ZhxNumber = r => require.ensure([], () => r(require('../pages/rebates/ZhxNumber')), 'rebates');
+const Account = r => require.ensure([], () => r(require('../pages/rebates/Account')), 'rebates');
+const Upload = r => require.ensure([], () => r(require('../pages/rebates/Upload')), 'rebates');
+const TaskCenter = r => require.ensure([], () => r(require('../pages/rebates/TaskCenter')), 'rebates');
+const Bank = r => require.ensure([], () => r(require('../pages/rebates/Bank')), 'rebates');
 
-const Visualization = r => require.ensure([], () => r(require('../pages/visual/Index')),'visual');
-const Merchant = r => require.ensure([], () => r(require('../pages/merchant/Index')),'merchant');
-const Dataview = r => require.ensure([], () => r(require('../pages/database/Index')),'database');
+const Visualization = r => require.ensure([], () => r(require('../pages/visual/Index')), 'visual');
+const Merchant = r => require.ensure([], () => r(require('../pages/merchant/Index')), 'merchant');
+const Dataview = r => require.ensure([], () => r(require('../pages/database/Index')), 'database');
 
 //系统管理
-const Area = r => require.ensure([], () => r(require('../pages/system/Index')),'system');
-const Shopping = r => require.ensure([], () => r(require('../pages/system/Shopping')),'system');
-const Dept = r => require.ensure([], () => r(require('../pages/system/Dept')),'system');
-const Job = r => require.ensure([], () => r(require('../pages/system/Job')),'system');
-const User = r => require.ensure([], () => r(require('../pages/system/User')),'system');
-const UserInfo = r => require.ensure([], () => r(require('../pages/system/UserInfo')),'system');
-const AddUser = r => require.ensure([], () => r(require('../pages/system/AddUser')),'system');
-const Role = r => require.ensure([], () => r(require('../pages/system/Role')),'system');
-const Dictionary = r => require.ensure([], () => r(require('../pages/system/Dictionary')),'system');
-const Log = r => require.ensure([], () => r(require('../pages/system/Log')),'system');
-const AddRole = r => require.ensure([], () => r(require('../pages/system/AddRole')),'system');
+const Area = r => require.ensure([], () => r(require('../pages/system/Index')), 'system');
+const Shopping = r => require.ensure([], () => r(require('../pages/system/Shopping')), 'system');
+const Dept = r => require.ensure([], () => r(require('../pages/system/Dept')), 'system');
+const Job = r => require.ensure([], () => r(require('../pages/system/Job')), 'system');
+const User = r => require.ensure([], () => r(require('../pages/system/User')), 'system');
+const UserInfo = r => require.ensure([], () => r(require('../pages/system/UserInfo')), 'system');
+const AddUser = r => require.ensure([], () => r(require('../pages/system/AddUser')), 'system');
+const Role = r => require.ensure([], () => r(require('../pages/system/Role')), 'system');
+const Dictionary = r => require.ensure([], () => r(require('../pages/system/Dictionary')), 'system');
+const Log = r => require.ensure([], () => r(require('../pages/system/Log')), 'system');
+const AddRole = r => require.ensure([], () => r(require('../pages/system/AddRole')), 'system');
 
 const router = new Router({
     routes: [
@@ -98,119 +102,119 @@ const router = new Router({
             component: Home
         },
         {
-            path:'/inner',
-            component:Inner,
-            redirect:'/inner/building',
-            children:[
+            path: '/inner',
+            component: Inner,
+            redirect: '/inner/building',
+            children: [
                 {
-                    path:'building',
-                    component:Building
+                    path: 'building',
+                    component: Building
                 },
                 {
-                    path:'floormanage',
-                    component:FloorManage
+                    path: 'floormanage',
+                    component: FloorManage
                 },
                 {
-                    path:'unit',
-                    component:Unit
+                    path: 'unit',
+                    component: Unit
                 },
                 {
-                    path:'addunit',
-                    component:AddUnit
+                    path: 'addunit',
+                    component: AddUnit
                 },
                 {
-                    path:'site',
-                    component:Site
+                    path: 'site',
+                    component: Site
                 },
                 {
-                    path:'adtype',
-                    component:AdType
+                    path: 'adtype',
+                    component: AdType
                 },
                 {
-                    path:'admanage',
-                    component:AdManage
+                    path: 'admanage',
+                    component: AdManage
                 },
                 {
-                    path:'office',
-                    component:Office
+                    path: 'office',
+                    component: Office
                 },
                 {
-                    path:'operation',
-                    component:Operation
+                    path: 'operation',
+                    component: Operation
                 },
                 {
-                    path:'brand',
-                    component:Brand
+                    path: 'brand',
+                    component: Brand
                 },
                 {
-                    path:'merchants',
-                    component:Merchants
+                    path: 'merchants',
+                    component: Merchants
                 },
                 {
-                    path:'addmerchant',
-                    component:AddMerchant
+                    path: 'addmerchant',
+                    component: AddMerchant
                 },
                 {
-                    path:'shop',
-                    component:Shop
-                },{
-                    path:'group',
-                    component:Group
+                    path: 'shop',
+                    component: Shop
+                }, {
+                    path: 'group',
+                    component: Group
                 },
                 {
-                    path:'goods',
-                    component:Goods
+                    path: 'goods',
+                    component: Goods
                 },
                 {
-                    path:'intention',
-                    component:Intention
+                    path: 'intention',
+                    component: Intention
                 },
                 {
-                    path:'addcontract',
-                    component:Contract
+                    path: 'addcontract',
+                    component: Contract
                 },
                 {
-                    path:'shops',
-                    component:Shops
+                    path: 'shops',
+                    component: Shops
                 },
                 {
-                    path:'addshops',
-                    component:AddShops
+                    path: 'addshops',
+                    component: AddShops
                 },
                 {
-                    path:'field',
-                    component:Field
+                    path: 'field',
+                    component: Field
                 },
                 {
-                    path:'addfidle',
-                    component:AddField
+                    path: 'addfidle',
+                    component: AddField
                 },
                 {
-                    path:'adposition',
-                    component:AdPosition
+                    path: 'adposition',
+                    component: AdPosition
                 },
                 {
-                    path:'addadposition',
-                    component:AddAdPosition
+                    path: 'addadposition',
+                    component: AddAdPosition
                 },
                 {
-                    path:'coffice',
-                    component:cOffice
+                    path: 'coffice',
+                    component: cOffice
                 },
                 {
-                    path:'addoffice',
-                    component:AddOffice
+                    path: 'addoffice',
+                    component: AddOffice
                 }
             ]
         },
         {
-            path:'/finance',
-            component:Inner,
-            redirect:'/finance/accountGroup',
-            children:[
+            path: '/finance',
+            component: Inner,
+            redirect: '/finance/accountGroup',
+            children: [
                 {
-                    path:'accountGroup',
-                    component:AccountGroup
+                    path: 'accountGroup',
+                    component: AccountGroup
                 },
                 {
                     path: 'cost',
@@ -287,31 +291,31 @@ const router = new Router({
                 {
                     path: 'irregularCost/entering',
                     component: Entering
-                },{
+                }, {
                     path: 'costAdjust',
                     component: CostAdjust
-                },{
+                }, {
                     path: 'costAdjust/addCostAdjust',
                     component: AddCostAdjust
-                },{
+                }, {
                     path: 'rentFree',
                     component: RentFree
-                },{
+                }, {
                     path: 'rentFree/addRentFree',
                     component: AddRentFree
-                },{
+                }, {
                     path: 'generateAccount',
                     component: GenerateAccount
-                },{
+                }, {
                     path: 'accountManagement',
                     component: AccountManagement
-                },{
+                }, {
                     path: 'billGeneration',
                     component: BillGeneration
-                },{
+                }, {
                     path: 'accountAdjustType',
                     component: AccountAdjustType
-                },{
+                }, {
                     path: 'importIrregularCost',
                     component: ImportIrregularCost
                 },{
@@ -321,113 +325,129 @@ const router = new Router({
             ]
         },
         {
-            path:'/sales',
-            component:Inner,
-            children:[
+            path: '/sales',
+            component: Inner,
+            children: [
                 {
-                    path:'salmanage',
-                    component:Salmanage
+                    path: 'salmanage',
+                    component: Salmanage
                 }
             ]
         },
         {
-            path:'/rebates',
-            component:Inner,
-            redirect:'/rebates/terminal',
-            children:[
+            path: '/rebates',
+            component: Inner,
+            redirect: '/rebates/terminal',
+            children: [
                 {
-                    path:'terminal',
-                    component:Terminal
+                    path: 'terminal',
+                    component: Terminal
                 },
                 {
-                    path:'poundage',
-                    component:Poundage
+                    path: 'poundage',
+                    component: Poundage
                 },
                 {
-                    path:'zhxnumber',
-                    component:ZhxNumber
+                    path: 'zhxnumber',
+                    component: ZhxNumber
+                },
+                {
+                    path: 'account',
+                    component: Account
+                },
+                {
+                    path: 'upload',
+                    component: Upload
+                },
+                {
+                    path: 'bank',
+                    component: Bank
+                },
+                {
+                    path: 'taskcenter',
+                    component: TaskCenter
                 }
             ]
         },
         {
-            path:'/visual',
-            component:Inner,
-            children:[
+            path: '/visual',
+            component: Inner,
+            children: [
                 {
-                    path:'visualization',
-                    component:Visualization
+                    path: 'visualization',
+                    component: Visualization
                 }
             ]
         },
         {
-            path:'/webinner',
-            component:BlankPage,
-            redirect:'/webinner/merchant',
-            children:[
+            path: '/webinner',
+            component: BlankPage,
+            redirect: '/webinner/merchant',
+            children: [
                 {
-                    path:'merchant',
-                    component:Merchant
+                    path: 'merchant',
+                    component: Merchant
                 }
             ]
         },
         {
-            path:'/database',
-            component:Inner,
-            children:[
+            path: '/database',
+            component: Inner,
+            children: [
                 {
-                    path:'dataview',
-                    component:Dataview
+                    path: 'dataview',
+                    component: Dataview
                 }
             ]
         },
         {
-            path:'/system',
-            component:Inner,
-            redirect:'/system/area',
-            children:[
+            path: '/system',
+            component: Inner,
+            redirect: '/system/area',
+            children: [
                 {
-                    path:'area',
-                    component:Area
+                    path: 'area',
+                    component: Area
                 },
                 {
-                    path:'shopping',
-                    component:Shopping
+                    path: 'shopping',
+                    component: Shopping
                 },
                 {
-                    path:'dept',
-                    component:Dept
+                    path: 'dept',
+                    component: Dept
                 },
                 {
-                    path:'job',
-                    component:Job
+                    path: 'job',
+                    component: Job
                 },
                 {
-                    path:'user',
-                    component:User
+                    path: 'user',
+                    component: User
                 },
                 {
-                    path:'userinfo/:userid',
-                    component:UserInfo
+                    path: 'userinfo/:userid',
+                    component: UserInfo
                 },
                 {
-                    path:'adduser',
-                    component:AddUser
+                    path: 'adduser',
+                    component: AddUser
                 },
                 {
-                    path:'role',
-                    component:Role
+                    path: 'role',
+                    component: Role
                 },
                 {
-                    path:'addrole',
-                    component:AddRole
+                    path: 'addrole',
+                    component: AddRole
                 },
                 {
-                    path:'dictionary',
-                    component:Dictionary
+                    path: 'dictionary',
+                    component: Dictionary
                 },
                 {
-                    path:'log',
-                    component:Log
+                    path: 'log',
+                    component: Log
                 }
             ]
         }
@@ -436,9 +456,9 @@ const router = new Router({
 router.beforeEach((toroute, fromroute, next) => {
     let store = router.app.$options.store,
         _path = toroute.path.match(/\/?[^\/]+/g);
-        _path = _path||['/'];
-    let enterHandler = ()=>{
-        store.commit('MENU_ACTIVE',_path[0])
+    _path = _path || ['/'];
+    let enterHandler = () => {
+        store.commit('MENU_ACTIVE', _path[0])
     };
     enterHandler();
     next();
