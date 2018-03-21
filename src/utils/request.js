@@ -17,9 +17,9 @@ service.interceptors.request.use(config => {
 
 // response拦截器
 service.interceptors.response.use(response => {
-  const res = response.data;  
+  const res = response.data;
   if (res.code === 2000) {
-    return res.data;
+    return res.data;    
   }
   else {
     if(res.message) {

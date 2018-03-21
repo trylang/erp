@@ -13,7 +13,7 @@
 				</tr>
 			</thead>
 			<tbody class="table_body">
-				<tr v-for="(content,index) in content" :key="index" :style="[index%2 === 0 ? '': oddColor]">
+				<tr v-for="(content,index) in content.list" :key="index" :style="[index%2 === 0 ? '': oddColor]">
           <td v-for="(header,key) in header" :key="key">
             <div class="cell">
               <span v-if="header.type==='text'">{{content[header.name]}}</span>
@@ -26,7 +26,7 @@
                     :key="index" :class="operation.class" 
                     :style="operation.style" 
                     @click.stop.prevent="operation.click(content, content)" 
-                    >{{operation.label}}</a>
+                    >{{ (operation.name && content[operation.name] === true ? operation.label : operation.otherLabel) || operation.label}}</a>
               </div>                       
             </div>
           </td>
@@ -38,14 +38,14 @@
 			</tbody>
       
 	  </table>
-    <div v-if="!noPage && content && content.length>0" class="table_page">
+    <div v-if="!noPage && content.list && content.list.length>0" class="table_page">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page.sync="currentPage"
-        :page-size="1"
+        :page-size="content.pageSize"
         layout="prev, pager, next, jumper"
-        :total="content.length">
+        :total="content.total">
       </el-pagination>
     </div>
 	</div>
@@ -94,7 +94,8 @@ export default {
       console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      this.$emit('currentPage', val);
     }
   }
 };

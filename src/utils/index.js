@@ -22,3 +22,11 @@ export function _returnPromise(api, url, callback) {
     });
   })
 }
+
+export function _changeJson(data, string) {
+  const json = {};
+  data.forEach(item => {
+    json[item[string]] = item;
+  });
+  return json;
+}

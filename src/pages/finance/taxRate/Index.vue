@@ -1,14 +1,14 @@
 <template>
   <con-head title="税率设置">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={rate: '', rateCode: '', validDate: ''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入名称" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入名称" v-model="query.rateCode"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改税码': '添加税码'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -33,21 +33,27 @@ export default {
         {
           label: "税码",
           type: "text",
-          name: "id"
+          name: "rateCode"
         },
         {
           label: "税率",
           type: "text",
-          name: "name"
+          name: "rate"
+        },
+        {
+          label: "有效期",
+          name: "validDate",
+          type: "time",
+          filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
           label: "说明",
           type: "text",
-          name: "desc"
+          name: "description"
         },
         {
           label: "更新时间",
-          name: "update_time",
+          name: "updateDate",
           type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
@@ -87,22 +93,28 @@ export default {
           ]
         }
       ],
+      content: [],
       dialog: {
         models: [{
           label: '税码',
-          name: 'id',
+          name: 'rateCode',
           type: 'text',
           placeholder: '请输入编号'
         }, {
           label: '税率',
-          name: 'name',
+          name: 'rate',
           type: 'text',
           placeholder: '请输入名称'
         }, {
-          label: '说明',
-          name: 'desc',
+          label: '有效期',
+          name: 'validDate',
+          type: 'date',
+          placeholder: '请输入名称'
+        }, {
+          label: '说明（选填）',
+          name: 'description',
           type: 'textarea',
-          placeholder: '请输入备注'
+          placeholder: '请输入说明'
         }],
         dialogVisible: false,
         param: {
@@ -116,7 +128,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -133,11 +144,14 @@ export default {
         }]
       },
       query: {
-        name: ""
+        rateCode: ""
       }
     };
   },
   methods: {
+    getCurrentPage(page) {
+      this.getTaxRates(page);
+    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -145,65 +159,90 @@ export default {
     confirmDialog: function() {
       if (this.dialog.param.id) {
         // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
+        this.editTaxRates(this.dialog.param);
       } else {
         // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
+        this.addTaxRates(this.dialog.param);
       }
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该税率设置, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
-        });
+      }).then(() => {
+        this.deleteTaxRates(item);
+      });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    async getTaxRates(pageNum=0, callback) {
+      const param = {
+        pageNum,
+        rateCode: this.query.rateCode
+      };
+      this.$api.financeapi.listUsingGET_6(param).then(res => {
+        const data = res.data;
+        if(data.code === 200) {
+          this.content = data.data;
+        } else {
+          return data.message;
+        }
+        if (callback) callback();
+      })
+    },
+    async addTaxRates(param) {
+      let params = {
+        param : param
+      };
+      await this.$api.financeapi.addUsingPOST_4(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getTaxRates({}, () => {
+            // TODO: 重新查列表，需要带参数，这里还没弄
+            $message("success", "添加成功!");
+            this.dialog.dialogVisible = false;
+          });          
+        } else {
+          $message("error", "添加失败!");
+        }       
+      });
+    },
+    async editTaxRates(param) {
+      let params = {
+        id: param.id,
+        param: param
+      };
+      const that = this;
+      await this.$api.financeapi.updateUsingPUT_6(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getTaxRates({}, () => {
+            // TODO: 重新查列表，需要带参数，这里还没弄
+            $message("success", "修改成功!");
+            that.dialog.dialogVisible = false;
+          });
+        } else {
+          $message("error", "修改失败!");
+        }       
+      });
+    },
+    async deleteTaxRates(param) {
+      let params = {
+        id: param.id
+      };
+      const that = this;
+      await this.$api.financeapi.deleteUsingDELETE_2(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getTaxRates({}, () => {
+            // TODO: 重新查列表，需要带参数，这里还没弄
+            $message("success", "删除成功!");
+            that.dialog.dialogVisible = false;
+          });          
+        } else {
+          $message("error", "删除失败!");
+        }       
+      });
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getTaxRates();
   }
 };
 </script>

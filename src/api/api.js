@@ -15,6 +15,3 @@ export const deleteData = (data) => {
 export const updateData = (id,data) => {
     return $axios.post(`/api/update?id=${id}`,data)
 };*/
-export const getUserListData = (data) => {
-    return $axios.get('/sys/user/list',data)
-};

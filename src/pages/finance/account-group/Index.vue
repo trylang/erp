@@ -1,14 +1,15 @@
 <template>
   <con-head title="结算组别">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
+    dialog.param={settleGroupCode:'', settleGroupName:''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入名称" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入名称" v-model="query.settleGroupName"><i class="iconfont icon-sousuo" @click="getAccountGroups()"></i>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -20,7 +21,9 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import api from '@/utils/rest';
+
+import { _replace, _remove } from '@/utils';
+import { queryAccountGroups } from '@/utils/rest/financeAPI';
 export default {
   name: "account-group",
   components: {
@@ -32,28 +35,23 @@ export default {
     return {
       header: [
         {
-          label: "",
-          name: "state",
-          type: "checkbox"
-        },
-        {
           label: "编码",
           type: "text",
-          name: "id"
+          name: "settleGroupCode"
         },
         {
           label: "名称",
           type: "text",
-          name: "name"
+          name: "settleGroupName"
         },
         {
           label: "备注",
           type: "text",
-          name: "desc"
+          name: "remark"
         },
         {
           label: "更新时间",
-          name: "update_time",
+          name: "updateDate",
           type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
@@ -67,7 +65,7 @@ export default {
           operations: [
             {
               label: "编辑",
-              name: "edit",
+              name: "",
               type: "",
               style: {
                 // color: "#902323"
@@ -79,42 +77,44 @@ export default {
               }
             },
             {
-              label: "删除",
-              name: "delete",
+              label: "禁用",
+              otherLabel: "启用",
+              name: "status",
               type: "",
               style: {
                 // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
-                this.deleteDialog(item, data);
+                this.disableDialog(item, data);
               }
             }
           ]
         }
       ],
+      content: [],
       dialog: {
         models: [{
           label: '编码',
-          name: 'id',
+          name: 'settleGroupCode',
           type: 'text',
           placeholder: '请输入编号'
         }, {
           label: '名称',
-          name: 'name',
+          name: 'settleGroupName',
           type: 'text',
           placeholder: '请输入名称'
         }, {
           label: '备注',
-          name: 'desc',
+          name: 'remark',
           type: 'text',
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          settleGroupCode: "",
+          settleGroupName: "",
+          remark: ""
         },
         options: [{
           label: "确 定",
@@ -122,7 +122,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -139,14 +138,16 @@ export default {
         }]
       },
       query: {
-        name: ""
+        settleGroupName: ""
       }
     };
   },
   mounted() {
-    console.log(this);
   },
   methods: {
+    getCurrentPage(page) {
+      this.getAccountGroups(page);
+    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -154,66 +155,88 @@ export default {
     confirmDialog: function() {
       if (this.dialog.param.id) {
         // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
+        this.editAccountGroup(this.dialog.param);
       } else {
         // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
+        this.addAccountGroup(this.dialog.param);
       }
     },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+    disableDialog: function(item) {
+      this.$confirm(`操作将${item.status === true ? '禁止' : '开启' }该结算组别, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+      }).then(() => {
+        const param = {
+          id: item.id,
+          status: item.status === true ? false : true
+        };
+        this.$api.financeapi.updateUsingDELETE_3(param).then(res => {
+          const data = res.data;
+          if(data.code === 200) {
+            item.status = (item.status === true ? false : true);
+            $message("success", item.status ? "启用成功!" : "禁用成功!");
+          } else {
+            $message("error",  item.status ? "启用失败!" : "禁用失败!");
+            return data.message;
+          }
         })
-        .catch(() => {
-          $message("info", "已取消删除!");
-        });
+      })
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    async getAccountGroups(pageNum) {
+      let params = {
+        settleGroupName: this.query.settleGroupName,
+        pageNum
+      };
+      this.$api.financeapi.listUsingGET_8(params).then(res => {
+        const data = res.data;
+        if(data.code === 200) {
+          this.content = data.data;
+        } else {
+          return data.message;
+        }
+      })
+    },
+    async addAccountGroup(param) {
+      let params = {
+        param : this.dialog.param
+      };
+      await this.$api.financeapi.addUsingPOST_5(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.content.unshift(returnObj.data.data);
+          $message("success", "添加成功!");
+          this.dialog.dialogVisible = false;
+        } else {
+          $message("error", "添加失败!");
+        }       
+      });
+    },
+    async editAccountGroup(param) {
+      let params = {
+        id: param.id,
+        param: param
+      };
+      const that = this;
+      await this.$api.financeapi.updateUsingPUT_8(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          console.log( returnObj.data.data)
+          _replace('id', that.content, returnObj.data.data);
+          $message("success", "修改成功!");
+          this.dialog.dialogVisible = false;
+        } else {
+          $message("error", "修改失败!");
+        }       
+      });
     }
   },
   computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
+    // ...mapGetters({
+    //   content: "accountGroups"
+    // })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
-    console.log(api)
+    // this.$store.dispatch("getAccountGroups");
+    this.getAccountGroups();
   }
 };
 </script>

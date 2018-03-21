@@ -1,213 +1,5036 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "1.0.0",
-        "title": "Swagger Petstore",
-        "description": "A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "Swagger API Team",
-            "email": "foo@example.com",
-            "url": "http://madskristensen.net"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT"
-        }
+    "description": "Api Documentation",
+    "version": "1.0",
+    "title": "Api Documentation",
+    "termsOfService": "urn:tos",
+    "contact": {},
+    "license": {
+    "name": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
     },
-    "host": "petstore.swagger.io",
-    "basePath": "/api",
-    "schemes": [
-        "http"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
+    "host": "192.168.1.138:8111",
+    "basePath": "/",
+    "tags": [
+    {
+    "name": "finance-cost-item-apply-controller",
+    "description": "项目税率应用"
+    },
+    {
+    "name": "finance-cost-item-controller",
+    "description": "合同费用项目"
+    },
+    {
+    "name": "finance-rate-controller",
+    "description": "税率设置"
+    },
+    {
+    "name": "finance-receive-account-controller",
+    "description": "收款账户"
+    },
+    {
+    "name": "finance-settle-group-controller",
+    "description": "结算组别"
+    },
+    {
+    "name": "不规则费用管理、费用调整管理、免租管理",
+    "description": "Cost Manage Controller"
+    },
+    {
+    "name": "保证金/诚意金收取",
+    "description": "Contract Bond Receive Record Controller"
+    },
+    {
+    "name": "商户预付款",
+    "description": "Finance Prepayment Controller"
+    },
+    {
+    "name": "收款管理",
+    "description": "Bill Receipt Controller"
+    },
+    {
+    "name": "结算单生成、结算单管理",
+    "description": "Finance Bill Controller"
+    },
+    {
+    "name": "结算单调整",
+    "description": "Finance Bill Adjust Controller"
+    },
+    {
+    "name": "账单周期",
+    "description": "Bill Cycle Controller"
+    },
+    {
+    "name": "账单生成任务",
+    "description": "Bill Task Controller"
+    },
+    {
+    "name": "费用管理项",
+    "description": "Cost Manage Item Controller"
+    },
+    {
+    "name": "预付款处理",
+    "description": "Prepayment Operate Record Controller"
+    },
+    {
+    "name": "预付款收取",
+    "description": "Prepayment Receive Record Controller"
+    }
     ],
     "paths": {
-        "/pets": {
-            "get": {
-                "description": "Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo. In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittis libero sed lacinia.\n\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n",
-                "operationId": "findPets",
-                "parameters": [
-                    {
-                        "name": "tags",
-                        "in": "query",
-                        "description": "tags to filter by",
-                        "required": false,
-                        "type": "array",
-                        "collectionFormat": "csv",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "maximum number of results to return",
-                        "required": false,
-                        "type": "integer",
-                        "format": "int32"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "pet response",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Pet"
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new pet in the store.  Duplicates are allowed",
-                "operationId": "addPet",
-                "parameters": [
-                    {
-                        "name": "pet",
-                        "in": "body",
-                        "description": "Pet to add to the store",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/NewPet"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "pet response",
-                        "schema": {
-                            "$ref": "#/definitions/Pet"
-                        }
-                    },
-                    "default": {
-                        "description": "unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/pets/{id}": {
-            "get": {
-                "description": "Returns a user based on a single ID, if the user does not have access to the pet",
-                "operationId": "find pet by id",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID of pet to fetch",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "pet response",
-                        "schema": {
-                            "$ref": "#/definitions/Pet"
-                        }
-                    },
-                    "default": {
-                        "description": "unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "deletes a single pet based on the ID supplied",
-                "operationId": "deletePet",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID of pet to delete",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "pet deleted"
-                    },
-                    "default": {
-                        "description": "unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        }
+    "/bill/adjust/cancel": {
+    "put": {
+    "tags": [
+    "结算单调整"
+    ],
+    "summary": "取消",
+    "operationId": "cancelUsingPUT_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/adjust/confirm": {
+    "put": {
+    "tags": [
+    "结算单调整"
+    ],
+    "summary": "确认",
+    "operationId": "confirmUsingPUT_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/adjust/confirm/list": {
+    "get": {
+    "tags": [
+    "结算单调整"
+    ],
+    "summary": "结算单调整确认列表",
+    "operationId": "confirmListUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/adjust/manage/list": {
+    "get": {
+    "tags": [
+    "结算单调整"
+    ],
+    "summary": "结算单调整管理列表",
+    "operationId": "manageListUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/cancel": {
+    "put": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "取消",
+    "operationId": "cancelUsingPUT_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/confirm": {
+    "put": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "确认",
+    "operationId": "confirmUsingPUT_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/confirm/list": {
+    "get": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "结算单确认列表",
+    "operationId": "confirmListUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleDate",
+    "in": "query",
+    "description": "结算日",
+    "required": false,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/create": {
+    "post": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "生成结算单",
+    "operationId": "createUsingPOST_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/create/list": {
+    "get": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "结算单生成查询列表",
+    "operationId": "createListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleDate",
+    "in": "query",
+    "description": "结算日",
+    "required": false,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/cycle/create": {
+    "post": {
+    "tags": [
+    "账单周期"
+    ],
+    "summary": "创建周期",
+    "operationId": "createUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "id",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/manage/list": {
+    "get": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "结算单管理列表",
+    "operationId": "manageListUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleDate",
+    "in": "query",
+    "description": "结算日",
+    "required": false,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/publish": {
+    "put": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "发布",
+    "operationId": "publishUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/publish/list": {
+    "get": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "结算单发布列表",
+    "operationId": "publishListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleDate",
+    "in": "query",
+    "description": "结算日",
+    "required": false,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "settleNo",
+    "in": "query",
+    "description": "结算单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/receipt/cancel": {
+    "put": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "取消",
+    "operationId": "cancelUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/receipt/confirm": {
+    "put": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "确认",
+    "operationId": "confirmUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/receipt/confirm/list": {
+    "get": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "收款确认列表",
+    "operationId": "confirmListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "receiptId",
+    "in": "query",
+    "description": "收款单号|合同号|账单号|票据号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/receipt/del": {
+    "put": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "删除",
+    "operationId": "delUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/bill/receipt/manage/list": {
+    "get": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "收款管理列表",
+    "operationId": "manageListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "receiptId",
+    "in": "query",
+    "description": "收款单号|合同号|账单号|票据号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/receipt/save": {
+    "post": {
+    "tags": [
+    "收款管理"
+    ],
+    "summary": "编辑",
+    "operationId": "saveUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "paymentWayType",
+    "in": "query",
+    "description": "付款类型",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "collectionDate",
+    "in": "query",
+    "description": "收款日期",
+    "required": true,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "remark",
+    "in": "query",
+    "description": "备注",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/task/list": {
+    "get": {
+    "tags": [
+    "账单生成任务"
+    ],
+    "summary": "数据处理任务",
+    "operationId": "listUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "status",
+    "in": "query",
+    "description": "status",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/task/result/{id}": {
+    "get": {
+    "tags": [
+    "账单生成任务"
+    ],
+    "summary": "处理结果",
+    "operationId": "resultUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/{id}": {
+    "get": {
+    "tags": [
+    "结算单生成、结算单管理"
+    ],
+    "summary": "结算单详情",
+    "operationId": "detailUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/cost/manage/item/del/{id}": {
+    "delete": {
+    "tags": [
+    "费用管理项"
+    ],
+    "summary": "删除",
+    "operationId": "delUsingDELETE_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/cost/manage/item/list": {
+    "get": {
+    "tags": [
+    "费用管理项"
+    ],
+    "summary": "查询列表",
+    "operationId": "listUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/cost/manage/item/save": {
+    "post": {
+    "tags": [
+    "费用管理项"
+    ],
+    "summary": "查询列表",
+    "operationId": "saveUsingPOST_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "amount",
+    "in": "query",
+    "description": "收款金额",
+    "required": true,
+    "type": "number"
+    },
+    {
+    "name": "expenseDate",
+    "in": "query",
+    "description": "费用日期",
+    "required": true,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "remark",
+    "in": "query",
+    "description": "备注",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "costManageOId",
+    "in": "query",
+    "description": "费用管理主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "costItemId",
+    "in": "query",
+    "description": "费用项目主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/cost/manage/item/update": {
+    "put": {
+    "tags": [
+    "费用管理项"
+    ],
+    "summary": "更新",
+    "operationId": "updateUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "amount",
+    "in": "query",
+    "description": "收款金额",
+    "required": true,
+    "type": "number"
+    },
+    {
+    "name": "expenseDate",
+    "in": "query",
+    "description": "费用日期",
+    "required": true,
+    "type": "string",
+    "format": "date"
+    },
+    {
+    "name": "remark",
+    "in": "query",
+    "description": "备注",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/cost/manage/item/{id}": {
+    "get": {
+    "tags": [
+    "费用管理项"
+    ],
+    "summary": "获取详情",
+    "operationId": "getByIdUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/add": {
+    "post": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "新增",
+    "description": "保证金/诚意金收取（收取保证金/诚意金）",
+    "operationId": "addUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "requestParams",
+    "description": "requestParams",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractBondReceiveRecordQuery"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/bondinfo": {
+    "get": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "收取信息",
+    "description": "诚意金/保证金收取金额",
+    "operationId": "bondinfoUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "receiptNumber",
+    "in": "query",
+    "description": "收款单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "query",
+    "description": "0诚意金 1保证金",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增 1已确认 2取消",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/detail": {
+    "get": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "详情",
+    "description": "保证金/诚意金收取详情",
+    "operationId": "bondDetailUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "receiptNumber",
+    "in": "path",
+    "description": "收款单号",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/list": {
+    "get": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "列表",
+    "description": "保证金/诚意金收取页列表",
+    "operationId": "bondListUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "receiptNumber",
+    "in": "query",
+    "description": "收款单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "query",
+    "description": "0诚意金 1保证金",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增 1已确认 2取消",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/paymentmethod": {
+    "get": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "收款记录列表",
+    "description": "诚意金/保证金查询列表",
+    "operationId": "getPaymentMethodListUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "receiptNumber",
+    "in": "query",
+    "description": "收款单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "query",
+    "description": "0诚意金 1保证金",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增 1已确认 2取消",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/sub": {
+    "post": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "提交",
+    "description": "保证金/诚意金收款提交",
+    "operationId": "paymentSubmitUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "requestParams",
+    "description": "requestParams",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractBondReceiveRecordQuery"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/{id}": {
+    "put": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "编辑",
+    "description": "保证金收取列表中的编辑",
+    "operationId": "updateUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "requestParams",
+    "description": "requestParams",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractBondReceiveRecordRequest"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/contractbond/receiverecord/{id}/{type}": {
+    "delete": {
+    "tags": [
+    "保证金/诚意金收取"
+    ],
+    "summary": "删除",
+    "description": "保证金收取列表中的删除",
+    "operationId": "deleteUsingDELETE",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "type",
+    "in": "path",
+    "description": "类型",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/add": {
+    "post": {
+    "tags": [
+    "finance-cost-item-controller"
+    ],
+    "summary": "合同费用项目添加",
+    "description": "合同费用项目添加",
+    "operationId": "addUsingPOST_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceCostItemParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/apply/add": {
+    "post": {
+    "tags": [
+    "finance-cost-item-apply-controller"
+    ],
+    "summary": "项目税率应用添加",
+    "description": "项目税率应用添加",
+    "operationId": "addUsingPOST_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceCostItemApplyParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/apply/list": {
+    "get": {
+    "tags": [
+    "finance-cost-item-apply-controller"
+    ],
+    "summary": "项目税率应用列表",
+    "description": "项目税率应用列表",
+    "operationId": "listUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "costItemCode",
+    "in": "query",
+    "description": "ID",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/apply/{id}": {
+    "get": {
+    "tags": [
+    "finance-cost-item-apply-controller"
+    ],
+    "summary": "根据ID查询项目税率应用",
+    "description": "根据ID查询项目税率应用",
+    "operationId": "selectByIdUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "finance-cost-item-apply-controller"
+    ],
+    "summary": "项目税率应用修改",
+    "description": "项目税率应用修改",
+    "operationId": "updateUsingPUT_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceCostItemParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "finance-cost-item-apply-controller"
+    ],
+    "summary": "项目税率应用删除",
+    "description": "项目税率应用删除",
+    "operationId": "updateUsingDELETE",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/list": {
+    "get": {
+    "tags": [
+    "finance-cost-item-controller"
+    ],
+    "summary": "合同费用项目列表",
+    "description": "合同费用项目列表",
+    "operationId": "listUsingGET_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "costItemCodeOrName",
+    "in": "query",
+    "description": "费用编码/名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "costType",
+    "in": "query",
+    "description": "费用类型",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "propertyType",
+    "in": "query",
+    "description": "物业性质",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/cost/item/{id}": {
+    "get": {
+    "tags": [
+    "finance-cost-item-controller"
+    ],
+    "summary": "根据ID查询合同费用项目",
+    "description": "根据ID查询合同费用项目",
+    "operationId": "selectByIdUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "finance-cost-item-controller"
+    ],
+    "summary": "合同费用项目修改",
+    "description": "合同费用项目修改",
+    "operationId": "updateUsingPUT_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceCostItemParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "finance-cost-item-controller"
+    ],
+    "summary": "合同费用项目删除",
+    "description": "合同费用项目删除",
+    "operationId": "updateUsingDELETE_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/list": {
+    "get": {
+    "tags": [
+    "商户预付款"
+    ],
+    "summary": "列表",
+    "description": "商户预付款列表",
+    "operationId": "listUsingGET_5",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/operaterecord/prepaymentlist": {
+    "get": {
+    "tags": [
+    "预付款处理"
+    ],
+    "summary": "商户预付款列表",
+    "description": "商户预付款列表",
+    "operationId": "prepaymentistUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/operaterecord/prepaymentmanagelist": {
+    "get": {
+    "tags": [
+    "预付款处理"
+    ],
+    "summary": "商户预付款处理列表",
+    "description": "商户预付款处理列表",
+    "operationId": "prepaymentManageListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/operaterecord/{id}": {
+    "put": {
+    "tags": [
+    "预付款处理"
+    ],
+    "summary": "归还",
+    "description": "预付款归还",
+    "operationId": "updateUsingPUT_8",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "归还成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/add": {
+    "post": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "新增",
+    "description": "预付款收取（收取预付款）",
+    "operationId": "addUsingPOST_6",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "requestParams",
+    "description": "requestParams",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/PrepaymentReceiveRecordRequest"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/cancels": {
+    "get": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "取消",
+    "description": "预付款收已确认的可以取消操作",
+    "operationId": "cancelsUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/list": {
+    "get": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "列表",
+    "description": "预付款收取页列表",
+    "operationId": "listUsingGET_9",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "receiptNumber",
+    "in": "query",
+    "description": "收款单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增 1已确认 2取消",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/verifys": {
+    "get": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "预付款收取确认",
+    "description": "预付款收确认添加到商户预付款中",
+    "operationId": "verifysUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "ids",
+    "in": "path",
+    "description": "收款记录id字符串用(,)拼接",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/verifyslist": {
+    "get": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "确认列表",
+    "description": "预付款确认列表",
+    "operationId": "verifyslistUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "receiptNumber",
+    "in": "query",
+    "description": "收款单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺id",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增 1已确认 2取消",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/receiverecord/{id}": {
+    "put": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "编辑",
+    "description": "预付款收取列表编辑",
+    "operationId": "updateUsingPUT_9",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "requestParams",
+    "description": "requestParams",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/PrepaymentReceiveRecordRequest"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "预付款收取"
+    ],
+    "summary": "删除",
+    "description": "预付款收取列表中的删除",
+    "operationId": "deleteUsingDELETE_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/prepayment/{id}": {
+    "put": {
+    "tags": [
+    "商户预付款"
+    ],
+    "summary": "归还",
+    "description": "商户预付款归还",
+    "operationId": "updateUsingPUT_4",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "预付款id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "dealtAmount",
+    "in": "path",
+    "description": "处理金额",
+    "required": true,
+    "type": "number"
+    },
+    {
+    "name": "remark",
+    "in": "path",
+    "description": "备注",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "归还成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/rate/add": {
+    "post": {
+    "tags": [
+    "finance-rate-controller"
+    ],
+    "summary": "税率设置添加",
+    "description": "税率设置添加",
+    "operationId": "addUsingPOST_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceRateParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/rate/list": {
+    "get": {
+    "tags": [
+    "finance-rate-controller"
+    ],
+    "summary": "税率设置列表",
+    "description": "税率设置列表",
+    "operationId": "listUsingGET_6",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "rateCode",
+    "in": "query",
+    "description": "税码",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/rate/{id}": {
+    "get": {
+    "tags": [
+    "finance-rate-controller"
+    ],
+    "summary": "根据ID查询税率设置",
+    "description": "根据ID查询税率设置",
+    "operationId": "selectByIdUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "finance-rate-controller"
+    ],
+    "summary": "税率设置修改",
+    "description": "税率设置修改",
+    "operationId": "updateUsingPUT_5",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceRateParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "finance-rate-controller"
+    ],
+    "summary": "税率设置删除",
+    "description": "税率设置删除",
+    "operationId": "deleteUsingDELETE_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/receive/account/add": {
+    "post": {
+    "tags": [
+    "finance-receive-account-controller"
+    ],
+    "summary": "收款账户添加",
+    "description": "收款账户添加",
+    "operationId": "addUsingPOST_4",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceReceiveAccountParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/receive/account/list": {
+    "get": {
+    "tags": [
+    "finance-receive-account-controller"
+    ],
+    "summary": "收款账户列表",
+    "description": "收款账户列表",
+    "operationId": "listUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "openingBank",
+    "in": "query",
+    "description": "开户行",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/receive/account/{id}": {
+    "get": {
+    "tags": [
+    "finance-receive-account-controller"
+    ],
+    "summary": "根据ID查询收款账户",
+    "description": "根据ID查询收款账户",
+    "operationId": "selectByIdUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "finance-receive-account-controller"
+    ],
+    "summary": "收款账户修改",
+    "description": "收款账户修改",
+    "operationId": "updateUsingPUT_6",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceReceiveAccountParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "finance-receive-account-controller"
+    ],
+    "summary": "收款账户删除",
+    "description": "收款账户删除",
+    "operationId": "updateUsingDELETE_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/finance/settle/group/add": {
+    "post": {
+    "tags": [
+    "finance-settle-group-controller"
+    ],
+    "summary": "结算组别添加",
+    "description": "结算组别添加",
+    "operationId": "addUsingPOST_5",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceSettleGroupParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/settle/group/list": {
+    "get": {
+    "tags": [
+    "finance-settle-group-controller"
+    ],
+    "summary": "结算组别列表",
+    "description": "结算组别列表",
+    "operationId": "listUsingGET_8",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "settleGroupName",
+    "in": "query",
+    "description": "名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/finance/settle/group/{id}": {
+    "get": {
+    "tags": [
+    "finance-settle-group-controller"
+    ],
+    "summary": "根据ID查询结算组别",
+    "description": "根据ID查询结算组别",
+    "operationId": "selectByIdUsingGET_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "finance-settle-group-controller"
+    ],
+    "summary": "结算组别修改",
+    "description": "结算组别修改",
+    "operationId": "updateUsingPUT_7",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/FinanceSettleGroupParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "finance-settle-group-controller"
+    ],
+    "summary": "结算组别启用/禁用",
+    "description": "结算组别启用/禁用",
+    "operationId": "updateUsingDELETE_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "启用/禁用",
+    "required": true,
+    "type": "boolean"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/irregular/cost/cancel/{id}": {
+    "put": {
+    "tags": [
+    "不规则费用管理、费用调整管理、免租管理"
+    ],
+    "summary": "取消",
+    "operationId": "cancelUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/irregular/cost/confirm": {
+    "put": {
+    "tags": [
+    "不规则费用管理、费用调整管理、免租管理"
+    ],
+    "summary": "确定",
+    "operationId": "confirmUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键数组",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/irregular/cost/del": {
+    "delete": {
+    "tags": [
+    "不规则费用管理、费用调整管理、免租管理"
+    ],
+    "summary": "删除",
+    "operationId": "delUsingDELETE",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键数组",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/irregular/cost/list": {
+    "get": {
+    "tags": [
+    "不规则费用管理、费用调整管理、免租管理"
+    ],
+    "summary": "查询不规则费用管理、不规则费用审核列表",
+    "operationId": "listUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "costNo",
+    "in": "query",
+    "description": "费用单号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "settleGroupId",
+    "in": "query",
+    "description": "结算组别主键",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    }
     },
     "definitions": {
-        "Pet": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/NewPet"
-                },
-                {
-                    "required": [
-                        "id"
-                    ],
-                    "properties": {
-                        "id": {
-                            "type": "integer",
-                            "format": "int64",
-                            "x-type-options": {
-                                "min": 1,
-                                "max": 1000
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        "NewPet": {
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "x-chance-type": "name"
-                },
-                "tag": {
-                    "type": "string",
-                    "x-chance-type": "guid"
-                }
-            }
-        },
-        "Error": {
-            "required": [
-                "code",
-                "message"
-            ],
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        }
+    "ContractBondReceiveRecordQuery": {
+    "type": "object",
+    "required": [
+    "type"
+    ],
+    "properties": {
+    "contractCode": {
+    "type": "string",
+    "description": "合同编号",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户id",
+    "allowEmptyValue": false
+    },
+    "merchantName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "pageNum": {
+    "type": "integer",
+    "format": "int32",
+    "description": "页码",
+    "allowEmptyValue": false
+    },
+    "pageSize": {
+    "type": "integer",
+    "format": "int32",
+    "description": "每页显示数量",
+    "allowEmptyValue": false
+    },
+    "receiptNumber": {
+    "type": "string",
+    "description": "收款单号",
+    "allowEmptyValue": false
+    },
+    "shopCode": {
+    "type": "string",
+    "description": "店铺编号",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺id",
+    "allowEmptyValue": false
+    },
+    "shopName": {
+    "type": "string",
+    "description": "店铺名称",
+    "allowEmptyValue": false
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态：0新增 1已确认 2取消",
+    "allowEmptyValue": false
+    },
+    "type": {
+    "type": "integer",
+    "format": "int32",
+    "description": "0诚意金 1保证金",
+    "allowEmptyValue": false
     }
-}
+    },
+    "title": "ContractBondReceiveRecordQuery",
+    "description": "保证金/诚意金记录列表（查询条件）"
+    },
+    "ContractBondReceiveRecordRequest": {
+    "type": "object",
+    "required": [
+    "contractCode",
+    "merchantId",
+    "paymentCode",
+    "receivedAmount",
+    "receivedDate",
+    "shopId"
+    ],
+    "properties": {
+    "contractCode": {
+    "type": "string",
+    "description": "合同编号",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "保证金/诚意金收款记录id(编辑时需要传入)",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户id",
+    "allowEmptyValue": false
+    },
+    "paymentCode": {
+    "type": "integer",
+    "format": "int32",
+    "description": "收款方式",
+    "allowEmptyValue": false
+    },
+    "receivedAmount": {
+    "type": "number",
+    "description": "收款金额",
+    "allowEmptyValue": false
+    },
+    "receivedDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "收款日期",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "收款备注",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺id",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractBondReceiveRecordRequest",
+    "description": "保证金/诚意金编辑/新增请求参数实体"
+    },
+    "FinanceCostItemApplyParam": {
+    "type": "object",
+    "required": [
+    "costType",
+    "rateId",
+    "validStartDate"
+    ],
+    "properties": {
+    "costType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "费用类型",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "rateId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "税率ID",
+    "allowEmptyValue": false
+    },
+    "validEndDate": {
+    "type": "string",
+    "description": "生效结束日期",
+    "allowEmptyValue": false
+    },
+    "validStartDate": {
+    "type": "string",
+    "description": "生效开始日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "FinanceCostItemApplyParam"
+    },
+    "FinanceCostItemParam": {
+    "type": "object",
+    "required": [
+    "costItemCode",
+    "costItemName",
+    "costType",
+    "propertyType",
+    "settleGroupId"
+    ],
+    "properties": {
+    "costItemCode": {
+    "type": "string",
+    "description": "费用编码",
+    "allowEmptyValue": false
+    },
+    "costItemName": {
+    "type": "string",
+    "description": "费用名称",
+    "allowEmptyValue": false
+    },
+    "costType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "费用类型",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "propertyType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "物业性质",
+    "allowEmptyValue": false
+    },
+    "settleGroupId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "结算组别",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "FinanceCostItemParam"
+    },
+    "FinanceRateParam": {
+    "type": "object",
+    "required": [
+    "rate",
+    "rateCode",
+    "validDate"
+    ],
+    "properties": {
+    "description": {
+    "type": "string",
+    "description": "说明",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "rate": {
+    "type": "string",
+    "description": "税率",
+    "allowEmptyValue": false
+    },
+    "rateCode": {
+    "type": "string",
+    "description": "税码",
+    "allowEmptyValue": false
+    },
+    "validDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "有效期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "FinanceRateParam"
+    },
+    "FinanceReceiveAccountParam": {
+    "type": "object",
+    "required": [
+    "bankAccount",
+    "openingBank",
+    "settleGroupId",
+    "shoppingCenterId"
+    ],
+    "properties": {
+    "bankAccount": {
+    "type": "string",
+    "description": "银行账户",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "openingBank": {
+    "type": "string",
+    "description": "开户行",
+    "allowEmptyValue": false
+    },
+    "settleGroupId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "结算组别ID",
+    "allowEmptyValue": false
+    },
+    "shoppingCenterId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "购物中心ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "FinanceReceiveAccountParam"
+    },
+    "FinanceSettleGroupParam": {
+    "type": "object",
+    "required": [
+    "settleGroupCode",
+    "settleGroupName"
+    ],
+    "properties": {
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "settleGroupCode": {
+    "type": "string",
+    "description": "编码",
+    "allowEmptyValue": false
+    },
+    "settleGroupName": {
+    "type": "string",
+    "description": "名称",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "FinanceSettleGroupParam"
+    },
+    "PrepaymentReceiveRecordRequest": {
+    "type": "object",
+    "required": [
+    "contractCode",
+    "merchantId",
+    "paymentCode",
+    "receivedAmount",
+    "receivedDate",
+    "shopId"
+    ],
+    "properties": {
+    "contractCode": {
+    "type": "string",
+    "description": "合同编号",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "预付款收款记录id(编辑时需要传入)",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户id",
+    "allowEmptyValue": false
+    },
+    "paymentCode": {
+    "type": "integer",
+    "format": "int32",
+    "description": "收款方式",
+    "allowEmptyValue": false
+    },
+    "receivedAmount": {
+    "type": "number",
+    "description": "收款金额",
+    "allowEmptyValue": false
+    },
+    "receivedDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "收款日期",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "收款备注",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺id",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "PrepaymentReceiveRecordRequest",
+    "description": "预付款编辑/新增请求参数实体"
+    },
+    "统一返回格式": {
+    "type": "object",
+    "properties": {
+    "code": {
+    "type": "integer",
+    "format": "int32"
+    },
+    "data": {
+    "type": "object"
+    },
+    "msg": {
+    "type": "string"
+    }
+    },
+    "title": "统一返回格式"
+    }
+    }
+    }

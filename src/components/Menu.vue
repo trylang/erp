@@ -214,10 +214,6 @@
                             title: '结算单调整',
                             children: [
                                 {
-                                    path: '/finance/accountAdjustType',
-                                    title: '结算单调整类型'
-                                },
-                                {
                                     path: '/finance/accountAdjust',
                                     title: '结算单调整'
                                 }
@@ -270,8 +266,12 @@
                             title: '对账文件管理',
                             children: [
                                 {
-                                    path: '/',
-                                    title: '物业性质'
+                                    path: '/rebates/account',
+                                    title: '对账文件管理'
+                                },
+                                {
+                                    path: '/rebates/upload',
+                                    title: '对账文件上传'
                                 }
                             ]
                         },
@@ -279,8 +279,8 @@
                             title: '对账报表',
                             children: [
                                 {
-                                    path: '/',
-                                    title: '物业性质'
+                                    path: '/rebates/bank',
+                                    title: '银行账单'
                                 }
                             ]
                         },
@@ -288,8 +288,8 @@
                             title: '任务中心',
                             children: [
                                 {
-                                    path: '/',
-                                    title: '物业性质'
+                                    path: '/rebates/taskcenter',
+                                    title: '数据处理任务'
                                 }
                             ]
                         }],

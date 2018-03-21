@@ -278,6 +278,14 @@ export default {
           $message("info", "已取消删除!");
         });
     },
+    async getReceptList(query) {
+      await this.$api.financeapi.manageListUsingGET({}).then(returnObj => {
+        console.log(returnObj);
+      })
+      // await _returnPromise(queryIrregularList, {}, (returnObj)=> {
+      //   console.log(returnObj);
+      // });
+    },
     ...mapActions(["getAccountGroups"]),
     queryList: function(query) {
       this.getAccountGroups(query);
@@ -289,7 +297,8 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getReceptList();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

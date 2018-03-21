@@ -280,7 +280,12 @@ export default {
     ...mapActions(["getAccountGroups"]),
     queryList: function(query) {
       this.getAccountGroups(query);
-    }
+    },
+    async getGenetateAccount(query) {
+      await this.$api.financeapi.createListUsingGET({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
   },
   computed: {
     ...mapGetters({
@@ -288,7 +293,8 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getGenetateAccount();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

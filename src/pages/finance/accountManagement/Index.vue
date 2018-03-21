@@ -5,7 +5,7 @@
       <!-- 导航tab栏 -->
       <el-row>
         <el-col class="tab_item" v-for="(item, index) in tabs" :key="index" :span="3">
-          <h4 :class="{active: item.id === variables.isActive}" @click="variables.isActive = item.id">{{item.label}}</h4>
+          <h4 :class="{active: item.id === variables.isActive}" @click="activeFunc(item)">{{item.label}}</h4>
         </el-col>
         <el-col class="btn_item" :offset="9" :span="6">
           <el-button type="primary" v-if="variables.isActive === 'first'">取消确认</el-button>
@@ -89,7 +89,7 @@
             </div>
           </el-col>
         </el-row>
-        <el-row :gutter="20" id="subOutputRank-print">
+        <el-row :gutter="20">
           <account-tree :header="header" :content="content"></account-tree>  
         </el-row>
       </section>
@@ -117,6 +117,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import AccountTree from "../../../components/AccountTree";
+
 export default {
   name: "account-group",
   components: {
@@ -344,8 +345,15 @@ export default {
     handleClick() {
       console.log(23);
     },
+    activeFunc(item) {
+      this.variables.isActive = item.id;
+      if (item.id === 'first') this.getAccountManagement();
+      else if (index === 'second') this.getAccountConfirm();
+      else if (index === 'third') this.getAccountPulish();
+    },
     printContent() {
-      // this.$emit('print');
+      this.$root.eventEmit.$emit('print');
+
     //   // 1.设置要打印的区域 div的className
     //   var newstr = document.getElementById('printOrder-data')[0].innerHTML
     //   // 2. 复制给body，并执行window.print打印功能
@@ -357,15 +365,15 @@ export default {
     //   return false
 
 
-      let subOutputRankPrint = document.getElementById('subOutputRank-print');  
-      console.log(subOutputRankPrint.innerHTML);  
-      let newContent =subOutputRankPrint.innerHTML;  
-      let oldContent = document.body.innerHTML;  
-      document.body.innerHTML = newContent;  
-      window.print();  
-      window.location.reload();  
-      document.body.innerHTML = oldContent;  
-      return false;
+      // let subOutputRankPrint = document.getElementById('subOutputRank-print');  
+      // console.log(subOutputRankPrint.innerHTML);  
+      // let newContent =subOutputRankPrint.innerHTML;  
+      // let oldContent = document.body.innerHTML;  
+      // document.body.innerHTML = newContent;  
+      // window.print();  
+      // window.location.reload();  
+      // document.body.innerHTML = oldContent;  
+      // return false;
     },
     statusHandler(status) {
       this.selects.status.forEach(function(obj) {
@@ -436,7 +444,25 @@ export default {
     ...mapActions(["getAccountGroups"]),
     queryList: function(query) {
       this.getAccountGroups(query);
-    }
+    },
+    // 结算单管理
+    async getAccountManagement(query) {
+      await this.$api.financeapi.manageListUsingGET_2({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
+    // 结算单确认
+    async getAccountConfirm(query) {
+      await this.$api.financeapi.confirmListUsingGET_2({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
+    // 结算单发布
+    async getAccountPulish(query) {
+      await this.$api.financeapi.publishListUsingGET({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
   },
   computed: {
     ...mapGetters({
@@ -444,7 +470,8 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getAccountManagement();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

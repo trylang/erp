@@ -280,18 +280,24 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
-    }
+    // ...mapActions(["getAccountGroups"]),
+    // queryList: function(query) {
+    //   this.getAccountGroups(query);
+    // },
+    async getcostAdjust(query) {
+      await this.$api.financeapi.manageListUsingGET_1({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
   },
   computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
+    // ...mapGetters({
+    //   content: "accountGroups"
+    // })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getcostAdjust();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

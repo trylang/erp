@@ -63,7 +63,6 @@ const RentFree = r => require.ensure([], () => r(require('../pages/finance/rentF
 const AddRentFree = r => require.ensure([], () => r(require('../pages/finance/addRentFree/Index')), 'finance');
 const GenerateAccount = r => require.ensure([], () => r(require('../pages/finance/generateAccount/Index')), 'finance');
 const AccountManagement = r => require.ensure([], () => r(require('../pages/finance/accountManagement/Index')), 'finance');
-const AccountAdjustType = r => require.ensure([], () => r(require('../pages/finance/accountAdjustType/Index')), 'finance');
 const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/finance/importIrregularCost/Index')), 'finance');
 const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration')), 'finance');
 
@@ -312,9 +311,6 @@ const router = new Router({
                 }, {
                     path: 'billGeneration',
                     component: BillGeneration
-                }, {
-                    path: 'accountAdjustType',
-                    component: AccountAdjustType
                 }, {
                     path: 'importIrregularCost',
                     component: ImportIrregularCost

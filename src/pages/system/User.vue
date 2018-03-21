@@ -33,6 +33,7 @@
     import ConHead from '../../components/ConHead'
     import PageContent from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
+    //import { listUsingGET_9 } from '../../api/system-api-client'
     export default {
         name: "user",
         data(){
@@ -72,14 +73,15 @@
                 this.dialogVisible = false;
             },
             async getUserList(){
-                let paramData = {
+                await this.$api.systemapi.listUsingGET_9({
                     pageNum:1,
                     pageSize:10,
                     name:''
-                };
-                let userList = await this.$api.getUserListData(paramData);
-                this.dataList = userList.data.list;
-            },
+                }).then(res=>{
+                    this.dataList = res.data.data;
+                    console.log(res.data.data)
+                })
+            }
             /*async addbuilding(){
                 let params = {
                     number:this.add.number,

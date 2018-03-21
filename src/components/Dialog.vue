@@ -14,7 +14,7 @@
             <el-option
               v-for="(item, index) in model.options"
               :key="index"
-              :label="item.label"
+              :label="item[model.valueLabel]"
               :value="item[model.value]">
             </el-option>
           </el-select>
@@ -37,7 +37,12 @@
 <script>
   export default {
     name: 'erp-dialog',
-    props: ["title", "dialog"]
+    props: ["title", "dialog"],
+    watch: {
+      'dialog': function(old) {
+        console.log(old);
+      }
+    }
   }
 </script>
 

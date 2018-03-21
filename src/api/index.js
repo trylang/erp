@@ -5,7 +5,7 @@ let cancel;
 let promiseArr = {};
 const CancelToken = axios.CancelToken;
 //axios.defaults.baseURL = process.env.API_ROOT;
-axios.defaults.baseURL = '/api';
+//axios.defaults.baseURL = '/api';
 axios.defaults.timeout = 5000;
 //请求时拦截
 axios.interceptors.request.use(config=>{

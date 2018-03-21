@@ -1,6 +1,7 @@
 <template>
   <con-head title="收款账户">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={shui:'', cost:'', cost1:'', daterange:''}">添加</el-button>
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
+      dialog.param={bankAccount:'', openingBank:'', settleGroupId:'', shoppingCenterId: '123'}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
@@ -8,7 +9,7 @@
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改收款账户': '添加收款账户'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -20,6 +21,8 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import { queryAccountGroup, queryCollectList } from '@/utils/rest/financeAPI';
+import { _replace } from '@/utils';
 export default {
   name: "account-group",
   components: {
@@ -33,12 +36,12 @@ export default {
         {
           label: "开户行",
           type: "text",
-          name: "id"
+          name: "openingBank"
         },
         {
           label: "银行账户",
           type: "text",
-          name: "name"
+          name: "bankAccount"
         },{
           label: "购物中心",
           type: "text",
@@ -49,7 +52,7 @@ export default {
           name: "name"
         },
         {
-          label: "有效期",
+          label: "更新时间",
           name: "update_time",
           type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
@@ -93,28 +96,28 @@ export default {
       dialog: {
         models: [{
           label: '开户行',
-          name: 'shui',
+          name: 'openingBank',
           type: 'text',
           placeholder: '请输入...'
         }, {
           label: '银行账户',
-          name: 'cost',
+          name: 'bankAccount',
           type: 'text',
           placeholder: '请输入...'
         }, {
           label: '结算组别',
-          name: 'cost1',
+          name: 'settleGroupId',
           type: 'select',
           value: 'id',
-          options: [{id:1, label:'haha'}, {id:12, label:'heihie'}, {id:3, label:'enen'}],
+          valueLabel: 'settleGroupName',
+          options: [],
           placeholder: '请选择结算组别'
         }],
         dialogVisible: false,
         param: {
-          shui: "",
-          cost: "",
-          cost1: "",
-          daterange: ""
+          bankAccount: "",
+          openingBank: "",
+          settleGroupId: "",
         },
         options: [{
           label: "确 定",
@@ -126,7 +129,6 @@ export default {
             });
           },
           click: () => {
-            console.log(this.dialog.param);
             this.confirmDialog();
           }
         }, {
@@ -138,15 +140,21 @@ export default {
           }
         }]
       },
+      content: [],
       query: {
         name: ""
-      }
+      },
+      // options: {
+      //   accountGroup: []
+      // }
     };
   },
   mounted() {
-    console.log(this);
   },
   methods: {
+    getCurrentPage(page) {
+      this.getAccountGroups(page);
+    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -154,31 +162,12 @@ export default {
     confirmDialog: function() {
       if (this.dialog.param.id >=0) {
         // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
+        this.editCollectAccount(this.dialog.param);
+        
       } else {
         // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
+        this.addCollectAccount(this.dialog.param);
+       
       }
     },
     deleteDialog: function(item) {
@@ -204,15 +193,50 @@ export default {
     ...mapActions(["getAccountGroups"]),
     queryList: function(query) {
       this.getAccountGroups(query);
+    },
+    getCollectAccount(query) {
+      queryCollectList(query).then(v => {
+        this.content = v.list;
+      });
+    },
+    async addCollectAccount(param) {
+      await this.$api.financeapi.addUsingPOST_4({ param }).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.content.unshift(returnObj.data.data);
+          $message("success", "添加成功!");
+          this.dialog.dialogVisible = false;
+        } else {
+          $message("error", "添加失败!");
+        }       
+      });
+    },
+    async editCollectAccount(param) {
+      let params = {
+        id: param.id,
+        param: param
+      };
+      const that = this;
+      await this.$api.financeapi.updateUsingPUT_8(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          console.log( returnObj.data.data)
+          _replace('id', that.content, returnObj.data.data);
+          $message("success", "修改成功!");
+          this.dialog.dialogVisible = false;
+        } else {
+          $message("error", "修改失败!");
+        }       
+      });
+    },
+    async init () {
+      let [accountGroup] = await Promise.all([queryAccountGroup()]);
+      console.log(accountGroup);
+      this.dialog.models[this.dialog.models.length-1].options = accountGroup.data.list.length >= 0 ? accountGroup.data.list : [];
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getCollectAccount();
+    this.init();
   }
 };
 </script>

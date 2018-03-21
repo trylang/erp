@@ -283,7 +283,12 @@ export default {
     ...mapActions(["getAccountGroups"]),
     queryList: function(query) {
       this.getAccountGroups(query);
-    }
+    },
+    async getAccountAdjust(query) {
+      await this.$api.financeapi.manageListUsingGET_1({}).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
   },
   computed: {
     ...mapGetters({
@@ -291,7 +296,8 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.getAccountAdjust();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

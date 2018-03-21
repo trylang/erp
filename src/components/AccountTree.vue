@@ -14,7 +14,7 @@
         </div>
       </el-col>
       <el-col :span="14" class="full_width">
-        <div class="erp_container" @print="selectedPrint">
+        <div class="erp_container" id="subOutputRank-print">
           <notice-template :header="header" :content="content"></notice-template>
         </div>
       </el-col>   
@@ -24,6 +24,7 @@
 
 <script>
 import NoticeTemplate from "@/components/NoticeTemplate";
+// import print from '@/utils/directive/print';
 export default {
   name: "account-tree",
   props: ["tree", "header", "content"],
@@ -107,6 +108,11 @@ export default {
       document.body.innerHTML = oldContent;  
       return false;
     }
+  },
+  mounted() {
+    this.$root.eventEmit.$on('print', () => {
+      this.selectedPrint();
+    })
   }
 };
 </script>
@@ -121,14 +127,14 @@ export default {
     }
   }
 
-  @media print {
-    .not-print {
-      display: none;
-    }
-    .full_width {
-      width: 100%;
-    }
-  }
+  // @media print {
+  //   .not-print {
+  //     display: none;
+  //   }
+  //   .full_width {
+  //     width: 100%;
+  //   }
+  // }
 </style>
 
 

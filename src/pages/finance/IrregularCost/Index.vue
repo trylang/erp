@@ -229,9 +229,12 @@ export default {
 			status.isStatus = !status.isStatus
     },
     async getIrregulars(query) {
-      await _returnPromise(queryIrregularList, {}, (returnObj)=> {
+      await this.$api.financeapi.listUsingGET_2({}).then(returnObj => {
         console.log(returnObj);
-      });
+      })
+      // await _returnPromise(queryIrregularList, {}, (returnObj)=> {
+      //   console.log(returnObj);
+      // });
     },
     async deleteIrregular(ids) {
       await _returnPromise(deleteIrregularList, {
@@ -302,8 +305,8 @@ export default {
     })
   },
   created() {
-    // this.getIrregulars();
-    this.$store.dispatch("getAccountGroups");
+    this.getIrregulars();
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

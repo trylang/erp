@@ -5,11 +5,14 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
-import * as api from './api/api'
+import axios from 'axios'
+//import * as api from './api/api'
 import * as filter from './utils/filter'
 import store from './store'
 
-// Vue.prototype.$api = api;
+import api from './api/apilist'
+axios.defaults.baseURL = '/api';
+Vue.prototype.$api = api;
 Vue.use(ElementUI);
 
 Object.keys(filter).forEach(key => {
@@ -21,5 +24,8 @@ new Vue({
     el: '#app',
     router,
     store,
-    render:h => h(App)
+    render:h => h(App),
+    data: {
+        eventEmit: new Vue()
+    }
 });
