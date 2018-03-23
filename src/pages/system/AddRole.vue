@@ -6,29 +6,31 @@
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">用户名</span>
-                    <input class="inputtext" type="text" placeholder="请输入用户名">
-                    <span class="textcount">0/20</span>
+                    <input class="inputtext" type="text" maxlength="10" placeholder="请输入用户名" v-model="addRole.roleName">
+                    <span class="textcount">{{addRole.roleName.length}}/10</span>
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
-                        <span class="inputname">备注</span>
+                        <span class="inputname">描述</span>
                     </div>
-                    <textarea class="textareabox" placeholder="选填"></textarea>
-                    <span class="textcount">0/20</span>
+                    <textarea class="textareabox" maxlength="50" placeholder="选填" v-model="addRole.description"></textarea>
+                    <span class="textcount">{{addRole.description.length}}/50</span>
                 </div>
                 <div class="treetitle">功能权限</div>
                 <div class="treecontent">
                     <el-tree
-                            :data="data2"
+                            :data="menuList"
                             show-checkbox
                             node-key="id"
-                            :props="defaultProps">
+                            :props="defaultProps"
+                            ref="tree"
+                            @check-change="handleCheckChange">
                     </el-tree>
                 </div>
                 </el-col>
             </el-row>
         </div>
-        <div class="savebtn"><button>提交</button></div>
+        <div class="savebtn"><button @click="submitRoleData()">提交</button></div>
     </div>
 </template>
 
@@ -38,46 +40,75 @@
         name: "add-role",
         data() {
             return {
-                data2: [{
-                    id: 1,
-                    label: '一级 1',
-                    children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        children: [{
-                            id: 9,
-                            label: '三级 1-1-1'
-                        }, {
-                            id: 10,
-                            label: '三级 1-1-2'
-                        }]
-                    }]
-                }, {
-                    id: 2,
-                    label: '一级 2',
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1'
-                    }, {
-                        id: 6,
-                        label: '二级 2-2'
-                    }]
-                }, {
-                    id: 3,
-                    label: '一级 3',
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1'
-                    }, {
-                        id: 8,
-                        label: '二级 3-2'
-                    }]
-                }],
+                addRole:{
+                    id:'',
+                    marketId:1,
+                    roleName:'',
+                    description:'',
+                    menus:[]
+                },
+                menuList:[],
                 defaultProps: {
-                    children: 'children',
-                    label: 'label'
+                    children: 'childrenMenus',
+                    label: 'menuName'
                 }
             };
+        },
+        mounted(){
+            this.getMenuList();
+            this.getRoleInfo();
+        },
+        methods:{
+            async getMenuList(){
+                await this.$api.systemapi.listUsingGET_7().then(res=>{
+                    this.menuList = res.data.data;
+                })
+            },
+            async handleCheckChange(){
+                this.addRole.menus = this.$refs.tree.getCheckedNodes().map(item=>{
+                    if(item.id != undefined){
+                        return {
+                            id:item.id
+                        }
+                    }
+                });
+            },
+            async getRoleInfo(){
+                if(this.$route.params.roleid != 0) {
+                    await this.$api.systemapi.selectAllMenusForUpdateUsingGET({
+                        roleId: this.$route.params.roleid
+                    }).then(res => {
+                        this.addRole = res.data.data.thisRole;
+                        this.$refs.tree.setCheckedKeys(res.data.data.theRoleHasTheseMenus);
+                    })
+                }
+            },
+            async submitRoleData(){
+                if(this.$route.params.roleid == 0) {
+                    await this.$api.systemapi.addUsingPOST_1({
+                        role:this.addRole
+                    }).then(res => {
+                        if(res.data.code == 200){
+                            this.$message.success(res.data.msg);
+                            this.$router.push('/system/role');
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    this.addRole.id = this.$route.params.roleid;
+                    await this.$api.systemapi.updateUsingPUT_1({
+                        role:this.addRole
+                    }).then(res => {
+                        if(res.data.code == 200){
+                            this.$message.success(res.data.msg);
+                            this.$router.push('/system/role');
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }
+            }
         },
         components:{
             ConHead

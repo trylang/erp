@@ -5,39 +5,39 @@
             <div class="userinfobox">
                 <div class="userinfo">
                     <span class="userinfoL">用户名</span>
-                    <span class="userinfoR">张三</span>
+                    <span class="userinfoR" v-text="addUser.username"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">角色</span>
-                    <span class="userinfoR">西单管理员</span>
+                    <span class="userinfoR" v-for="rolename in addUser.roleSet" v-text="rolename.roleName"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">所属部门</span>
-                    <span class="userinfoR">研策部</span>
+                    <span class="userinfoR" v-text="addUser.department.departmentName"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">职位</span>
-                    <span class="userinfoR">经理</span>
+                    <span class="userinfoR" v-text="addUser.position.positionName"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">员工姓名</span>
-                    <span class="userinfoR">张三</span>
+                    <span class="userinfoR" v-text="addUser.realname"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">性别</span>
-                    <span class="userinfoR">男</span>
+                    <span class="userinfoR" v-text="addUser.sex==1?'男':'女'"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">手机号</span>
-                    <span class="userinfoR">18000000000</span>
+                    <span class="userinfoR" v-text="addUser.mobile"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">邮箱</span>
-                    <span class="userinfoR">123456789@qq.com</span>
+                    <span class="userinfoR" v-text="addUser.email"></span>
                 </div>
                 <div class="userinfo">
                     <span class="userinfoL">备注</span>
-                    <span class="userinfoR">无</span>
+                    <span class="userinfoR" v-text="addUser.remark==''?'无':addUser.remark"></span>
                 </div>
             </div>
         </con-head>
@@ -48,6 +48,23 @@
     import ConHead from '../../components/ConHead'
     export default {
         name: "userinfo",
+        data() {
+            return {
+                addUser:{}
+            }
+        },
+        mounted(){
+            this.getUserInfo();
+        },
+        methods:{
+            async getUserInfo(){
+                await this.$api.systemapi.getByIdUsingGET({
+                    userId:this.$route.params.userid
+                }).then(res=>{
+                    this.addUser = res.data.data;
+                })
+            }
+        },
         components:{
             ConHead
         }

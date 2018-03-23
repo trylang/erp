@@ -5,11 +5,11 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入开户行" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入开户行" v-model="query.name"><i class="iconfont icon-sousuo" @click="getCollectAccount"></i>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改收款账户': '添加收款账户'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -22,7 +22,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import { queryAccountGroup, queryCollectList } from '@/utils/rest/financeAPI';
-import { _replace } from '@/utils';
+
 export default {
   name: "account-group",
   components: {
@@ -45,11 +45,11 @@ export default {
         },{
           label: "购物中心",
           type: "text",
-          name: "name"
+          name: "shoppingCenterName"
         },{
           label: "结算组别",
           type: "text",
-          name: "name"
+          name: "settleGroupLabel"
         },
         {
           label: "更新时间",
@@ -141,19 +141,20 @@ export default {
         }]
       },
       content: [],
-      query: {
-        name: ""
+      selects: {
+        accountGroupJson: {}
       },
-      // options: {
-      //   accountGroup: []
-      // }
+      query: {}
     };
   },
   mounted() {
   },
   methods: {
-    getCurrentPage(page) {
-      this.getAccountGroups(page);
+    getCurrentPage(pageNum) {
+      this.getCollectAccount({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getCollectAccount({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -162,8 +163,7 @@ export default {
     confirmDialog: function() {
       if (this.dialog.param.id >=0) {
         // 修改
-        this.editCollectAccount(this.dialog.param);
-        
+        this.editCollectAccount(this.dialog.param);        
       } else {
         // 新增
         this.addCollectAccount(this.dialog.param);
@@ -171,40 +171,54 @@ export default {
       }
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该收款账户, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+          const that = this;
+          const param = {
+            id: item.id
+          };
+          this.$api.financeapi.updateUsingDELETE_2(param).then(res => {
+            const data = res.data;
+            if(data.code === 200) {
+              this.getCollectAccount({}, () => {
+                $message("success", "删除成功");
+              })
+            } else {
+              $message("error",  "删除失败");
+              return data.message;
+            }
+          });  
         })
         .catch(() => {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
-    },
-    getCollectAccount(query) {
-      queryCollectList(query).then(v => {
-        this.content = v.list;
+    getCollectAccount(page, callback) {
+      const param = {
+        openingBank: this.query.openingBank,
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
+      };
+      queryCollectList(param).then(v => {
+        const Ajson = this.selects.accountGroupJson;
+        v.list.forEach(item => {
+          item.settleGroupLabel = Ajson[item.settleGroupId] ? Ajson[item.settleGroupId].settleGroupName : '';
+        });
+        this.content = v;
+        if (callback) callback();
       });
     },
     async addCollectAccount(param) {
       await this.$api.financeapi.addUsingPOST_4({ param }).then(returnObj => {
         if(returnObj.data.code === 200) {
-          this.content.unshift(returnObj.data.data);
-          $message("success", "添加成功!");
-          this.dialog.dialogVisible = false;
+          this.getCollectAccount({}, () => {
+            $message("success", "添加成功!");
+            this.dialog.dialogVisible = false;           
+          });
         } else {
           $message("error", "添加失败!");
         }       
@@ -216,29 +230,31 @@ export default {
         param: param
       };
       const that = this;
-      await this.$api.financeapi.updateUsingPUT_8(params).then(returnObj => {
+      await this.$api.financeapi.updateUsingPUT_6(params).then(returnObj => {
         if(returnObj.data.code === 200) {
-          console.log( returnObj.data.data)
-          _replace('id', that.content, returnObj.data.data);
-          $message("success", "修改成功!");
-          this.dialog.dialogVisible = false;
+          this.getCollectAccount({}, () => {
+            $message("success", "修改成功!");
+            this.dialog.dialogVisible = false;            
+          });          
         } else {
           $message("error", "修改失败!");
         }       
       });
     },
-    async init () {
+    async init () {      
       let [accountGroup] = await Promise.all([queryAccountGroup()]);
-      console.log(accountGroup);
+      this.selects.accountGroupJson = accountGroup.json;
       this.dialog.models[this.dialog.models.length-1].options = accountGroup.data.list.length >= 0 ? accountGroup.data.list : [];
+      await this.getCollectAccount({});
     }
   },
   computed: {},
-  created() {
-    this.getCollectAccount();
+  created() {    
     this.init();
   }
 };
+
+// TODO: 后台删除没有真删除；
 </script>
 
 <style scoped>

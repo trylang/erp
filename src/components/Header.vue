@@ -50,10 +50,10 @@
                 },{
                     path:'/finance',
                     title:'财务管理'
-                },{
+                },/*{
                     path:'/sales',
                     title:'销售管理'
-                },{
+                },*/{
                     path:'/rebates',
                     title:'销售返款'
                 },{

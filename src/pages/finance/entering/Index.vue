@@ -1,47 +1,57 @@
 <template>
   <con-head title="不规则费用录入">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+    <h1>{{dialog.param.contractId}}</h1>
+    <h1>{{dialog.param.settleGroupId}}</h1>
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true,
+      dialog.param={costItemId: '', amount: '', expenseDate: ''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchselect">
-            <span class="inputname">费用类型</span>
-            <el-select v-model="query.name" placeholder="固定费用" class="dialogselect">
+            <span class="inputname">商户</span>
+            <el-select v-model="dialog.param.haha" placeholder="商户" class="dialogselect">
               <el-option
                 v-for="item in selects.expenses"
                 :key="item.id"
-                :value="item.label">
+                :label="item.label"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">物业性质</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
+            <span class="inputname">合同</span>
+            <el-select v-model="query.contractId" :disabled="!!this.$route.query.contractId" placeholder="合同" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
                 :key="item.id"
-                :value="item.label">
+                :label="item.label"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
       </el-col>
       <el-col :span="9">
         <div class="searchselect">
-            <span class="inputname">费用类型</span>
-            <el-select v-model="query.name" placeholder="固定费用" class="dialogselect">
+            <span class="inputname">结算组别</span>
+            <el-select v-model="query.settleGroupId" :disabled="!!this.$route.query.settleGroupId" placeholder="结算组别" class="dialogselect">
               <el-option
-                v-for="item in selects.expenses"
+                v-for="item in selects.accountGroup"
                 :key="item.id"
-                :value="item.label">
+                :label="item.settleGroupName"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content"></erp-table>
-
-    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+    <el-row>
+      <el-col :span="2" :offset="22">
+        <el-button type="primary" @click="addEntering">提交</el-button>
+      </el-col>
+    </el-row>
+    <erp-dialog :title="dialog.param.itemId? '修改不规则费用': '添加不规则费用'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -52,6 +62,10 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+
+import { queryAccountGroup, queryMerchant } from "@/utils/rest/financeAPI";
+import { _changeJson, _replace, _remove, _uuid } from "@/utils";
+
 export default {
   name: "account-group",
   components: {
@@ -63,35 +77,25 @@ export default {
     return {
       header: [
         {
-          label: "编码",
+          label: "费用项目",
           type: "text",
-          name: "id"
+          name: "costItemName"
         },
         {
-          label: "名称",
+          label: "收款金额",
           type: "text",
-          name: "name"
+          name: "amount"
         },
         {
-          label: "结算组别",
+          label: "费用日期",
+          name: "expenseDate",
           type: "text",
-          name: "desc"
-        },
-        {
-          label: "费用类型",
-          type: "text",
-          name: "desc"
-        },
-        {
-          label: "物业类型",
-          type: "text",
-          name: "desc"
-        },
-        {
-          label: "更新时间",
-          name: "update_time",
-          type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
+        },
+        {
+          label: "备注",
+          type: "text",
+          name: "remark"
         },
         {
           label: "操作",
@@ -105,11 +109,9 @@ export default {
               label: "编辑",
               name: "edit",
               type: "",
-              style: {
-                color: "#902323"
-              },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -118,9 +120,6 @@ export default {
               label: "删除",
               name: "delete",
               type: "",
-              style: {
-                color: "#093216"
-              },
               class: "delete",
               click: (item, data) => {
                 this.deleteDialog(item, data);
@@ -129,41 +128,34 @@ export default {
           ]
         }
       ],
+      content: {
+        list: []
+      },
       dialog: {
         models: [{
-          label: '编码',
-          name: 'id',
+          label: '费用项目',
+          name: 'costItemId',
           type: 'text',
-          placeholder: '请输入编码'
+          placeholder: '请输入费用项目'
         }, {
-          label: '名称',
-          name: 'name',
+          label: '收款金额',
+          name: 'amount',
           type: 'text',
-          placeholder: '请输入名称'
-        },{
-          label: '结算组别',
-          name: 'name',
-          type: 'select',
-          placeholder: '请选择组别'
-        },{
-          label: '费用类型',
-          name: 'name',
-          type: 'select',
-          placeholder: '请选择费用类型'
+          placeholder: '请输入收款金额'
         }, {
-          label: '物业性质',
-          name: 'desc',
-          type: 'select',
-          placeholder: '请选择物业性质'
-        }],
-        // handleClose: () => {
-        //   this.handleClose();
-        // },
+          label: '费用日期',
+          name: 'expenseDate',
+          type: 'date',
+          placeholder: '请选择费用日期'
+        }, {
+          label: '备注',
+          name: 'remark',
+          type: 'textarea',
+          placeholder: '请填写备注'
+        }],       
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          itemId: 1,
         },
         options: [{
           label: "确 定",
@@ -171,7 +163,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -188,6 +179,8 @@ export default {
         }]
       },
       selects: {
+        merchants: [], //商户
+        accountGroup: [], // 结算组别
         shops: [{
           id: 1,
           label: '商铺1'
@@ -204,91 +197,158 @@ export default {
         }]
       },
       query: {
-        name: ""
+        contractId: '',
+        settleGroupId: '',
+        item: []
       }
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
-    handleClose(done) {
-      let _this = this;
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          _this.dialog.param = {};
-          done();
-        })
-        .catch(_ => {});
-    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
-      if (this.dialog.param.id) {
+      if (this.dialog.param.id || this.dialog.param.itemId) {
         // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
+        this.editItem(this.dialog.param);        
       } else {
         // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
+        this.dialog.param.itemId = _uuid();
+        this.addItem(this.dialog.param);
       }
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该费用录入, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+          this.deleteItem(item);
         })
         .catch(() => {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    addItem(param) {
+      //TODO: 调用账单周期的接口地方，返回cycleId
+      param.cycleId = 2;
+      this.content.list.unshift(param);
+      this.dialog.dialogVisible = false;
+    },
+    editItem(param) {
+      if (param.id) {
+        _replace('itemId', this.content.list, param);
+      } else {
+        _replace('id', this.content.list, param);
+      }     
+      this.dialog.dialogVisible = false;
+    },
+    deleteItem(param) {
+      if (param.id) {
+        _remove('id', param.id, this.content.list);
+      } else {
+        _remove('itemId', param.itemId, this.content.list);
+      }
+    },
+    async getEntering(pageNum, callback) {
+      const params = {
+        id: this.$route.query.id,
+        pageNum
+      };
+      this.$api.financeapi.listUsingGET_13(params).then(res => {
+        const data = res.data;
+        if (data.code === 200) {
+          data.data.list.forEach(item => {
+            item.expenseDate = item.cycleDate;
+          });    
+          this.content = data.data;
+          if (callback) callback();
+        } else {
+          return data.message;
+        }
+      });
+    },
+    async addEntering() {
+      const param = {
+        contractId: this.query.contractId,
+        settleGroupId: this.query.settleGroupId,
+        item: this.content.list
+      }
+      const apiFunc = (api, param) => {
+        this.$api.financeapi[api]({param}).then(returnObj => {
+          if (returnObj.data.code === 200) {
+            $message("success", "提交成功!");
+            this.$router.push({path: '/finance/irregularCost'});
+          } else {
+            $message("error", "修改失败!");
+          }
+        });
+      };
+
+      if (this.$route.query.id) {
+        param.id = this.$route.query.id;
+        await apiFunc('updateUsingPUT_8', param);
+      } else {
+        await apiFunc('saveUsingPOST_3', param);
+      }      
+    },
+    async editEntering(param) {
+      let params = {
+        id: param.id,
+        param: param
+      };
+      await this.$api.financeapi.updateUsingPUT_9(params).then(returnObj => {
+        if (returnObj.data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "修改成功!");
+            this.dialog.dialogVisible = false;
+          });
+        } else {
+          $message("error", "修改失败!");
+        }
+      });
+    },
+    async deleteEntering(item) {
+      const param = {
+        id: item.id
+      };
+      this.$api.financeapi.delUsingDELETE_3(param).then(res => {
+        const data = res.data;
+        if (data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "删除成功");
+          });
+        } else {
+          $message("error", "删除失败");
+          return data.message;
+        }
+      });
+    },
+    async init() {
+      let [accountGroup, merchants] = await Promise.all([queryAccountGroup()]);
+      this.selects.accountGroup = accountGroup.data.list;
+      // this.selects.merchants = merchant;
+      // console.log(merchants);
+      if (!this.$route.query.id) return;
+      await this.getEntering();
+      this.query.contractId = this.$route.query.contractId;
+      this.query.merchantId = this.$route.query.merchantId;
+      this.query.settleGroupId = this.$route.query.settleGroupId;
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
+  computed: {},
+  watch: {
+    '$route': 'getEntering'
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.init();
   }
 };
+
+// TODO: 1. 租务接口的商户和合同列表接口没有； 2. 点添加确定时，需要调用租务接口（账单周期接口，返回cycleId）；
 </script>
 
 <style scoped>

@@ -1,101 +1,160 @@
 <template>
     <div>
         <con-head title="用户管理">
-            <router-link to="/system/adduser" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
+            <router-link to="/system/adduser/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model.trim="searchText" @keyup.enter="searchData()"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="dataList" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="190"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">重置密码</button>
-                            <button class="btn_text">删除</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <table class="el-table table_box">
+                    <thead class="table_header">
+                        <tr>
+                            <th><div class="cell">用户名</div></th>
+                            <th><div class="cell">姓名</div></th>
+                            <th><div class="cell">性别</div></th>
+                            <th><div class="cell">手机号</div></th>
+                            <th><div class="cell">部门</div></th>
+                            <th><div class="cell">职位</div></th>
+                            <th><div class="cell">角色</div></th>
+                            <th width="190"><div class="cell">操作</div></th>
+                            <th class="gutter" style="width: 0px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="dataList != null">
+                        <tr v-for="userlist in dataList">
+                            <td><div class="cell"><router-link :to="'/system/UserInfo/'+userlist.id" class="btn_text">{{userlist.username}}</router-link></div></td>
+                            <td><div class="cell" v-text="userlist.realname"></div></td>
+                            <td><div class="cell" v-text="userlist.sex==1?'男':'女'"></div></td>
+                            <td><div class="cell" v-text="userlist.mobile"></div></td>
+                            <td><div class="cell" v-text="userlist.department.departmentName"></div></td>
+                            <td><div class="cell" v-text="userlist.position.positionName"></div></td>
+                            <td><div class="cell" v-for="rolename in userlist.roleSet">{{rolename.roleName}}</div></td>
+                            <td>
+                                <div class="cell">
+                                    <router-link :to="'/system/adduser/'+userlist.id" class="btn_text">编辑</router-link>
+                                    <button class="btn_text" @click="dialogData(userlist.id)">重置密码</button>
+                                    <button class="btn_text" :style="userlist.forbidden == false?'color:#ff5400':''" @click="userStutas(userlist.forbidden,userlist.id)">{{userlist.forbidden == false?'禁用':'启用'}}</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="el-table__empty-block" v-if="dataList == null">
+                    <span class="el-table__empty-text">暂无数据</span>
+                </div>
             </div>
         </con-head>
+        <el-dialog
+                title="重置密码"
+                :visible.sync="dialogVisible"
+                custom-class="customdialog">
+            <div class="dialogbox">
+                <div class="dialoginput">
+                    <span class="inputname">重置密码</span>
+                    <input class="inputtext" type="password" placeholder="请输入新密码" v-model="passwordCont">
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleClose">取 消</el-button>
+                <el-button type="primary" @click="resetPassword()">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import ConHead from '../../components/ConHead'
     import PageContent from '../../components/Pagination'
-    import DataTable from '../../components/DataTable'
-    //import { listUsingGET_9 } from '../../api/system-api-client'
     export default {
         name: "user",
         data(){
             return{
                 dialogVisible:false,
                 dataList:[],
-                add:{
-                    number:"",
-                    name:""
-                },
-                value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                columnData:[
-                    { prop: 'realname', label: '用户名', link:'/system/userinfo', param:'id'},
-                    { prop: 'realname', label: '姓名'},
-                    { prop: 'realname', label: '性别'},
-                    { prop: 'realname', label: '手机号'},
-                    { prop: 'realname', label: '部门'},
-                    { prop: 'realname', label: '职位'},
-                    { prop: 'realname', label: '角色'}
-                ]
+                searchText:'',
+                userid:'',
+                passwordCont:''
             }
         },
         created(){
-            this.getUserList();
         },
         mounted(){
+            this.getUserList();
+        },
+        watch:{
+            searchText() {
+                this.$delay(() => {
+                    this.getUserList();
+                }, 1000);
+            }
         },
         methods:{
-            handleClose(){
-                this.dialogVisible = false;
-            },
             async getUserList(){
                 await this.$api.systemapi.listUsingGET_9({
                     pageNum:1,
                     pageSize:10,
-                    name:''
+                    name:this.searchText
                 }).then(res=>{
                     this.dataList = res.data.data;
-                    console.log(res.data.data)
                 })
+            },
+            async searchData(){
+                await this.getUserList();
+            },
+            async handleClose(){
+                this.dialogVisible = false;
+            },
+            async dialogData(id){
+                this.userid = id;
+                this.dialogVisible = true;
+            },
+            async resetPassword(){
+                await this.$api.systemapi.resetPasswordUsingPUT_7({
+                    userId:this.userid,
+                    password:this.passwordCont
+                }).then(res=>{
+                    if(res.data.code == 200){
+                        this.$message.success(res.data.msg);
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+            async userStutas(userstate,userid){
+                if(userstate == false) {
+                    await this.$api.systemapi.setForbiddenUsingGET({
+                        id: userid
+                    }).then(res => {
+                        if(res.data.code == 200){
+                            this.$message.success(res.data.msg);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                        this.getUserList();
+                    });
+                }else{
+                    await this.$api.systemapi.setUnForbiddenUsingGET({
+                        id: userid
+                    }).then(res => {
+                        if(res.data.code == 200){
+                            this.$message.success(res.data.msg);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                        this.getUserList();
+                    });
+                }
             }
-            /*async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
-            }*/
         },
         components:{
             ConHead,
-            PageContent,
-            DataTable
+            PageContent
         }
     }
 </script>

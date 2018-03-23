@@ -4,13 +4,13 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+          <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.costNo"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
+            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect">
               <el-option
                 v-for="item in selects.expenses"
                 :key="item.id"
@@ -25,7 +25,10 @@
         <div class="texttitle">
             <span class="inputname">状态：</span>
             <div class="line-nav">
-                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
+                <a href="javascript:void(0)" v-for="status in selects.status"
+                :key="status.id" 
+                :class="{active:status.isStatus}" 
+                @click="statusHandler(status)">{{status.label}}</a>
                 <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
             </div>
         </div>
@@ -45,13 +48,11 @@
     </el-row>
 		<el-row slot="preappend">
 			<div class="global-block">
-				<button class="global-btn">确 定</button>	
-				<button class="global-btn">删 除</button>	
+				<button class="global-btn" @click="batchConfirm">确 定</button>	
+				<button class="global-btn" @click="batchDelete">删 除</button>	
 			</div>
 		</el-row>
-    <erp-table :header="header" :content="content"></erp-table>
-
-    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
 
 </template>
@@ -62,8 +63,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import { queryIrregularList, deleteIrregularList } from '@/utils/rest/finance';
-import { _returnPromise } from '@/utils';
+
 export default {
   name: "account-group",
   components: {
@@ -76,29 +76,49 @@ export default {
       header: [
         {
           label: "",
-          name: "state",
+          name: "checked",
           type: "checkbox"
         },
         {
-          label: "编码",
+          label: "费用单号",
           type: "text",
-          name: "id"
+          name: "costNo"
         },
         {
-          label: "名称",
+          label: "合同号",
           type: "text",
-          name: "name"
+          name: "contractCode"
         },
         {
-          label: "备注",
+          label: "商户名称",
           type: "text",
-          name: "desc"
+          name: "merchantName"
         },
         {
-          label: "更新时间",
-          name: "update_time",
+          label: "店铺名称",
+          type: "text",
+          name: "shopName"
+        },
+        {
+          label: "结算组别",
+          type: "text",
+          name: "settleGroupName"
+        },
+        {
+          label: "金额",
+          type: "text",
+          name: "sum"
+        },
+        {
+          label: "录入日期",
+          name: "updateDate",
           type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
+        },
+        {
+          label: "状态",
+          type: "text",
+          name: "statusText"
         },
         {
           label: "操作",
@@ -110,76 +130,33 @@ export default {
           operations: [
             {
               label: "编辑",
-              name: "edit",
-              type: "",
+              show: "showEdit",
               style: {
                 // color: "#902323"
               },
               class: "edit",
-              click: (item) => {
+              click: function(item) {
                 Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
-              }
+                this.$router.push({path: '/finance/irregularCost/entering', query: { id: item.id, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
+              }.bind(this)
             },
             {
-              label: "删除",
-              name: "delete",
-              type: "",
+              label: "取消",
+              show: "showCancel",
               style: {
                 // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
-                this.deleteDialog(item, data);
+                this.cancelIrregularCost(item, data);
               }
             }
           ]
         }
       ],
+      content: [],
       dialog: {
-        models: [{
-          label: '编码',
-          name: 'id',
-          type: 'text',
-          placeholder: '请输入编号'
-        }, {
-          label: '名称',
-          name: 'name',
-          type: 'text',
-          placeholder: '请输入名称'
-        }, {
-          label: '备注',
-          name: 'desc',
-          type: 'text',
-          placeholder: '请输入备注'
-        }],
-        dialogVisible: false,
-        param: {
-          id: "",
-          name: "",
-          desc: ""
-        },
-        options: [{
-          label: "确 定",
-          name: "submit",
-          type: "primary",
-          disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              console.log(item);
-              return item === (undefined || "");
-            });
-          },
-          click: () => {
-            this.confirmDialog();
-          }
-        }, {
-          label: "取 消",
-          name: "edit",
-          type: "",
-          click: () => {
-            this.cancelDialog();
-          }
-        }]
+        param: {}
       },
       selects: {
         shops: [{
@@ -211,13 +188,14 @@ export default {
         }]
       },
       query: {
-        name: ""
+        costNo: '',
+        merchantId: '',
+        contractId: '',
+        status: ''
       }
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
     linkTo(path) {
       this.$router.push({ path });
@@ -226,89 +204,111 @@ export default {
 			this.selects.status.forEach(function(obj){
 					obj.isStatus = false;
 			});
-			status.isStatus = !status.isStatus
+			status.isStatus = !status.isStatus;
+      this.query.status = status.isStatus;
     },
-    async getIrregulars(query) {
-      await this.$api.financeapi.listUsingGET_2({}).then(returnObj => {
-        console.log(returnObj);
+    getCurrentPage(pageNum) {
+      this.getIrregularCost({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getIrregularCost({pageSize});
+    },
+    filterIds() {
+      const param = this.content.list.filter(item => {
+        return item.checked === true;
+      });
+      let ids = [];
+      param.forEach(item => {
+        ids.push(item.id);
+      });
+      return ids.toString();
+    },
+    batchConfirm() {
+      this.confirmIrregularCost(this.filterIds());
+    },
+    batchDelete() {
+      this.deleteIrregularCost(this.filterIds());
+    },
+    async getIrregularCost(page={}, callback) {
+      let params = {
+        // costNo: this.query.costNo || null,
+        // merchantId: this.query.merchantId || null,
+        // contractId: this.query.contractId || null,
+        // status: this.query.status || null,
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
+      };
+      this.$api.financeapi.listUsingGET_12(params).then(res => {
+        const data = res.data;
+        if(data.code === 200) {
+          data.data.list.forEach(item => {
+            item.checked = false;
+            if (item.status === 10) {
+              item.showEdit = true;
+              item.showCancel = false;
+            }
+            if (item.status >= 20) {
+              item.showEdit = false;
+              item.showCancel = true;
+            }
+          });
+          this.content = data.data;
+          if(callback) callback();
+        } else {
+          return data.message;
+        }        
       })
-      // await _returnPromise(queryIrregularList, {}, (returnObj)=> {
-      //   console.log(returnObj);
-      // });
     },
-    async deleteIrregular(ids) {
-      await _returnPromise(deleteIrregularList, {
-        param: ids,
-      }, (returnObj)=> {
-        console.log(returnObj);
+    async confirmIrregularCost(param) {
+      let params = {
+        id: param
+      };
+      await this.$api.financeapi.confirmUsingPUT_4(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "确认成功!");
+          });  
+        } else {
+          $message("error", "确认失败!");
+        }       
       });
     },
-    cancelDialog: function() {
-      this.dialog.dialogVisible = false;
-      this.dialog.param = {};
+    async deleteIrregularCost(param) {
+      let params = {
+        id: param
+      };
+      await this.$api.financeapi.delUsingDELETE_3(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "删除成功!");
+          });  
+        } else {
+          $message("error", "删除失败!");
+        }       
+      });
     },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
+    async cancelIrregularCost(param) {
+      let params = {
+        id: param.id
+      };
+      await this.$api.financeapi.cancelUsingPUT_4(params).then(returnObj => {
+        if(returnObj.data.code === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "取消成功!");
           });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.deleteIrregular([123, 789]);
-          // this.$store
-          //   .dispatch("delAccountGroup", item.id)
-          //   .then(() => {
-          //     $message("success", "删除成功!");
-          //   })
-          //   .catch(() => {
-          //     $message("error", "无法删除，请重试!");
-          //   });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
-        });
+        } else {
+          console.log('cuowu')
+          $message("error", "取消失败!");
+        }       
+      });
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.getIrregulars();
-    // this.$store.dispatch("getAccountGroups");
+    this.getIrregularCost();
   }
 };
+
 </script>
 
 <style lang="scss" scoped>

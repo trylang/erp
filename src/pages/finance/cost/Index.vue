@@ -60,8 +60,8 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryAccountGroup } from '@/utils/rest/financeAPI';
-import { _changeJson, _replace, _remove } from '@/utils';
+import { queryAccountGroup } from "@/utils/rest/financeAPI";
+import { _changeJson } from "@/utils";
 
 export default {
   name: "account-group",
@@ -116,11 +116,12 @@ export default {
               label: "编辑",
               name: "edit",
               type: "",
-              style: {
-                color: "#902323"
-              },
+              // style: {
+              //   color: "#902323"
+              // },
               class: "edit",
-              click: (item) => {
+              click: item => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -129,9 +130,9 @@ export default {
               label: "删除",
               name: "delete",
               type: "",
-              style: {
-                color: "#093216"
-              },
+              // style: {
+              //   color: "#093216"
+              // },
               class: "delete",
               click: (item, data) => {
                 this.deleteDialog(item, data);
@@ -142,89 +143,113 @@ export default {
       ],
       content: [],
       dialog: {
-        models: [{
-          label: '编码',
-          name: 'costItemCode',
-          type: 'text',
-          placeholder: '请输入编码'
-        }, {
-          label: '名称',
-          name: 'costItemName',
-          type: 'text',
-          placeholder: '请输入名称'
-        },{
-          label: '结算组别',
-          valueLabel: 'settleGroupName',
-          name: 'settleGroupId',
-          value: 'id',
-          type: 'select',
-          options: [],
-          placeholder: '请选择组别'
-        },{
-          label: '费用类型',
-          valueLabel: 'label',
-          name: 'costType',
-          type: 'select',
-          value: 'id',
-          options: [],
-          placeholder: '请选择合同费用类型'
-        }, {
-          label: '物业性质',
-          name: 'propertyType',
-          valueLabel: 'label',
-          value: 'id',
-          type: 'select',
-          options: [],
-          placeholder: '请选择物业性质'
-        }],
+        models: [
+          {
+            label: "编码",
+            name: "costItemCode",
+            type: "text",
+            placeholder: "请输入编码"
+          },
+          {
+            label: "名称",
+            name: "costItemName",
+            type: "text",
+            placeholder: "请输入名称"
+          },
+          {
+            label: "结算组别",
+            valueLabel: "settleGroupName",
+            name: "settleGroupId",
+            value: "id",
+            type: "select",
+            options: [],
+            event: (item) => {
+              console.log(item);
+            },
+            placeholder: "请选择组别"
+          },
+          {
+            label: "费用类型",
+            valueLabel: "label",
+            name: "costType",
+            type: "select",
+            value: "id",
+            options: [],
+            placeholder: "请选择合同费用类型"
+          },
+          {
+            label: "物业性质",
+            name: "propertyType",
+            valueLabel: "label",
+            value: "id",
+            type: "select",
+            options: [],
+            placeholder: "请选择物业性质"
+          }
+        ],
         dialogVisible: false,
         param: {
-          id: ''
+          costItemCode: '',
+          costItemName: '',
+          costType: '',
+          propertyType: '',
+          settleGroupId: ''
         },
-        options: [{
-          label: "确 定",
-          name: "submit",
-          type: "primary",
-          disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              return item === (undefined || "");
-            });
+        options: [
+          {
+            label: "确 定",
+            name: "submit",
+            type: "primary",
+            disabledFun: () => {
+              return Object.values(this.dialog.param).some(item => {
+                return item === (undefined || "");
+              });
+            },
+            click: () => {
+              this.confirmDialog();
+            }
           },
-          click: () => {
-            this.confirmDialog();
+          {
+            label: "取 消",
+            name: "edit",
+            type: "",
+            click: () => {
+              this.cancelDialog();
+            }
           }
-        }, {
-          label: "取 消",
-          name: "edit",
-          type: "",
-          click: () => {
-            this.cancelDialog();
-          }
-        }]
+        ]
       },
       selects: {
         accountGroupJson: {},
         propertyTypeJson: {},
-        shops: [{
-          id: 0,
-          label: '商铺'
-        }, {
-          id: 1,
-          label: '场地'
-        }, {
-          id: 2,
-          label: '广告位'
-        }, {
-          id: 3,
-          label: '写字楼'
-        }],
-        expenses: [{
-          id: 11,
-          label: '合同费用11'
-        }, {
-          id: 22,
-          label: '合同费用22'
-        }]
+        shops: [
+          {
+            id: 0,
+            label: "商铺"
+          },
+          {
+            id: 1,
+            label: "场地"
+          },
+          {
+            id: 2,
+            label: "广告位"
+          },
+          {
+            id: 3,
+            label: "写字楼"
+          }
+        ],
+        expenses: [
+          {
+            id: 11,
+            label: "合同费用11"
+          },
+          {
+            id: 22,
+            label: "合同费用22"
+          }
+        ]
       },
       query: {}
     };
@@ -241,33 +266,35 @@ export default {
     confirmDialog: function() {
       if (this.dialog.param.id) {
         // 修改
-        this.editCost(this.dialog.param);        
+        this.editCost(this.dialog.param);
       } else {
         // 新增
         this.addCost(this.dialog.param);
       }
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该合同费用项目, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
+      }).then(() => {
+        const param = {
+          id: item.id
+        };
+        this.$api.financeapi.updateUsingDELETE_1(param).then(res => {
+          const data = res.data;
+          if (data.code === 200) {
+            this.getCost(0, () => {
+              $message("success", "删除成功");
             });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
+          } else {
+            $message("error", "删除失败");
+            return data.message;
+          }
         });
+      });
     },
-    async getCost(pageNum) {
+    async getCost(pageNum, callback) {
       const params = {
         costItemCodeOrName: this.query.costItemCodeOrName,
         settleGroupId: this.query.settleGroupId,
@@ -275,35 +302,36 @@ export default {
         propertyType: this.query.propertyType,
         pageNum
       };
-      this.$api.financeapi.listUsingGET_4(params).then(res => {
+      this.$api.financeapi.listUsingGET_21(params).then(res => {
         const data = res.data;
-        if(data.code === 200) {
+        if (data.code === 200) {
           const Ajson = this.selects.accountGroupJson;
           const Pjson = this.selects.propertyTypeJson;
           data.data.list.forEach(item => {
-            item.settleGroupLabel = Ajson[item.settleGroupId] ? Ajson[item.settleGroupId].settleGroupName : '';
-            item.propertyTypeLabel = Pjson[item.propertyType] ? Pjson[item.propertyType].label : '';
+            item.settleGroupLabel = Ajson[item.settleGroupId]
+              ? Ajson[item.settleGroupId].settleGroupName
+              : "";
+            item.propertyTypeLabel = Pjson[item.propertyType]
+              ? Pjson[item.propertyType].label
+              : "";
           });
           this.content = data.data;
+          if (callback) callback();
         } else {
           return data.message;
         }
-      })
+      });
     },
     async addCost(param) {
-      await this.$api.financeapi.addUsingPOST_2({param}).then(returnObj => {
-        if(returnObj.data.code === 200) {
-          const data = returnObj.data.data;
-          const Ajson = this.selects.accountGroupJson;
-          const Pjson = this.selects.propertyTypeJson;
-          data.settleGroupLabel = Ajson[data.settleGroupId] ? Ajson[data.settleGroupId].settleGroupName : '';
-          data.propertyTypeLabel = Pjson[data.propertyType] ? Pjson[data.propertyType].label : '';
-          this.content.list.unshift(data);
-          $message("success", "添加成功!");
-          this.dialog.dialogVisible = false;        
+      await this.$api.financeapi.addUsingPOST_2({ param }).then(returnObj => {
+        if (returnObj.data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "添加成功!");
+            this.dialog.dialogVisible = false;
+          });
         } else {
           $message("error", "添加失败!");
-        }       
+        }
       });
     },
     async editCost(param) {
@@ -311,36 +339,21 @@ export default {
         id: param.id,
         param: param
       };
-      const that = this;
       await this.$api.financeapi.updateUsingPUT_3(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
-          _replace('id', that.content.list, returnObj.data.data);
-          $message("success", "修改成功!");
-          that.dialog.dialogVisible = false;          
+        if (returnObj.data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "修改成功!");
+            this.dialog.dialogVisible = false;
+          });
         } else {
           $message("error", "修改失败!");
-        }       
-      });
-    },
-    async deleteCost(param) {
-      let params = {
-        id: param.id
-      };
-      const that = this;
-      await this.$api.financeapi.updateUsingDELETE_1(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
-          _remove('id', param.id, that.content.list);
-          $message("success", "删除成功!");
-          that.dialog.dialogVisible = false;         
-        } else {
-          $message("error", "删除失败!");
-        }       
+        }
       });
     },
     async init() {
-      let [accountGroup] = await Promise.all([queryAccountGroup()]);      
+      let [accountGroup] = await Promise.all([queryAccountGroup()]);
       this.selects.accountGroupJson = accountGroup.json;
-      this.selects.propertyTypeJson = _changeJson(this.selects.shops, 'id');
+      this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
       this.dialog.models[2].options = accountGroup.data.list;
       this.dialog.models[3].options = this.selects.expenses;
@@ -348,7 +361,7 @@ export default {
     }
   },
   computed: {},
-  created() {   
+  created() {
     this.init();
   }
 };

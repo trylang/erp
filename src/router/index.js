@@ -93,6 +93,9 @@ const Role = r => require.ensure([], () => r(require('../pages/system/Role')), '
 const Dictionary = r => require.ensure([], () => r(require('../pages/system/Dictionary')), 'system');
 const Log = r => require.ensure([], () => r(require('../pages/system/Log')), 'system');
 const AddRole = r => require.ensure([], () => r(require('../pages/system/AddRole')), 'system');
+const Tenant = r => require.ensure([], () => r(require('../pages/system/Tenant')), 'system');
+const TenantMsg = r => require.ensure([], () => r(require('../pages/system/TenantMsg')), 'system');
+const AddTenant = r => require.ensure([], () => r(require('../pages/system/AddTenant')), 'system');
 
 const router = new Router({
     routes: [
@@ -426,7 +429,7 @@ const router = new Router({
                     component: UserInfo
                 },
                 {
-                    path: 'adduser',
+                    path: 'adduser/:userid',
                     component: AddUser
                 },
                 {
@@ -434,7 +437,7 @@ const router = new Router({
                     component: Role
                 },
                 {
-                    path: 'addrole',
+                    path: 'addrole/:roleid',
                     component: AddRole
                 },
                 {
@@ -444,6 +447,19 @@ const router = new Router({
                 {
                     path: 'log',
                     component: Log
+                },
+                {
+                    path: 'tenant',
+                    component: Tenant
+                },
+                {
+                    path: 'tenantmsg/:id',
+                    component: TenantMsg
+                },
+                {
+                    path: 'addtenant',
+                    component: AddTenant,
+                    name: 'addtenant'
                 }
             ]
         }

@@ -20,6 +20,14 @@ Object.keys(filter).forEach(key => {
 })
 
 /* eslint-disable no-new */
+const delay = (function() {
+    let timer = 0;
+    return function(callback, ms) {
+        clearTimeout(timer);
+        timer = setTimeout(callback, ms);
+    };
+})();
+Vue.prototype.$delay = delay;
 new Vue({
     el: '#app',
     router,

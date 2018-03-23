@@ -1,28 +1,42 @@
 <template>
     <div>
         <con-head title="角色管理">
-            <router-link to="/system/addrole" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
+            <router-link to="/system/addrole/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchText" @keyup.enter="searchData()"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="110"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <table class="el-table table_box">
+                    <thead class="table_header">
+                        <tr>
+                            <th><div class="cell">角色名称</div></th>
+                            <th><div class="cell">描述</div></th>
+                            <th width="190"><div class="cell">操作</div></th>
+                            <th class="gutter" style="width: 0px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="dataList != null">
+                    <tr v-for="userlist in dataList">
+                        <td><div class="cell" v-text="userlist.roleName"></div></td>
+                        <td><div class="cell" v-text="userlist.description"></div></td>
+                        <td>
+                            <div class="cell">
+                                <router-link :to="'/system/addrole/'+userlist.id" class="btn_text">编辑</router-link>
+                                <button class="btn_text" @click="deleteRole(userlist.id)">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="el-table__empty-block" v-if="dataList == null">
+                    <span class="el-table__empty-text">暂无数据</span>
+                </div>
             </div>
         </con-head>
     </div>
@@ -36,45 +50,50 @@
         name: "role",
         data(){
             return{
-                dialogVisible:false,
-                datalist:[],
-                add:{
-                    number:"",
-                    name:""
-                },
-                value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                columnData:[
-                    { prop: 'number', label: '角色名称'},
-                    { prop: 'name', label: '描述' }
-                ]
+                dataList:[],
+                searchText:''
             }
         },
         mounted(){
-            this.getbuilding();
+            this.getRoleList();
+        },
+        watch:{
+            searchText() {
+                this.$delay(() => {
+                    this.getRoleList();
+                }, 1000);
+            }
         },
         methods:{
-            handleClose(){
-                this.dialogVisible = false;
+            async getRoleList(){
+                await this.$api.systemapi.listUsingGET_8({
+                    pageNum:1,
+                    pageSize:10,
+                    name:this.searchText
+                }).then(res=>{
+                    this.dataList = res.data.data;
+                })
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            async searchData(){
+                await this.getRoleList();
             },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
+            async deleteRole(rId){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.systemapi.deleteUsingDELETE_5({
+                        roleId:rId
+                    }).then(res=>{
+                        if(res.data.code == 200){
+                            this.getRoleList();
+                            this.$message.success(res.data.msg);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    });
+                }).catch(() => {});
             }
         },
         components:{

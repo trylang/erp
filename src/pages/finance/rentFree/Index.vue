@@ -213,9 +213,7 @@ export default {
       }
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
     linkTo(path) {
       this.$router.push({ path });
@@ -280,18 +278,10 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
-    }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.$store.dispatch("getAccountGroups");
+    // this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

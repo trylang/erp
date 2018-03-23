@@ -205,7 +205,7 @@
     }
 
     .savebtn button {
-        padding: 10px 0;
+        padding: 15px 0;
         background: #ff5400;
         border-color: #ff5400;
         font-size: 14px;
@@ -331,7 +331,9 @@
     .dialoginput .dialogselect {
         flex: 1;
     }
-
+    .dialoginput .el-select__tags{
+        padding-left: 10px;
+    }
     .dialogbox .noline {
         border: none;
     }
@@ -515,7 +517,7 @@
         background: none;
         border: none;
         border-bottom: 1px solid #e5e5e5;
-        padding: 3px 35px 3px 5px;
+        padding: 3px 35px 3px 35px;
         color: #ccc;
         width: 100%;
         height: 32px;
@@ -525,10 +527,10 @@
         position: absolute;
         width: 32px;
         height: 100%;
-        right: 0;
+        left: 0;
         top: 0;
         text-align: center;
-        color: #666;
+        color: #ccc;
         transition: all .3s;
         font-size: 14px;
         line-height: 32px;
@@ -655,7 +657,14 @@
         border: none;
         cursor: pointer;
     }
-
+    /*自定义列表*/
+    .table_box{
+        border-collapse:collapse;
+    }
+    .table_header tr th{
+        background-color: #e4e4e4;
+        color: #666;
+    }
     /*表单及文本域*/
     .textareabox {
         height: 60px;

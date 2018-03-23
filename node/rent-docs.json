@@ -1,0 +1,8676 @@
+{
+    "swagger": "2.0",
+    "info": {
+    "description": "Api Documentation",
+    "version": "1.0",
+    "title": "Api Documentation",
+    "termsOfService": "urn:tos",
+    "contact": {},
+    "license": {
+    "name": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+    },
+    "host": "192.168.1.235:8888",
+    "basePath": "/",
+    "tags": [
+    {
+    "name": "contract-controller",
+    "description": "合同管理"
+    },
+    {
+    "name": "intent-contract-controller",
+    "description": "意向合同管理"
+    },
+    {
+    "name": "上传",
+    "description": "File Controller"
+    },
+    {
+    "name": "业态管理",
+    "description": "Business Controller"
+    },
+    {
+    "name": "单元、广告位、写字楼、场地管理",
+    "description": "Rent Unit Controller"
+    },
+    {
+    "name": "品牌管理",
+    "description": "Brand Controller"
+    },
+    {
+    "name": "商户管理",
+    "description": "Merchant Controller"
+    },
+    {
+    "name": "国别",
+    "description": "Country Controller"
+    },
+    {
+    "name": "广告位类型",
+    "description": "Rent Advertising Type Controller"
+    },
+    {
+    "name": "店铺管理",
+    "description": "Shop Controller"
+    },
+    {
+    "name": "楼宇管理",
+    "description": "Rent Build Controller"
+    },
+    {
+    "name": "楼宇类型",
+    "description": "Rent Build Type Controller"
+    },
+    {
+    "name": "楼层管理",
+    "description": "Rent Floor Controller"
+    },
+    {
+    "name": "账单周期",
+    "description": "Finance Bill Cycle Controller"
+    },
+    {
+    "name": "货品管理",
+    "description": "Goods Controller"
+    },
+    {
+    "name": "货品组别管理",
+    "description": "Goods Type Controller"
+    },
+    {
+    "name": "附件",
+    "description": "Attachment Controller"
+    }
+    ],
+    "paths": {
+    "/atment/list": {
+    "get": {
+    "tags": [
+    "附件"
+    ],
+    "summary": "查询附件列表",
+    "description": "查询所有附件信息",
+    "operationId": "listUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "tableName",
+    "in": "query",
+    "description": "表名",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "tableRowId",
+    "in": "query",
+    "description": "表行ID",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "tableRowState",
+    "in": "query",
+    "description": "表行业务状态",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "attachmentType",
+    "in": "query",
+    "description": "附件类型",
+    "required": true,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/AttachmentVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/atment/{id}": {
+    "get": {
+    "tags": [
+    "附件"
+    ],
+    "summary": "获取附件详情",
+    "description": "获取附件详情",
+    "operationId": "detailUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/AttachmentVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "附件"
+    ],
+    "summary": "编辑附件",
+    "description": "编辑附件",
+    "operationId": "updateUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/AttachmentParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/bill/cycle/period": {
+    "get": {
+    "tags": [
+    "账单周期"
+    ],
+    "summary": "根据日期判断所属周期",
+    "operationId": "cycleUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contractId",
+    "in": "query",
+    "description": "合同主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "expenseDate",
+    "in": "query",
+    "description": "费用日期",
+    "required": true,
+    "type": "string",
+    "format": "date"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/file/upload": {
+    "post": {
+    "tags": [
+    "上传"
+    ],
+    "summary": "文件上传",
+    "description": "文件上传",
+    "operationId": "uploadUsingPOST",
+    "consumes": [
+    "multipart/form-data"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "file",
+    "in": "formData",
+    "description": "file",
+    "required": true,
+    "type": "file"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "上传成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/file/uploads": {
+    "post": {
+    "tags": [
+    "上传"
+    ],
+    "summary": "文件上传",
+    "description": "文件上传",
+    "operationId": "uploadsUsingPOST",
+    "consumes": [
+    "multipart/form-data"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "file",
+    "in": "formData",
+    "description": "file",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "file"
+    },
+    "collectionFormat": "multi"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "上传成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/add": {
+    "post": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "添加录入意向合同",
+    "description": "添加录入意向合同",
+    "operationId": "addUsingPOST_5",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/IntentContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/cancel": {
+    "put": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "取消确认",
+    "description": "取消确认",
+    "operationId": "cancelUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/confirm": {
+    "put": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "确认",
+    "description": "确认",
+    "operationId": "confirmUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/del": {
+    "put": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "意向合同删除",
+    "description": "意向合同删除",
+    "operationId": "delUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/detail/{id}": {
+    "get": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "意向合同详情",
+    "description": "意向合同详情",
+    "operationId": "detailUsingGET_6",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/edit": {
+    "put": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "意向合同编辑",
+    "description": "意向合同编辑",
+    "operationId": "editUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/IntentContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/IntentContract/list": {
+    "get": {
+    "tags": [
+    "intent-contract-controller"
+    ],
+    "summary": "意向合同条件查询列表",
+    "description": "根据条件查询意向合同列表",
+    "operationId": "getListForPageUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "brandId",
+    "in": "query",
+    "description": "品牌名称",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/IntentContractVo"
+    }
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/advertising/type/add": {
+    "post": {
+    "tags": [
+    "广告位类型"
+    ],
+    "summary": "广告位类型添加",
+    "description": "广告位类型添加",
+    "operationId": "addUsingPOST_7",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentAdvertisingTypeParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/advertising/type/list": {
+    "get": {
+    "tags": [
+    "广告位类型"
+    ],
+    "summary": "广告位类型列表",
+    "description": "广告位类型列表",
+    "operationId": "listUsingGET_8",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/RentAdvertisingTypeVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/advertising/type/{id}": {
+    "get": {
+    "tags": [
+    "广告位类型"
+    ],
+    "summary": "根据ID查询广告位类型",
+    "description": "根据ID查询广告位类型",
+    "operationId": "getByIdUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "广告位类型"
+    ],
+    "summary": "广告位类型修改",
+    "description": "广告位类型修改",
+    "operationId": "updateUsingPUT_9",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentAdvertisingTypeParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "广告位类型"
+    ],
+    "summary": "广告位类型删除",
+    "description": "广告位类型删除",
+    "operationId": "updateUsingDELETE",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/brand/add": {
+    "post": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "添加品牌",
+    "description": "添加品牌",
+    "operationId": "addUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentBrandParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/audit/list": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "查询品牌列表",
+    "description": "查询所有品牌项",
+    "operationId": "auditListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "brandCode",
+    "in": "query",
+    "description": "编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "brandName",
+    "in": "query",
+    "description": "名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增1空置2.取消空置3预定4使用中5失效",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessId",
+    "in": "query",
+    "description": "业态编号",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBrandVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/audit/listpg": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "查询品牌列表",
+    "description": "查询所有品牌项",
+    "operationId": "auditListpgUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "brandCode",
+    "in": "query",
+    "description": "编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "brandName",
+    "in": "query",
+    "description": "名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增1空置2.取消空置3预定4使用中5失效",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessId",
+    "in": "query",
+    "description": "业态编号",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBrandVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/code": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "获取品牌编码",
+    "description": "获取品牌编码",
+    "operationId": "codeUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "获取成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/country/list": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "查询国别列表",
+    "description": "查询所有国别信息",
+    "operationId": "listUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentCountryVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/list": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "查询品牌列表",
+    "description": "查询所有品牌项",
+    "operationId": "listUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "brandCode",
+    "in": "query",
+    "description": "编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "brandName",
+    "in": "query",
+    "description": "名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增1空置2.取消空置3预定4使用中5失效",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessId",
+    "in": "query",
+    "description": "业态编号",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBrandVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/listpg": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "查询品牌列表",
+    "description": "查询所有品牌项",
+    "operationId": "listpgUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "brandCode",
+    "in": "query",
+    "description": "编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "brandName",
+    "in": "query",
+    "description": "名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态：0新增1空置2.取消空置3预定4使用中5失效",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessId",
+    "in": "query",
+    "description": "业态编号",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBrandVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/brand/{id}": {
+    "get": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "获取品牌详情",
+    "description": "获取品牌详情",
+    "operationId": "detailUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBrandVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "编辑品牌",
+    "description": "编辑品牌",
+    "operationId": "updateUsingPUT_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentBrandParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "删除品牌",
+    "description": "删除品牌",
+    "operationId": "deleteUsingDELETE",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/brand/{id}/{status}": {
+    "put": {
+    "tags": [
+    "品牌管理"
+    ],
+    "summary": "修改品牌状态",
+    "description": "修改品牌状态",
+    "operationId": "updateUsingPUT_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "path",
+    "description": "状态",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "修改成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/build/list": {
+    "get": {
+    "tags": [
+    "楼宇管理"
+    ],
+    "summary": "楼宇列表",
+    "description": "楼宇列表",
+    "operationId": "listUsingGET_9",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/build/tree/list": {
+    "get": {
+    "tags": [
+    "楼宇管理"
+    ],
+    "summary": "楼宇树列表",
+    "description": "楼宇树列表",
+    "operationId": "treeListUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/RentBuildVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/build/type/list": {
+    "get": {
+    "tags": [
+    "楼宇类型"
+    ],
+    "summary": "楼宇类型列表",
+    "description": "楼宇类型列表",
+    "operationId": "listUsingGET_10",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/RentBuildTypeVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/build/type/{id}": {
+    "get": {
+    "tags": [
+    "楼宇类型"
+    ],
+    "summary": "根据ID查询楼宇类型",
+    "description": "根据ID查询楼宇类型",
+    "operationId": "selectByIdUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/build/{id}": {
+    "get": {
+    "tags": [
+    "楼宇管理"
+    ],
+    "summary": "根据ID查询楼宇",
+    "description": "根据ID查询楼宇",
+    "operationId": "selectByIdUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/busi/add": {
+    "post": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "添加业态",
+    "description": "添加业态",
+    "operationId": "addUsingPOST_1",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentBusinessParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/busi/list": {
+    "get": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "查询业态列表",
+    "description": "查询所有业态信息",
+    "operationId": "listUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessCode",
+    "in": "query",
+    "description": "业态编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "businessName",
+    "in": "query",
+    "description": "业态名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBusinessVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/busi/listpg": {
+    "get": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "查询业态列表",
+    "description": "查询所有业态信息",
+    "operationId": "listpgUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessCode",
+    "in": "query",
+    "description": "业态编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "businessName",
+    "in": "query",
+    "description": "业态名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBusinessVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/busi/tree": {
+    "get": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "查询业态列表",
+    "description": "查询所有业态信息",
+    "operationId": "treeUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "businessCode",
+    "in": "query",
+    "description": "业态编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "businessName",
+    "in": "query",
+    "description": "业态名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBusinessVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/busi/{id}": {
+    "get": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "获取业态详情",
+    "description": "获取业态详情",
+    "operationId": "detailUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentBusinessVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "编辑业态",
+    "description": "编辑业态",
+    "operationId": "updateUsingPUT_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentBusinessParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "业态管理"
+    ],
+    "summary": "删除业态",
+    "description": "删除业态",
+    "operationId": "deleteUsingDELETE_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/contract/add": {
+    "post": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "添加录入正式合同",
+    "description": "添加录入正式合同",
+    "operationId": "addUsingPOST_2",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "录入合同主体成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/bond": {
+    "post": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "添加录入正式合同保证金记录",
+    "description": "添加录入正式合同保证金记录",
+    "operationId": "addBondUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractBondParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加录入正式合同保证金记录",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/cancel": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "取消确认",
+    "description": "取消确认",
+    "operationId": "cancelUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/confirm": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "确认",
+    "description": "确认",
+    "operationId": "confirmUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "ids",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "collectionFormat": "multi"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "确认成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/del": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "删除",
+    "description": "删除",
+    "operationId": "delUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/delay": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "正式合同延期",
+    "description": "正式合同延期",
+    "operationId": "delayUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "延期成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/detail/{id}": {
+    "get": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "正式合同详情",
+    "description": "正式合同详情",
+    "operationId": "detailUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/edit": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "正式合同编辑",
+    "description": "正式合同编辑",
+    "operationId": "editUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/IntentContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/list": {
+    "get": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "合同条件查询列表",
+    "description": "根据条件查询合同列表",
+    "operationId": "getListForPageUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "propertyType",
+    "in": "query",
+    "description": "物业性质：商铺、写字楼、广告位、场地",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "contractCode",
+    "in": "query",
+    "description": "合同编号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "shopId",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "latestOrNot",
+    "in": "query",
+    "description": "是否最新版本",
+    "required": false,
+    "type": "boolean"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "type": "array",
+    "items": {
+    "$ref": "#/definitions/ContractVo"
+    }
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/rentOrCost": {
+    "post": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "添加录入正式合同租金/费用条款",
+    "description": "添加录入正式合同租金/费用条款",
+    "operationId": "addRentOrCostUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractFormalRentTermsParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/shopUnit": {
+    "post": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "添加合同关联的店铺单元记录",
+    "description": "添加合同关联的店铺单元记录",
+    "operationId": "addShopUnitUsingPOST",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractUnitRelationParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    },
+    {
+    "required": false,
+    "schema": {
+    "type": "string"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "录入合同店铺单元成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/stop": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "正式合同终止",
+    "description": "正式合同终止",
+    "operationId": "stopUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/IntentContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "终止成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/contract/update": {
+    "put": {
+    "tags": [
+    "contract-controller"
+    ],
+    "summary": "正式合同变更",
+    "description": "正式合同变更",
+    "operationId": "updateUsingPUT_4",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/ContractParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "变更成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/country/list": {
+    "get": {
+    "tags": [
+    "国别"
+    ],
+    "summary": "查询国别列表",
+    "description": "查询所有国别信息",
+    "operationId": "listUsingGET_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/floor/add": {
+    "post": {
+    "tags": [
+    "楼层管理"
+    ],
+    "summary": "楼层添加",
+    "description": "楼层添加",
+    "operationId": "addUsingPOST_8",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentFloorParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/floor/list/{buildId}": {
+    "get": {
+    "tags": [
+    "楼层管理"
+    ],
+    "summary": "根据楼宇ID查询楼层列表",
+    "description": "根据楼宇ID查询楼层列表",
+    "operationId": "selectByBuildIdUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "buildId",
+    "in": "path",
+    "description": "楼宇ID",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/floor/{id}": {
+    "get": {
+    "tags": [
+    "楼层管理"
+    ],
+    "summary": "根据ID查询楼层",
+    "description": "根据ID查询楼层",
+    "operationId": "selectByIdUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "楼层管理"
+    ],
+    "summary": "楼层修改",
+    "description": "楼层修改",
+    "operationId": "updateUsingPUT_10",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentFloorParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "楼层管理"
+    ],
+    "summary": "楼层删除",
+    "description": "楼层删除",
+    "operationId": "updateUsingDELETE_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/goods/add": {
+    "post": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "添加货品",
+    "description": "添加货品",
+    "operationId": "addUsingPOST_3",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentGoodsParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goods/list": {
+    "get": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "查询货品列表",
+    "description": "查询所有货品信息",
+    "operationId": "listUsingGET_5",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "goodsCode",
+    "in": "query",
+    "description": "货品编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsName",
+    "in": "query",
+    "description": "货品名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsTypeId",
+    "in": "query",
+    "description": "货品组别",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goods/listpg": {
+    "get": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "查询货品列表",
+    "description": "查询所有货品信息",
+    "operationId": "listpgUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "goodsCode",
+    "in": "query",
+    "description": "货品编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsName",
+    "in": "query",
+    "description": "货品名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsTypeId",
+    "in": "query",
+    "description": "货品组别",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goods/{id}": {
+    "get": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "获取货品详情",
+    "description": "获取货品详情",
+    "operationId": "detailUsingGET_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "编辑货品",
+    "description": "编辑货品",
+    "operationId": "updateUsingPUT_5",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentGoodsParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "货品管理"
+    ],
+    "summary": "删除货品",
+    "description": "删除货品",
+    "operationId": "deleteUsingDELETE_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/goodstp/add": {
+    "post": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "添加货品组别",
+    "description": "添加货品组别",
+    "operationId": "addUsingPOST_4",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentGoodsTypeParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goodstp/list": {
+    "get": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "查询货品组别列表",
+    "description": "查询所有货品组别信息",
+    "operationId": "listUsingGET_6",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "goodsTypeCode",
+    "in": "query",
+    "description": "货品组别编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsTypeName",
+    "in": "query",
+    "description": "货品组别名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsTypeVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goodstp/listpg": {
+    "get": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "查询货品组别列表",
+    "description": "查询所有货品组别信息",
+    "operationId": "listpgUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "goodsTypeCode",
+    "in": "query",
+    "description": "货品组别编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "goodsTypeName",
+    "in": "query",
+    "description": "货品组别名称",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsTypeVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goodstp/rondcode": {
+    "get": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "获取货品组别编码",
+    "description": "获取货品组别编码",
+    "operationId": "rondcodeUsingGET",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "获得成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/goodstp/{id}": {
+    "get": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "获取货品组别详情",
+    "description": "获取货品组别详情",
+    "operationId": "detailUsingGET_5",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentGoodsTypeVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "编辑货品组别",
+    "description": "编辑货品组别",
+    "operationId": "updateUsingPUT_6",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentGoodsTypeParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "货品组别管理"
+    ],
+    "summary": "删除货品组别",
+    "description": "删除货品组别",
+    "operationId": "deleteUsingDELETE_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/merchant/add": {
+    "post": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "添加商户",
+    "description": "添加商户",
+    "operationId": "addUsingPOST_6",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contactLstParams[0].id",
+    "in": "query",
+    "description": "商户联系人ID",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "contactLstParams[0].responsiblePerson",
+    "in": "query",
+    "description": "联系人",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contactLstParams[0].contactNumber",
+    "in": "query",
+    "description": "联系电话",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contactLstParams[0].fax",
+    "in": "query",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "contactLstParams[0].mainOrNot",
+    "in": "query",
+    "required": false,
+    "type": "boolean"
+    },
+    {
+    "name": "id",
+    "in": "query",
+    "description": "商户ID",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantCode",
+    "in": "query",
+    "description": "商户编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "merchantEnglishName",
+    "in": "query",
+    "description": "商户英文名称",
+    "required": true,
+    "type": "string"
+    },
+    {
+    "name": "merchantType",
+    "in": "query",
+    "description": "商户类型 0商场1写字楼2广告位3场地",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "merchantNature",
+    "in": "query",
+    "description": "商户性质 商户性质0法人1个体",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "companyName",
+    "in": "query",
+    "description": "公司名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "adress",
+    "in": "query",
+    "description": "地址",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "businessLicenseNumber",
+    "in": "query",
+    "description": "营业执照",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "businessPermitNumber",
+    "in": "query",
+    "description": "经营许可证号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "trademarkRegistrationNumber",
+    "in": "query",
+    "description": "商标注册证件号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "legalPersonId",
+    "in": "query",
+    "description": "法人身份证号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "otherCertificate",
+    "in": "query",
+    "description": "其他证件号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "mainContractId",
+    "in": "query",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/audit/list": {
+    "get": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "查询审计商户列表",
+    "description": "查询审计商户列表",
+    "operationId": "auditListUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantCode",
+    "in": "query",
+    "description": "商户编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantEnglishName",
+    "in": "query",
+    "description": "商户英文名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantType",
+    "in": "query",
+    "description": "商户类型",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentMerchantVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/audit/listpg": {
+    "get": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "查询审计商户列表",
+    "description": "查询审计商户列表",
+    "operationId": "auditListpgUsingGET_1",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantCode",
+    "in": "query",
+    "description": "商户编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantEnglishName",
+    "in": "query",
+    "description": "商户英文名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantType",
+    "in": "query",
+    "description": "商户类型",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentMerchantVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/list": {
+    "get": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "查询商户列表",
+    "description": "查询商户列表",
+    "operationId": "listUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantCode",
+    "in": "query",
+    "description": "商户编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantEnglishName",
+    "in": "query",
+    "description": "商户英文名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantType",
+    "in": "query",
+    "description": "商户类型",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentMerchantVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/listpg": {
+    "get": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "查询商户列表",
+    "description": "查询商户列表",
+    "operationId": "listpgUsingGET_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "merchantCode",
+    "in": "query",
+    "description": "商户编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantName",
+    "in": "query",
+    "description": "商户名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantEnglishName",
+    "in": "query",
+    "description": "商户英文名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantType",
+    "in": "query",
+    "description": "商户类型",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentMerchantVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/{id}": {
+    "get": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "获取商户详情",
+    "description": "获取商户详情",
+    "operationId": "detailUsingGET_7",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentMerchantVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "编辑商户",
+    "description": "编辑商户",
+    "operationId": "updateUsingPUT_8",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentMerchantParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "删除商户",
+    "description": "删除商户",
+    "operationId": "deleteUsingDELETE_4",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/merchant/{id}/updtpass": {
+    "put": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "修改商户状态",
+    "description": "修改商户状态",
+    "operationId": "updtpassUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "password",
+    "in": "path",
+    "description": "密码",
+    "required": true,
+    "type": "string"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "修改成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/merchant/{id}/{status}": {
+    "put": {
+    "tags": [
+    "商户管理"
+    ],
+    "summary": "修改商户状态",
+    "description": "修改商户状态",
+    "operationId": "updateUsingPUT_7",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "path",
+    "description": "状态",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "修改成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/add": {
+    "post": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "添加店铺",
+    "description": "添加店铺",
+    "operationId": "addUsingPOST_10",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentShopParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "添加成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/audit/list": {
+    "get": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "查询审计店铺列表",
+    "description": "查询审计店铺列表",
+    "operationId": "auditListUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户编号",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "店铺状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/audit/listpg": {
+    "get": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "查询审计店铺列表",
+    "description": "查询审计店铺列表",
+    "operationId": "auditListpgUsingGET_2",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户编号",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "店铺状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/list": {
+    "get": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "查询店铺列表",
+    "description": "查询店铺列表",
+    "operationId": "listUsingGET_12",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户编号",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "店铺状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/listpg": {
+    "get": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "查询店铺列表",
+    "description": "查询店铺列表",
+    "operationId": "listpgUsingGET_5",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "shopCode",
+    "in": "query",
+    "description": "店铺编码",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "shopName",
+    "in": "query",
+    "description": "店铺名称",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "merchantId",
+    "in": "query",
+    "description": "商户编号",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "店铺状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/shop/{id}": {
+    "get": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "获取店铺详情",
+    "description": "获取店铺详情",
+    "operationId": "detailUsingGET_8",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "查询成功",
+    "schema": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "put": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "编辑店铺",
+    "description": "编辑店铺",
+    "operationId": "updateUsingPUT_13",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "request",
+    "description": "request",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentShopParam"
+    }
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "编辑成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "删除店铺",
+    "description": "删除店铺",
+    "operationId": "deleteUsingDELETE_6",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "删除成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/shop/{id}/{status}": {
+    "put": {
+    "tags": [
+    "店铺管理"
+    ],
+    "summary": "修改店铺状态",
+    "description": "修改店铺状态",
+    "operationId": "updateUsingPUT_12",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键id",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "path",
+    "description": "状态",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "api-version",
+    "in": "header",
+    "required": true,
+    "type": "string",
+    "default": "1",
+    "enum": [
+    "1"
+    ]
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "修改成功",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/unit/ids": {
+    "put": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "单元、广告位、写字楼、场地批量审核",
+    "description": "单元、广告位、写字楼、场地批量审核",
+    "operationId": "updateStatusUsingPUT",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "in": "body",
+    "name": "idList",
+    "description": "主键集合",
+    "required": true,
+    "schema": {
+    "type": "array",
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    }
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/unit/{id}": {
+    "get": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "根据ID查询单元、广告位、写字楼、场地",
+    "description": "根据ID查询单元、广告位、写字楼、场地",
+    "operationId": "selectByIdUsingGET_3",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    },
+    "delete": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "单元、广告位、写字楼、场地删除",
+    "description": "单元、广告位、写字楼、场地删除",
+    "operationId": "deleteUsingDELETE_5",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "id",
+    "in": "path",
+    "description": "主键",
+    "required": true,
+    "type": "integer",
+    "format": "int64"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "204": {
+    "description": "No Content"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    }
+    }
+    }
+    },
+    "/rent/unit/{type}/add": {
+    "post": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "单元、广告位、写字楼、场地添加",
+    "description": "单元、广告位、写字楼、场地添加",
+    "operationId": "addUsingPOST_9",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "path",
+    "description": "类型",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentUnitParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/unit/{type}/list": {
+    "get": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "单元、广告位、写字楼、场地列表",
+    "description": "单元、广告位、写字楼、场地列表",
+    "operationId": "listUsingGET_11",
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "path",
+    "description": "类型",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageNum",
+    "in": "query",
+    "description": "页码",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "pageSize",
+    "in": "query",
+    "description": "每页显示数量",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "name": "code",
+    "in": "query",
+    "description": "单元号",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "buildId",
+    "in": "query",
+    "description": "楼宇ID",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "floorId",
+    "in": "query",
+    "description": "楼层ID",
+    "required": false,
+    "type": "integer",
+    "format": "int64"
+    },
+    {
+    "name": "status",
+    "in": "query",
+    "description": "状态",
+    "required": false,
+    "type": "integer",
+    "format": "int32"
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/RentUnitVo"
+    }
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    },
+    "/rent/unit/{type}/{id}": {
+    "put": {
+    "tags": [
+    "单元、广告位、写字楼、场地管理"
+    ],
+    "summary": "单元、广告位、写字楼、场地修改",
+    "description": "单元、广告位、写字楼、场地修改",
+    "operationId": "updateUsingPUT_11",
+    "consumes": [
+    "application/json"
+    ],
+    "produces": [
+    "application/json;charset=UTF-8"
+    ],
+    "parameters": [
+    {
+    "name": "token",
+    "in": "header",
+    "description": "header中token字段",
+    "required": false,
+    "type": "string"
+    },
+    {
+    "name": "type",
+    "in": "path",
+    "description": "类型",
+    "required": true,
+    "type": "integer",
+    "format": "int32"
+    },
+    {
+    "in": "body",
+    "name": "param",
+    "description": "param",
+    "required": true,
+    "schema": {
+    "$ref": "#/definitions/RentUnitParam"
+    }
+    }
+    ],
+    "responses": {
+    "200": {
+    "description": "OK",
+    "schema": {
+    "$ref": "#/definitions/统一返回格式"
+    }
+    },
+    "201": {
+    "description": "Created"
+    },
+    "401": {
+    "description": "Unauthorized"
+    },
+    "403": {
+    "description": "Forbidden"
+    },
+    "404": {
+    "description": "Not Found"
+    }
+    }
+    }
+    }
+    },
+    "definitions": {
+    "AttachmentParam": {
+    "type": "object",
+    "required": [
+    "attachmentType",
+    "ids",
+    "tableName",
+    "tableRowId",
+    "tableRowState"
+    ],
+    "properties": {
+    "attachmentType": {
+    "type": "string",
+    "description": "附件类型",
+    "allowEmptyValue": false
+    },
+    "ids": {
+    "type": "array",
+    "description": "附件ID",
+    "allowEmptyValue": false,
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    }
+    },
+    "tableName": {
+    "type": "string",
+    "description": "表名",
+    "allowEmptyValue": false
+    },
+    "tableRowId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "表行ID",
+    "allowEmptyValue": false
+    },
+    "tableRowState": {
+    "type": "integer",
+    "format": "int32",
+    "description": "表行业务状态",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "AttachmentParam",
+    "description": "附件添加"
+    },
+    "AttachmentVo": {
+    "type": "object",
+    "properties": {
+    "attachmentType": {
+    "type": "string",
+    "description": "附件类型",
+    "allowEmptyValue": false
+    },
+    "createTime": {
+    "type": "string",
+    "format": "date-time",
+    "description": "创建时间",
+    "allowEmptyValue": false
+    },
+    "createUser": {
+    "type": "integer",
+    "format": "int64",
+    "description": "创建用户",
+    "allowEmptyValue": false
+    },
+    "fileOriginalName": {
+    "type": "string",
+    "description": "上传的文件名称",
+    "allowEmptyValue": false
+    },
+    "filePath": {
+    "type": "string",
+    "description": "文件路径",
+    "allowEmptyValue": false
+    },
+    "fileSaveName": {
+    "type": "string",
+    "description": "保存的文件名称",
+    "allowEmptyValue": false
+    },
+    "fileSize": {
+    "type": "integer",
+    "format": "int64",
+    "description": "文件大小",
+    "allowEmptyValue": false
+    },
+    "fileType": {
+    "type": "string",
+    "description": "文件类型",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "tableName": {
+    "type": "string",
+    "description": "表名称",
+    "allowEmptyValue": false
+    },
+    "tableRowId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "行",
+    "allowEmptyValue": false
+    },
+    "tableRowState": {
+    "type": "integer",
+    "format": "int32",
+    "description": "业务状态",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    },
+    "updateUser": {
+    "type": "integer",
+    "format": "int64",
+    "description": "更新用户",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "AttachmentVo",
+    "description": "附件信息"
+    },
+    "ContractBondParam": {
+    "type": "object",
+    "required": [
+    "bond"
+    ],
+    "properties": {
+    "bond": {
+    "type": "number",
+    "description": "租赁保证金",
+    "allowEmptyValue": false
+    },
+    "contractId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "合同ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractBondParam"
+    },
+    "ContractFormalRentTermsParam": {
+    "type": "object",
+    "required": [
+    "advanceDay",
+    "advanceMonth",
+    "contractId",
+    "costItemId",
+    "costType",
+    "countType",
+    "lateFeeStartDate",
+    "settleCycle",
+    "settleGroupId",
+    "settleType",
+    "settleUnit",
+    "type"
+    ],
+    "properties": {
+    "advanceDay": {
+    "type": "integer",
+    "format": "int32",
+    "description": "提前结算日",
+    "allowEmptyValue": false
+    },
+    "advanceMonth": {
+    "type": "integer",
+    "format": "int32",
+    "description": "提前结算月",
+    "allowEmptyValue": false
+    },
+    "contractId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "合同ID",
+    "allowEmptyValue": false
+    },
+    "contractRentTermsPeriodParamList": {
+    "type": "array",
+    "description": "租金条款阶段对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractRentTermsPeriodParam"
+    }
+    },
+    "costItemId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "费用项目ID",
+    "allowEmptyValue": false
+    },
+    "costType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "费用类型",
+    "allowEmptyValue": false
+    },
+    "countType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "计算方式",
+    "allowEmptyValue": false
+    },
+    "lateFeeRate": {
+    "type": "number",
+    "description": "滞纳金比例",
+    "allowEmptyValue": false
+    },
+    "lateFeeStartDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "滞纳金起算日",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "settleCycle": {
+    "type": "integer",
+    "format": "int32",
+    "description": "结算周期",
+    "allowEmptyValue": false
+    },
+    "settleGroupId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "结算组别ID",
+    "allowEmptyValue": false
+    },
+    "settleType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "结算方式",
+    "allowEmptyValue": false
+    },
+    "settleUnit": {
+    "type": "integer",
+    "format": "int32",
+    "description": "结算周期单位",
+    "allowEmptyValue": false
+    },
+    "type": {
+    "type": "integer",
+    "format": "int32",
+    "description": "租金条款/费用条款",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractFormalRentTermsParam",
+    "description": "正式合同租金条款添加条件"
+    },
+    "ContractIntentRentTermsParam": {
+    "type": "object",
+    "required": [
+    "drawRate",
+    "endRent",
+    "period",
+    "periodEndDate",
+    "periodStartDate"
+    ],
+    "properties": {
+    "drawRate": {
+    "type": "number",
+    "description": "抽成比例",
+    "allowEmptyValue": false
+    },
+    "endRent": {
+    "type": "number",
+    "description": "保底租金",
+    "allowEmptyValue": false
+    },
+    "period": {
+    "type": "integer",
+    "format": "int32",
+    "description": "第几阶段",
+    "allowEmptyValue": false
+    },
+    "periodEndDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "阶段结束日期日期",
+    "allowEmptyValue": false
+    },
+    "periodStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "阶段开始",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractIntentRentTermsParam",
+    "description": "意向合同租金条款添加条件"
+    },
+    "ContractParam": {
+    "type": "object",
+    "required": [
+    "cashierMode",
+    "contractCode",
+    "contractType",
+    "decorationEndDate",
+    "decorationStartDate",
+    "mainBrandId",
+    "merchantId",
+    "openingDate",
+    "operationMode",
+    "pavingDate",
+    "propertyType",
+    "rate",
+    "rateType",
+    "rentFreeNumber",
+    "rentStartDate",
+    "settleLevel",
+    "shopId",
+    "signDate",
+    "validEndDate",
+    "validStartDate",
+    "version"
+    ],
+    "properties": {
+    "cashierMode": {
+    "type": "integer",
+    "format": "int32",
+    "description": "收银模式",
+    "allowEmptyValue": false
+    },
+    "contractCode": {
+    "type": "string",
+    "description": "合同号",
+    "allowEmptyValue": false
+    },
+    "contractType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "合同分类",
+    "allowEmptyValue": false
+    },
+    "decorationEndDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "装修结束日期",
+    "allowEmptyValue": false
+    },
+    "decorationStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "装修开始日期",
+    "allowEmptyValue": false
+    },
+    "description": {
+    "type": "string",
+    "description": "合同说明",
+    "allowEmptyValue": false
+    },
+    "intentionContractId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "意向合同ID",
+    "allowEmptyValue": false
+    },
+    "mainBrandId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主品牌ID",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户ID",
+    "allowEmptyValue": false
+    },
+    "openingDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "开业日期",
+    "allowEmptyValue": false
+    },
+    "operationMode": {
+    "type": "integer",
+    "format": "int32",
+    "description": "经营方式",
+    "allowEmptyValue": false
+    },
+    "pavingDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "交铺日期",
+    "allowEmptyValue": false
+    },
+    "propertyType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "物业性质",
+    "allowEmptyValue": false
+    },
+    "rate": {
+    "type": "number",
+    "description": "税率",
+    "allowEmptyValue": false
+    },
+    "rateType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "销售计税类型",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "rentFreeNumber": {
+    "type": "string",
+    "description": "免租期",
+    "allowEmptyValue": false
+    },
+    "rentStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "起租日期",
+    "allowEmptyValue": false
+    },
+    "settleLevel": {
+    "type": "integer",
+    "format": "int32",
+    "description": "结算等级",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺ID",
+    "allowEmptyValue": false
+    },
+    "signDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "签约日期",
+    "allowEmptyValue": false
+    },
+    "validEndDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "有效截止日期",
+    "allowEmptyValue": false
+    },
+    "validStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "有效开始日期",
+    "allowEmptyValue": false
+    },
+    "version": {
+    "type": "string",
+    "example": 1,
+    "description": "版本号",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractParam",
+    "description": "合同添加条件"
+    },
+    "ContractPeriodPercentParam": {
+    "type": "object",
+    "required": [
+    "percent"
+    ],
+    "properties": {
+    "endAmount": {
+    "type": "number",
+    "description": "阶段截止金额",
+    "allowEmptyValue": false
+    },
+    "goodsTypeId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "货品组别ID",
+    "allowEmptyValue": false
+    },
+    "paymentWay": {
+    "type": "integer",
+    "format": "int32",
+    "description": "货品组别ID",
+    "allowEmptyValue": false
+    },
+    "percent": {
+    "type": "number",
+    "example": 5,
+    "description": "抽成比例",
+    "allowEmptyValue": false
+    },
+    "startAmount": {
+    "type": "number",
+    "description": "阶段开始金额",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractPeriodPercentParam",
+    "description": "合同租金条款阶段抽成添加条件"
+    },
+    "ContractRentTermsPeriodParam": {
+    "type": "object",
+    "required": [
+    "contractRentTermsPeriodType",
+    "endDate",
+    "highOrLow",
+    "startDate"
+    ],
+    "properties": {
+    "contractPeriodPercentParamList": {
+    "type": "array",
+    "description": "抽成记录对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractPeriodPercentParam"
+    }
+    },
+    "contractRentTermsPeriodType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "阶段计费类型",
+    "allowEmptyValue": false
+    },
+    "endDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "截止日期",
+    "allowEmptyValue": false
+    },
+    "fixedAmount": {
+    "type": "number",
+    "description": "固租金额",
+    "allowEmptyValue": false
+    },
+    "fixedArea": {
+    "type": "number",
+    "description": "固定面积",
+    "allowEmptyValue": false
+    },
+    "highOrLow": {
+    "type": "integer",
+    "format": "int32",
+    "description": "是否比高比低",
+    "allowEmptyValue": false
+    },
+    "highOrLowType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "比高比低类型",
+    "allowEmptyValue": false
+    },
+    "outsideArea": {
+    "type": "number",
+    "description": "外摆面积",
+    "allowEmptyValue": false
+    },
+    "period": {
+    "type": "integer",
+    "format": "int32",
+    "description": "第几阶段",
+    "allowEmptyValue": false
+    },
+    "price": {
+    "type": "number",
+    "description": "单价",
+    "allowEmptyValue": false
+    },
+    "startDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "起始日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractRentTermsPeriodParam",
+    "description": "合同租金条款阶段添加条件"
+    },
+    "ContractUnitRelationParam": {
+    "type": "object",
+    "required": [
+    "area",
+    "contractId",
+    "rentArea",
+    "rentWay",
+    "shopId",
+    "unitIds",
+    "useArea"
+    ],
+    "properties": {
+    "area": {
+    "type": "number",
+    "description": "建筑面积",
+    "allowEmptyValue": false
+    },
+    "contractId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "合同ID",
+    "allowEmptyValue": false
+    },
+    "rentArea": {
+    "type": "number",
+    "description": "计租面积",
+    "allowEmptyValue": false
+    },
+    "rentWay": {
+    "type": "integer",
+    "format": "int32",
+    "description": "计租方式",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺ID",
+    "allowEmptyValue": false
+    },
+    "swingArea": {
+    "type": "number",
+    "description": "外摆面积",
+    "allowEmptyValue": false
+    },
+    "unitIds": {
+    "type": "array",
+    "description": "单元ID",
+    "allowEmptyValue": false,
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    }
+    },
+    "useArea": {
+    "type": "number",
+    "description": "使用面积",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractUnitRelationParam",
+    "description": "意向合同单元添加条件"
+    },
+    "ContractVo": {
+    "type": "object",
+    "properties": {
+    "brandName": {
+    "type": "string",
+    "description": "经营品牌",
+    "allowEmptyValue": false
+    },
+    "contractCode": {
+    "type": "string",
+    "description": "合同号",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "merchantName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "propertyType": {
+    "type": "string",
+    "description": "物业性质",
+    "allowEmptyValue": false
+    },
+    "shopName": {
+    "type": "string",
+    "description": "店铺名称",
+    "allowEmptyValue": false
+    },
+    "signDate": {
+    "type": "string",
+    "description": "签约日期",
+    "allowEmptyValue": false
+    },
+    "status": {
+    "type": "string",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "validEndDate": {
+    "type": "string",
+    "description": "失效截止日期",
+    "allowEmptyValue": false
+    },
+    "validStartDate": {
+    "type": "string",
+    "description": "失效开始日期",
+    "allowEmptyValue": false
+    },
+    "version": {
+    "type": "string",
+    "description": "版本号",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "ContractVo",
+    "description": "合同Vo"
+    },
+    "IntentContractParam": {
+    "type": "object",
+    "required": [
+    "contractCode",
+    "contractType",
+    "houseFee",
+    "invalidDate",
+    "merchantId",
+    "operationMode",
+    "promotFee",
+    "propertyManageFee",
+    "propertyType",
+    "rate",
+    "rateType",
+    "signDate",
+    "sincerityMoney",
+    "version"
+    ],
+    "properties": {
+    "brandId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "品牌ID",
+    "allowEmptyValue": false
+    },
+    "contractCode": {
+    "type": "string",
+    "description": "合同号",
+    "allowEmptyValue": false
+    },
+    "contractIntentRentTermsParamList": {
+    "type": "array",
+    "description": "租金条款对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractIntentRentTermsParam"
+    }
+    },
+    "contractType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "合同分类",
+    "allowEmptyValue": false
+    },
+    "contractUnitRelationParamList": {
+    "type": "array",
+    "description": "意向合同单元对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractUnitRelationParam"
+    }
+    },
+    "decorationEndDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "装修结束日期",
+    "allowEmptyValue": false
+    },
+    "decorationStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "装修开始日期",
+    "allowEmptyValue": false
+    },
+    "description": {
+    "type": "string",
+    "description": "合同说明",
+    "allowEmptyValue": false
+    },
+    "houseFee": {
+    "type": "number",
+    "description": "库房费",
+    "allowEmptyValue": false
+    },
+    "invalidDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "失效日期",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户ID",
+    "allowEmptyValue": false
+    },
+    "openingDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "开业日期",
+    "allowEmptyValue": false
+    },
+    "operationMode": {
+    "type": "integer",
+    "format": "int32",
+    "example": 1,
+    "description": "经营方式",
+    "allowEmptyValue": false
+    },
+    "pavingDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "交铺日期",
+    "allowEmptyValue": false
+    },
+    "promotFee": {
+    "type": "number",
+    "description": "推广费",
+    "allowEmptyValue": false
+    },
+    "propertyManageFee": {
+    "type": "number",
+    "description": "物业管理费",
+    "allowEmptyValue": false
+    },
+    "propertyType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "物业性质",
+    "allowEmptyValue": false
+    },
+    "rate": {
+    "type": "number",
+    "description": "税率",
+    "allowEmptyValue": false
+    },
+    "rateType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "销售计税类型",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "signDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "签约日期",
+    "allowEmptyValue": false
+    },
+    "sincerityMoney": {
+    "type": "number",
+    "description": "诚意金",
+    "allowEmptyValue": false
+    },
+    "validEndDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "有效截止日期",
+    "allowEmptyValue": false
+    },
+    "validStartDate": {
+    "type": "string",
+    "example": "2018-01-01",
+    "description": "有效开始日期",
+    "allowEmptyValue": false
+    },
+    "version": {
+    "type": "string",
+    "description": "版本号",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "IntentContractParam"
+    },
+    "IntentContractVo": {
+    "type": "object",
+    "required": [
+    "contractCode",
+    "contractType",
+    "houseFee",
+    "invalidDate",
+    "merchantId",
+    "operationMode",
+    "promotFee",
+    "propertyManageFee",
+    "propertyType",
+    "rate",
+    "rateType",
+    "signDate",
+    "sincerityMoney",
+    "version"
+    ],
+    "properties": {
+    "brandId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "品牌ID",
+    "allowEmptyValue": false
+    },
+    "contractCode": {
+    "type": "string",
+    "description": "合同号",
+    "allowEmptyValue": false
+    },
+    "contractIntentRentTermsParamList": {
+    "type": "array",
+    "description": "租金条款对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractIntentRentTermsParam"
+    }
+    },
+    "contractType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "合同分类",
+    "allowEmptyValue": false
+    },
+    "contractUnitRelationParamList": {
+    "type": "array",
+    "description": "意向合同单元对象数组",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/ContractUnitRelationParam"
+    }
+    },
+    "decorationEndDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "装修结束日期",
+    "allowEmptyValue": false
+    },
+    "decorationStartDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "装修开始日期",
+    "allowEmptyValue": false
+    },
+    "description": {
+    "type": "string",
+    "description": "合同说明",
+    "allowEmptyValue": false
+    },
+    "houseFee": {
+    "type": "number",
+    "description": "库房费",
+    "allowEmptyValue": false
+    },
+    "invalidDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "失效日期",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户ID",
+    "allowEmptyValue": false
+    },
+    "openingDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "开业日期",
+    "allowEmptyValue": false
+    },
+    "operationMode": {
+    "type": "integer",
+    "format": "int32",
+    "example": 1,
+    "description": "经营方式",
+    "allowEmptyValue": false
+    },
+    "pavingDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "交铺日期",
+    "allowEmptyValue": false
+    },
+    "promotFee": {
+    "type": "number",
+    "description": "推广费",
+    "allowEmptyValue": false
+    },
+    "propertyManageFee": {
+    "type": "number",
+    "description": "物业管理费",
+    "allowEmptyValue": false
+    },
+    "propertyType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "物业性质",
+    "allowEmptyValue": false
+    },
+    "rate": {
+    "type": "number",
+    "description": "税率",
+    "allowEmptyValue": false
+    },
+    "rateType": {
+    "type": "integer",
+    "format": "int32",
+    "description": "销售计税类型",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "signDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "签约日期",
+    "allowEmptyValue": false
+    },
+    "sincerityMoney": {
+    "type": "number",
+    "description": "诚意金",
+    "allowEmptyValue": false
+    },
+    "validEndDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "有效截止日期",
+    "allowEmptyValue": false
+    },
+    "validStartDate": {
+    "type": "string",
+    "format": "date",
+    "example": "2018-01-01",
+    "description": "有效开始日期",
+    "allowEmptyValue": false
+    },
+    "version": {
+    "type": "string",
+    "description": "版本号",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "IntentContractVo",
+    "description": "意向合同返回参数"
+    },
+    "RentAdvertisingTypeParam": {
+    "type": "object",
+    "required": [
+    "advertisingTypeCode",
+    "advertisingTypeName"
+    ],
+    "properties": {
+    "advertisingTypeCode": {
+    "type": "string",
+    "description": "广告位类型编码",
+    "allowEmptyValue": false
+    },
+    "advertisingTypeName": {
+    "type": "string",
+    "description": "广告位类型名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string"
+    }
+    },
+    "title": "RentAdvertisingTypeParam"
+    },
+    "RentAdvertisingTypeVo": {
+    "type": "object",
+    "properties": {
+    "advertisingTypeCode": {
+    "type": "string",
+    "description": "广告位类型编码",
+    "allowEmptyValue": false
+    },
+    "advertisingTypeName": {
+    "type": "string",
+    "description": "广告位类型名称",
+    "allowEmptyValue": false
+    },
+    "createDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "创建时间",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "描述",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "修改时间",
+    "allowEmptyValue": false
+    },
+    "updateUserId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "更新用户ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentAdvertisingTypeVo"
+    },
+    "RentBrandParam": {
+    "type": "object",
+    "required": [
+    "brandCode",
+    "brandName",
+    "businessId",
+    "countryId"
+    ],
+    "properties": {
+    "brandCode": {
+    "type": "string",
+    "description": "品牌编码",
+    "allowEmptyValue": false
+    },
+    "brandName": {
+    "type": "string",
+    "description": "品牌名称",
+    "allowEmptyValue": false
+    },
+    "businessId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "业态ID",
+    "allowEmptyValue": false
+    },
+    "countryId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "国别ID",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "品牌ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string"
+    }
+    },
+    "title": "RentBrandParam",
+    "description": "品牌添加条件"
+    },
+    "RentBrandVo": {
+    "type": "object",
+    "properties": {
+    "brandCode": {
+    "type": "string",
+    "description": "品牌编码",
+    "allowEmptyValue": false
+    },
+    "brandName": {
+    "type": "string",
+    "description": "品牌名称",
+    "allowEmptyValue": false
+    },
+    "busNames": {
+    "type": "string",
+    "description": "业态名称",
+    "allowEmptyValue": false
+    },
+    "businessId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "业态ID",
+    "allowEmptyValue": false
+    },
+    "businessVo": {
+    "description": "业态",
+    "allowEmptyValue": false,
+    "$ref": "#/definitions/RentBusinessVo"
+    },
+    "country": {
+    "description": "国别",
+    "allowEmptyValue": false,
+    "$ref": "#/definitions/RentCountry"
+    },
+    "countryId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "国别ID",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "investSoursStatus": {
+    "type": "string",
+    "description": "状态",
+    "allowEmptyValue": false,
+    "enum": [
+    "InvestSoursStatus{name='新增', index=0}",
+    "InvestSoursStatus{name='空置', index=1}",
+    "InvestSoursStatus{name='取消', index=2}",
+    "InvestSoursStatus{name='预定', index=3}",
+    "InvestSoursStatus{name='使用中', index=4}",
+    "InvestSoursStatus{name='失效', index=5}"
+    ]
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentBrandVo",
+    "description": "品牌信息"
+    },
+    "RentBuildTypeVo": {
+    "type": "object",
+    "properties": {
+    "buildTypeCode": {
+    "type": "string",
+    "description": "楼宇类型编码",
+    "allowEmptyValue": false
+    },
+    "buildTypeName": {
+    "type": "string",
+    "description": "楼宇类型名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentBuildTypeVo"
+    },
+    "RentBuildVo": {
+    "type": "object",
+    "properties": {
+    "buildCode": {
+    "type": "string",
+    "description": "楼宇编码",
+    "allowEmptyValue": false
+    },
+    "buildName": {
+    "type": "string",
+    "description": "楼宇名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼宇ID",
+    "allowEmptyValue": false
+    },
+    "marketCode": {
+    "type": "string",
+    "description": "购物中心编码",
+    "allowEmptyValue": false
+    },
+    "marketId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "购物中心ID",
+    "allowEmptyValue": false
+    },
+    "marketName": {
+    "type": "string",
+    "description": "购物中心名称",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentBuildVo"
+    },
+    "RentBusinessParam": {
+    "type": "object",
+    "required": [
+    "businessCode",
+    "businessName"
+    ],
+    "properties": {
+    "businessCode": {
+    "type": "string",
+    "description": "业态编码",
+    "allowEmptyValue": false
+    },
+    "businessName": {
+    "type": "string",
+    "description": "业态名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "业态ID",
+    "allowEmptyValue": false
+    },
+    "pid": {
+    "type": "integer",
+    "format": "int64",
+    "description": "业态父级ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentBusinessParam",
+    "description": "业态添加条件"
+    },
+    "RentBusinessVo": {
+    "type": "object",
+    "properties": {
+    "businessCode": {
+    "type": "string",
+    "description": "业态编号",
+    "allowEmptyValue": false
+    },
+    "businessName": {
+    "type": "string",
+    "description": "业态名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "parentBusVo": {
+    "description": "父级业态",
+    "allowEmptyValue": false,
+    "$ref": "#/definitions/RentBusinessVo"
+    },
+    "pid": {
+    "type": "integer",
+    "format": "int64",
+    "description": "父级ID",
+    "allowEmptyValue": false
+    },
+    "pids": {
+    "type": "string",
+    "description": "所有父级ID",
+    "allowEmptyValue": false
+    },
+    "tree": {
+    "type": "array",
+    "description": "所有子业态",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/RentBusinessVo"
+    }
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentBusinessVo",
+    "description": "业态信息"
+    },
+    "RentCountry": {
+    "type": "object",
+    "properties": {
+    "countryCode": {
+    "type": "string"
+    },
+    "countryName": {
+    "type": "string"
+    },
+    "createDate": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "deletedOrNot": {
+    "type": "boolean"
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "updateUserId": {
+    "type": "integer",
+    "format": "int64"
+    }
+    },
+    "title": "RentCountry"
+    },
+    "RentCountryVo": {
+    "type": "object",
+    "properties": {
+    "countryCode": {
+    "type": "string",
+    "description": "国别编号",
+    "allowEmptyValue": false
+    },
+    "countryName": {
+    "type": "string",
+    "description": "国别名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentCountryVo",
+    "description": "国别信息"
+    },
+    "RentFloorParam": {
+    "type": "object",
+    "required": [
+    "buildId",
+    "floorCode",
+    "floorName"
+    ],
+    "properties": {
+    "buildId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "所属楼宇",
+    "allowEmptyValue": false
+    },
+    "floorArea": {
+    "type": "number",
+    "description": "面积",
+    "allowEmptyValue": false
+    },
+    "floorCode": {
+    "type": "string",
+    "description": "楼层编码",
+    "allowEmptyValue": false
+    },
+    "floorName": {
+    "type": "string",
+    "description": "楼层名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentFloorParam"
+    },
+    "RentGoodsParam": {
+    "type": "object",
+    "required": [
+    "goodsCode",
+    "goodsName",
+    "goodsTypeId",
+    "shopId"
+    ],
+    "properties": {
+    "description": {
+    "type": "string",
+    "description": "货品描述",
+    "allowEmptyValue": false
+    },
+    "goodsCode": {
+    "type": "string",
+    "description": "货品编码",
+    "allowEmptyValue": false
+    },
+    "goodsName": {
+    "type": "string",
+    "description": "货品名称",
+    "allowEmptyValue": false
+    },
+    "goodsTypeId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "货品组别",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "货品ID",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "array",
+    "description": "店铺",
+    "allowEmptyValue": false,
+    "items": {
+    "type": "integer",
+    "format": "int64"
+    }
+    }
+    },
+    "title": "RentGoodsParam",
+    "description": "货品添加条件"
+    },
+    "RentGoodsTypeParam": {
+    "type": "object",
+    "required": [
+    "goodsTypeCode",
+    "goodsTypeName"
+    ],
+    "properties": {
+    "goodsTypeCode": {
+    "type": "string",
+    "description": "货品组别编码",
+    "allowEmptyValue": false
+    },
+    "goodsTypeName": {
+    "type": "string",
+    "description": "货品组别名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "货品组别ID",
+    "allowEmptyValue": false
+    },
+    "pid": {
+    "type": "integer",
+    "format": "int64"
+    }
+    },
+    "title": "RentGoodsTypeParam",
+    "description": "货品组别添加条件"
+    },
+    "RentGoodsTypeVo": {
+    "type": "object",
+    "properties": {
+    "createDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "创建日期",
+    "allowEmptyValue": false
+    },
+    "goodsTypeCode": {
+    "type": "string",
+    "description": "货品组别编码",
+    "allowEmptyValue": false
+    },
+    "goodsTypeName": {
+    "type": "string",
+    "description": "货品组别名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "parentgoodsTypeVo": {
+    "description": "父级货品组别",
+    "allowEmptyValue": false,
+    "$ref": "#/definitions/RentGoodsTypeVo"
+    },
+    "pid": {
+    "type": "integer",
+    "format": "int64",
+    "description": "父级ID",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentGoodsTypeVo",
+    "description": "货品组别信息"
+    },
+    "RentGoodsVo": {
+    "type": "object",
+    "properties": {
+    "businessId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "业态ID",
+    "allowEmptyValue": false
+    },
+    "createDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "创建日期",
+    "allowEmptyValue": false
+    },
+    "description": {
+    "type": "string",
+    "description": "详情",
+    "allowEmptyValue": false
+    },
+    "goodsCode": {
+    "type": "string",
+    "description": "货品编号",
+    "allowEmptyValue": false
+    },
+    "goodsName": {
+    "type": "string",
+    "description": "货品名称",
+    "allowEmptyValue": false
+    },
+    "goodsTypeId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "货品组别ID",
+    "allowEmptyValue": false
+    },
+    "goodsTypeVo": {
+    "description": "货品组别",
+    "allowEmptyValue": false,
+    "$ref": "#/definitions/RentGoodsTypeVo"
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "shopId": {
+    "type": "string",
+    "description": "店铺ID",
+    "allowEmptyValue": false
+    },
+    "shopVoList": {
+    "type": "array",
+    "description": "店铺列表",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/RentShopVo"
+    }
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "statusStr": {
+    "type": "string",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentGoodsVo",
+    "description": "货品信息"
+    },
+    "RentMerchantContact": {
+    "type": "object",
+    "properties": {
+    "contactNumber": {
+    "type": "string"
+    },
+    "createDate": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "deletedOrNot": {
+    "type": "boolean"
+    },
+    "fax": {
+    "type": "string"
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "mainOrNot": {
+    "type": "boolean"
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "responsiblePerson": {
+    "type": "string"
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time"
+    },
+    "updateUserId": {
+    "type": "integer",
+    "format": "int64"
+    }
+    },
+    "title": "RentMerchantContact"
+    },
+    "RentMerchantContactParam": {
+    "type": "object",
+    "properties": {
+    "contactNumber": {
+    "type": "string",
+    "description": "联系电话",
+    "allowEmptyValue": false
+    },
+    "fax": {
+    "type": "string"
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户联系人ID",
+    "allowEmptyValue": false
+    },
+    "mainOrNot": {
+    "type": "boolean"
+    },
+    "responsiblePerson": {
+    "type": "string",
+    "description": "联系人",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentMerchantContactParam",
+    "description": "商户联系人添加条件"
+    },
+    "RentMerchantParam": {
+    "type": "object",
+    "required": [
+    "contactLstParams",
+    "merchantEnglishName",
+    "merchantName",
+    "merchantNature",
+    "merchantType"
+    ],
+    "properties": {
+    "adress": {
+    "type": "string",
+    "description": "地址",
+    "allowEmptyValue": false
+    },
+    "businessLicenseNumber": {
+    "type": "string",
+    "description": "营业执照",
+    "allowEmptyValue": false
+    },
+    "businessPermitNumber": {
+    "type": "string",
+    "description": "经营许可证号",
+    "allowEmptyValue": false
+    },
+    "companyName": {
+    "type": "string",
+    "description": "公司名称",
+    "allowEmptyValue": false
+    },
+    "contactLstParams": {
+    "type": "array",
+    "description": "联系人信息",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/RentMerchantContactParam"
+    }
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户ID",
+    "allowEmptyValue": false
+    },
+    "legalPersonId": {
+    "type": "string",
+    "description": "法人身份证号",
+    "allowEmptyValue": false
+    },
+    "mainContractId": {
+    "type": "integer",
+    "format": "int64"
+    },
+    "merchantCode": {
+    "type": "string",
+    "description": "商户编码",
+    "allowEmptyValue": false
+    },
+    "merchantEnglishName": {
+    "type": "string",
+    "description": "商户英文名称",
+    "allowEmptyValue": false
+    },
+    "merchantName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "merchantNature": {
+    "type": "integer",
+    "format": "int32",
+    "description": "商户性质 商户性质0法人1个体",
+    "allowEmptyValue": false
+    },
+    "merchantType": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户类型 0商场1写字楼2广告位3场地",
+    "allowEmptyValue": false
+    },
+    "otherCertificate": {
+    "type": "string",
+    "description": "其他证件号",
+    "allowEmptyValue": false
+    },
+    "trademarkRegistrationNumber": {
+    "type": "string",
+    "description": "商标注册证件号",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentMerchantParam",
+    "description": "商户添加条件"
+    },
+    "RentMerchantVo": {
+    "type": "object",
+    "properties": {
+    "adress": {
+    "type": "string",
+    "description": "地址",
+    "allowEmptyValue": false
+    },
+    "businessLicenseNumber": {
+    "type": "string",
+    "description": "营业执照编号",
+    "allowEmptyValue": false
+    },
+    "businessPermitNumber": {
+    "type": "string",
+    "description": "营业许可证号",
+    "allowEmptyValue": false
+    },
+    "companyName": {
+    "type": "string",
+    "description": "公司名称",
+    "allowEmptyValue": false
+    },
+    "createDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "创建时间",
+    "allowEmptyValue": false
+    },
+    "deletedOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否删除",
+    "allowEmptyValue": false
+    },
+    "enumInvestSoursStatus": {
+    "type": "string",
+    "description": "状态",
+    "allowEmptyValue": false,
+    "enum": [
+    "InvestSoursStatus{name='新增', index=0}",
+    "InvestSoursStatus{name='空置', index=1}",
+    "InvestSoursStatus{name='取消', index=2}",
+    "InvestSoursStatus{name='预定', index=3}",
+    "InvestSoursStatus{name='使用中', index=4}",
+    "InvestSoursStatus{name='失效', index=5}"
+    ]
+    },
+    "enumMerchantNature": {
+    "type": "string",
+    "description": "商户性质",
+    "allowEmptyValue": false,
+    "enum": [
+    "InvestSoursStatus{name='法人', index=0}",
+    "InvestSoursStatus{name='非法人', index=1}"
+    ]
+    },
+    "enumMerchantType": {
+    "type": "string",
+    "description": "商户类型",
+    "allowEmptyValue": false,
+    "enum": [
+    "InvestSoursStatus{name='商场', index=0}",
+    "InvestSoursStatus{name='写字楼', index=1}",
+    "InvestSoursStatus{name='广告位', index=2}",
+    "InvestSoursStatus{name='场地', index=3}"
+    ]
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "legalPersonId": {
+    "type": "string",
+    "description": "法人身份证号",
+    "allowEmptyValue": false
+    },
+    "mainContractId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主联系人编号",
+    "allowEmptyValue": false
+    },
+    "merchantCode": {
+    "type": "string",
+    "description": "商户编码",
+    "allowEmptyValue": false
+    },
+    "merchantContacts": {
+    "type": "array",
+    "description": "联系人",
+    "allowEmptyValue": false,
+    "items": {
+    "$ref": "#/definitions/RentMerchantContact"
+    }
+    },
+    "merchantEnglishName": {
+    "type": "string",
+    "description": "商户英文名称",
+    "allowEmptyValue": false
+    },
+    "merchantName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "merchantNature": {
+    "type": "integer",
+    "format": "int32",
+    "description": "商户性质",
+    "allowEmptyValue": false
+    },
+    "merchantType": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户类型",
+    "allowEmptyValue": false
+    },
+    "otherCertificate": {
+    "type": "string",
+    "description": "其他证件号",
+    "allowEmptyValue": false
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "trademarkRegistrationNumber": {
+    "type": "string",
+    "description": "商标注册证件号",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新时间",
+    "allowEmptyValue": false
+    },
+    "updateUserId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "更新用户ID",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentMerchantVo",
+    "description": "商户信息"
+    },
+    "RentShopParam": {
+    "type": "object",
+    "required": [
+    "floorId",
+    "merchantId",
+    "shopBrandId",
+    "shopCode",
+    "shopMainBrandId",
+    "shopName",
+    "shopType"
+    ],
+    "properties": {
+    "centerCollectingOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否中央收银",
+    "allowEmptyValue": false
+    },
+    "floorId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼层",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "店铺ID",
+    "allowEmptyValue": false
+    },
+    "mainStoreOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否主力店",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "所属商户",
+    "allowEmptyValue": false
+    },
+    "shopBrandId": {
+    "type": "string",
+    "description": "经营品牌",
+    "allowEmptyValue": false
+    },
+    "shopCode": {
+    "type": "string",
+    "description": "商户编码",
+    "allowEmptyValue": false
+    },
+    "shopMainBrandId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主品牌",
+    "allowEmptyValue": false
+    },
+    "shopName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "shopType": {
+    "type": "string",
+    "description": "商户类型",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentShopParam",
+    "description": "店铺添加条件"
+    },
+    "RentShopVo": {
+    "type": "object",
+    "properties": {
+    "area": {
+    "type": "number",
+    "description": "店铺建筑面积",
+    "allowEmptyValue": false
+    },
+    "centerCollectingOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否中央收银",
+    "allowEmptyValue": false
+    },
+    "centerCollectingOrNotStr": {
+    "type": "string",
+    "description": "是否中央收银",
+    "allowEmptyValue": false
+    },
+    "deletedOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否删除",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主键ID",
+    "allowEmptyValue": false
+    },
+    "mainStoreOrNot": {
+    "type": "boolean",
+    "example": false,
+    "description": "是否主力店",
+    "allowEmptyValue": false
+    },
+    "mainStoreOrNotStr": {
+    "type": "string",
+    "description": "是否主力店",
+    "allowEmptyValue": false
+    },
+    "merchantId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "商户ID",
+    "allowEmptyValue": false
+    },
+    "merchantName": {
+    "type": "string",
+    "description": "商户名称",
+    "allowEmptyValue": false
+    },
+    "rentArea": {
+    "type": "number",
+    "description": "计租面积",
+    "allowEmptyValue": false
+    },
+    "rentWay": {
+    "type": "integer",
+    "format": "int32",
+    "description": "计租方式",
+    "allowEmptyValue": false
+    },
+    "shopBrandId": {
+    "type": "string",
+    "description": "品牌ID",
+    "allowEmptyValue": false
+    },
+    "shopBrandNames": {
+    "type": "array",
+    "description": "品牌名称",
+    "allowEmptyValue": false,
+    "items": {
+    "type": "string"
+    }
+    },
+    "shopCode": {
+    "type": "string",
+    "description": "店铺编码",
+    "allowEmptyValue": false
+    },
+    "shopMainBrandId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "主品牌ID",
+    "allowEmptyValue": false
+    },
+    "shopMainBrandName": {
+    "type": "string",
+    "description": "主品牌名称",
+    "allowEmptyValue": false
+    },
+    "shopName": {
+    "type": "string",
+    "description": "店铺名称",
+    "allowEmptyValue": false
+    },
+    "shopType": {
+    "type": "string",
+    "description": "店铺类型",
+    "allowEmptyValue": false
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "statusStr": {
+    "type": "string",
+    "description": "状态",
+    "allowEmptyValue": false
+    },
+    "swingArea": {
+    "type": "number",
+    "description": "店铺外摆面积",
+    "allowEmptyValue": false
+    },
+    "updateDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "updateDateStr": {
+    "type": "string",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "useArea": {
+    "type": "number",
+    "description": "店铺使用面积",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentShopVo",
+    "description": "店铺信息"
+    },
+    "RentUnitParam": {
+    "type": "object",
+    "required": [
+    "buildId",
+    "floorId",
+    "marketId",
+    "unitCode"
+    ],
+    "properties": {
+    "advertisingStandard": {
+    "type": "string",
+    "description": "广告位规格",
+    "allowEmptyValue": false
+    },
+    "area": {
+    "type": "number",
+    "description": "建筑面积",
+    "allowEmptyValue": false
+    },
+    "buildId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼宇ID",
+    "allowEmptyValue": false
+    },
+    "floorId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼层ID",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "marketId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "购物中心ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "rentAdvertisingTypeId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "广告位类型ID",
+    "allowEmptyValue": false
+    },
+    "unitCode": {
+    "type": "string",
+    "description": "编码",
+    "allowEmptyValue": false
+    },
+    "useArea": {
+    "type": "number",
+    "description": "使用面积",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentUnitParam"
+    },
+    "RentUnitVo": {
+    "type": "object",
+    "properties": {
+    "advertisingStandard": {
+    "type": "string",
+    "description": "广告位规格",
+    "allowEmptyValue": false
+    },
+    "area": {
+    "type": "number",
+    "description": "建筑面积",
+    "allowEmptyValue": false
+    },
+    "buildId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼宇ID",
+    "allowEmptyValue": false
+    },
+    "buildName": {
+    "type": "string",
+    "description": "楼宇名称",
+    "allowEmptyValue": false
+    },
+    "floorId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "楼层ID",
+    "allowEmptyValue": false
+    },
+    "floorName": {
+    "type": "string",
+    "description": "楼层名称",
+    "allowEmptyValue": false
+    },
+    "id": {
+    "type": "integer",
+    "format": "int64",
+    "description": "ID",
+    "allowEmptyValue": false
+    },
+    "marketId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "购物中心ID",
+    "allowEmptyValue": false
+    },
+    "remark": {
+    "type": "string",
+    "description": "备注",
+    "allowEmptyValue": false
+    },
+    "rentAdvertisingTypeId": {
+    "type": "integer",
+    "format": "int64",
+    "description": "广告位类型ID",
+    "allowEmptyValue": false
+    },
+    "rentAdvertisingTypeName": {
+    "type": "string",
+    "description": "广告位类型名称",
+    "allowEmptyValue": false
+    },
+    "status": {
+    "type": "integer",
+    "format": "int32",
+    "description": "状态ID",
+    "allowEmptyValue": false
+    },
+    "statusName": {
+    "type": "string",
+    "description": "状态名称",
+    "allowEmptyValue": false
+    },
+    "type": {
+    "type": "integer",
+    "format": "int32",
+    "description": "类型ID",
+    "allowEmptyValue": false
+    },
+    "unitCode": {
+    "type": "string",
+    "description": "单元号",
+    "allowEmptyValue": false
+    },
+    "unitName": {
+    "type": "string",
+    "description": "场地名称",
+    "allowEmptyValue": false
+    },
+    "updateDateLong": {
+    "type": "integer",
+    "format": "int64",
+    "description": "更新日期",
+    "allowEmptyValue": false
+    },
+    "useArea": {
+    "type": "number",
+    "description": "使用面积",
+    "allowEmptyValue": false
+    }
+    },
+    "title": "RentUnitVo"
+    },
+    "统一返回格式": {
+    "type": "object",
+    "properties": {
+    "code": {
+    "type": "integer",
+    "format": "int32"
+    },
+    "data": {
+    "type": "object"
+    },
+    "msg": {
+    "type": "string"
+    }
+    },
+    "title": "统一返回格式"
+    }
+    }
+    }

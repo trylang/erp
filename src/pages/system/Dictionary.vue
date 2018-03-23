@@ -44,8 +44,8 @@
                                         {{lists.isDisabled == true?'启用':'禁用'}}
                                     </div>
                                     <div class="statusbtn">
-                                        <button v-show="lists.isDisabled == true" class="btndisable">禁用</button>
-                                        <button v-show="lists.isDisabled == false" class="btnenable">启用√</button>
+                                        <button class="btnenable">保存</button>
+                                        <button class="btnenable">取消</button>
                                     </div>
                                 </div>
                                 <div class="listcont" v-show="isadditem">
@@ -65,10 +65,10 @@
                                     </div>
                                     <div class="status">
                                         <span>状态：</span>
-                                        禁用
                                     </div>
                                     <div class="statusbtn">
-                                        <button class="btnenable">启用√</button>
+                                        <button class="btnenable">保存</button>
+                                        <button class="btnenable">取消</button>
                                     </div>
                                 </div>
                             </div>
@@ -103,9 +103,19 @@
                 }]
             }
         },
+        mounted(){
+            this.getDictList();
+        },
         methods:{
             addItem(){
                 this.isadditem = true;
+            },
+            async getDictList(){
+                await this.$api.systemapi.typeListUsingGET({
+                    nameOrCode:''
+                }).then(res=>{
+                    this.dataList = res.data.data;
+                })
             }
         },
         components:{

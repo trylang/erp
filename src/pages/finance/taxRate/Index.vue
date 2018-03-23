@@ -179,7 +179,7 @@ export default {
         pageNum,
         rateCode: this.query.rateCode
       };
-      this.$api.financeapi.listUsingGET_6(param).then(res => {
+      this.$api.financeapi.listUsingGET_23(param).then(res => {
         const data = res.data;
         if(data.code === 200) {
           this.content = data.data;

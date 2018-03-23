@@ -6,7 +6,7 @@
           <th v-for="(header,index) in header" :key="index">
             <div class="cell" :class="header.class" :style="header.style">
               {{header.label}}  
-              <input v-if="header.type==='checkbox'" type="checkbox" id="checkedAll" :checked="checkedAll" @click="toggleAll(header, content)">							
+              <input v-if="header.type==='checkbox'" type="checkbox" id="checkedAll" :checked="checkedAll" @click="toggleAll(header, content.list)">							
               <label v-if="header.type==='checkbox'" for="checkedAll"></label>
             </div>
           </th>
@@ -23,6 +23,7 @@
               <label v-if="header.type==='checkbox'" :for="index"></label>
               <div v-if="header.type==='buttons'">
                   <a href="#" class="btn_text" v-for="(operation, index) in header.operations"
+                    v-if="!operation.show || content[operation.show]"
                     :key="index" :class="operation.class" 
                     :style="operation.style" 
                     @click.stop.prevent="operation.click(content, content)" 
@@ -31,7 +32,7 @@
             </div>
           </td>
 				</tr>
-        <tr v-if="content && content.length<1" class="table_empty-block">
+        <tr v-if="content.list && content.list.length<1" class="table_empty-block">
           <td colspan="7" class="table_empty-text">暂无数据</td>
         </tr>
         <slot name="lastTr"></slot>
@@ -42,15 +43,14 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 30]"
         :page-size="content.pageSize"
-        layout="prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="content.total">
-      </el-pagination>
+    </el-pagination>
     </div>
-	</div>
-	
-	
+	</div>	
 </template>
 
 <script>
@@ -60,14 +60,13 @@ export default {
   data() {
     return {
       currentPage: 1
-    }
+    };
   },
   computed: {
     checkedAll: function() {
-      if (this.content.length <= 0) return false; 
-      const checkName = this.header.find(item => item.type === "checkbox")
-        .name;
-      return this.content.every(item => {
+      if (this.content.length <= 0) return false;
+      const checkName = this.header.find(item => item.type === "checkbox").name;
+      return this.content.list.every(item => {
         return item[checkName];
       });
     }
@@ -92,10 +91,11 @@ export default {
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+      this.$emit("pageSize", val);
     },
     handleCurrentChange(val) {
       this.currentPage = val;
-      this.$emit('currentPage', val);
+      this.$emit("currentPage", val);
     }
   }
 };
@@ -116,13 +116,13 @@ export default {
       user-select: none;
       text-align: left;
       .cell {
-        padding: .6rem;
+        padding: 0.6rem;
       }
     }
   }
   tbody {
     .cell {
-      padding: .6rem;
+      padding: 0.6rem;
     }
     .table_empty-block {
       min-height: 60px;
@@ -137,7 +137,7 @@ export default {
     display: none;
   }
 
-  input[type="checkbox"]+label {
+  input[type="checkbox"] + label {
     display: inline-block;
     width: 48%;
     margin-top: 10px;
@@ -154,11 +154,11 @@ export default {
     border: 1px solid #eee;
     border-radius: 2px;
     margin-right: 5px;
-    transition: background ease-in .3s;
+    transition: background ease-in 0.3s;
   }
 
-  input[type="checkbox"]:checked+label::before {
-    content: '\2713';
+  input[type="checkbox"]:checked + label::before {
+    content: "\2713";
     color: #fff;
     font-size: 10px;
     text-align: center;

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-      :title="title"
+      :title.sync="title"
       :visible.sync="dialog.dialogVisible"
       :before-close="dialog.handleClose"
       width="48%"
@@ -10,7 +10,14 @@
           <span class="inputname">{{model.label}}</span>
           <input class="inputtext" v-if="model.type==='text'" v-model="dialog.param[model.name]" :type="model.type" :placeholder="model.placeholder">
           <el-input v-if="model.type==='textarea'" class="dialog_area" v-model="dialog.param[model.name]" :type="model.type" :placeholder="model.placeholder"></el-input>
-          <el-select v-if="model.type==='select'" v-model="dialog.param[model.name]">
+          <!-- <select v-if="model.type==='select'" v-model="dialog.param[model.name]" @change="model.event?model.event(dialog.param[model.name]): ''">
+            <option v-for="(item, index) in model.options"
+              :key="index"
+              :value="item[model.value]">
+              {{item[model.valueLabel]}}
+              </option>
+          </select> -->
+          <el-select v-if="model.type==='select'" v-model="dialog.param[model.name]" @change="model.event?model.event(dialog.param[model.name]): ''">
             <el-option
               v-for="(item, index) in model.options"
               :key="index"
@@ -35,15 +42,18 @@
 </template>
 
 <script>
-  export default {
-    name: 'erp-dialog',
-    props: ["title", "dialog"],
-    watch: {
-      'dialog': function(old) {
-        console.log(old);
-      }
+export default {
+  name: "erp-dialog",
+  props: ["title", "dialog"],
+  watch: {
+    dialog: function(old) {
+      console.log(old);
+    },
+    title: function(old) {
+      console.log(old);
     }
   }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -62,6 +72,36 @@
   .inputname {
     width: 8rem;
   }
-} 
+}
+select {
+  width: 50%;
+  margin-bottom: .5rem;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+  color: #606266;
+  display: inline-block;
+  font-size: inherit;
+  height: 40px;
+  line-height: 40px;
+  outline: none;
+  padding: 0 15px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+option {
+  font-size: 14px;
+    padding: 0 20px;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #606266;
+    height: 34px;
+    line-height: 34px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
 </style>
 

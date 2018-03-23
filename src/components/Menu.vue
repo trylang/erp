@@ -126,7 +126,7 @@
                             },
                             {
                                 path: '/finance/taxRate2cost',
-                                title: '费用项目税率应用'
+                                title: '项目税率应用'
                             },
                             {
                                 path: '/finance/collectionAccount',
@@ -403,6 +403,14 @@
                                 {
                                     path: '/system/log',
                                     title: '操作日志'
+                                }
+                            ]
+                        },  {
+                            title: '租户通知管理',
+                            children: [
+                                {
+                                    path: '/system/tenant',
+                                    title: '通知管理'
                                 }
                             ]
                         }]

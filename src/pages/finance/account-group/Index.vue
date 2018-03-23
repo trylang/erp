@@ -22,7 +22,6 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { _replace, _remove } from '@/utils';
 import { queryAccountGroups } from '@/utils/rest/financeAPI';
 export default {
   name: "account-group",
@@ -183,15 +182,16 @@ export default {
         })
       })
     },
-    async getAccountGroups(pageNum) {
+    async getAccountGroups(pageNum, callback) {
       let params = {
         settleGroupName: this.query.settleGroupName,
         pageNum
       };
-      this.$api.financeapi.listUsingGET_8(params).then(res => {
+      this.$api.financeapi.listUsingGET_11(params).then(res => {
         const data = res.data;
         if(data.code === 200) {
           this.content = data.data;
+          if(callback) callback();
         } else {
           return data.message;
         }
@@ -201,11 +201,12 @@ export default {
       let params = {
         param : this.dialog.param
       };
-      await this.$api.financeapi.addUsingPOST_5(params).then(returnObj => {
+      await this.$api.financeapi.addUsingPOST_6(params).then(returnObj => {
         if(returnObj.data.code === 200) {
-          this.content.unshift(returnObj.data.data);
-          $message("success", "添加成功!");
-          this.dialog.dialogVisible = false;
+          this.getAccountGroups(0, () => {
+            $message("success", "添加成功!");
+            this.dialog.dialogVisible = false;
+          });         
         } else {
           $message("error", "添加失败!");
         }       
@@ -216,26 +217,20 @@ export default {
         id: param.id,
         param: param
       };
-      const that = this;
       await this.$api.financeapi.updateUsingPUT_8(params).then(returnObj => {
         if(returnObj.data.code === 200) {
-          console.log( returnObj.data.data)
-          _replace('id', that.content, returnObj.data.data);
-          $message("success", "修改成功!");
-          this.dialog.dialogVisible = false;
+          this.getAccountGroups(0, () => {
+            $message("success", "修改成功!");
+            this.dialog.dialogVisible = false;
+          });
         } else {
           $message("error", "修改失败!");
         }       
       });
     }
   },
-  computed: {
-    // ...mapGetters({
-    //   content: "accountGroups"
-    // })
-  },
+  computed: { },
   created() {
-    // this.$store.dispatch("getAccountGroups");
     this.getAccountGroups();
   }
 };

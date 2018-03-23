@@ -1,11 +1,12 @@
 <template>
   <con-head title="免租">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">添加</el-button>
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
+      dialog.param={amount: '', costItemId: '', expenseDate: '', reduceType: ''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.name" placeholder="固定费用" class="dialogselect">
+            <el-select v-model="query.name" placeholder="商户" class="dialogselect">
               <el-option
                 v-for="item in selects.expenses"
                 :key="item.id"
@@ -17,19 +18,36 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">合同</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
+            <el-select v-model="query.contractId" placeholder="合同" class="dialogselect">
               <el-option
-                v-for="item in selects.shops"
+                v-for="item in selects.expenses"
                 :key="item.id"
                 :value="item.label">
               </el-option>
             </el-select>
         </div>
       </el-col>
+      <el-col :span="9">
+        <div class="searchselect">
+          <span class="inputname">结算组别</span>
+          <el-select v-model="query.settleGroupId" placeholder="结算组别" class="dialogselect">
+            <el-option
+              v-for="item in selects.accountGroup"
+              :key="item.id"
+              :label="item.settleGroupName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
+      </el-col>
     </el-row>
     <erp-table :header="header" :content="content"></erp-table>
-
-    <erp-dialog :title="dialog.param.id? '修改费用调整': '添加费用调整'" :dialog="dialog"></erp-dialog>
+    <el-row>
+      <el-col :span="2" :offset="22">
+        <el-button type="primary" @click="addRentFree">提交</el-button>
+      </el-col>
+    </el-row>
+    <erp-dialog :title="dialog.param.id? '修改免租': '添加免租'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -40,6 +58,10 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+
+import { queryAccountGroup, queryMerchant } from "@/utils/rest/financeAPI";
+import { _changeJson, _replace, _remove, _uuid } from "@/utils";
+
 export default {
   name: "account-group",
   components: {
@@ -53,22 +75,22 @@ export default {
         {
           label: "费用项目",
           type: "text",
-          name: "id"
+          name: "costItemName"
         },
         {
           label: "免租类型",
           type: "text",
-          name: "name"
+          name: "reduceType"
         },
         {
-          label: "免租内容",
+          label: "免租金额",
           type: "text",
-          name: "name"
+          name: "amount"
         },
         {
           label: "费用日期",
           type: "text",
-          name: "desc"
+          name: "expenseDate"
         },
         {
           label: "备注",
@@ -87,11 +109,9 @@ export default {
               label: "编辑",
               name: "edit",
               type: "",
-              style: {
-                color: "#902323"
-              },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -100,9 +120,6 @@ export default {
               label: "删除",
               name: "delete",
               type: "",
-              style: {
-                color: "#093216"
-              },
               class: "delete",
               click: (item, data) => {
                 this.deleteDialog(item, data);
@@ -111,36 +128,39 @@ export default {
           ]
         }
       ],
+      content: {
+        list: []
+      },
       dialog: {
         models: [{
-          label: '编码',
-          name: 'id',
+          label: '费用项目',
+          name: 'costItemId',
           type: 'text',
-          placeholder: '请输入编码'
-        }, {
-          label: '名称',
-          name: 'name',
+          placeholder: '请输入费用项目'
+        },{
+          label: '免租金额',
+          name: 'amount',
           type: 'text',
-          placeholder: '请输入名称'
-        },{
-          label: '结算组别',
-          name: 'name',
-          type: 'select',
-          placeholder: '请选择组别'
-        },{
-          label: '费用类型',
-          name: 'name',
-          type: 'select',
-          placeholder: '请选择费用类型'
+          placeholder: '请填写免租金额'
         }, {
-          label: '物业性质',
-          name: 'desc',
+          label: '免租类型',
+          name: 'reduceType',
           type: 'select',
-          placeholder: '请选择物业性质'
+          valueLabel: "label",
+          value: "id",
+          options: [{ id: 10, label: '指定金额' }, { id: 20, label: '全免'}, {id: 30, label: '比例' }],
+          placeholder: '请选择类型'
+        },{
+          label: '费用日期',
+          name: 'expenseDate',
+          type: 'date',
+          placeholder: '请选择费用时间'
+        },{
+          label: '备注',
+          name: 'remark',
+          type: 'textarea',
+          placeholder: '请填写备注'
         }],
-        // handleClose: () => {
-        //   this.handleClose();
-        // },
         dialogVisible: false,
         param: {
           id: "",
@@ -153,7 +173,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -170,13 +189,7 @@ export default {
         }]
       },
       selects: {
-        shops: [{
-          id: 1,
-          label: '商铺1'
-        }, {
-          id: 2,
-          label: '商铺2'
-        }],
+        accountGroup: [],
         expenses: [{
           id: 11,
           label: '费用11'
@@ -190,85 +203,107 @@ export default {
       }
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
-    handleClose(done) {
-      let _this = this;
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          _this.dialog.param = {};
-          done();
-        })
-        .catch(_ => {});
-    },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
-      if (this.dialog.param.id) {
+      if (this.dialog.param.itemId) {
         // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
+        this.editItem(this.dialog.param);        
       } else {
         // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
+        this.dialog.param.itemId = _uuid();
+        this.addItem(this.dialog.param);
       }
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该费用录入, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+          this.deleteItem(item.itemId);
         })
         .catch(() => {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    addItem(param) {
+      this.content.list.unshift(param);
+      this.dialog.dialogVisible = false;
+    },
+    editItem(param) {
+      _replace('itemId', this.content.list, param);
+      this.dialog.dialogVisible = false;
+    },
+    deleteItem(param) {
+      _remove('itemId', param, this.content.list);
+    },
+    async getRentFree(pageNum, callback) {
+      const params = {
+        pageNum
+      };
+      this.$api.financeapi.listUsingGET_27(params).then(res => {
+        const data = res.data;
+        if (data.code === 200) {
+          const Ajson = this.selects.accountGroupJson;
+          const Pjson = this.selects.propertyTypeJson;
+          data.data.list.forEach(item => {
+            item.settleGroupLabel = Ajson[item.settleGroupId]
+              ? Ajson[item.settleGroupId].settleGroupName
+              : "";
+            item.propertyTypeLabel = Pjson[item.propertyType]
+              ? Pjson[item.propertyType].label
+              : "";
+          });
+          this.content = data.data;
+          if (callback) callback();
+        } else {
+          return data.message;
+        }
+      });
+    },
+    async addRentFree() {
+      const param = {
+        // id: 1,
+        contractId: this.query.contractId,
+        settleGroupId: this.query.settleGroupId,
+        item: this.content.list
+      }
+      await this.$api.financeapi.saveUsingPOST_6({param}).then(returnObj => {
+        if (returnObj.data.code === 200) {
+          $message("success", "提交成功!");
+          this.$router.push({path: '/finance/rentFree'});
+          // this.getCost(0, () => {
+          //   $message("success", "修改成功!");
+          //   this.dialog.dialogVisible = false;
+          // });
+        } else {
+          $message("error", "修改失败!");
+        }
+      });
+      
+    },
+    async init() {
+      let [accountGroup, merchants] = await Promise.all([queryAccountGroup()]);
+      // this.selects.accountGroupJson = accountGroup.json;
+      this.selects.accountGroup = accountGroup.data.list;
+      // this.selects.merchants = merchant;
+      // console.log(merchants);
+      // this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
+      // await this.getEntering();
+      // this.dialog.models[2].options = accountGroup.data.list;
+      // this.dialog.models[3].options = this.selects.expenses;
+      // this.dialog.models[4].options = this.selects.shops;
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.init();
   }
 };
 </script>
