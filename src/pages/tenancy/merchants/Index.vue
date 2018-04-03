@@ -1,64 +1,38 @@
 <template>
     <div>
         <con-head title="业态管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
-            <el-row slot="preappend">
-                <el-col :span="9">
-                    <div class="searchselect">
-                        <span class="inputname inputnameauto">业态</span>
-                        <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                            <el-option
-                                    v-for="item in options"
-                                    :key="item.value"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                </el-col>
-            </el-row>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
+            <el-button type="primary" slot="append" @click="getInfoData()">修改</el-button>
+            <el-button type="primary" slot="append" @click="deleteData()">删除</el-button>
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="110"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <el-tree
+                        :data="dataTreeList"
+                        :props="defaultProps"
+                        :highlight-current=true
+                        @node-click="handleNodeClick"
+                        :expand-on-click-node="false"
+                ></el-tree>
             </div>
         </con-head>
         <el-dialog
-                :title="listid?'编辑业态':'添加业态'"
+                :title="listId?'编辑业态':'添加业态'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
+                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">上级业态</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="addInfoData.businessName">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
+                <el-button type="primary" @click="addTreeData()">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -66,102 +40,129 @@
 
 <script>
     import ConHead from '../../../components/ConHead'
-    import PageContent from '../../../components/Pagination'
+    import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){
             return{
                 dialogVisible:false,
-                datalist:[],
-                add:{
-                    number: '',
-                    name: '',
-                    englishname:'',
-                    value: ''
+                dataTreeList:[],
+                addInfoData:{
+                    businessCode: '',
+                    businessName: '',
+                    id:'',
+                    pid: null
                 },
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                columnData:[
-                    { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '名称' },
-                    { prop: 'superior2', label: '上级业态' },
-                    { prop: 'datetime', label: '更新时间' }
-                ],
-                oneData:{},
-                listid:''
+                defaultProps: {
+                    children: 'tree',
+                    label: 'businessName'
+                },
+                listId:'',
+                treeData:''
             }
         },
         mounted(){
-            this.getbuilding();
+            this.getDataList();
         },
         methods:{
+            handleOpen() {
+                this.dialogVisible = true;
+            },
             handleClose(){
                 this.dialogVisible = false;
-            },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
-            },
-            async addbuilding(id){
-                if(id){
-                    let params = {
-                        id:id,
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.updateData(id,params);
-                }else{
-                    let params = {
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.addBuilding(params);
+                this.addInfoData = {
+                    businessCode: '',
+                    businessName: '',
+                    id:'',
+                    pid: null
                 }
-                this.dialogVisible = false;
-                this.getbuilding();
             },
-            async deleteList(id){
-                let params = {
-                    id:id
-                };
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.deleteData(params);
-                    this.datalist = this.datalist.filter(item=>item.id!==id);
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                }).catch(() => {});
+            async getDataList(){
+                await this.$api.rentapi.treeUsingGET().then(res=>{
+                    this.dataTreeList = res.data.data;
+                })
             },
-            async dialogData(id){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = await this.$api.getOneData(id);
+            handleNodeClick(data){
+                this.treeData = data;
+                console.log(data)
+            },
+            async getInfoData(){
+                this.addInfoData.id = this.treeData.id;
+                if(this.treeData.id){
+                    this.dialogVisible = true;
+                    await this.$api.rentapi.detailUsingGET_2({
+                        id:this.treeData.id
+                    }).then(res=>{
+                        this.addInfoData = res.data.data;
+                    })
+                }
+            },
+            async addTreeData(){
+                if(this.addInfoData.id == '') {
+                    this.addInfoData.pid = this.treeData.id;
+                    await this.$api.rentapi.addUsingPOST_2({
+                        request: this.addInfoData
+                    }).then(res => {
+                        this.treeData = '';
+                        if (res.data.status == 200) {
+                            this.addInfoData = {
+                                businessCode: '',
+                                businessName: '',
+                                id:'',
+                                pid: null
+                            }
+                            this.$message.success(res.data.msg);
+                            this.getDataList();
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
                 }else{
-                    this.add = {};
+                    await this.$api.rentapi.updateUsingPUT_4({
+                        request: this.addInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.addInfoData = {
+                                businessCode: '',
+                                businessName: '',
+                                id:'',
+                                pid: null
+                            }
+                            this.$message.success(res.data.msg);
+                            this.getDataList();
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }
+            },
+            async deleteData(){
+                if(this.treeData.id) {
+                    this.$confirm('是否删除该条数据?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$api.rentapi.deleteUsingDELETE_1({
+                            id: this.treeData.id
+                        }).then(res => {
+                            if (res.data.status == 200) {
+                                this.$message.success(res.data.msg);
+                                this.getDataList();
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        })
+                    })
                 }
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

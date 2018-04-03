@@ -4,17 +4,18 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+          <input type="text" placeholder=" 请输入费用单号" v-model="query.costNo" @keyup.enter="getIrregularCost()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
+            <el-select v-model="query.merchantId" placeholder="商户名称" @change="getIrregularCost()" class="dialogselect">
               <el-option
-                v-for="item in selects.expenses"
+                v-for="item in selects.merchants"
                 :key="item.id"
-                :value="item.label">
+                :label="item.merchantName"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
@@ -25,33 +26,34 @@
         <div class="texttitle">
             <span class="inputname">状态：</span>
             <div class="line-nav">
-                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
+                <a href="javascript:void(0)" v-for="status in selects.status"
+                :key="status.id" 
+                :class="{active:status.isStatus}" 
+                @click="statusHandler(status)">{{status.label}}</a>
                 <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
             </div>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">物业性质</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
+            <span class="inputname">合同</span>
+            <el-select v-model="query.contractId" placeholder="请选择"  @change="getIrregularCost()" class="dialogselect">
               <el-option
-                v-for="item in selects.shops"
+                v-for="item in selects.contracts"
                 :key="item.id"
-                :value="item.label">
+                :label="item.contractCode"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn">确 定</button>	
-				<button class="global-btn">删 除</button>	
-			</div>
-		</el-row>
-    <erp-table :header="header" :content="content"></erp-table>
-
-    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+        <el-row slot="preappend">
+            <div class="global-block">
+                <button class="global-btn" @click="batchConfirm">确 定</button>   
+            </div>
+        </el-row>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
 
 </template>
@@ -62,6 +64,8 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import qs from 'qs'
+
 export default {
   name: "account-group",
   components: {
@@ -71,219 +75,259 @@ export default {
   },
   data() {
     return {
-      header: [
-        {
-          label: "",
-          name: "state",
-          type: "checkbox"
-        },
-        {
-          label: "编码",
-          type: "text",
-          name: "id"
-        },
-        {
-          label: "名称",
-          type: "text",
-          name: "name"
-        },
-        {
-          label: "备注",
-          type: "text",
-          name: "desc"
-        },
-        {
-          label: "更新时间",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
-        },
-        {
-          label: "操作",
-          name: "operations",
-          type: "buttons",
-          style: {
-            width: "130px"
-          },
-          operations: [
+        header: [
             {
-              label: "编辑",
-              name: "edit",
-              type: "",
-              style: {
-                // color: "#902323"
-              },
-              class: "edit",
-              click: (item) => {
-                Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
-              }
+              label: "",
+              name: "checked",
+              type: "checkbox"
             },
             {
-              label: "删除",
-              name: "delete",
-              type: "",
+              label: "费用单号",
+              type: "link",
+              name: "costNo",
+              linkStyle: {color: "#457fcf"},
+              basehref: '#/finance/rentFree/detail/',
+              urlId: 'id',
+            },
+            {
+              label: "合同号",
+              type: "text",
+              name: "contractCode"
+            },
+            {
+              label: "商户名称",
+              type: "text",
+              name: "merchantName"
+            },
+            {
+              label: "店铺名称",
+              type: "text",
+              name: "shopName"
+            },
+            {
+              label: "结算组别",
+              type: "text",
+              name: "settleGroupName"
+            },
+            {
+              label: "免租金额",
+              type: "text",
+              name: "sum"
+            },
+            {
+              label: "录入日期",
+              name: "updateDate",
+              type: "time",
+              filter: "yyyy-MM-dd hh:mm:ss.S"
+            },
+            {
+              label: "状态",
+              type: "text",
+              name: "statusText"
+            },
+            {
+              label: "操作",
+              name: "operations",
+              type: "buttons",
               style: {
-                // color: "#093216"
+                width: "130px"
               },
-              class: "delete",
-              click: (item, data) => {
-                this.deleteDialog(item, data);
-              }
-            }
-          ]
+              operations: [
+                {
+                  label: "编辑",
+                  show: "showEdit",
+                  style: {
+                    // color: "#902323"
+                  },
+                  class: "edit",
+                  click: function(item) {
+                    Object.assign(this.dialog.param, item);
+                    this.$router.push({path: '/finance/rentFree/addRentFree', query: { id: item.id, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
+                  }.bind(this)
+                },
+                {
+                  label: "取消",
+                  show: "showCancel",
+                  style: {
+                    // color: "#093216"
+                  },
+                  class: "delete",
+                  click: (item, data) => {
+                    this.cancelIrregularCost(item, data);
+                  }
+                },
+                {
+                  label: "删除",
+                  show: "showEdit",
+                  style: {
+                    // color: "#093216"
+                  },
+                  class: "delete",
+                  click: (item, data) => {
+                    this.deleteIrregularCost(item, data);
+                  }
+                }
+            ]
         }
       ],
+      content: [],
       dialog: {
-        models: [{
-          label: '编码',
-          name: 'id',
-          type: 'text',
-          placeholder: '请输入编号'
-        }, {
-          label: '名称',
-          name: 'name',
-          type: 'text',
-          placeholder: '请输入名称'
-        }, {
-          label: '备注',
-          name: 'desc',
-          type: 'text',
-          placeholder: '请输入备注'
-        }],
-        dialogVisible: false,
-        param: {
-          id: "",
-          name: "",
-          desc: ""
-        },
-        options: [{
-          label: "确 定",
-          name: "submit",
-          type: "primary",
-          disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              console.log(item);
-              return item === (undefined || "");
-            });
-          },
-          click: () => {
-            this.confirmDialog();
-          }
-        }, {
-          label: "取 消",
-          name: "edit",
-          type: "",
-          click: () => {
-            this.cancelDialog();
-          }
-        }]
+        param: {}
       },
       selects: {
-        shops: [{
-          id: 1,
-          label: '商铺1'
-        }, {
-          id: 2,
-          label: '商铺2'
-        }],
-        expenses: [{
-          id: 11,
-          label: '费用11'
-        }, {
-          id: 22,
-          label: '费用22'
-        }],
+        contracts: [],//合同
+        merchants: [],//商户
         status: [{
           isStatus:true,
-          label: '全部'
+          label: '全部',
+          id: ''
         }, {
           isStatus:false,
-          label: '新增'
+          label: '新增',
+          id: 10
         }, {
           isStatus:false,
-          label: '已确认'
+          label: '已确认',
+          id: 20
         }, {
           isStatus:false,
-          label: '取消'
+          label: '取消',
+          id: 30
         }]
       },
       query: {
-        name: ""
+        costNo: '',
+        merchantId: '',
+        contractId: '',
+        status: ''
       }
     };
   },
-  mounted() {},
+  mounted() {
+    this.$api.rentapi.listUsingGET_12({}).then(res=>{ //商户列表 status:4 已确定状态没加
+        this.selects.merchants = res.data.data;
+    }).catch(res=>{
+        this.$message.error(res.data.msg);
+    });
+    this.$api.rentapi.getListForPageUsingGET({status:30}).then(res=>{//合同列表
+        this.selects.contracts = res.data.data.list;
+    }).catch(res=>{
+        this.$message.error(res.data.msg);
+    });
+  },
   methods: {
     linkTo(path) {
       this.$router.push({ path });
     },
     statusHandler(status){
-			this.selects.status.forEach(function(obj){
-					obj.isStatus = false;
-			});
-			status.isStatus = !status.isStatus
-    },
-    cancelDialog: function() {
-      this.dialog.dialogVisible = false;
-      this.dialog.param = {};
-    },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
+        this.selects.status.forEach(function(obj){
+            obj.isStatus = false;
         });
+        status.isStatus = !status.isStatus;
+        this.query.status = status.id;
+        this.getIrregularCost();
     },
+    getCurrentPage(pageNum) {
+      this.getIrregularCost({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getIrregularCost({pageSize});
+    },
+    filterIds() {
+      const param = this.content.list.filter(item => {
+        return item.checked === true;
+      });
+      let ids = [];
+      param.forEach(item => {
+        ids.push(item.id);
+      });
+      return ids;
+    },
+    batchConfirm() {
+      this.confirmIrregularCost(this.filterIds());
+    },
+    async getIrregularCost(page={}, callback) {
+      let params = {
+        costNo: this.query.costNo,
+        merchantId: this.query.merchantId,
+        contractId: this.query.contractId,
+        status: this.query.status,
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
+      };
+      this.$api.financeapi.listUsingGET_16(params).then(res => {
+        const data = res.data;
+        if(data.status === 200) {
+          data.data.list.forEach(item => {
+            item.checked = false;
+            if (item.status === 10) {
+              item.showEdit = true;
+              item.showCancel = false;
+            }else if(item.status === 20){
+                item.showEdit = false;
+                item.showCancel = true;
+            }else if(item.status === 30) {
+              item.showEdit = true;
+              item.showCancel = false;
+            } 
+          });
+          this.content = data.data;
+          if(callback) callback();
+        } else {
+          return data.message;
+        }        
+      })
+    },
+    async confirmIrregularCost(param) {
+      let params = {
+        id: param
+      };
+      await this.$api.financeapi.confirmUsingPUT_4(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "确认成功!");
+          });  
+        } else {
+          $message("error", "确认失败!");
+        }       
+      });
+    },
+    async deleteIrregularCost(param) {
+      let params = {
+        id: param
+      };
+      await this.$api.financeapi.delUsingDELETE_7(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "删除成功!");
+          });  
+        } else {
+          $message("error", "删除失败!");
+        }       
+      });
+    },
+    async cancelIrregularCost(param) {
+      let params = {
+        id: param.id
+      };
+      await this.$api.financeapi.cancelUsingPUT_5(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
+          this.getIrregularCost({}, () => {
+            $message("success", "取消成功!");
+          });
+        } else {
+          console.log('cuowu')
+          $message("error", "取消失败!");
+        }       
+      });
+    }
   },
   computed: {},
   created() {
-    // this.$store.dispatch("getAccountGroups");
+    this.getIrregularCost();
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -303,8 +347,8 @@ export default {
         color: #457fcf;
         border-bottom: 2px solid #457fcf;
     }
-		.global-block {
-			margin-top: 1rem;
-		}
-		
+        .global-block {
+            margin-top: 1rem;
+        }
+        
 </style>

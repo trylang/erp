@@ -1,41 +1,46 @@
 <template>
-  <div>
-    <con-head title="诚意金收取">
-      <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={id: ''}">收取</el-button>
-      <el-row slot="preappend">
-        <el-col :span="9">
-          <div class="searchselect">
-              <span class="inputname">商户</span>
-              <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
-                <el-option
-                  v-for="item in selects.expenses"
-                  :key="item.id"
-                  :value="item.label">
-                </el-option>
-              </el-select>
-          </div>
-        </el-col>
-        <el-col :span="9" :offset="6">
-          <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.id"
-                :value="item.label">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-      </el-row>
-    </con-head>
-    
-    <blank-head title="店铺租赁诚意金">
-      <cash-card :cash="[{name:'haha', id:1000}, {name: 'heihie', id:2000}, {name: 'enenen', id:3000}]"></cash-card>
-    </blank-head>
-  
-    <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改诚意金': '诚意金收取'" :dialog="dialog"></erp-dialog>
+  <div class="savebox">
+    <div class="savecont">
+        <con-head title="诚意金收取">
+          <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={paymentCode: '', receivedAmount: '', receivedDate: ''}" :disabled="!!(!query.merchantId||!query.contractCode)">收取</el-button>
+          <el-row slot="preappend">
+            <el-col :span="9">
+              <div class="searchselect">
+                  <span class="inputname">商户</span>
+                  <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="checkContractHandler(query.merchantId)" :disabled="!!this.$route.query.merchantId">
+                    <el-option
+                      v-for="item in selects.merchants"
+                      :key="item.id"
+                      :label="item.merchantName"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+              </div>
+            </el-col>
+            <el-col :span="9" :offset="6">
+              <div class="searchselect">
+                <span class="inputname">意向合同</span>
+                <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="checkMoneyHandler" :disabled="!!this.$route.query.contractCode">
+                  <el-option
+                    v-for="item in selects.contracts"
+                    :key="item.id"
+                    :label="item.contractCode"
+                    :value="item.contractCode">
+                  </el-option>
+                </el-select>
+              </div>
+            </el-col>
+          </el-row>
+        </con-head>
+        
+        <blank-head title="店铺租赁诚意金">
+          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.notAmount}]"></cash-card>
+        </blank-head>
+        
+        <erp-table :header="header" :content="content"  @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
+        <erp-dialog :title="dialog.param.id? '修改诚意金': '诚意金收取'" :dialog="dialog"></erp-dialog>
+    </div>
+    <div class="savebtn"><button @click="addEntering">提交</button></div>
   </div>
   
 </template>
@@ -48,6 +53,8 @@ import blankHead from "../../../components/BlankHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import cashCard from "../../../components/CashCard";
+import { _changeJson, _replace, _remove, _uuid } from "@/utils";
+import { formatDate } from '@/utils/filter';
 export default {
   name: "account-group",
   components: {
@@ -61,25 +68,25 @@ export default {
     return {
       header: [
         {
-          label: "编码",
+          label: "收款方式",
           type: "text",
-          name: "id"
+          name: "paymentName"
         },
         {
-          label: "名称",
+          label: "收款金额",
           type: "text",
-          name: "name"
+          name: "receivedAmount"
+        },
+        {
+          label: "收款日期",
+          type: "time",
+          name: "receivedDate",
+          filter: "yyyy-MM-dd"
         },
         {
           label: "备注",
+          name: "remark",
           type: "text",
-          name: "desc"
-        },
-        {
-          label: "更新时间",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
           label: "操作",
@@ -94,7 +101,7 @@ export default {
               name: "edit",
               type: "",
               style: {
-                color: "#902323"
+                // color: "#902323"
               },
               class: "edit",
               click: (item) => {
@@ -107,7 +114,7 @@ export default {
               name: "delete",
               type: "",
               style: {
-                color: "#093216"
+                // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
@@ -120,35 +127,36 @@ export default {
       dialog: {
         models: [{
           label: '收款方式',
-          name: 'id',
-          type: 'select',
-          options: [{
-            id: '1',
-            label: '工商银行'
-          }, {
-            id: '2',
-            label: '招商银行'
-          }, {
-            id: '3',
-            label: '中信银行'
-          }],
-          placeholder: ''
+          name: "paymentCode",
+          type: "select",
+          value: "id",
+          valueLabel: "name",
+          options: [],
+          placeholder: "请选择收款方式"
         }, {
           label: '收款金额',
-          name: 'name',
+          name: 'receivedAmount',
           type: 'text',
           placeholder: '请输入收款金额'
         }, {
+            label: "收款日期",
+            type: "date",
+            name: "receivedDate"
+        }, {
           label: '备注',
-          name: 'desc',
+          name: 'remark',
           type: 'textarea',
           placeholder: '请输入...'
         }],
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          //id: '',
+          paymentCode: '',
+          // paymentName: '',//弹窗收款方式要展示name
+          receivedAmount: '',
+          receivedDate: '',
+          //remark: '',
+          //receiptNumber: ''
         },
         options: [{
           label: "确 定",
@@ -156,7 +164,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -173,115 +180,173 @@ export default {
         }]
       },
       selects: {
-        shops: [{
-          id: 1,
-          label: '商铺1'
-        }, {
-          id: 2,
-          label: '商铺2'
-        }],
-        expenses: [{
-          id: 11,
-          label: '费用11'
-        }, {
-          id: 22,
-          label: '费用22'
-        }],
-        status: [{
-          isStatus:true,
-          label: '全部'
-        }, {
-          isStatus:false,
-          label: '新增'
-        }, {
-          isStatus:false,
-          label: '已确认'
-        }, {
-          isStatus:false,
-          label: '取消'
-        }]
+        merchants: [], //诚意金下的所有商户
+        contracts: [], //该商户下的意向合同
       },
+      content: {list:[],receivableAmount: '',receivedAmount: '',notAmount: ''},
       query: {
-        name: ""
-      }
+        merchantId: '',
+        contractCode: '',
+        shopId: '', //店铺id
+        bondId: '', //保证金id
+        stage: '',    //意向
+        shopId: ''
+      },
+      bondId: ''
     };
   },
-  mounted() {
-    console.log(this);
-  },
-  methods: {
-    statusHandler(status){
-			this.selects.status.forEach(function(obj){
-					obj.isStatus = false;
-			});
-			status.isStatus = !status.isStatus
-    },
-    cancelDialog: function() {
-      this.dialog.dialogVisible = false;
-      this.dialog.param = {};
-    },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
+    mounted() {
+        this.getEntering();
+        this.query.merchantId = this.querys.merchantId;
+        this.query.contractCode = this.querys.contractCode;
+        this.query.shopId = this.querys.shopId;
+        this.query.stage = this.querys.stage;
+        this.$api.rentapi.listUsingGET_11({stage: this.query.stage}).then(res=>{ //诚意金下 的所有商户列表
+            this.selects.merchants = res.data.data;
+        }).catch(res=>{
+            this.$message.error(res.data.msg);
+        });
+        this.$api.systemapi.typeListUsingGET({ nameOrCode: "0005" }).then(res => {//类型code
+          let paymentCode = res.data.data[0].code;
+          this.$api.systemapi.itemListUsingGET({ code: paymentCode }).then(res => {//根据code查询付款方式
+            this.dialog.models[0].options = res.data.data;
           });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    methods: {
+        checkContractHandler(merchantId){
+            let params = {
+                merchantId: merchantId || null, //可根据该商户查询意向合同，也可直接展示所有意向合同
+            }
+
+        },
+        checkMoneyHandler(){
+            let params = {
+                stage: 0,
+                merchantId: this.query.merchantId,
+                shopId: this.query.shopId,
+                contractCode: this.query.contractCode
+            }
+            this.$api.rentapi.infoUsingGET( params ).then(res=>{//点击意向合同后查出三个金额
+                let data = res.data.data;
+                this.content.receivableAmount = data.receivableAmount;//应收金额
+                this.content.receivedAmount = data.receivedAmount;  //已收金额
+                this.content.notAmount = data.notAmount;        //未收金额
+                thia.query.shopId = data.shopId;
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            });
+        },
+        getCurrentPage(pageNum) {
+          this.getEntering({pageNum});
+        },
+        getpageSize(pageSize) {
+          this.getEntering({pageSize});
+        },
+        cancelDialog: function() {
+            this.dialog.dialogVisible = false;
+            this.dialog.param = {};
+        },
+        confirmDialog: function() {
+            if (this.dialog.param.id || this.dialog.param.itemId) {
+              // 修改
+              this.editItem(this.dialog.param);        
+            } else {
+              // 新增
+              this.dialog.param.itemId = _uuid();
+              this.addItem(this.dialog.param);
+            }
+        },
+        editItem(param) {
+          if (param.id) {
+            _replace('itemId', this.content.list, param);
+          } else {
+            _replace('id', this.content.list, param);
+          }     
+          this.dialog.dialogVisible = false;
+        },
+        addItem(param) {
+          this.content.list.unshift(param);
+          this.dialog.dialogVisible = false;
+        },
+        deleteDialog: function(item) {
+            console.log(121,item)
+            this.$confirm("此操作将永久删除该费用录入, 是否继续?", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "warning"
+            })
+              .then(() => {
+                this.deleteItem(item);
+              })
+              .catch(() => {
+                $message("info", "已取消删除!");
+              });
+        },
+        async getEntering(page={}, callback) {
+          if (!this.$route.query.receiptNumber) return;
+          this.$api.financeapi.detailUsingGET_3({ //列表---前边编辑带过来的数据
+            receiptNumber: this.$route.query.receiptNumber,
+            pageNum: page.pageNum,
+            pageSize: page.pageSize,
+          }).then(res => {
+            const data = res.data;
+            console.log(777,data)
+            if (data.status === 200) {
+              this.content = data.data;
+              this.query.bondId = this.content.id;    //查出保证金id
+              this.query.shopId = this.content.shopId;    //查出店铺id
+              console.log('列表数据：',this.content)
+              if (callback) callback();
+            } else {
+              return data.message;
+            }
+          });
+        },
+        deleteItem(param) {
+          if (param.id) {
+            _remove('id', param.id, this.content.list);
+          } else {
+            _remove('itemId', param.itemId, this.content.list);
+          }
+        },
+        async addEntering() {
+          const param = {
+            merchantId: this.query.merchantId,
+            contractCode: this.query.contractCode,
+            shopId: this.querys.shopId,
+            stage: this.query.stage,
+            receiptNumber: this.$route.query.receiptNumber?this.querys.receiptNumber:null,//编辑传收款单号，新增不用传
+            id: this.query.bondId,    //保证金id
+            list: this.content.list
+          }
+          const apiFunc = (api, param) => {
+            console.log('提交的数据：',param)
+            this.$api.financeapi[api]({request: param}).then(returnObj => {
+              if (returnObj.data.status === 200) {
+                $message("success", "提交成功!");
+                this.$router.push({path: '/finance/rentFree'});
+              } else {
+                $message("error", "修改失败!");
+              }
+            });
+          };
+
+          if (this.$route.query.receiptNumber) {
+            param.receiptNumber = this.$route.query.receiptNumber;
+            await apiFunc('updateUsingPUT_2', param);//编辑提交
+          } else {
+            await apiFunc('submitsUsingPOST', param);//新增提交
+          }      
+        },
+    },
+    computed: {
+        querys(){
+            return this.$route.query;
+        }
+    },
+    created() {
+    // this.$store.dispatch("getAccountGroups");
     }
-  },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
-  created() {
-    this.$store.dispatch("getAccountGroups");
-  }
 };
 </script>

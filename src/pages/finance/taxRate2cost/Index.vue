@@ -5,12 +5,11 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入费用项目编码" v-model="query.costItemCode"><i class="iconfont icon-sousuo" @click="getTaxRate2cost"></i>
+            <input type="text" placeholder="请输入费用项目编码" v-model="query.costItemCode" @keyup.enter="getTaxRate2cost"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
-    <h1>{{dialog.param.id}}</h1>
     <erp-dialog :title="dialog.param.id>0? '修改项目税率应用': '添加项目税率应用'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -23,7 +22,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryCost, queryTaxRate } from '@/utils/rest/financeAPI';
+import { queryCost, queryTaxRate, queryDicsByCode } from '@/utils/rest/financeAPI';
 export default {
   name: "account-group",
   components: {
@@ -32,6 +31,7 @@ export default {
     erpDialog
   },
   data() {
+    const _this = this;
     return {
       header: [
         {
@@ -86,8 +86,7 @@ export default {
                 // color: "#902323"
               },
               class: "edit",
-              click: (item) => {
-                
+              click: (item) => {               
                 Object.assign(this.dialog.param, item);
                 console.log(this.dialog.param)
                 this.dialog.dialogVisible = true;
@@ -120,15 +119,18 @@ export default {
           placeholder: '请输入税码'
         }, {
           label: '费用类型',
-          valueLabel: 'label',
+          valueLabel: 'name',
           name: 'costType',
           type: 'select',
-          value: 'id',
-          options: [{id:1, label:'haha'}, {id:12, label:'heihie'}, {id:3, label:'enen'}],
+          value: 'value',
+          options: [],
           placeholder: '请选择费用类型',
-          event: (costType) => {
-            console.log(costType);
-            // this.dialog.models[2].options = [];
+          async event(costType) {
+            await _this.$api.financeapi.listUsingGET_7({costType}).then(res => {
+              if (res.data.status === 200) {
+                _this.dialog.models[2].options = res.data.data.list;
+              }              
+            });
           }
         }, {
           label: '费用项目',
@@ -175,15 +177,17 @@ export default {
         validDate:''
       },
       selects: {
-        costJson: {},
-        taxRateJson: {},
+        cost: []
       }
     };
   },
   mounted() {},
   methods: {
-    getCurrentPage(page) {
-      this.getTaxRate2cost(page);
+    getCurrentPage(pageNum) {
+      this.getTaxRate2cost({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getTaxRate2cost({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -211,14 +215,15 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    async getTaxRate2cost(pageNum, callback) {
+    async getTaxRate2cost(page={}, callback) {
       const params = {
         costItemCode: this.query.costItemCode,
-        pageNum
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
       };
-      this.$api.financeapi.listUsingGET_3(params).then(res => {
+      this.$api.financeapi.listUsingGET_6(params).then(res => {
         const data = res.data;
-        if (data.code === 200) {
+        if (data.status === 200) {
           const Ajson = this.selects.accountGroupJson;
           // data.data.list.forEach(item => {
           //   item.settleGroupLabel = Ajson[item.settleGroupId]
@@ -233,9 +238,9 @@ export default {
       });
     },
     async addTaxRate2cost(param) {
-      await this.$api.financeapi.addUsingPOST_1({ param }).then(returnObj => {
-        if (returnObj.data.code === 200) {
-          this.getTaxRate2cost(0, () => {
+      await this.$api.financeapi.addUsingPOST({ request: param }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.getTaxRate2cost({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
           });
@@ -249,9 +254,9 @@ export default {
         id: param.id,
         param: param
       };
-      await this.$api.financeapi.updateUsingPUT_2(params).then(returnObj => {
-        if (returnObj.data.code === 200) {
-          this.getTaxRate2cost(0, () => {
+      await this.$api.financeapi.updateUsingPUT_3(params).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.getTaxRate2cost({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
           });
@@ -266,8 +271,8 @@ export default {
       };
       this.$api.financeapi.updateUsingDELETE(param).then(res => {
         const data = res.data;
-        if (data.code === 200) {
-          this.getTaxRate2cost(0, () => {
+        if (data.status === 200) {
+          this.getTaxRate2cost({}, () => {
             $message("success", "删除成功");
           });
         } else {
@@ -277,16 +282,15 @@ export default {
       });
     },
     async init() {
-      let [cost, taxRate] = await Promise.all([queryCost(), queryTaxRate()]);
-      this.selects.costJson = cost.json;
+      let [cost, taxRate, costType] = await Promise.all([queryCost(), queryTaxRate(), queryDicsByCode('0004')]);
+      this.selects.cost = cost.data;
       this.selects.taxRateJson = taxRate.json;
       await this.getTaxRate2cost();
       taxRate.data.list.forEach(item => {
         item.rateFullLabel = item.rateCode +"（" + item.rate + "）";
       });
       this.dialog.models[0].options = taxRate.data.list;
-      this.dialog.models[2].options = cost.data.list;
-      // this.dialog.models[4].options = this.selects.shops;
+      this.dialog.models[1].options = costType.data;
     }
   },
   computed: {},

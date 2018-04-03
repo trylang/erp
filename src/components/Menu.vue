@@ -25,10 +25,10 @@
                     tenancy: [{
                         title: '资产管理',
                         children: [
-                            {
+                            /*{
                                 path: '/inner/building',
                                 title: '楼宇类型'
-                            },
+                            },*/
                             {
                                 path: '/inner/floormanage',
                                 title: '楼宇管理'
@@ -92,19 +92,19 @@
                                     title: '意向合同管理'
                                 },
                                 {
-                                    path: '/inner/shops',
+                                    path: '/inner/shops/0',
                                     title: '商铺合同管理'
                                 },
                                 {
-                                    path: '/inner/field',
+                                    path: '/inner/field/2',
                                     title: '场地合同管理'
                                 },
                                 {
-                                    path: '/inner/adposition',
+                                    path: '/inner/adposition/3',
                                     title: '广告位合同管理'
                                 },
                                 {
-                                    path: '/inner/coffice',
+                                    path: '/inner/coffice/1',
                                     title: '写字楼合同管理'
                                 }
                             ]
@@ -281,6 +281,26 @@
                                 {
                                     path: '/rebates/bank',
                                     title: '银行账单'
+                                },
+                                {
+                                    path: '/rebates/wechat',
+                                    title: '微信账单'
+                                },
+                                {
+                                    path: '/rebates/paytreasure',
+                                    title: '支付宝账单'
+                                },
+                                {
+                                    path: '/rebates/yzfbill',
+                                    title: '翼支付账单'
+                                },
+                                {
+                                    path: '/rebates/zhxbill',
+                                    title: '资和信账单'
+                                },
+                                {
+                                    path: '/rebates/etc',
+                                    title: 'ETC账单'
                                 }
                             ]
                         },
@@ -294,68 +314,32 @@
                             ]
                         }],
                     visual: [{
-                        title: '资产管理',
+                        title: '可视化管理',
                         children: [
                             {
                                 path: '/inner/building',
-                                title: '楼宇管理'
+                                title: '可视化管理'
                             }
                         ]
-                    },
-                        {
-                            title: '招商资源管理',
-                            children: [
-                                {
-                                    path: '/',
-                                    title: '物业性质'
-                                }
-                            ]
-                        }],
+                    }],
                     merchant: [{
-                        title: '资产管理',
+                        title: '商户价值',
                         children: [
                             {
                                 path: '/inner/building',
-                                title: '楼宇管理'
+                                title: '商户价值'
                             }
                         ]
-                    },
-                        {
-                            title: '招商资源管理',
-                            children: [
-                                {
-                                    path: '/',
-                                    title: '物业性质'
-                                }
-                            ]
-                        }],
+                    }],
                     database: [{
-                        title: '资产管理',
+                        title: '数据中心',
                         children: [
                             {
                                 path: '/inner/building',
-                                title: '楼宇管理'
+                                title: '数据中心'
                             }
                         ]
-                    },
-                        {
-                            title: '招商资源管理',
-                            children: [
-                                {
-                                    path: '/',
-                                    title: '物业性质'
-                                }
-                            ]
-                        },
-                        {
-                            title: '合同管理',
-                            children: [
-                                {
-                                    path: '/',
-                                    title: '意向合同管理'
-                                }
-                            ]
-                        }],
+                    }],
                     system: [{
                         title: '组织管理',
                         children: [
@@ -441,8 +425,7 @@
                     case '/system':
                         return menuData.system;
                         break;
-                }
-                ;
+                };
             }
         },
         created() {

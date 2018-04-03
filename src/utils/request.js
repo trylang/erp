@@ -2,7 +2,6 @@ import axios from 'axios';
 import { $message } from './notice';
 const service = axios.create({
   baseURL: process.env.API_ROOT,
-  // baseURL: '/api',
   timeout: 15000
 });
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';

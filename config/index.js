@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.1.235:8111/finance',//设置你调用的接口域名和端口号 别忘了加http
+        target: 'http://192.168.1.235:30013',//设置你调用的接口域名和端口号 别忘了加http
         // target: 'http://192.168.1.138:8111/',//设置你调用的接口域名和端口号 别忘了加http
         changeOrigin: true,
         pathRewrite: {
@@ -20,6 +20,7 @@ module.exports = {
         }
       }
     },
+
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8000, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
@@ -53,7 +54,15 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '',
-
+    proxyTable: {
+      '/api': {
+          target: 'http://192.168.1.235:30013/',//设置你调用的接口域名和端口号
+          changeOrigin: true,
+          pathRewrite: {
+              '^/api': '/'//这里理解成用‘/api’代替target里面的地址
+          }
+      }
+    },
     /**
      * Source Maps
      */
@@ -74,5 +83,44 @@ module.exports = {
     // `npm run build --report`
     // Set to `true` or `false` to always turn it on or off
     bundleAnalyzerReport: process.env.npm_config_report
-  }
+  },
+
+  test: {
+        // Template for index.html
+        index: path.resolve(__dirname, '../dist/index.html'),
+
+        // Paths
+        assetsRoot: path.resolve(__dirname, '../dist'),
+        assetsSubDirectory: 'static',
+        assetsPublicPath: '',
+        proxyTable: {
+            '/api': {
+                target: 'http://192.168.1.235:30013/',//设置你调用的接口域名和端口号
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': '/'//这里理解成用‘/api’代替target里面的地址
+                }
+            }
+        },
+        /**
+         * Source Maps
+         */
+
+        productionSourceMap: true,
+        // https://webpack.js.org/configuration/devtool/#production
+        devtool: '#source-map',
+
+        // Gzip off by default as many popular static hosts such as
+        // Surge or Netlify already gzip all static assets for you.
+        // Before setting to `true`, make sure to:
+        // npm install --save-dev compression-webpack-plugin
+        productionGzip: false,
+        productionGzipExtensions: ['js', 'css'],
+
+        // Run the build command with an extra argument to
+        // View the bundle analyzer report after build finishes:
+        // `npm run build --report`
+        // Set to `true` or `false` to always turn it on or off
+        bundleAnalyzerReport: process.env.npm_config_report
+    }
 }

@@ -11,6 +11,17 @@
                 </el-col>
             </el-row>
         </div>
+        <div v-if="tab" class="titlebg"></div>
+        <div class="header" v-if="tab">
+            <el-row>
+                <el-col :span="18" class="titletxt">
+                    <slot name="appendtab"></slot>
+                </el-col>
+                <el-col :span="6" style="text-align: right;" class="titlebtn">
+                    <slot name="append"></slot>
+                </el-col>
+            </el-row>
+        </div>
         <div class="preappend">
             <slot name="preappend"></slot>
         </div>
@@ -21,7 +32,7 @@
 <script>
     export default {
         name: "con-head",
-        props:['title']
+        props:['title','tab']
     }
 </script>
 

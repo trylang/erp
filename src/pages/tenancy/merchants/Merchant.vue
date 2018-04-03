@@ -1,31 +1,44 @@
 <template>
     <div>
-        <con-head title="商户管理">
-            <router-link to="/inner/addmerchant" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
+        <con-head tab="tab">
+            <div slot="appendtab" class="tabmenu">
+                <router-link to="/inner/merchants">商户管理</router-link>
+                <router-link to="/inner/merchantaudit">商户审核</router-link>
+            </div>
+            <router-link to="/inner/addmerchant/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="9">
                         <div class="searchselect">
-                            <span class="inputname inputnameauto">业态</span>
-                            <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                            <span class="inputname inputnameauto">类型</span>
+                            <el-select v-model="typeValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
+                                        v-for="item in typeOptions"
+                                        :key="item.id"
+                                        :label="item.typeName"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="6">
+                        <div class="texttitle">
+                            <span class="inputname">状态：</span>
+                            <div class="line-nav">
+                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
+                            </div>
                         </div>
                     </el-col>
                 </el-row>
@@ -33,129 +46,162 @@
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
+                <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
+                            <router-link :to="'/inner/addmerchant/'+scope.row.id" class="btn_text">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
     </div>
 </template>
 
 <script>
     import ConHead from '../../../components/ConHead'
-    import PageContent from '../../../components/Pagination'
+    import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){
             return{
-                dialogVisible:false,
-                datalist:[],
-                add:{
-                    number: '',
-                    name: '',
-                    englishname:'',
-                    value: ''
-                },
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
+                dataList:[],
+                searchText:'',
+                searchName:'',
+                typeValue:'',
+                statusId:'',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
                 columnData:[
-                    { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '名称' },
-                    { prop: 'superior1', label: '英文名称' },
-                    { prop: 'name', label: '类型' },
-                    { prop: 'superior2', label: '商户性质' },
-                    { prop: 'superior2', label: '联系人' },
-                    { prop: 'number', label: '电话'},
-                    { prop: 'datetime', label: '更新时间' }
+                    { prop: 'merchantCode', label: '编码'},
+                    { prop: 'merchantName', label: '名称' },
+                    { prop: 'merchantEnglishName', label: '英文名称' },
+                    { prop: 'enumMerchantType', label: '类型' },
+                    { prop: 'enumMerchantNature', label: '商户性质' },
+                    { prop: 'responsiblePerson', label: '联系人' },
+                    { prop: 'contactNumber', label: '电话'},
+                    { prop: 'updateDateStr', label: '更新时间' }
                 ],
-                oneData:{},
-                listid:''
+                typeOptions:[{
+                    typeName:'商场',
+                    id:0
+                },{
+                    typeName:'写字楼',
+                    id:1
+                },{
+                    typeName:'广告位',
+                    id:2
+                },{
+                    typeName:'场地',
+                    id:3
+                }],
+                statusData:[{
+                    name:"全部",
+                    isStatus:true,
+                    id:''
+                },{
+                    name:"新增",
+                    isStatus:false,
+                    id:0
+                },{
+                    name:"已确认",
+                    isStatus:false,
+                    id:1
+                },{
+                    name:"取消",
+                    isStatus:false,
+                    id:2
+                }]
             }
         },
         mounted(){
-            this.getbuilding();
+        },
+        watch:{
+            searchText(){
+                this.$delay(()=>{
+                    this.getDataList(1);
+                },300)
+            },
+            searchName(){
+                this.$delay(()=>{
+                    this.getDataList(1);
+                },300)
+            }
         },
         methods:{
-            handleClose(){
-                this.dialogVisible = false;
+            async getDataList(pageNum,pageSize){
+                await this.$api.rentapi.listpgUsingGET_4({
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
+                    merchantCode:this.searchText,
+                    merchantName:this.searchName,
+                    merchantEnglishName:'',
+                    merchantType:this.typeValue,
+                    status:this.statusId
+                }).then(res=>{
+                    this.dataList = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                })
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
-            },
-            async addbuilding(id){
-                if(id){
-                    let params = {
-                        id:id,
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.updateData(id,params);
-                }else{
-                    let params = {
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.addBuilding(params);
-                }
-                this.dialogVisible = false;
-                this.getbuilding();
-            },
-            async deleteList(id){
-                let params = {
-                    id:id
-                };
+            async deleteListData(id){
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.deleteData(params);
-                    this.datalist = this.datalist.filter(item=>item.id!==id);
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                }).catch(() => {});
+                    this.$api.rentapi.deleteUsingDELETE_4({
+                        id:id
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.getDataList(1);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                })
             },
-            async dialogData(id){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = await this.$api.getOneData(id);
-                }else{
-                    this.add = {};
-                }
+            statusHandler(status){
+                this.statusData.forEach(function(obj){
+                    obj.isStatus = false;
+                });
+                status.isStatus = !status.isStatus;
+                this.statusId = status.id;
+                this.getDataList(1);
+            },
+            typeSelect(){
+                this.getDataList(1);
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }
 </script>
 
 <style scoped>
-
+    .line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
 </style>

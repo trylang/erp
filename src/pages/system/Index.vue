@@ -5,7 +5,7 @@
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -18,12 +18,13 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id)">编辑</button>
+                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
                             <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
                 :title="listid?'编辑区域':'添加区域'"
@@ -31,30 +32,28 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">区域编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
-                </div>
-                <div class="dialoginput">
                     <span class="inputname">区域名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.regionName">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">英文名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文名称" v-model="add.superior1">
+                    <span class="inputname">英文缩写</span>
+                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">上级区域</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
+                    <input class="inputtext" type="text" v-if="listid" v-model="add.pname==null?'无':add.pname+'（不可更改）'" disabled>
+                    <el-tree
+                        v-if="!listid"
+                        :data="treeData"
+                        node-key="id"
+                        ref="tree"
+                        @node-click="checkHandler"
+                        :props="defaultProps">
+                    </el-tree>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose">取 消</el-button>
+                <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
             </span>
         </el-dialog>
@@ -63,7 +62,7 @@
 
 <script>
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
+    import RtPage from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
     export default {
         name: "index",
@@ -71,95 +70,144 @@
             return{
                 dialogVisible:false,
                 datalist:[],
+                listid:'',
+                searchName: '',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
+                treeData: [],
                 add:{
-                    number: '',
-                    name: '',
-                    englishname:'',
-                    value: ''
+                    id: '',
+                    pid: '',
+                    regionName: '',
+                    regionEnglishName: '',
+                    pname: '',
+                    treeId: ''
                 },
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
                 columnData:[
-                    { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '区域名称' },
-                    { prop: 'superior1', label: '英文缩写' },
-                    { prop: 'superior2', label: '上级区域' },
-                    { prop: 'datetime', label: '更新时间' }
+                    { prop: 'regionCode', label: '编码'},
+                    { prop: 'regionName', label: '区域名称' },
+                    { prop: 'regionEnglishName', label: '英文缩写' },
+                    { prop: 'pname', label: '上级区域' },
+                    { prop: 'showUpdateDate', label: '更新时间' }
                 ],
-                oneData:{},
-                listid:''
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
             }
         },
         mounted(){
-            this.getbuilding();
+
+        },
+        watch:{
+            searchName(){
+                this.$delay(()=>{
+                    this.pageHandler(1);
+                },300)
+            }
         },
         methods:{
-            handleClose(){
-                this.dialogVisible = false;
+            pageHandler(pageNum, pageSize){
+                let params = {
+                    pageNum: pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    name: this.searchName
+                }
+                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                    this.datalist = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
-            },
-            async addbuilding(id){
+            addbuilding(id){
                 if(id){
-                    let params = {
-                        id:id,
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.updateData(id,params);
+                    if(!this.add.regionName){
+                        this.$message.warning('区域名称不能为空');
+                    }else if(!this.add.regionEnglishName){
+                        this.$message.warning('英文缩写不能为空');
+                    }else if(!this.add.pid){
+                        this.$message.warning('上级区域不能为空');
+                    }else{
+                        this.$api.systemapi.updateUsingPOST_4({request:{
+                            regionId: this.add.id,
+                            pid: this.add.pid,
+                            regionName: this.add.regionName,
+                            regionEnglishName: this.add.regionEnglishName
+                        }}).then(res=>{
+                            if(res.data.code==200){
+                                this.$message.success(res.data.msg);
+                                this.pageHandler(1);
+                            }else{
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
+                            this.$message.error(res.data.msg);
+                        });
+                    }
                 }else{
-                    let params = {
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.addBuilding(params);
+                    this.$api.systemapi.saveUsingPOST_4({request:{
+                        pid: this.add.treeId,
+                        regionName: this.add.regionName,
+                        regionEnglishName: this.add.regionEnglishName
+                    }}).then(res=>{
+                        if(res.data.code==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    });
                 }
                 this.dialogVisible = false;
-                this.getbuilding();
             },
-            async deleteList(id){
-                let params = {
-                    id:id
-                };
+            dialogData(id, data){
+                this.listid = id;
+                this.dialogVisible = true;
+                if(id) {
+                    this.add = {
+                        id: data.id,
+                        pid: data.pid,
+                        regionName: data.regionName,
+                        regionEnglishName: data.regionEnglishName,
+                        pname: data.pname
+                    }
+                }else{
+                    this.add = {};
+                    this.$api.systemapi.queryTreeUsingGET().then(res=>{
+                        this.treeData = res.data.data;
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
+            },
+            deleteList(id){
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.deleteData(params);
-                    this.datalist = this.datalist.filter(item=>item.id!==id);
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
+                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
+                        if(res.data.code==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res => {
+                        this.$message.error(res.data.msg);
                     });
-                }).catch(() => {});
+                })
             },
-            async dialogData(id){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = await this.$api.getOneData(id);
-                }else{
-                    this.add = {};
-                }
+            checkHandler(data){
+                this.add.treeId = data.id;
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

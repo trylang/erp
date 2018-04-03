@@ -221,7 +221,7 @@ export default {
     })
   },
   created() {
-    this.$store.dispatch("getAccountGroups");
+    //this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

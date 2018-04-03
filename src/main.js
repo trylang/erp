@@ -9,15 +9,15 @@ import axios from 'axios'
 //import * as api from './api/api'
 import * as filter from './utils/filter'
 import store from './store'
-
 import api from './api/apilist'
-axios.defaults.baseURL = '/api';
+
+axios.defaults.baseURL = process.env.API_ROOT;
 Vue.prototype.$api = api;
 Vue.use(ElementUI);
 
 Object.keys(filter).forEach(key => {
     Vue.filter(key, filter[key])
-})
+});
 
 /* eslint-disable no-new */
 const delay = (function() {
@@ -28,6 +28,7 @@ const delay = (function() {
     };
 })();
 Vue.prototype.$delay = delay;
+
 new Vue({
     el: '#app',
     router,

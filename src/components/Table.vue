@@ -6,7 +6,7 @@
           <th v-for="(header,index) in header" :key="index">
             <div class="cell" :class="header.class" :style="header.style">
               {{header.label}}  
-              <input v-if="header.type==='checkbox'" type="checkbox" id="checkedAll" :checked="checkedAll" @click="toggleAll(header, content.list)">							
+              <input v-if="header.type==='checkbox'" type="checkbox" id="checkedAll" :checked="checkedAll" @click="toggleAll(header)">							
               <label v-if="header.type==='checkbox'" for="checkedAll"></label>
             </div>
           </th>
@@ -17,8 +17,10 @@
           <td v-for="(header,key) in header" :key="key">
             <div class="cell">
               <span v-if="header.type==='text'">{{content[header.name]}}</span>
-              <a v-if="header.type==='link'" :style="header.linkStyle" :href="header.basehref+content[header.name]">{{content[header.name]}}</a>
+              <a v-if="header.type==='link'" :style="header.linkStyle" :href="header.basehref+content[header.urlId]">{{content[header.name]}}</a>
               <span v-if="header.type==='time'">{{content[header.name]|formatDate(header.filter)}}</span>
+              <span v-if="header.type==='status'">{{content[header.name] ? header.option[content[header.name]]: ''}}</span>
+              <span v-if="header.type==='selectText'">{{content[header.name] ? header.option[content[header.name]][header.valueLabel]: ''}}</span>
               <input v-if="header.type==='checkbox'" type="checkbox" :id="index" v-model="content[header.name]">
               <label v-if="header.type==='checkbox'" :for="index"></label>
               <div v-if="header.type==='buttons'">
@@ -64,7 +66,13 @@ export default {
   },
   computed: {
     checkedAll: function() {
-      if (this.content.length <= 0) return false;
+      let length = -1;
+      if (this.content && this.content.list) {
+        length = this.content.list.length;
+      } else {
+        length = this.content && this.content.length;
+      }      
+      if (length <= 0) return false;
       const checkName = this.header.find(item => item.type === "checkbox").name;
       return this.content.list.every(item => {
         return item[checkName];
@@ -72,25 +80,22 @@ export default {
     }
   },
   methods: {
-    toggleAll: (header, content) => {
+    toggleAll: function(header) {
       const checkName = [header].find(item => item.type === "checkbox").name;
-      const ifChecked = content.every(item => {
+      const ifChecked = this.content.list.every(item => {
         return item[checkName];
       });
       if (ifChecked) {
-        content.forEach(element => {
+        this.content.list.forEach(element => {
           element[checkName] = false;
         });
       } else {
-        content.forEach(element => {
+        this.content.list.forEach(element => {
           element[checkName] = true;
         });
       }
-      console.log(ifChecked);
-      console.log(content);
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.$emit("pageSize", val);
     },
     handleCurrentChange(val) {
@@ -121,6 +126,11 @@ export default {
     }
   }
   tbody {
+    tr {
+      &:hover {
+        background: #FAFAFA;
+      } 
+    }
     .cell {
       padding: 0.6rem;
     }

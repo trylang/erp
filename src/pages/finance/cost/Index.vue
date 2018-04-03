@@ -5,17 +5,18 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入合同费用项目编码" v-model="query.costItemCodeOrName"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入合同费用项目编码" v-model="query.costItemCodeOrName" @keyup.enter="getCost()"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">结算组别</span>
-            <el-select v-model="query.settleGroupId" placeholder="结算组别" class="dialogselect">
+            <el-select v-model="query.settleGroupId" @change="getCost()" placeholder="结算组别" class="dialogselect">
               <el-option
                 v-for="item in dialog.models[2].options"
                 :key="item.id"
-                :value="item.settleGroupName">
+                :label="item.settleGroupName"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
@@ -25,11 +26,12 @@
       <el-col :span="9">
         <div class="searchselect">
             <span class="inputname">费用类型</span>
-            <el-select v-model="query.costType" placeholder="费用类型" class="dialogselect">
+            <el-select v-model="query.costType" @change="getCost()" placeholder="费用类型" class="dialogselect">
               <el-option
-                v-for="item in selects.expenses"
+                v-for="item in selects.costType"
                 :key="item.id"
-                :value="item.label">
+                :label="item.name"
+                :value="item.value">
               </el-option>
             </el-select>
         </div>
@@ -37,17 +39,18 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">物业性质</span>
-            <el-select v-model="query.propertyType" placeholder="商铺" class="dialogselect">
+            <el-select v-model="query.propertyType" @change="getCost()" placeholder="商铺" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
                 :key="item.id"
-                :value="item.label">
+                :value="item.id"
+                :label="item.label">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改合同费用组别': '添加合同费用组别'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -60,7 +63,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryAccountGroup } from "@/utils/rest/financeAPI";
+import { queryAccountGroup, queryDicsByCode } from "@/utils/rest/financeAPI";
 import { _changeJson } from "@/utils";
 
 export default {
@@ -170,10 +173,10 @@ export default {
           },
           {
             label: "费用类型",
-            valueLabel: "label",
+            valueLabel: "name",
             name: "costType",
             type: "select",
-            value: "id",
+            value: "value",
             options: [],
             placeholder: "请选择合同费用类型"
           },
@@ -240,24 +243,18 @@ export default {
             label: "写字楼"
           }
         ],
-        expenses: [
-          {
-            id: 11,
-            label: "合同费用11"
-          },
-          {
-            id: 22,
-            label: "合同费用22"
-          }
-        ]
+        costType: []
       },
       query: {}
     };
   },
   mounted() {},
   methods: {
-    getCurrentPage(page) {
-      this.getCost(page);
+    getCurrentPage(pageNum) {
+      this.getCost({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getCost({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -283,8 +280,8 @@ export default {
         };
         this.$api.financeapi.updateUsingDELETE_1(param).then(res => {
           const data = res.data;
-          if (data.code === 200) {
-            this.getCost(0, () => {
+          if (data.status === 200) {
+            this.getCost({}, () => {
               $message("success", "删除成功");
             });
           } else {
@@ -294,17 +291,18 @@ export default {
         });
       });
     },
-    async getCost(pageNum, callback) {
+    async getCost( param = {}, callback) {
       const params = {
         costItemCodeOrName: this.query.costItemCodeOrName,
         settleGroupId: this.query.settleGroupId,
         costType: this.query.costType,
         propertyType: this.query.propertyType,
-        pageNum
+        pageNum: param.pageNum,
+        pageSize: param.pageSize
       };
-      this.$api.financeapi.listUsingGET_21(params).then(res => {
+      this.$api.financeapi.listUsingGET_7(params).then(res => {
         const data = res.data;
-        if (data.code === 200) {
+        if (data.status === 200) {
           const Ajson = this.selects.accountGroupJson;
           const Pjson = this.selects.propertyTypeJson;
           data.data.list.forEach(item => {
@@ -323,9 +321,9 @@ export default {
       });
     },
     async addCost(param) {
-      await this.$api.financeapi.addUsingPOST_2({ param }).then(returnObj => {
-        if (returnObj.data.code === 200) {
-          this.getCost(0, () => {
+      await this.$api.financeapi.addUsingPOST_1({ request: param }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.getCost({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
           });
@@ -339,9 +337,9 @@ export default {
         id: param.id,
         param: param
       };
-      await this.$api.financeapi.updateUsingPUT_3(params).then(returnObj => {
-        if (returnObj.data.code === 200) {
-          this.getCost(0, () => {
+      await this.$api.financeapi.updateUsingPUT_4(params).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.getCost({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
           });
@@ -351,12 +349,13 @@ export default {
       });
     },
     async init() {
-      let [accountGroup] = await Promise.all([queryAccountGroup()]);
+      let [accountGroup, costType] = await Promise.all([queryAccountGroup(), queryDicsByCode('0004')]);
       this.selects.accountGroupJson = accountGroup.json;
+      this.selects.costType = costType.data;
       this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
       this.dialog.models[2].options = accountGroup.data.list;
-      this.dialog.models[3].options = this.selects.expenses;
+      this.dialog.models[3].options = this.selects.costType;
       this.dialog.models[4].options = this.selects.shops;
     }
   },

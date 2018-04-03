@@ -13,7 +13,7 @@
         </span>
         <span v-if="con.type==='time'">{{details[con.name]|formatDate(con.filter)}}</span>
         <div class="detail_table" v-if="con.type==='table'">
-          <erp-table :noPage="true" :header="con.table" :content="details[con.name]"></erp-table>
+          <erp-table :noPage="true" :header="con.table" :content="details"></erp-table>
         </div>
       </el-col>
     </el-row>
@@ -30,7 +30,7 @@ export default {
     conHead,
     erpTable
   },
-  props: ["header", "details"]
+  props: ["header", "details"],
 };
 </script>
 

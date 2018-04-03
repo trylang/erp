@@ -1,11 +1,11 @@
 <template>
     <div>
         <con-head title="发布通知">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入消息标题或者商户" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -18,7 +18,6 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id)">编辑</button>
                             <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
@@ -73,14 +72,9 @@
                     this.$message.error(res.data.msg);
                 })
             },
-            dialogData(id){
-                this.listid = id;
+            dialogData(){
                 this.dialogVisible = true;
-                if(id) {
-                    this.$router.push({name:'addtenant', params:{id: id}});
-                }else{
-                    this.$router.push('/system/addtenant/');
-                }
+                this.$router.push('/system/addtenant/');
             },
             deleteList(id){
                 this.$confirm('是否删除该条数据?', '提示', {

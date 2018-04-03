@@ -4,33 +4,33 @@
       <h4>商场租户结算通知单</h4>
       <div class="notice_info">
         <aside class="head_part_l">
-          <p class="mar_bottom_03"><span>商铺：</span><strong>A02</strong></p>
-          <p><span>店铺编号：</span><strong>B129B3</strong></p>
+          <p class="mar_bottom_03"><span>店铺：</span><strong>{{detail.shopName}}</strong></p>
+          <p><span>店铺编号：</span><strong>{{detail.shopCode}}</strong></p>
         </aside>
         <aside class="head_part_r">
-          <p class="mar_bottom_03"><span>电话：12345678912</span></p>
-          <p class="mar_bottom_03"><span>传真：B129B3</span></p>
+          <p class="mar_bottom_03"><span>电话：{{detail.shopTelephone}}</span></p>
+          <p class="mar_bottom_03"><span>传真：{{detail.shopFox}}</span></p>
           <p><span>结算单号：1234567891243232323</span></p>
         </aside>
       </div>
     </header>
     <main>
       <div class="notice_info">
-        <p class="company_name mar_bottom_3">致：北京阿桑那商贸有限公司</p>
+        <p class="company_name mar_bottom_3">致：{{detail.merchantName}}</p>
         <p class="company_info mar_bottom_3">
-          <span>电话：12903945554</span>
-          <span>传真：876945554</span>
+          <span>电话：{{detail.merChantTelephone}}</span>
+          <span>传真：{{detail.merchantFox}}</span>
         </p>
         <p class="company_info mar_bottom_03">
-          <span>发单日期：2017-11-12</span>
+          <span>发单日期：{{detail.releaseDate}}</span>
           <span>页数：400</span>
         </p>
-        <strong>上期结余：0.00</strong>
+        <strong>上期结余：{{detail.totalOwed}}</strong>
       </div>
       <erp-table class="templete_table" :header="header" :content="content" noPage="true" :oddColor="oddColor">
         <tr class="last_tr" slot="lastTr">
           <td colspan="2"><div class="cell"><span>合计欠款</span></div></td>
-          <td><div class="cell"><span>0.00</span></div></td>
+          <td><div class="cell"><span>{{detail.remainOwed}}</span></div></td>
         </tr>
       </erp-table>
     </main>
@@ -44,9 +44,9 @@
           <li class="address">
             <span>2.</span>
             <article>
-              <p>收款名称：西单大悦城有限公司</p>
-              <p>开户银行：中国农业银行北京海淀东区支行（行号147）</p>
-              <p>银行账号：11 2505 0104 0025 292</p>
+              <p>收款名称：{{detail.receiptName}}</p>
+              <p>开户银行：{{detail.openingBank}}</p>
+              <p>银行账号：{{detail.bankAccount}}</p>
               <p>西单大悦城结算中心地址：西单北大街甲131号商场四层结算中心</p>
             </article>
           </li>
@@ -74,7 +74,7 @@
   import SmallCollection from "@/components/SmallCollection";
   export default {
     name: 'notice-template',
-    props: ["header", "content"],
+    props: ["header", "content", "detail"],
     components: {
       erpTable,
       SmallCollection

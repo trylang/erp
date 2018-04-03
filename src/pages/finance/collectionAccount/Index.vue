@@ -5,7 +5,7 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入开户行" v-model="query.name"><i class="iconfont icon-sousuo" @click="getCollectAccount"></i>
+            <input type="text" placeholder="请输入开户行" v-model="query.openingBank" @keyup.enter="getCollectAccount()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
     </el-row>
@@ -53,7 +53,7 @@ export default {
         },
         {
           label: "更新时间",
-          name: "update_time",
+          name: "updateDate",
           type: "time",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
@@ -95,12 +95,17 @@ export default {
       ],
       dialog: {
         models: [{
-          label: '开户行',
+          label: '开户名称',
+          name: 'receiptName',
+          type: 'text',
+          placeholder: '请输入...'
+        }, {
+          label: '开户银行',
           name: 'openingBank',
           type: 'text',
           placeholder: '请输入...'
         }, {
-          label: '银行账户',
+          label: '开户账号',
           name: 'bankAccount',
           type: 'text',
           placeholder: '请输入...'
@@ -112,10 +117,20 @@ export default {
           valueLabel: 'settleGroupName',
           options: [],
           placeholder: '请选择结算组别'
+        }, {
+          label: '购物中心',
+          name: 'shop',
+          type: 'select',
+          value: 'id',
+          valueLabel: 'label',
+          options: [{id: 1, label: '西单大悦城'}],
+          placeholder: '请选择购物中心'
         }],
         dialogVisible: false,
         param: {
+          id: 0,
           bankAccount: "",
+          receiptName: "",
           openingBank: "",
           settleGroupId: "",
         },
@@ -144,7 +159,9 @@ export default {
       selects: {
         accountGroupJson: {}
       },
-      query: {}
+      query: {
+        openingBank: ''
+      }
     };
   },
   mounted() {
@@ -183,7 +200,7 @@ export default {
           };
           this.$api.financeapi.updateUsingDELETE_2(param).then(res => {
             const data = res.data;
-            if(data.code === 200) {
+            if(data.status === 200) {
               this.getCollectAccount({}, () => {
                 $message("success", "删除成功");
               })
@@ -197,24 +214,24 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    getCollectAccount(page, callback) {
+    getCollectAccount(page={}, callback) {
       const param = {
         openingBank: this.query.openingBank,
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
-      queryCollectList(param).then(v => {
+      this.$api.financeapi.listUsingGET_10(param).then(v => {
         const Ajson = this.selects.accountGroupJson;
-        v.list.forEach(item => {
+        v.data.data.list.forEach(item => {
           item.settleGroupLabel = Ajson[item.settleGroupId] ? Ajson[item.settleGroupId].settleGroupName : '';
         });
-        this.content = v;
+        this.content = v.data.data;
         if (callback) callback();
       });
     },
     async addCollectAccount(param) {
-      await this.$api.financeapi.addUsingPOST_4({ param }).then(returnObj => {
-        if(returnObj.data.code === 200) {
+      await this.$api.financeapi.addUsingPOST_3({request: param }).then(returnObj => {
+        if(returnObj.data.status === 200) {
           this.getCollectAccount({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;           
@@ -231,7 +248,7 @@ export default {
       };
       const that = this;
       await this.$api.financeapi.updateUsingPUT_6(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+        if(returnObj.data.status === 200) {
           this.getCollectAccount({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;            
@@ -244,7 +261,7 @@ export default {
     async init () {      
       let [accountGroup] = await Promise.all([queryAccountGroup()]);
       this.selects.accountGroupJson = accountGroup.json;
-      this.dialog.models[this.dialog.models.length-1].options = accountGroup.data.list.length >= 0 ? accountGroup.data.list : [];
+      this.dialog.models[this.dialog.models.length-2].options = accountGroup.data.list.length >= 0 ? accountGroup.data.list : [];
       await this.getCollectAccount({});
     }
   },

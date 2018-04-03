@@ -5,7 +5,7 @@
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model.trim="searchText" @keyup.enter="searchData()"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model.trim="searchText" @keyup.enter="getUserList(1)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -32,8 +32,8 @@
                             <td><div class="cell" v-text="userlist.realname"></div></td>
                             <td><div class="cell" v-text="userlist.sex==1?'男':'女'"></div></td>
                             <td><div class="cell" v-text="userlist.mobile"></div></td>
-                            <td><div class="cell" v-text="userlist.department.departmentName"></div></td>
-                            <td><div class="cell" v-text="userlist.position.positionName"></div></td>
+                            <td><div class="cell" v-text="userlist.department == null?'':userlist.department.departmentName"></div></td>
+                            <td><div class="cell" v-text="userlist.position == null?'':userlist.position.positionName"></div></td>
                             <td><div class="cell" v-for="rolename in userlist.roleSet">{{rolename.roleName}}</div></td>
                             <td>
                                 <div class="cell">
@@ -49,6 +49,7 @@
                     <span class="el-table__empty-text">暂无数据</span>
                 </div>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getUserList" style="margin-bottom:30px;padding: 0 20px;"></rt-page>
         </con-head>
         <el-dialog
                 title="重置密码"
@@ -70,7 +71,7 @@
 
 <script>
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
+    import RtPage from '../../components/Pagination'
     export default {
         name: "user",
         data(){
@@ -79,38 +80,38 @@
                 dataList:[],
                 searchText:'',
                 userid:'',
-                passwordCont:''
+                passwordCont:'',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0
             }
         },
         created(){
         },
         mounted(){
-            this.getUserList();
+            //this.getUserList();
         },
         watch:{
             searchText() {
                 this.$delay(() => {
-                    this.getUserList();
+                    this.getUserList(1);
                 }, 1000);
             }
         },
         methods:{
-            async getUserList(){
+            async getUserList(pageNum,pageSize){
                 await this.$api.systemapi.listUsingGET_9({
-                    pageNum:1,
-                    pageSize:10,
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
                     name:this.searchText
                 }).then(res=>{
                     this.dataList = res.data.data;
+                    this.total = Number(res.data.data.total);
                 })
             },
-            async searchData(){
-                await this.getUserList();
-            },
-            async handleClose(){
+            handleClose(){
                 this.dialogVisible = false;
             },
-            async dialogData(id){
+            dialogData(id){
                 this.userid = id;
                 this.dialogVisible = true;
             },
@@ -154,7 +155,7 @@
         },
         components:{
             ConHead,
-            PageContent
+            RtPage
         }
     }
 </script>

@@ -5,11 +5,11 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入名称" v-model="query.settleGroupName"><i class="iconfont icon-sousuo" @click="getAccountGroups()"></i>
+            <input type="text" placeholder="请输入名称" v-model="query.settleGroupName" @keyup.enter="getAccountGroups()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -111,6 +111,7 @@ export default {
         }],
         dialogVisible: false,
         param: {
+          id: "",
           settleGroupCode: "",
           settleGroupName: "",
           remark: ""
@@ -144,8 +145,11 @@ export default {
   mounted() {
   },
   methods: {
-    getCurrentPage(page) {
-      this.getAccountGroups(page);
+    getCurrentPage(pageNum) {
+      this.getAccountGroups({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getAccountGroups({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -172,7 +176,7 @@ export default {
         };
         this.$api.financeapi.updateUsingDELETE_3(param).then(res => {
           const data = res.data;
-          if(data.code === 200) {
+          if(data.status === 200) {
             item.status = (item.status === true ? false : true);
             $message("success", item.status ? "启用成功!" : "禁用成功!");
           } else {
@@ -182,14 +186,15 @@ export default {
         })
       })
     },
-    async getAccountGroups(pageNum, callback) {
+    async getAccountGroups(page={}, callback) {
       let params = {
         settleGroupName: this.query.settleGroupName,
-        pageNum
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
       };
       this.$api.financeapi.listUsingGET_11(params).then(res => {
         const data = res.data;
-        if(data.code === 200) {
+        if(data.status === 200) {
           this.content = data.data;
           if(callback) callback();
         } else {
@@ -199,11 +204,11 @@ export default {
     },
     async addAccountGroup(param) {
       let params = {
-        param : this.dialog.param
+        request : this.dialog.param
       };
-      await this.$api.financeapi.addUsingPOST_6(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
-          this.getAccountGroups(0, () => {
+      await this.$api.financeapi.addUsingPOST_4(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
+          this.getAccountGroups({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
           });         
@@ -217,9 +222,9 @@ export default {
         id: param.id,
         param: param
       };
-      await this.$api.financeapi.updateUsingPUT_8(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
-          this.getAccountGroups(0, () => {
+      await this.$api.financeapi.updateUsingPUT_7(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
+          this.getAccountGroups({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
           });

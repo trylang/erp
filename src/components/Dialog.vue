@@ -8,16 +8,19 @@
       <div class="dialogbox">
         <div class="dialoginput searchselect" v-for="(model,index) in dialog.models" :key="index">
           <span class="inputname">{{model.label}}</span>
-          <input class="inputtext" v-if="model.type==='text'" v-model="dialog.param[model.name]" :type="model.type" :placeholder="model.placeholder">
-          <el-input v-if="model.type==='textarea'" class="dialog_area" v-model="dialog.param[model.name]" :type="model.type" :placeholder="model.placeholder"></el-input>
-          <!-- <select v-if="model.type==='select'" v-model="dialog.param[model.name]" @change="model.event?model.event(dialog.param[model.name]): ''">
-            <option v-for="(item, index) in model.options"
-              :key="index"
-              :value="item[model.value]">
-              {{item[model.valueLabel]}}
-              </option>
-          </select> -->
-          <el-select v-if="model.type==='select'" v-model="dialog.param[model.name]" @change="model.event?model.event(dialog.param[model.name]): ''">
+          <span v-if="model.type==='word'">{{model.options[dialog.param[model.name]] ? model.options[dialog.param[model.name]][model.valueLabel]:''}}</span>
+          <input class="inputtext" v-if="model.type==='text'" 
+            v-model="dialog.param[model.name]" 
+            :type="model.type" 
+            @change="toggleVal(model, dialog.param[model.name])"
+            :placeholder="model.placeholder">
+          <el-input v-if="model.type==='textarea'" class="dialog_area" 
+            v-model="dialog.param[model.name]" 
+            :type="model.type"
+            @change="toggleVal(model, dialog.param[model.name])" 
+            :placeholder="model.placeholder"></el-input>
+          <el-select v-if="model.type==='select'" v-model="dialog.param[model.name]" 
+            @change="toggleVal(model, dialog.param[model.name])">
             <el-option
               v-for="(item, index) in model.options"
               :key="index"
@@ -25,10 +28,26 @@
               :value="item[model.value]">
             </el-option>
           </el-select>
+          <el-select v-if="model.type==='custom_select'" filterable v-model="dialog.param[model.name]" 
+            @change="toggleVal(model, dialog.param[model.name])">
+            <el-option-group v-for="group in model.optionsGroups"
+              :key="group.label"
+              :label="group.label">
+              <el-option
+                v-for="(item, index) in group.options"
+                :key="index"
+                :label="item[model.valueLabel]"
+                :value="item">
+                <span :style="model.optionsStyle" v-for="(optionlabel, index) in model.optionsLabels" :key="index">{{item[optionlabel]}}</span>
+              </el-option>
+            </el-option-group>
+            
+          </el-select>
           <el-date-picker
             v-if="(model.type==='daterange' || model.type==='date')"
             v-model="dialog.param[model.name]"
             :type="model.type"
+            @blur="toggleVal(model, dialog.param[model.name])"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期">
@@ -45,10 +64,21 @@
 export default {
   name: "erp-dialog",
   props: ["title", "dialog"],
-  watch: {
-    dialog: function(old) {
-      console.log(old);
+  methods: {
+    toggleVal(model, val) {
+      if (model.event) {
+        model.event(this.dialog.param[model.name]);
+      }
+      this.$forceUpdate();
+      // this.$nextTick(function () {
+      //   this.$emit('toggleInput', key, val);
+      // })
     },
+    filterSelect(data) {
+      // console.log(data);
+    }
+  },
+  watch: {
     title: function(old) {
       console.log(old);
     }
@@ -75,7 +105,7 @@ export default {
 }
 select {
   width: 50%;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   background-color: #fff;
   background-image: none;
   border-radius: 4px;
@@ -92,16 +122,16 @@ select {
 }
 option {
   font-size: 14px;
-    padding: 0 20px;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #606266;
-    height: 34px;
-    line-height: 34px;
-    box-sizing: border-box;
-    cursor: pointer;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #606266;
+  height: 34px;
+  line-height: 34px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 </style>
 

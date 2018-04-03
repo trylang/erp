@@ -1,36 +1,49 @@
 <template>
-    <div>
+    <div class="savebox">
+        <div class="savecont">
         <blank-head title="添加商户"></blank-head>
         <el-row class="commonbox">
             <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">商户名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入商户名称">
+                    <input class="inputtext" type="text" placeholder="请输入商户名称" v-model="merchantInfoData.merchantName">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">英文名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文名称">
+                    <input class="inputtext" type="text" placeholder="请输入英文名称" v-model="merchantInfoData.merchantEnglishName">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">商户类型</span>
+                    <el-select v-model="merchantInfoData.merchantType" placeholder="选填" class="dialogselect">
+                        <el-option
+                                v-for="item in merchantTypeOption"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">商户性质</span>
-                    <el-select v-model="value" placeholder="选填" class="dialogselect">
+                    <el-select v-model="merchantInfoData.merchantNature" placeholder="选填" class="dialogselect">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in merchantNatureOption"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">公司名称</span>
-                    <input class="inputtext" type="text" placeholder="选填">
+                    <input class="inputtext" type="text" placeholder="选填" v-model="merchantInfoData.companyName">
                 </div>
             </el-col>
             <el-col :span="12"></el-col>
             <el-col :span="24" class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">地址</span>
-                    <input class="inputtext" type="text" placeholder="选填">
+                    <input class="inputtext" type="text" placeholder="选填" v-model="merchantInfoData.adress">
                 </div>
             </el-col>
         </el-row>
@@ -39,30 +52,30 @@
             <el-row class="dialogbox">
                 <el-col :span="24">
                     <div class="listbox" style="margin: 0;">
-                        <div class="listcont" v-for="(lists,index) in list">
+                        <div class="listcont" v-for="(contactLists,index) in merchantInfoData.CCLstParams">
                             <template>
                                 <el-radio v-model="radio" :label="index+1">主</el-radio>
                             </template>
                             <div class="listcolum columbox" style="padding: 0 20px;">
                                 <div class="columboxinput">
                                     <span class="inputname" style="width: auto">联系人</span>
-                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入联系人">
+                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入联系人" v-model="contactLists.responsiblePerson">
                                 </div>
                             </div>
                             <div class="listcolum columbox" style="padding: 0 20px;">
                                 <div class="columboxinput">
                                     <span class="inputname"  style="width: auto">联系电话</span>
-                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入联系电话">
+                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入联系电话" v-model="contactLists.contactNumber">
                                 </div>
                             </div>
                             <div class="listcolum columbox" style="padding: 0 20px;">
                                 <div class="columboxinput">
                                     <span class="inputname" style="width: auto">传真</span>
-                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入传真">
+                                    <input class="inputtext" style="width: 55%" type="text" placeholder="请输入传真" v-model="contactLists.fax">
                                 </div>
                             </div>
                             <div class="deletebtn">
-                                <button data-v-4d27413a="" class="btn_text">删除</button>
+                                <button class="btn_text" @click="delContactLists(contactLists)">删除</button>
                             </div>
                         </div>
                     </div>
@@ -237,6 +250,8 @@
                 </el-col>
             </el-row>
         </div>
+        </div>
+        <div class="savebtn"><button @click="submitFormData()">提交</button></div>
     </div>
 </template>
 
@@ -245,19 +260,102 @@
     export default {
         name: "add-merchant",
         data(){
-          return{
-              list:[{
-                  name:'B1-40B',
-                  number:'117.98㎡',
-              },{
-                  name:'B1-40B',
-                  number:'117.98㎡',
-              },{
-                  name:'B1-40B',
-                  number:'117.98㎡',
-              }],
-              radio: 1
+            return{
+                merchantInfoData:{
+                    contactLstParams:[{
+                        id:'',
+                        responsiblePerson:'',
+                        contactNumber:'',
+                        fax:'',
+                        mainOrNot:''
+                    }],
+                    id:'',
+                    merchantCode:'',
+                    merchantName:'',
+                    merchantEnglishName:'',
+                    merchantType:'',
+                    merchantNature:'',
+                    companyName:'',
+                    adress:'',
+                    businessLicenseNumber:'',
+                    businessPermitNumber:'',
+                    trademarkRegistrationNumber:'',
+                    legalPersonId:'',
+                    otherCertificate:'',
+                    mainContractId:'',
+                    busLinsNumFile:'',
+                    busPermitNumfile:'',
+                    tradeRegistNumFile:'',
+                    legalPersonIdFile:'',
+                    otherFile:''
+                },
+                merchantTypeOption:[{
+                    name:'商场',
+                    id:'0'
+                },{
+                    name:'写字楼',
+                    id:'1'
+                },{
+                    name:'广告位',
+                    id:'2'
+                },{
+                    name:'场地',
+                    id:'3'
+                }],
+                merchantNatureOption:[{
+                    name:'法人',
+                    id:'0'
+                },{
+                    name:'个体',
+                    id:'1'
+                }],
+                contactList:[],
+
+                radio: 1
           }
+        },
+        mounted(){
+            this.getMerchantInfo();
+        },
+        methods:{
+            async submitFormData(){
+                if(this.$route.params.merchantId == 0) {
+                    await this.$api.rentapi.addUsingPOST_8({
+                        request: this.merchantInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.$router.push('/inner/merchants');
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    this.merchantInfoData.id = this.$route.params.merchantId;
+                    await this.$api.rentapi.updateUsingPUT_10({
+                        request: this.merchantInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.$router.push('/inner/merchants');
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }
+            },
+            async delContactLists(contactLists){
+
+            },
+            async getMerchantInfo(){
+                if(this.$route.params.merchantId != 0) {
+                    this.$api.rentapi.detailUsingGET_7({
+                        id: this.$route.params.merchantId
+                    }).then(res => {
+                        this.merchantInfoData = res.data.data;
+                    })
+                }
+            },
         },
         components:{
             BlankHead

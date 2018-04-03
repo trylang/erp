@@ -1,29 +1,34 @@
 <template>
     <div>
-        <con-head title="单元管理">
-            <router-link to="/inner/addunit" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
+        <con-head tab="tab">
+            <div slot="appendtab" class="tabmenu">
+                <router-link to="/inner/unit">单元管理</router-link>
+                <router-link to="/inner/unitaudit">单元审核</router-link>
+            </div>
+            <router-link to="/inner/addunit/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入单元号"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
-                            <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                            <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
+                                        v-for="item in floorOptions"
+                                        :key="item.id"
+                                        :label="item.floorName"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="12">
                         <div class="texttitle">
                             <span class="inputname">状态：</span>
                             <div class="line-nav">
@@ -35,134 +40,146 @@
             </div>
         </con-head>
         <con-head>
-            <div class="btn"><button @click="auditbtn">确定</button></div>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData" @listSelected="childData">
+                <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
+                            <router-link :to="'/inner/addunit/'+scope.row.id" class="btn_text">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
-        <el-dialog
-                title="添加楼宇类型"
-                :visible.sync="dialogVisible"
-                custom-class="customdialog">
-            <div class="dialogbox">
-                <div class="dialoginput">
-                    <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="add.number">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="add.name">
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     import ConHead from '../../../components/ConHead'
-    import PageContent from '../../../components/Pagination'
+    import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
         name: "unit",
         data(){
             return{
-                dialogVisible:false,
-                datalist:[],
-                add:{
-                    number:"",
-                    name:""
-                },
+                dataList:[],
+                searchText:'',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
                 columnData:[
-                    { type: 'selection', width:'50'},
-                    { prop: 'number', label: '单元号'},
-                    { prop: 'name', label: '楼宇' },
-                    { prop: 'number', label: '楼层'},
-                    { prop: 'number', label: '建筑面积'},
-                    { prop: 'name', label: '使用面积' },
-                    { prop: 'name', label: '状态' },
-                    { prop: 'number', label: '备注'},
-                    { prop: 'datetime', label: '更新时间', width:'180'}
+                    { prop: 'unitCode', label: '单元号'},
+                    { prop: 'buildName', label: '楼宇' },
+                    { prop: 'floorName', label: '楼层'},
+                    { prop: 'area', label: '建筑面积'},
+                    { prop: 'useArea', label: '使用面积' },
+                    { prop: 'statusName', label: '状态' },
+                    { prop: 'remark', label: '备注'},
+                    { prop: 'updateDateLong', label: '更新时间', width:'180'}
                 ],
+                floorOptions:[],
+                floorValue:'',
                 statusData:[{
                     name:"全部",
-                    isStatus:true
+                    isStatus:true,
+                    id:''
                 },{
                     name:"新增",
-                    isStatus:false
+                    isStatus:false,
+                    id:0
                 },{
                     name:"空置",
-                    isStatus:false
+                    isStatus:false,
+                    id:1
                 },{
                     name:"预定",
-                    isStatus:false
+                    isStatus:false,
+                    id:2
                 },{
                     name:"使用中",
-                    isStatus:false
+                    isStatus:false,
+                    id:3
+                },{
+                    name:"取消",
+                    isStatus:false,
+                    id:4
                 },{
                     name:"失效",
-                    isStatus:false
+                    isStatus:false,
+                    id:5
                 }],
-                value: '',
-                options: [{
-                    value: 'F1'
-                }, {
-                    value: 'F2'
-                }, {
-                    value: 'F3'
-                }],
+                statusId:'',
                 multipleSelection:[]
             }
         },
         mounted(){
-            this.getbuilding();
+            this.getFloorList();
+        },
+        watch:{
+            searchText(){
+                this.$delay(()=>{
+                    this.getDataList(1);
+                },300)
+            }
         },
         methods:{
             statusHandler(status){
                 this.statusData.forEach(function(obj){
                     obj.isStatus = false;
                 });
-                status.isStatus = !status.isStatus
+                status.isStatus = !status.isStatus;
+                this.statusId = status.id;
+                this.getDataList(1);
             },
-            handleClose(){
-                this.dialogVisible = false;
+            async getDataList(pageNum,pageSize){
+                await this.$api.rentapi.listUsingGET_15({
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
+                    code:this.searchText,
+                    buildId:'',
+                    floorId:this.floorValue,
+                    type:1,
+                    status:this.statusId
+                }).then(res=>{
+                    this.dataList = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                })
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            async getFloorList(){
+                await this.$api.rentapi.selectByBuildIdUsingGET({
+                    buildId:1
+                }).then(res=>{
+                    this.floorOptions = res.data.data;
+                })
             },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
+            async deleteListData(id){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.rentapi.deleteUsingDELETE_6({
+                        id:id
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.getDataList(1);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                })
             },
-            childData(data){
-                this.multipleSelection = data;
-            },
-            auditbtn(){
-                console.log(this.multipleSelection)
+            floorSelect(){
+                this.getDataList(1);
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

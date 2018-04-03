@@ -4,8 +4,10 @@
       <el-col :span="10" class="not-print">
         <div class="erp_container">
           <el-tree
-            :data="data2"
+            :data="createTree"
             show-checkbox
+            ref="tree"
+            node-key="id"
             default-expand-all
             highlight-current
             :props="defaultProps"
@@ -15,7 +17,7 @@
       </el-col>
       <el-col :span="14" class="full_width">
         <div class="erp_container" id="subOutputRank-print">
-          <notice-template :header="header" :content="content"></notice-template>
+          <notice-template :header="header" :content="content" :detail="detail"></notice-template>
         </div>
       </el-col>   
     </el-row>
@@ -24,65 +26,18 @@
 
 <script>
 import NoticeTemplate from "@/components/NoticeTemplate";
+import { $message } from "@/utils/notice";
+
 // import print from '@/utils/directive/print';
 export default {
   name: "account-tree",
-  props: ["tree", "header", "content"],
+  props: ["createTree", "header", "content"],
   components: {
     NoticeTemplate
   },
   data() {
     return {
-      data2: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1"
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1"
-            },
-            {
-              id: 6,
-              label: "二级 2-2"
-            }
-          ]
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1"
-            },
-            {
-              id: 8,
-              label: "二级 3-2"
-            }
-          ]
-        }
-      ],
+      detail: {},
       defaultProps: {
         children: "children",
         label: "label",
@@ -95,46 +50,113 @@ export default {
   },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate)
+      if (checked) {
+        const nodes = this.$refs.tree.getCheckedNodes();
+        const lastId = nodes[nodes.length - 1].id;
+        this.billDetail(lastId);
+      }
     },
-    selectedPrint() {
-      let subOutputRankPrint = document.getElementById('subOutputRank-print');  
-      console.log(subOutputRankPrint.innerHTML);  
-      let newContent =subOutputRankPrint.innerHTML;  
-      let oldContent = document.body.innerHTML;  
-      document.body.innerHTML = newContent;  
-      window.print();  
-      window.location.reload();  
-      document.body.innerHTML = oldContent;  
+    selectedIds() {
+      if (this.$refs.tree) {
+        const ids = [];
+        const nodes = this.$refs.tree.getCheckedNodes();
+        nodes.forEach(item => {
+          if (!item.children) {
+            ids.push(item.id);
+          }
+        });
+        return ids;
+      }
+    },
+    printBill() {
+      let subOutputRankPrint = document.getElementById("subOutputRank-print");
+      console.log(subOutputRankPrint.innerHTML);
+      let newContent = subOutputRankPrint.innerHTML;
+      let oldContent = document.body.innerHTML;
+      document.body.innerHTML = newContent;
+      window.print();
+      window.location.reload();
+      document.body.innerHTML = oldContent;
       return false;
+    },
+    async billDetail(id) {
+      await this.$api.financeapi.detailUsingGET_1({ id }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.detail = returnObj.data.data;
+        }
+      });
+    },
+    async cancelBill() {
+      const id = this.selectedIds();
+      if (!id) return;
+      if (id.length <= 0) {
+        $message("info", "请先选择结算单!");
+        return;
+      }
+      await this.$api.financeapi.cancelUsingPUT_3({ id }).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
+    async confirmBill() {
+      const id = this.selectedIds();
+      if (!id) return;
+      if (id.length <= 0) {
+        $message("info", "请先选择结算单!");
+        return;
+      }
+      await this.$api.financeapi.confirmUsingPUT_3({ id }).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
+    async publishBill() {
+      const id = this.selectedIds();
+      if (!id) return;
+      if (id.length <= 0) {
+        $message("info", "请先选择结算单!");
+        return;
+      }
+      await this.$api.financeapi.publishUsingPUT({ id }).then(returnObj => {
+        console.log(returnObj);
+      });
+    },
+    async deleteBill() {
+      const id = this.selectedIds();
+      if (!id) return;
+      if (id.length <= 0) {
+        $message("info", "请先选择结算单!");
+        return;
+      }
+      await this.$api.financeapi.delUsingDELETE_2({ id }).then(returnObj => {
+        console.log(returnObj);
+      });
     }
   },
   mounted() {
-    this.$root.eventEmit.$on('print', () => {
-      this.selectedPrint();
-    })
+    this.$root.eventEmit.$on("ACCOUNTTREE", type => {
+      this[type.type]();
+    });
   }
 };
 </script>
 
 <style lang="scss" scoped>
-  .account_tree {
-    margin-top: 2rem;
-    .erp_container {
-      border: 1px solid #eee;
-      padding: 1rem;
-      margin: 0 .6rem;
-    }
+.account_tree {
+  margin-top: 2rem;
+  .erp_container {
+    border: 1px solid #eee;
+    padding: 1rem;
+    margin: 0 0.6rem;
   }
+}
 
-  // @media print {
-  //   .not-print {
-  //     display: none;
-  //   }
-  //   .full_width {
-  //     width: 100%;
-  //   }
-  // }
+// @media print {
+//   .not-print {
+//     display: none;
+//   }
+//   .full_width {
+//     width: 100%;
+//   }
+// }
 </style>
 
 

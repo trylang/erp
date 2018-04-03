@@ -12,23 +12,33 @@ const BlankPage = r => require.ensure([], () => r(require('../pages/Blank')), 'm
 const Building = r => require.ensure([], () => r(require('../pages/tenancy/assets/Index')), 'assets');
 const FloorManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/FloorManage')), 'assets');
 const Unit = r => require.ensure([], () => r(require('../pages/tenancy/assets/Unit')), 'assets');
+const UnitAudit = r => require.ensure([], () => r(require('../pages/tenancy/assets/UnitAudit')), 'assets');
 const AddUnit = r => require.ensure([], () => r(require('../pages/tenancy/assets/AddUnit')), 'assets');
 const Site = r => require.ensure([], () => r(require('../pages/tenancy/assets/Site')), 'assets');
+const SiteAudit = r => require.ensure([], () => r(require('../pages/tenancy/assets/SiteAudit')), 'assets');
 const AdType = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdType')), 'assets');
 const AdManage = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdManage')), 'assets');
+const AdAudit = r => require.ensure([], () => r(require('../pages/tenancy/assets/AdAudit')), 'assets');
 const Office = r => require.ensure([], () => r(require('../pages/tenancy/assets/Office')), 'assets');
+const OfficeAudit = r => require.ensure([], () => r(require('../pages/tenancy/assets/OfficeAudit')), 'assets');
 //2.招商投资管理
 const Operation = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Index')), 'merchants');
 const Brand = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Brand')), 'merchants');
+const BrandAudit = r => require.ensure([], () => r(require('../pages/tenancy/merchants/BrandAudit')), 'merchants');
 const Merchants = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Merchant')), 'merchants');
+const MerchantAudit = r => require.ensure([], () => r(require('../pages/tenancy/merchants/MerchantAudit')), 'merchants');
 const AddMerchant = r => require.ensure([], () => r(require('../pages/tenancy/merchants/AddMerchant')), 'merchants');
 const Shop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Shop')), 'merchants');
+const ShopAudit = r => require.ensure([], () => r(require('../pages/tenancy/merchants/ShopAudit')), 'merchants');
+const AddShop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/AddShop')), 'merchants');
 const Group = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Group')), 'merchants');
 const Goods = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Goods')), 'merchants');
 //3.合同管理
 const Intention = r => require.ensure([], () => r(require('../pages/tenancy/contract/Index')), 'contract');
+const IntentionAudit = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexAudit')), 'contract');
 const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexAdd')), 'contract');
 const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract/Shops')), 'contract');
+const ShopsAudit = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAudit')), 'contract');
 const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')), 'contract');
 const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')), 'contract');
 const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')), 'contract');
@@ -40,6 +50,7 @@ const AddOffice = r => require.ensure([], () => r(require('../pages/tenancy/cont
 const AccountGroup = r => require.ensure([], () => r(require('../pages/finance/account-group/Index')), 'finance');
 const Cost = r => require.ensure([], () => r(require('../pages/finance/cost/Index')), 'finance');
 const TakeMargin = r => require.ensure([], () => r(require('../pages/finance/takeMargin/Index')), 'finance');
+const TakeMarginDetail = r => require.ensure([], () => r(require('../pages/finance/takeMargin/Detail')), 'finance');
 const CollectEarnest = r => require.ensure([], () => r(require('../pages/finance/collectEarnest/Index')), 'finance');
 const CollectDeposit = r => require.ensure([], () => r(require('../pages/finance/collectDeposit/Index')), 'finance');
 const PayManagement = r => require.ensure([], () => r(require('../pages/finance/payManagement/Index')), 'finance');
@@ -50,21 +61,24 @@ const TaxRate2cost = r => require.ensure([], () => r(require('../pages/finance/t
 const CollectionAccount = r => require.ensure([], () => r(require('../pages/finance/collectionAccount/Index')), 'finance');
 const AccountAdjust = r => require.ensure([], () => r(require('../pages/finance/accountAdjust/Index')), 'finance');
 const AddAdjustment = r => require.ensure([], () => r(require('../pages/finance/addAdjustment/Index')), 'finance');
+const AdjustmentDetail = r => require.ensure([], () => r(require('../pages/finance/accountAdjust/Detail')), 'finance');
 const ContractMargin = r => require.ensure([], () => r(require('../pages/finance/contractMargin/Index')), 'finance');
 const DealMargin = r => require.ensure([], () => r(require('../pages/finance/dealMargin/Index')), 'finance');
-const TakeadvancePay = r => require.ensure([], () => r(require('../pages/finance/TakeadvancePay/Index')), 'finance');
-const MerchantAdvancePay = r => require.ensure([], () => r(require('../pages/finance/MerchantAdvancePay/Index')), 'finance');
+const TakeadvancePay = r => require.ensure([], () => r(require('../pages/finance/takeadvancePay/Index')), 'finance');
+const MerchantAdvancePay = r => require.ensure([], () => r(require('../pages/finance/merchantAdvancePay/Index')), 'finance');
 const DealAdvancePay = r => require.ensure([], () => r(require('../pages/finance/dealAdvancePay/Index')), 'finance');
 const Entering = r => require.ensure([], () => r(require('../pages/finance/entering/Index')), 'finance');
 const IrregularCost = r => require.ensure([], () => r(require('../pages/finance/IrregularCost/Index')), 'finance');
 const CostAdjust = r => require.ensure([], () => r(require('../pages/finance/costAdjust/Index')), 'finance');
+const CostAdjustDetail = r => require.ensure([], () => r(require('../pages/finance/costAdjust/Detail')), 'finance');
 const AddCostAdjust = r => require.ensure([], () => r(require('../pages/finance/addCostAdjust/Index')), 'finance');
 const RentFree = r => require.ensure([], () => r(require('../pages/finance/rentFree/Index')), 'finance');
+const RentFreeDetail = r => require.ensure([], () => r(require('../pages/finance/rentFree/Detail')), 'finance');
 const AddRentFree = r => require.ensure([], () => r(require('../pages/finance/addRentFree/Index')), 'finance');
 const GenerateAccount = r => require.ensure([], () => r(require('../pages/finance/generateAccount/Index')), 'finance');
 const AccountManagement = r => require.ensure([], () => r(require('../pages/finance/accountManagement/Index')), 'finance');
 const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/finance/importIrregularCost/Index')), 'finance');
-const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration')), 'finance');
+const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration/Index')), 'finance');
 
 //销售管理
 const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')), 'sales');
@@ -106,7 +120,7 @@ const router = new Router({
         {
             path: '/inner',
             component: Inner,
-            redirect: '/inner/building',
+            redirect: '/inner/floormanage',
             children: [
                 {
                     path: 'building',
@@ -121,12 +135,20 @@ const router = new Router({
                     component: Unit
                 },
                 {
-                    path: 'addunit',
+                    path: 'unitaudit',
+                    component: UnitAudit
+                },
+                {
+                    path: 'addunit/:unitId',
                     component: AddUnit
                 },
                 {
                     path: 'site',
                     component: Site
+                },
+                {
+                    path: 'siteaudit',
+                    component: SiteAudit
                 },
                 {
                     path: 'adtype',
@@ -137,8 +159,16 @@ const router = new Router({
                     component: AdManage
                 },
                 {
+                    path: 'adaudit',
+                    component: AdAudit
+                },
+                {
                     path: 'office',
                     component: Office
+                },
+                {
+                    path: 'officeaudit',
+                    component: OfficeAudit
                 },
                 {
                     path: 'operation',
@@ -149,16 +179,32 @@ const router = new Router({
                     component: Brand
                 },
                 {
+                    path: 'brandaudit',
+                    component: BrandAudit
+                },
+                {
                     path: 'merchants',
                     component: Merchants
                 },
                 {
-                    path: 'addmerchant',
+                    path: 'merchantaudit',
+                    component: MerchantAudit
+                },
+                {
+                    path: 'addmerchant/:merchantId',
                     component: AddMerchant
                 },
                 {
                     path: 'shop',
                     component: Shop
+                },
+                {
+                    path: 'shopaudit',
+                    component: ShopAudit
+                },
+                {
+                    path: 'addshop/:shopId',
+                    component: AddShop
                 }, {
                     path: 'group',
                     component: Group
@@ -172,40 +218,60 @@ const router = new Router({
                     component: Intention
                 },
                 {
-                    path: 'addcontract',
+                    path: 'intentionaudit',
+                    component: IntentionAudit
+                },
+                {
+                    path: 'addcontract/:contractId',
                     component: Contract
                 },
                 {
-                    path: 'shops',
+                    path: 'shops/:prototypeId',
                     component: Shops
                 },
                 {
-                    path: 'addshops',
+                    path: 'shopsaudit/:prototypeId',
+                    component: ShopsAudit
+                },
+                {
+                    path: 'addshops/:contractId/:prototypeId',
                     component: AddShops
                 },
                 {
-                    path: 'field',
-                    component: Field
+                    path: 'field/:prototypeId',
+                    component: Shops
                 },
                 {
-                    path: 'addfidle',
-                    component: AddField
+                    path: 'fidleaudit/:prototypeId',
+                    component: ShopsAudit
                 },
                 {
-                    path: 'adposition',
-                    component: AdPosition
+                    path: 'addfidle/:contractId/:prototypeId',
+                    component: AddShops
                 },
                 {
-                    path: 'addadposition',
-                    component: AddAdPosition
+                    path: 'adposition/:prototypeId',
+                    component: Shops
                 },
                 {
-                    path: 'coffice',
-                    component: cOffice
+                    path: 'adaudit/:prototypeId',
+                    component: ShopsAudit
                 },
                 {
-                    path: 'addoffice',
-                    component: AddOffice
+                    path: 'addadposition/:contractId/:prototypeId',
+                    component: AddShops
+                },
+                {
+                    path: 'coffice/:prototypeId',
+                    component: Shops
+                },
+                {
+                    path: 'cofficeaudit/:prototypeId',
+                    component: ShopsAudit
+                },
+                {
+                    path: 'addoffice/:contractId/:prototypeId',
+                    component: AddShops
                 }
             ]
         },
@@ -225,6 +291,10 @@ const router = new Router({
                 {
                     path: 'takeMargin',
                     component: TakeMargin
+                },
+                {
+                    path: 'takeMargin/detail/:id',
+                    component: TakeMarginDetail
                 },
                 {
                     path: 'takeMargin/collectDeposit',
@@ -267,6 +337,10 @@ const router = new Router({
                     component: AddAdjustment
                 },
                 {
+                    path: 'accountAdjust/detail/:id',
+                    component: AdjustmentDetail
+                },
+                {
                     path: 'contractMargin',
                     component: ContractMargin
                 },
@@ -299,9 +373,15 @@ const router = new Router({
                 }, {
                     path: 'costAdjust/addCostAdjust',
                     component: AddCostAdjust
+                },{
+                    path: 'costAdjust/detail/:id',
+                    component: CostAdjustDetail
                 }, {
                     path: 'rentFree',
                     component: RentFree
+                },{
+                    path: 'rentFree/detail/:id',
+                    component: RentFreeDetail
                 }, {
                     path: 'rentFree/addRentFree',
                     component: AddRentFree
@@ -360,6 +440,26 @@ const router = new Router({
                 },
                 {
                     path: 'bank',
+                    component: Bank
+                },
+                {
+                    path: 'wechat',
+                    component: Bank
+                },
+                {
+                    path: 'paytreasure',
+                    component: Bank
+                },
+                {
+                    path: 'yzfbill',
+                    component: Bank
+                },
+                {
+                    path: 'zhxbill',
+                    component: Bank
+                },
+                {
+                    path: 'etc',
                     component: Bank
                 },
                 {

@@ -19,28 +19,28 @@ export default {
         content: [
           {
             label: "收款单号",
-            name: "id",
+            name: "receiptCode",
             left_span: 6,
             right_span: 18,
             type: "text"
           },
           {
             label: "合同号",
-            name: "id",
+            name: "contractNumber",
             left_span: 6,
             right_span: 18,
             type: "text"
           },
           {
-            label: "票据号",
-            name: "id",
+            label: "结算单号",
+            name: "settleNumber",
             left_span: 6,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户名称",
-            name: "name",
+            name: "merchantName",
             left_span: 6,
             right_span: 18,
             type: "text"
@@ -53,8 +53,15 @@ export default {
             type: "text"
           },
           {
-            label: "收款金额",
-            name: "name",
+            label: "应收金额",
+            name: "amountReceivable",
+            left_span: 6,
+            right_span: 5,
+            type: "text"
+          },
+          {
+            label: "已收金额",
+            name: "amountReceived",
             left_span: 6,
             right_span: 5,
             type: "text"
@@ -68,43 +75,61 @@ export default {
           },
           {
             label: "收款日期",
-            name: "update_time",
+            name: "createDate",
             left_span: 6,
             right_span: 18,
-            type: "time",
-            filter: "yyyy-MM-dd"
+            type: "text"
+            // filter: "yyyy-MM-dd"
           },
           {
             label: "状态",
-            name: "state",
+            name: "receiptStatus",
             left_span: 6,
             right_span: 18,
             type: "status",
             option: {
-              '1': '新增',
-              '2': '已修改'
+              0: "新增",
+              1: "已确认",
+              2: "已取消"
             }
           },
-          {   
-            label: "收款方式",
+          {
+            label: "收款形式",
+            name: "receiptTypeText",
+            left_span: 6,
+            right_span: 18,
+            type: "text"
+          },
+          {
+            label: "费用项目及收费方式",
             name: "methods",
             left_span: 6,
             right_span: 18,
             type: "table",
             table: [
               {
-                label: "收款方式",
-                name: "id",
+                label: "费用项目",
+                name: "financeCostId",
                 type: "text"
               },
               {
+                label: "收款方式",
+                name: "receiptType",
+                type: "text",
+                option: {
+                  "1": "预存",
+                  "2": "现金",
+                  "3": "各种银行"
+                }
+              },
+              {
                 label: "收款金额",
-                name: "money",
+                name: "receiptMony",
                 type: "text"
               },
               {
                 label: "备注",
-                name: "desc",
+                name: "remarks",
                 type: "text"
               }
             ]
@@ -121,9 +146,13 @@ export default {
     $route: "fetchData"
   },
   methods: {
-    fetchData(id) {
-      getPayManagementById(id).then(returnObj => {
-        this.details = returnObj;
+    async fetchData(id) {
+      await this.$api.financeapi.byIdUsingGET({ id }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          let data = returnObj.data.data;
+          data.list = data.billRrecord;
+          this.details = data;
+        }
       });
     }
   }

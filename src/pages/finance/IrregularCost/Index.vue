@@ -4,17 +4,18 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-          <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.costNo"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+          <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.costNo" @keyup.enter="getIrregularCost()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect">
+            <el-select v-model="query.merchantId" @change="getIrregularCost()" placeholder="商户名称" class="dialogselect">
               <el-option
-                v-for="item in selects.expenses"
+                v-for="item in selects.merchants"
                 :key="item.id"
-                :value="item.label">
+                :label="item.merchantName"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
@@ -29,18 +30,18 @@
                 :key="status.id" 
                 :class="{active:status.isStatus}" 
                 @click="statusHandler(status)">{{status.label}}</a>
-                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
             </div>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">物业性质</span>
-            <el-select v-model="query.name" placeholder="商铺" class="dialogselect">
+            <span class="inputname">合同</span>
+            <el-select v-model="query.contractId" @change="getIrregularCost()" placeholder="合同" class="dialogselect">
               <el-option
-                v-for="item in selects.shops"
+                v-for="item in selects.contracts"
                 :key="item.id"
-                :value="item.label">
+                :label="item.contractCode"
+                :value="item.id">
               </el-option>
             </el-select>
         </div>
@@ -63,6 +64,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import { queryAccountGroup, queryMerchant, queryContract } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -159,31 +161,23 @@ export default {
         param: {}
       },
       selects: {
-        shops: [{
-          id: 1,
-          label: '商铺1'
-        }, {
-          id: 2,
-          label: '商铺2'
-        }],
-        expenses: [{
-          id: 11,
-          label: '费用11'
-        }, {
-          id: 22,
-          label: '费用22'
-        }],
+        merchants: [], // 商户
+        contracts: [], // 合同
         status: [{
           isStatus:true,
+          id: '',
           label: '全部'
         }, {
           isStatus:false,
+          id: 10,
           label: '新增'
         }, {
           isStatus:false,
+          id: 20,
           label: '已确认'
         }, {
           isStatus:false,
+          id: 30,
           label: '取消'
         }]
       },
@@ -205,7 +199,8 @@ export default {
 					obj.isStatus = false;
 			});
 			status.isStatus = !status.isStatus;
-      this.query.status = status.isStatus;
+      this.query.status = status.id;
+      this.getIrregularCost();
     },
     getCurrentPage(pageNum) {
       this.getIrregularCost({pageNum});
@@ -231,25 +226,29 @@ export default {
     },
     async getIrregularCost(page={}, callback) {
       let params = {
-        // costNo: this.query.costNo || null,
-        // merchantId: this.query.merchantId || null,
-        // contractId: this.query.contractId || null,
-        // status: this.query.status || null,
+        costNo: this.query.costNo,
+        merchantId: this.query.merchantId,
+        contractId: this.query.contractId,
+        status: this.query.status,
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
       this.$api.financeapi.listUsingGET_12(params).then(res => {
         const data = res.data;
-        if(data.code === 200) {
+        if(data.status === 200) {
           data.data.list.forEach(item => {
             item.checked = false;
             if (item.status === 10) {
               item.showEdit = true;
               item.showCancel = false;
             }
-            if (item.status >= 20) {
+            if (item.status === 20) {
               item.showEdit = false;
               item.showCancel = true;
+            }
+            if (item.status === 30) {
+              item.showEdit = true;
+              item.showCancel = false;
             }
           });
           this.content = data.data;
@@ -264,7 +263,7 @@ export default {
         id: param
       };
       await this.$api.financeapi.confirmUsingPUT_4(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+        if(returnObj.data.status === 200) {
           this.getIrregularCost({}, () => {
             $message("success", "确认成功!");
           });  
@@ -277,8 +276,8 @@ export default {
       let params = {
         id: param
       };
-      await this.$api.financeapi.delUsingDELETE_3(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+      await this.$api.financeapi.delUsingDELETE_5(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
           this.getIrregularCost({}, () => {
             $message("success", "删除成功!");
           });  
@@ -292,7 +291,7 @@ export default {
         id: param.id
       };
       await this.$api.financeapi.cancelUsingPUT_4(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+        if(returnObj.data.status === 200) {
           this.getIrregularCost({}, () => {
             $message("success", "取消成功!");
           });
@@ -301,35 +300,41 @@ export default {
           $message("error", "取消失败!");
         }       
       });
+    },
+    async init() {
+      let [accountGroup, merchants, contracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract()]); 
+      this.selects.merchants = merchants.data.list;
+      this.selects.contracts = contracts.data.list;
+      await this.getIrregularCost();
     }
   },
   computed: {},
   created() {
-    this.getIrregularCost();
+    this.init();
   }
 };
 
 </script>
 
 <style lang="scss" scoped>
-    .line-nav{
-        flex:1;
-        line-height: 30px;
-    }
-    .line-nav a{
-        margin: 0 10px;
-        color: #666;
-        font-weight: bold;
-        height: 30px;
-        text-decoration: none;
-        display: inline-block;
-    }
-    .line-nav a.active{
-        color: #457fcf;
-        border-bottom: 2px solid #457fcf;
-    }
-		.global-block {
-			margin-top: 1rem;
-		}
+.line-nav{
+    flex:1;
+    line-height: 30px;
+}
+.line-nav a{
+    margin: 0 10px;
+    color: #666;
+    font-weight: bold;
+    height: 30px;
+    text-decoration: none;
+    display: inline-block;
+}
+.line-nav a.active{
+    color: #457fcf;
+    border-bottom: 2px solid #457fcf;
+}
+.global-block {
+  margin-top: 1rem;
+}
 		
 </style>

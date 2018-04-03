@@ -4,11 +4,11 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入名称" v-model="query.rateCode"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入名称" v-model="query.rateCode" @keyup.enter="getTaxRates()"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog :title="dialog.param.id? '修改税码': '添加税码'" :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -20,6 +20,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+import { formatDate } from "@/utils/filter";
 export default {
   name: "account-group",
   components: {
@@ -42,8 +43,8 @@ export default {
         },
         {
           label: "有效期",
-          name: "validDate",
-          type: "time",
+          name: "validDateRange",
+          type: "text",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
@@ -118,9 +119,9 @@ export default {
         }],
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          rateCode: "",
+          rate: "",
+          validDate: ""
         },
         options: [{
           label: "确 定",
@@ -149,8 +150,11 @@ export default {
     };
   },
   methods: {
-    getCurrentPage(page) {
-      this.getTaxRates(page);
+    getCurrentPage(pageNum) {
+      this.getTaxRates({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getTaxRates({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -174,14 +178,20 @@ export default {
         this.deleteTaxRates(item);
       });
     },
-    async getTaxRates(pageNum=0, callback) {
+    async getTaxRates(page={}, callback) {
       const param = {
-        pageNum,
+        pageNum: page.pageNum,
+        pageSize: page.pageSize,
         rateCode: this.query.rateCode
       };
-      this.$api.financeapi.listUsingGET_23(param).then(res => {
+      this.$api.financeapi.listUsingGET_9(param).then(res => {
         const data = res.data;
-        if(data.code === 200) {
+        if(data.status === 200) {
+          data.data.list.forEach(item => {
+            let validTime = formatDate(item.validDateStart, 'yyyy/MM/dd') +'~'+ (item.validDateEnd ? formatDate(item.validDateEnd, 'yyyy/MM/dd') : '' );
+            item.validDateRange = validTime;
+            item.validDate = item.validDateStart;
+          });
           this.content = data.data;
         } else {
           return data.message;
@@ -191,10 +201,10 @@ export default {
     },
     async addTaxRates(param) {
       let params = {
-        param : param
+        request : param
       };
-      await this.$api.financeapi.addUsingPOST_4(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+      await this.$api.financeapi.addUsingPOST_2(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
             // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "添加成功!");
@@ -211,8 +221,8 @@ export default {
         param: param
       };
       const that = this;
-      await this.$api.financeapi.updateUsingPUT_6(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+      await this.$api.financeapi.updateUsingPUT_5(params).then(returnObj => {
+        if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
             // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "修改成功!");
@@ -229,7 +239,7 @@ export default {
       };
       const that = this;
       await this.$api.financeapi.deleteUsingDELETE_2(params).then(returnObj => {
-        if(returnObj.data.code === 200) {
+        if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
             // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "删除成功!");

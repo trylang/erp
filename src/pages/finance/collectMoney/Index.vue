@@ -5,7 +5,7 @@
       <el-row slot="preappend">
         <el-col :span="9">
           <div class="searchbox">
-              <input type="text" placeholder="请输入收款单号\合同号\账单号\票据号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+              <input type="text" placeholder="请输入收款单号\合同号\账单号\票据号" v-model="query.filterName" @keyup.enter="filterTree(query.filterName)"><i class="iconfont icon-sousuo"></i>
           </div>
         </el-col>
       </el-row>
@@ -13,36 +13,40 @@
         <el-col :span="12">
           <div class="erp_container">
             <el-tree
-              :data="data2"
-              show-checkbox
+              :data="createTree"
+              ref="tree"
+              node-key="id"
               default-expand-all
               highlight-current
+              :default-checked-keys="query.routerIds" 
               :props="defaultProps"
-              @check-change="handleCheckChange">
+              @node-click="handleCheckChange"
+              >
             </el-tree>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="marg_top_3rem">
-            <el-tabs class="collect_money_tabs" v-model="params.name" type="border-card">
+            <el-tabs class="collect_money_tabs" v-model="tabs.name" @tab-click="tabsClick" type="border-card">
               <el-tab-pane label="一次性全部收取" name="all">
-                <el-row class="all_tab_head">
+                <el-row v-if="query.billId" class="all_tab_head">
                   <el-col :span="19">
-                    <p class="all_info">共 <span>6</span> 项，合计 <strong>$231.000.00</strong></p>
+                    <p class="all_info">共 <span>{{content.size}}</span> 项，合计 <strong>{{content.amountReceivable}}</strong></p>
                   </el-col>
                   <el-col :span="5">
                     <el-button class="global-btn" @click="dialogVisible = true"><i class="iconfont icon-shoukuan" style="margin-right:.5rem"></i>收款</el-button>
                   </el-col>
                 </el-row>
-                <el-row class="tab_content" :gutter="8">
-                  <el-col :span="12">
-                    <small-collection :title="defaultProps.title">
+                <el-row v-if="query.billId" class="tab_content" :gutter="8">
+                  <el-col :span="12" v-for="(item, index) in content.item" :key="index">
+                    <small-collection :title="item.title">
                       <div slot="cash" class="cash_item">
-                        <p><span>应收金额</span><strong>￥50,000.00</strong></p>
-                        <p><span>已收金额</span><strong>￥40,000.00</strong></p>
-                        <p><span>未收金额</span><strong>￥10,000.00</strong></p>
+                        <p><span>应收金额</span><strong>{{item.amountReceivable}}</strong></p>
+                        <p><span>已收金额</span><strong>{{item.amountReceived}}</strong></p>
+                        <p><span>本次收款</span><strong>{{item.currentMoney}}</strong></p>
+                        <p><span>未收金额</span><strong>{{item.owed}}</strong></p>
                       </div>
-                      <ul class="cash_detail">
+                      <!-- <ul class="cash_detail">
                         <li class="detail_item">
                           <div class="detail_left">
                             <span>工商银行123343</span>
@@ -65,9 +69,9 @@
                             <a href="#">删除</a>
                           </div>
                         </li>
-                      </ul>
+                      </ul> -->
 
-                      <el-row class="rent_input">
+                      <!-- <el-row class="rent_input">
                         <el-col :span="10" class="searchselect marg_top_0">
                           <el-select v-model="params.bank" placeholder="请选择银行" class="dialogselect">
                             <el-option
@@ -83,34 +87,26 @@
                         <el-col :span="24" class="rent_area">
                           <el-input type="textarea" placeholder="请输入备注" v-model="params.desc"></el-input>
                         </el-col>
-                      </el-row>
+                      </el-row> -->
                       
-                    </small-collection>
-                  </el-col>
-                  <el-col :span="12">
-                    <small-collection :title="defaultProps.title">
-                      <div slot="cash" class="cash_item">
-                        <p><span>应收金额</span><strong>￥50,000.00</strong></p>
-                        <p><span>已收金额</span><strong>￥40,000.00</strong></p>
-                        <p><span>未收金额</span><strong>￥10,000.00</strong></p>
-                      </div>
                     </small-collection>
                   </el-col>
                 </el-row>
               </el-tab-pane>
               <el-tab-pane label="部分收取" name="part">
-                <el-row class="tab_content" :gutter="8">
-                  <el-col :span="12">
-                    <small-collection :title="defaultProps.title">
-                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="part_dialogVisible = true">收款</el-button>
+                <el-row v-if="query.billId" class="tab_content" :gutter="8">
+                  <el-col :span="12" v-for="(item, index) in content.item" :key="index">
+                    <small-collection :title="item.title">
+                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="mul_collect_btn(item)">收费</el-button>
                       <div slot="cash" class="cash_item">
-                        <p><span>应收金额</span><strong>￥50,000.00</strong></p>
-                        <p><span>已收金额</span><strong>￥40,000.00</strong></p>
-                        <p><span>未收金额</span><strong>￥10,000.00</strong></p>
+                        <p><span>应收金额</span><strong>{{item.amountReceivable}}</strong></p>
+                        <p><span>已收金额</span><strong>{{item.amountReceived}}</strong></p>
+                        <p><span>本次收款</span><strong>{{item.currentMoney}}</strong></p>
+                        <p><span>未收金额</span><strong>{{item.owed}}</strong></p>
                       </div>
                     </small-collection>
                   </el-col>
-                  <el-col :span="12">
+                  <!-- <el-col :span="12">
                     <small-collection :title="defaultProps.title">
                       <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="part_dialogVisible = true">收款</el-button>
                       <div slot="cash" class="cash_item">
@@ -119,6 +115,9 @@
                         <p><span>未收金额</span><strong>￥10,000.00</strong></p>
                       </div>
                     </small-collection>
+                  </el-col> -->
+                  <el-col :span="2" :offset="21">
+                    <el-button type="primary" @click="mulSubmit">提交</el-button>
                   </el-col>
                 </el-row>
               </el-tab-pane>
@@ -130,24 +129,22 @@
     <el-dialog
       title="收费"
       :visible.sync="dialogVisible"
-      width="42%"
-      :before-close="handleClose">
-      <pay-methods type="singleSelected"></pay-methods>
+      width="42%">
+      <pay-methods type="singleSelected" @singleParam="getDialogParam" :needBillInfo="query.needBillInfo" :dialog="dialog"></pay-methods>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="singleConfirm">确 定</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
       title="收费"
       :visible.sync="part_dialogVisible"
-      width="42%"
-      :before-close="handleClose">
-      <pay-methods type="mulSelected"></pay-methods>
+      width="42%">
+      <pay-methods type="mulSelected" @mulSelectParam="get_Mul_DialogParam" :needBillInfo="query.needBillInfo" :needItemInfo="query.needItemInfo" :dialog="dialog"></pay-methods>
       <span slot="footer" class="dialog-footer">
         <el-button @click="part_dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="part_dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="mulConfirm(query.needItemInfo)" >确 定</el-button>
       </span>
     </el-dialog>
   </div>  
@@ -156,8 +153,11 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import conHead from "../../../components/ConHead";
+import { $message } from "../../../utils/notice";
 import smallCollection from "../../../components/SmallCollection";
 import PayMethods from "@/components/PayMethods";
+import { formatTree, filterTree } from "@/utils";
+
 export default {
   name: "account-group",
   components: {
@@ -167,63 +167,14 @@ export default {
   },
   data() {
     return {
-      data2: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1"
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1"
-            },
-            {
-              id: 6,
-              label: "二级 2-2"
-            }
-          ]
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1"
-            },
-            {
-              id: 8,
-              label: "二级 3-2"
-            }
-          ]
-        }
-      ],
+      createTree: [],
+      originalTree: [],
+      content: {
+        item: []
+      },
       defaultProps: {
         children: "children",
-        label: "label",
-        title: {
-          ifBorder: true,
-          label: 'POS租金'
-        }
+        label: "label"
       },
       selects: {
         methods: [
@@ -265,52 +216,309 @@ export default {
           }
         ]
       },
-      params: {
+      tabs: {
+        // 点击标签切换 一次性和部分收款
         name: "all",
         bank: ""
       },
       query: {
-        name: ""
+        filterName: "",
+        financeId: "",
+        routerIds: [],
+        needBillInfo: {}, // 结算单相关数据，以及一次性收款中得总欠款，以及店铺预存款信息
+        needItemInfo: {}, // 部分收款中要显示的数据
+        mul_total_params: [] //多选提交时候的所有数据
+      },
+      dialog: {
+        param: {}
       },
       dialogVisible: false,
-      part_dialogVisible: false
+      part_dialogVisible: false,
+      total_bill_Info: {}
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
+    initParams() {
+      return (this.dialog.param = {
+        id: "",
+        costItemIdList: [], //一个/多个 费用项的Id集合
+        financeId: "", // 结算单id
+        contractId: "", // 合同id
+        merchantName: "", // 商户名称
+        amountReceived: "", // 实际收款金额
+        createDate: "", // 一次性收款日期
+        remark: "", // 备注
+        paymentWayType: "", // 付款类型
+        payType: "", // 非预存款方式时 收款方式（现金22/各种银行卡33）
+        payTypeAndmony: {}, // 收款信息map (多选)
+        collectionDate: "", // 收款日期
+        costItemId: "" // 单个费用项详情id
+      });
+    },
     linkTo(path) {
       this.$router.push({ path });
     },
-    handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then(_ => {
-          done();
-        })
-        .catch(_ => {});
+    tabsClick(tab, event) {
+      this.initParams();
     },
-    statusHandler(status) {
-      this.selects.status.forEach(function(obj) {
-        obj.isStatus = false;
+    // 部分收款 按钮
+    mul_collect_btn(item) {
+      this.part_dialogVisible = true;
+      this.query.needItemInfo = item;
+      if (!item.customId) {
+        item.customId = item.id;
+        this.initParams();
+        this.$root.eventEmit.$emit("INITIAL_PARAM", { type: "add" });
+      } else {
+        this.$root.eventEmit.$emit("EDIT_PARAM", {
+          needItemInfo: item,
+          collectionDate: this.total_bill_Info[item.id].collectionDate
+        });
+      }
+    },
+    selectedIds() {
+      if (this.$refs.tree) {
+        const ids = [];
+        const nodes = this.$refs.tree.getCheckedNodes();
+        nodes.forEach(item => {
+          if (!item.children) {
+            ids.push(item.id);
+          }
+        });
+        return ids;
+      }
+    },
+    filterTree(name) {
+      if (!name) this.createTree = this.originalTree;
+      this.createTree = filterTree(this.originalTree, name);
+    },
+    getDialogParam(param) {
+      this.dialog.param[param.key] = param.value;
+    },
+    // 点击remark发送数据的方法
+    get_Mul_DialogParam(param) {
+      Object.assign(this.total_bill_Info[param.id], param.param);
+    },
+    async singleConfirm() {
+      if (!this.dialog.param.createDate) {
+        $message("info", "请选选择收款日期");
+        return;
+      }
+      if (this.dialog.param.paymentWayType === 11) {
+        // 预存款方式
+        if (
+          this.query.needBillInfo.bankBalance <
+          this.query.needBillInfo.amountReceived
+        ) {
+          $message("info", "预存款不足，请换种付款方式");
+          return;
+        }
+      }
+      this.dialog.param.costItemIdList = this.content.item.map(item => item.id);
+      let total_owed = parseInt(this.query.needBillInfo.amountReceived);
+      let param = {
+        amountReceived: total_owed.toFixed(2),
+        costItemIdList: this.dialog.param.costItemIdList,
+        financeId: this.query.needBillInfo.id,
+        contractId: this.query.needBillInfo.contractId,
+        merchantName: this.query.needBillInfo.merchantName,
+        amountReceived: this.query.needBillInfo.amountReceived,
+        createDate: this.dialog.param.createDate,
+        remark: this.dialog.param.remark,
+        receiptType: 11, // 收款类型（一次性11/多次22）
+        paymentWayType: this.dialog.param.paymentWayType,
+        payType: ""
+      };
+
+      await this.$api.financeapi.oneOffSaveUsingPOST({ param }).then(res => {
+        if (res.data.status === 200) {
+          $message("success", "收款成功");
+          this.content.item.forEach(item => {
+            item.currentMoney = item.owed;
+            item.owed = 0;
+            item.amountReceived = item.amountReceivable;
+          });
+          this.dialogVisible = false;
+        } else {
+          $message("error", "收款失败");
+        }
       });
-      status.isStatus = !status.isStatus;
     },
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+    // 多选中确定按钮操作
+    mulConfirm(param) {
+      const item_param = this.total_bill_Info[param.id];
+      const bankBalance = this.query.needBillInfo.bankBalance;
+      if (!this.dialog.param.createDate) {
+        $message("info", "请选择收款日期");
+        return;
+      }
+      if (!item_param.payType) {
+        $message("info", "请选择收款方式及金额");
+        return;
+      }
+
+      if (
+        item_param.payType["11"] &&
+        item_param.payType["11"].money > bankBalance
+      ) {
+        $message("info", "支付金额大于预存款，请重新输入");
+        return;
+      }
+
+      let currentMoney = 0;
+      let payTypeAndmony = [];
+      let item_payType_ary = Object.values(item_param.payType);
+      let ifNaN = item_payType_ary.some(item => {
+        return isNaN(item.money);
+      });
+      if (ifNaN) {
+        $message("info", "支付金额需填写数值，请重新输入");
+        return;
+      }
+      item_payType_ary.forEach(item => {
+        if (!item.money) item.money = 0;
+        currentMoney += parseInt(item.money);
+        payTypeAndmony.push({
+          remark: item.remark,
+          money: item.money,
+          code: item.code
+        });
+      });
+      // 计算本次收款总和
+      this.total_bill_Info[param.id].currentMoney = currentMoney;
+
+      console.log(item_param.currentMoney);
+      if (item_param.currentMoney > item_param.owed) {
+        $message("info", "支付金额大于欠款，请重新输入");
+        return;
+      }
+
+      if (currentMoney > param.owed) {
+        $message("info", "缴费金额应小于等于应收金额");
+        return;
+      }
+      this.query.needItemInfo.payTypeAndmony = payTypeAndmony;
+      this.total_bill_Info[param.id].payTypeAndmony = payTypeAndmony;
+      this.total_bill_Info[
+        param.id
+      ].contractId = this.query.needBillInfo.contractId;
+      this.total_bill_Info[
+        param.id
+      ].financeId = this.query.needBillInfo.financeId;
+      this.total_bill_Info[
+        param.id
+      ].merchantName = this.query.needBillInfo.merchantName;
+      this.content.item.forEach(item => {
+        if (item.id === param.id) {
+          item.currentMoney = currentMoney;
+          item.owed = item.owed - currentMoney;
+          item.amountReceived = item.amountReceived + currentMoney;
+        }
+      });
+      this.part_dialogVisible = false;
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    // 多选中提交按钮操作
+    async mulSubmit() {
+      let ary = Object.values(this.total_bill_Info).filter(
+        item => !!item.payType
+      );
+      await this.$api.financeapi
+        .manyOffSaveUsingPOST({ paramList: ary })
+        .then(res => {
+          if (res.data.status === 200) {
+            $message("success", "收款成功");
+            console.log(res.data.data);
+          }
+        });
+    },
+    async handleCheckChange(data) {
+      if (data.children) return;
+      let billId = "";
+      if (this.$route.query.financeId) {
+        billId = this.$route.query.financeId;
+      } else {
+        billId = data.id;
+      }
+      this.query.needBillInfo = data;
+      this.query.billId = billId;
+      // 获取收款详情及确认金额
+      let [content, bankBalance] = await Promise.all([
+        this.getBilllistByAid(billId),
+        this.getBankBalance(data.shopId ? data.shopId: data.merchantId)
+      ]);
+      this.content = content;
+      this.query.needBillInfo.bankBalance = bankBalance;
+      this.query.needBillInfo.financeId = billId;
+    },
+    // 获取树
+    async getBillsTree() {
+      await this.$api.financeapi.billTreeUsingGET({}).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.createTree = formatTree(returnObj.data.data, {
+            onlyChild: true
+          });
+          Object.assign(this.originalTree, this.createTree);
+        }
+      });
+    },
+    // 根据结算单查询收款详情
+    async getBilllistByAid(id) {
+      const res = await this.$api.financeapi.queryCostUsingGET({ id });
+      this.query.needBillInfo.amountReceived = 0;
+      if (res.data.status === 200) {
+        res.data.data.item.forEach(item => {
+          // 一次性收款总数
+          this.query.needBillInfo.amountReceived += parseInt(item.owed);
+          this.total_bill_Info[item.id] = item; // 部分收取中每项结算组别下的详情
+          item.title = {
+            ifBorder: true,
+            label: item.costItemName
+          };
+        });
+        return res.data.data;
+      }
+    },
+    // 根据店铺id查询预存款余额
+    async getBankBalance(shopId) {
+      const param = {
+        billId: this.query.billId,
+        shopId: shopId
+      };
+      const res = await this.$api.financeapi.amountReceivedAllUsingPOST({
+        param
+      });
+      if (res.data.status === 200) {
+        return res.data.data;
+      }
+    },
+    async init() {
+      this.initParams();
+      await this.getBillsTree();
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.$store.dispatch("getAccountGroups");
+    this.init();
+    if (this.$route.query.financeId) {
+      const routerParam = {
+        financeId: this.$route.query.financeId,
+        merchantName: this.$route.query.merchantName,
+        contractId: this.$route.query.contractId,
+        shopId: this.$route.query.shopId
+      };
+      this.handleCheckChange(routerParam);
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (vm.$route.query.financeId) {
+        vm.query.financeId = vm.$route.query.financeId;
+        vm.query.needBillInfo.merchantId = vm.$route.query.merchantId;
+        vm.query.routerIds = [];
+        vm.query.routerIds.push(parseInt(vm.$route.query.financeId));
+      }
+    });
   }
 };
 </script>
@@ -330,7 +538,6 @@ $cardsDeepColor: (
   padding: 1.4rem 1rem;
   border: 1px solid nth($cardsDeepColor, 5);
 }
-
 .all_tab_head {
   padding-top: 1rem;
   .all_info {
@@ -382,7 +589,6 @@ $cardsDeepColor: (
 .rent_btns {
   margin-top: 1rem;
 }
-
 .tab_content {
   margin-top: 1rem;
   .cash_item {
@@ -390,43 +596,40 @@ $cardsDeepColor: (
     p {
       display: flex;
       justify-content: space-between;
-      margin-bottom: .3rem;
+      margin-bottom: 0.3rem;
     }
     p > span {
-      color:nth($cardsDeepColor, 4)
+      color: nth($cardsDeepColor, 4);
     }
     p:nth-of-type(1) > strong {
-      color: nth($cardsDeepColor, 4)
+      color: nth($cardsDeepColor, 4);
     }
     p:nth-of-type(2) > strong {
-      color: nth($cardsDeepColor, 1)
+      color: nth($cardsDeepColor, 1);
     }
-    p:nth-of-type(3) {
-      margin: .5rem -1rem 0;
-      padding: .5rem 1rem;
+    p:nth-of-type(4) {
+      margin: 0.5rem -1rem 0;
+      padding: 0.5rem 1rem;
       border-top: 1px dashed nth($cardsDeepColor, 5);
       background: nth($cardsDeepColor, 6);
       strong {
-        color: nth($cardsDeepColor, 3);       
+        color: nth($cardsDeepColor, 3);
       }
     }
   }
 }
-
 .marg_top_0 {
   margin-top: 0;
 }
-
 .marg_top_3rem {
   margin-top: 3rem;
 }
 .padd_botton_0 {
   padding-bottom: 0 !important;
 }
-
 .white-btn {
   background: #fff;
   border: 1px solid nth($cardsDeepColor, 1);
-  color:nth($cardsDeepColor, 1);
+  color: nth($cardsDeepColor, 1);
 }
 </style>

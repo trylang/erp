@@ -5,7 +5,7 @@
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchText" @keyup.enter="searchData()"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchText" @keyup.enter="getRoleList(1)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -38,44 +38,45 @@
                     <span class="el-table__empty-text">暂无数据</span>
                 </div>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getRoleList" style="margin-bottom:30px;padding: 0 20px;"></rt-page>
         </con-head>
     </div>
 </template>
 
 <script>
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
+    import RtPage from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
     export default {
         name: "role",
         data(){
             return{
                 dataList:[],
-                searchText:''
+                searchText:'',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0
             }
         },
         mounted(){
-            this.getRoleList();
+            //this.getRoleList();
         },
         watch:{
             searchText() {
                 this.$delay(() => {
-                    this.getRoleList();
+                    this.getRoleList(1);
                 }, 1000);
             }
         },
         methods:{
-            async getRoleList(){
+            async getRoleList(pageNum,pageSize){
                 await this.$api.systemapi.listUsingGET_8({
-                    pageNum:1,
-                    pageSize:10,
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
                     name:this.searchText
                 }).then(res=>{
                     this.dataList = res.data.data;
+                    this.total = Number(res.data.data.total);
                 })
-            },
-            async searchData(){
-                await this.getRoleList();
             },
             async deleteRole(rId){
                 this.$confirm('是否删除该条数据?', '提示', {
@@ -98,7 +99,7 @@
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

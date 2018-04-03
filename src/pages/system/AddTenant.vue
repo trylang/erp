@@ -1,25 +1,36 @@
 <template>
     <div class="savebox">
         <div class="savecont">
-            <con-head :title="aId?'编辑通知':'创建通知'">
-                <el-form ref="form" label-width="100px" label-position="left" style="margin:30px 0 0 30px;width:50%">
-                    <el-form-item label="标题">
-                        <el-input v-model="add.noticeName" placeholder="请输入标题"></el-input>
-                    </el-form-item>
-                    <el-form-item label="选择商户">
-                        <el-select v-model="add.merchantId" placeholder="选择商户">
-                            <el-option
-                                :label="item.label"
-                                :value="item.value"
-                                :key="item.id"
-                                v-for="item of tenantType">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="消息内容">
-                        <el-input type="textarea" v-model="add.noticeContent" placeholder="请输入消息内容"></el-input>
-                    </el-form-item>
-                </el-form>
+            <con-head title="创建通知">
+                <el-row class="commonbox">
+                    <el-col :span="12" class="dialogbox">
+                        <div class="dialoginput">
+                            <span class="inputname" style="line-height:40px;">标题</span>
+                            <input class="inputtext" type="text" style="height:40px;" placeholder="请输入标题" v-model="add.noticeName">
+                        </div>
+                        <div class="dialoginput">
+                            <span class="inputname">选择商户</span>
+                            <el-select v-model="add.merchantIds" multiple placeholder="请选择商户" class="dialogselect" @change="checkUserHandler">
+                                <el-option label="商户编号" value="0" disabled>
+                                    <span style="float: left">商户编号</span>
+                                    <span style="float:right;color:#8492a6;font-size:13px;margin-right:15px">商户名称</span>
+                                </el-option>
+                                <el-option
+                                    v-for="item in options"
+                                    :key="item.id"
+                                    :label="item.merchantName"
+                                    :value="item.merchantCode">
+                                    <span style="float: left">{{ item.merchantCode }}</span>
+                                    <span style="float:right;color:#8492a6;font-size:13px;margin-right:15px">{{ item.merchantName }}</span>
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <div class="dialoginput">
+                            <span class="inputname" style="line-height:40px;">消息内容</span>
+                            <input class="inputtext" type="text" style="height:40px;" placeholder="请输入消息内容" v-model="add.noticeContent">
+                        </div>
+                    </el-col>
+                </el-row>
             </con-head>
         </div>
         <div class="savebtn"><button @click="submitHandler">提交</button></div>
@@ -31,51 +42,34 @@
     export default {
         data(){
             return{
+                options:[],
                 add:{
                     noticeName: '',
-                    merchantId: '',
+                    merchantIds: [],
                     noticeContent: ''
-                },
-                tenantType:[
-                    {label: '商户A', value: 1},
-                    {label: '商户B', value: 2},
-                    {label: '商户C', value: 3},
-                ]
-            }
-        },
-        computed:{
-            aId(){
-                return this.$route.params.id || null
+                }
             }
         },
         mounted(){
-            if(this.aId){
-                this.$api.systemapi.byIdUsingGET_2({id:this.aId}).then(res=>{
-                    this.add = res.data.data;
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                });
-            }else{
-                this.add = {};
-            }
+            this.$api.rentapi.listUsingGET_11({status:4}).then(res=>{
+                this.options = res.data.data;
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            });
         },
         methods:{
+            checkUserHandler(val){
+                this.add.merchantIds = val;
+            },
             submitHandler(){
-                if(this.aId){
-                    this.$api.systemapi.updateUsingPOST_2({
-                        noticeName: this.add.noticeName,
-                        merchantId: this.add.merchantId,
-                        noticeContent: this.add.noticeContent
-                    }).then(res=>{
-                        this.$message.success(res.data.msg);
-                        this.$router.push('/system/tenant')
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                if(!this.add.noticeName){
+                    this.$message.warning('标题不能为空');
+                }else if(this.add.merchantIds.length==0){
+                    this.$message.warning('商户不能为空');
                 }else{
                     this.$api.systemapi.saveUsingPOST_2({
                         noticeName: this.add.noticeName,
-                        merchantIds: this.add.merchantId,
+                        merchantIds: this.add.merchantIds,
                         noticeContent: this.add.noticeContent
                     }).then(res=>{
                         this.$message.success(res.data.msg);
@@ -84,7 +78,7 @@
                         this.$message.error(res.data.msg);
                     });
                 }
-            }
+            },
         },
         components:{
             ConHead,

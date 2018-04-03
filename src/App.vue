@@ -263,7 +263,36 @@
     .customdialog {
         width: 600px;
     }
-
+    .contractdialog{
+        width: 600px;
+    }
+    .contractdialog .el-dialog__header{
+        padding: 0;
+    }
+    .contractdialog .el-dialog__title{
+        border: none;
+        line-height: 0;
+        padding: 0;
+        margin: 0;
+    }
+    .contractdialog .el-dialog__body{
+        padding: 15px;
+    }
+    .contractdialog .searchbox{
+        margin: 0;
+    }
+    .contractdialog .dialogbox{
+        padding: 0;
+    }
+    .floorsearchlist{
+        padding: 15px 0;
+        overflow: auto;
+    }
+    .floorsearchlist li{
+        float: left;
+        width: 50px;
+        cursor: pointer;
+    }
     /*dialog内容框*/
     .dialogbox {
         padding: 0 40px;
@@ -767,7 +796,17 @@
     .listskin input {
         width: 50%;
         height: 24px;
-        border: 1px solid #e6e6e6;
+        border: none;
+        border-bottom: 1px solid #e6e6e6;
+        padding-left: 5px;
+        font-size: 14px;
+    }
+    .listskin .text{
+        width: 50%;
+        height: 24px;
+        border: none;
+        padding-left: 5px;
+        color: #333;
     }
 
     .contractcont {
@@ -1373,5 +1412,35 @@
 
     .dialog_template .el-input__icon.el-icon-circle-close {
         margin-right: -26px;
+    }
+    /*数据字典*/
+    .dictstatus .el-input{
+        width: 70px;
+    }
+    .dictstatus .el-input__inner{
+        height: 26px;
+        padding: 0 12px;
+    }
+    .dictstatus .el-input__icon{
+        width:16px;
+    }
+    /*切换标题*/
+    .tabmenu{
+        color: #666;
+        margin: 10px 0;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .tabmenu a{
+        color: #666;
+        text-decoration: none;
+        margin-right: 30px;
+        border-left: 4px solid #fff;
+        padding-left: 5px;
+    }
+    .tabmenu a.router-link-active{
+        color: #353c5f;
+        border-left: 4px solid #353c5f;
+        padding-left: 5px;
     }
 </style>

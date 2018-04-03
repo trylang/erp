@@ -1,5 +1,5 @@
 'use strict'
 module.exports = {
     NODE_ENV: '"production"',
-    API_ROOT: '"//www.baidu.com/api"'
+    API_ROOT: '"//192.168.1.235:30013"'
 }

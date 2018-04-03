@@ -1,41 +1,47 @@
 <template>
     <div>
-        <con-head title="广告位管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
+        <con-head tab="tab">
+            <div slot="appendtab" class="tabmenu">
+                <router-link to="/inner/admanage">广告位管理</router-link>
+                <router-link to="/inner/adaudit">广告位审核</router-link>
+            </div>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入单元号"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="10" :offset="4">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼宇</span>
-                            <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect()">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
+                                        v-for="item in buildOptions"
+                                        :key="item.id"
+                                        :label="item.buildName"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
-                            <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                            <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
+                                        v-for="item in floorOptions"
+                                        :key="item.id"
+                                        :label="item.floorName"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="10" :offset="4">
                         <div class="texttitle">
                             <span class="inputname">状态：</span>
                             <div class="line-nav">
@@ -47,20 +53,20 @@
             </div>
         </con-head>
         <con-head>
-            <div class="btn"><button @click="auditbtn">确定</button></div>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData" @listSelected="childData">
+                <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id)">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
                 title="添加广告位"
@@ -69,46 +75,66 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="add.number">
+                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="unitInfoData.unitCode">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="add.name">
+                    <span class="inputname">购物中心</span>
+                    <el-select v-model="unitInfoData.marketId" placeholder="请选择" class="dialogselect" disabled>
+                        <el-option
+                                v-for="item in marketOptions"
+                                :key="item.id"
+                                :label="item.marketName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼宇</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" class="dialogselect" disabled>
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in buildOptions"
+                                :key="item.id"
+                                :label="item.buildName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">楼层</span>
+                    <el-select v-model="unitInfoData.floorId" placeholder="请选择" class="dialogselect">
+                        <el-option
+                                v-for="item in floorOptions"
+                                :key="item.id"
+                                :label="item.floorName"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">类型</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="unitInfoData.rentAdvertisingTypeId" placeholder="请选择" class="dialogselect">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in typeOptions"
+                                :key="item.id"
+                                :label="item.typeName"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">规格尺寸</span>
-                    <input class="inputtext" type="text" placeholder="请输入规格尺寸" v-model="add.name">
+                    <input class="inputtext" type="text" placeholder="请输入规格尺寸" v-model="unitInfoData.advertisingStandard">
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="选填"></textarea>
+                    <textarea class="textareabox" placeholder="选填" v-model="unitInfoData.remark"></textarea>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
+                <el-button type="primary" @click="submitFormData()">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -116,95 +142,210 @@
 
 <script>
     import ConHead from '../../../components/ConHead'
-    import PageContent from '../../../components/Pagination'
+    import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
         name: "unit",
         data(){
             return{
                 dialogVisible:false,
-                datalist:[],
-                add:{
-                    number:"",
-                    name:""
+                dataList:[],
+                searchText:'',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
+                listId:'',
+                buildValue:'',
+                floorValue:'',
+                statusId:'',
+                marketOptions:[{
+                    marketName:'朝阳大悦城',
+                    id:1
+                }],
+                buildOptions:[{
+                    buildName:'商场',
+                    id:1
+                }],
+                floorOptions:[],
+                typeOptions:[{
+                    typeName:'LED大屏',
+                    id:1
+                }],
+                unitInfoData:{
+                    advertisingStandard: '',
+                    area: '',
+                    buildId: 1,
+                    floorId: '',
+                    marketId: 1,
+                    remark: '',
+                    rentAdvertisingTypeId: '',
+                    type: 2,
+                    unitCode: '',
+                    useArea: ''
                 },
                 columnData:[
-                    { type: 'selection', width:'50'},
-                    { prop: 'number', label: '广告位'},
-                    { prop: 'name', label: '楼宇' },
-                    { prop: 'number', label: '楼层'},
-                    { prop: 'number', label: '类型'},
-                    { prop: 'name', label: '规格' },
-                    { prop: 'number', label: '备注'},
-                    { prop: 'name', label: '状态' },
-                    { prop: 'datetime', label: '更新时间', width:'180'}
+                    { prop: 'unitCode', label: '广告位'},
+                    { prop: 'buildName', label: '楼宇' },
+                    { prop: 'floorName', label: '楼层'},
+                    { prop: 'rentAdvertisingTypeName', label: '类型'},
+                    { prop: 'advertisingStandard', label: '规格' },
+                    { prop: 'remark', label: '备注'},
+                    { prop: 'statusName', label: '状态' },
+                    { prop: 'updateDateLong', label: '更新时间', width:'180'}
                 ],
                 statusData:[{
                     name:"全部",
-                    isStatus:true
+                    isStatus:true,
+                    id:''
                 },{
                     name:"新增",
-                    isStatus:false
+                    isStatus:false,
+                    id:0
                 },{
                     name:"空置",
-                    isStatus:false
+                    isStatus:false,
+                    id:1
                 },{
                     name:"预定",
-                    isStatus:false
+                    isStatus:false,
+                    id:2
                 },{
                     name:"使用中",
-                    isStatus:false
+                    isStatus:false,
+                    id:3
+                },{
+                    name:"取消",
+                    isStatus:false,
+                    id:4
                 },{
                     name:"失效",
-                    isStatus:false
-                }],
-                value: '',
-                options: [{
-                    value: 'F1'
-                }, {
-                    value: 'F2'
-                }, {
-                    value: 'F3'
-                }],
-                multipleSelection:[]
+                    isStatus:false,
+                    id:5
+                }]
             }
         },
         mounted(){
-            this.getbuilding();
+            this.getFloorList();
+        },
+        watch:{
+            searchText(){
+                this.$delay(()=>{
+                    this.getDataList(1);
+                },300)
+            }
         },
         methods:{
+            handleOpen(){
+                this.dialogVisible = true;
+            },
             statusHandler(status){
                 this.statusData.forEach(function(obj){
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus
+                this.statusId = status.id;
+                this.getDataList(1);
             },
             handleClose(){
                 this.dialogVisible = false;
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            async getDataList(pageNum,pageSize){
+                await this.$api.rentapi.listUsingGET_15({
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
+                    code:this.searchText,
+                    buildId:this.buildValue,
+                    floorId:this.floorValue,
+                    type:2,
+                    status:this.statusId
+                }).then(res=>{
+                    this.dataList = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                })
             },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
+            async getFloorList(){
+                await this.$api.rentapi.selectByBuildIdUsingGET({
+                    buildId:1
+                }).then(res=>{
+                    this.floorOptions = res.data.data;
+                })
             },
-            childData(data){
-                this.multipleSelection = data;
+            async submitFormData(){
+                if(this.listId == '') {
+                    await this.$api.rentapi.addUsingPOST_10({
+                        param: this.unitInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.getDataList(1);
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    await this.$api.rentapi.updateUsingPUT_13({
+                        id:this.listId,
+                        param: this.unitInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.getDataList(1);
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }
             },
-            auditbtn(){
-                console.log(this.multipleSelection)
+            async getUnitInfo(id){
+                this.dialogVisible = true;
+                this.listId = id;
+                this.unitInfoData={
+                    advertisingStandard: '',
+                    area: '',
+                    buildId: 1,
+                    floorId: '',
+                    marketId: 1,
+                    remark: '',
+                    rentAdvertisingTypeId: '',
+                    type: 2,
+                    unitCode: '',
+                    useArea: ''
+                }
+                this.$api.rentapi.selectByIdUsingGET_3({
+                    id: id
+                }).then(res => {
+                    this.unitInfoData = res.data.data;
+                })
+            },
+            async deleteListData(id){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.rentapi.deleteUsingDELETE_6({
+                        id:id
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.getDataList(1);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                })
+            },
+            buildSelect(){
+                this.getDataList(1);
+            },
+            floorSelect(){
+                this.getDataList(1);
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

@@ -3,20 +3,52 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入合同编号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入合同编号" v-model="searchName" @keyup.enter="getContractList()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
-        <div class="texttitle">
-            <span class="inputname">合同阶段：</span>
-            <div class="line-nav">
-                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
-                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
-            </div>
+        <div class="searchselect">
+            <span class="inputname">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getContractList">
+              <el-option
+                v-for="item in selects.merchants"
+                :key="item.id"
+                :label="item.merchantName"
+                :value="item.id">
+              </el-option>
+            </el-select>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
+    <el-row slot="preappend">
+        <el-col :span="9">
+            <div class="texttitle">
+                <span class="inputname">合同阶段：</span>
+                <div class="line-nav">
+                    <a href="javascript:void(0)" 
+                        v-for="status in selects.status" 
+                        :key="status.id" 
+                        :class="{active:status.isStatus}" 
+                        @click="statusHandler(status)">{{status.label}}</a>
+                    <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
+                </div>
+            </div>
+        </el-col>
+        <el-col :span="9" :offset="6">
+            <div class="searchselect">
+                <span class="inputname">店铺</span>
+                <el-select v-model="query.shopId" placeholder="请选择店铺" @change="getContractList()" class="dialogselect">
+                  <el-option
+                    v-for="item in selects.shopIds"
+                    :key="item.id"
+                    :label="item.shopName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+            </div>
+        </el-col>
+    </el-row>
+    <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog title='保证金处理' :dialog="dialog"></erp-dialog>
   </con-head>
 
@@ -41,37 +73,42 @@ export default {
         {
           label: "合同编号",
           type: "text",
-          name: "id"
+          name: "contractCode"
         },
         {
           label: "阶段",
           type: "text",
-          name: "name"
+          name: "stageText"
         },
         {
           label: "店铺",
           type: "text",
-          name: "desc"
+          name: "shopName"
         },
         {
           label: "商户",
           type: "text",
-          name: "desc"
+          name: "merchantName"
         },
         {
-          label: "应收",
+          label: "应收金额",
           type: "text",
-          name: "desc"
+          name: "receivableAmount"
         },
         {
-          label: "已收",
+          label: "已收金额",
           type: "text",
-          name: "desc"
+          name: "receivedAmount"
         },
         {
-          label: "剩余",
+          label: "处理金额",
           type: "text",
-          name: "desc"
+          name: "dealtAmount"
+        },
+        {
+          label: "剩余金额",
+          type: "text",
+          name: "restAmount"
         },
         {
           label: "操作",
@@ -91,19 +128,23 @@ export default {
               class: "edit",
               click: (item) => {
                 Object.assign(this.dialog.param, item);
+                this.dialog.param.type = 0; // 罚没
                 this.dialog.dialogVisible = true;
               }
             },
             {
               label: "归还",
               name: "delete",
+              show: "showback",
               type: "",
               style: {
                 // color: "#093216"
               },
               class: "delete",
               click: (item, data) => {
-                this.deleteDialog(item, data);
+                Object.assign(this.dialog.param, item);
+                this.dialog.param.type = 1; // 归还
+                this.dialog.dialogVisible = true;
               }
             }
           ]
@@ -112,37 +153,41 @@ export default {
       selects: {
         status: [{
           isStatus:true,
-          label: '全部'
+          label: '全部',
+          id: ''
         }, {
           isStatus:false,
-          label: '意向'
+          label: '意向',
+          id: 0
         }, {
           isStatus:false,
-          label: '正式'
-        }]
+          label: '正式',
+          id: 1
+        }],
+        merchants: [],
+        shopIds: []
       },
       dialog: {
         models: [{
-          label: '编码',
-          name: 'id',
-          type: 'text',
-          placeholder: '请输入编号'
+          label: '处理方式：',
+          name: 'typeText',
+          type: 'text'
         }, {
-          label: '名称',
-          name: 'name',
+          label: '处理金额：',
+          name: 'dealtAmount',
           type: 'text',
-          placeholder: '请输入名称'
+          placeholder: '请输入'
         }, {
           label: '备注',
-          name: 'desc',
-          type: 'text',
+          name: 'remark',
+          type: 'textarea',
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          dealtAmount: "",
+          remark: "",
+          type: ""
         },
         options: [{
           label: "确 定",
@@ -150,7 +195,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -167,86 +211,98 @@ export default {
         }]
       },
       query: {
-        name: ""
-      }
+        merchantId: '',
+        shopId: '',
+        stage: ''
+      },
+      searchName: '',
+      dataList: [],
     };
   },
+  watch:{
+      searchName(){
+          this.$delay(()=>{
+              this.getContractList();
+          },300)
+      }
+  },
   mounted() {
-    console.log(this);
+    this.getContractList();
+    this.$api.rentapi.listUsingGET_12({}).then(res=>{ //商户列表 status:4 已确定状态没加
+        this.selects.merchants = res.data.data;
+    }).catch(res=>{
+        this.$message.error(res.data.msg);
+    });
+    this.$api.rentapi.listUsingGET_14({}).then(res=>{ //店铺列表
+        this.selects.shopIds = res.data.data;
+    }).catch(res=>{
+        this.$message.error(res.data.msg);
+    });
   },
   methods: {
+    getContractList(page={}, callback){
+        let params ={
+            contractCode: this.searchName,
+            merchantId: this.query.merchantId,
+            shopId: this.query.shopId,
+            stage: this.query.stage,
+            pageNum: page.pageNum,
+            pageSize: page.pageSize
+        }
+        this.$api.financeapi.listUsingGET_5(params).then(res=>{
+            if(res.data.status === 200){
+                res.data.data.list.forEach(item=>{
+                    if (item.stage === 0 ) {
+                        item.stageText = '意向';
+                        item.showback = false;
+                    }else if(item.stage === 1){
+                        item.stageText = '正式';
+                        item.showback = true;
+                    }
+                    if(item.type === 0){
+                        item.typeText = '罚没'
+                    }else if(item.type === 1){
+                        item.typeText = '归还'
+                    }
+                })
+                this.dataList = res.data.data;
+            }
+        })
+    },
+    getCurrentPage(pageNum) {
+      this.getContractList({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getContractList({pageSize});
+    },
     statusHandler(status){
-			this.selects.status.forEach(function(obj){
-					obj.isStatus = false;
-			});
-			status.isStatus = !status.isStatus
+		this.selects.status.forEach(function(obj){
+			obj.isStatus = false;
+		});
+		status.isStatus = !status.isStatus
+        this.query.stage = status.id;
+        this.getContractList();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
+    confirmDialog() {
         this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
+        let params = {
+            request: this.dialog.param
         }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
+        this.$api.financeapi.givebackUsingPOST({params}).then(res=>{ //罚没，归还
+            if(res.data.status === 200){
+                this.$message.success(res.data.msg);
+                this.getContractList();
+            }else{
+                this.$message.error(res.data.msg);
+            }
+        }).catch(res=>{
+            this.$message.error(res.data.msg);
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
-    }
-  },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
-  created() {
-    this.$store.dispatch("getAccountGroups");
   }
 };
 </script>

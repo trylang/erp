@@ -93,14 +93,14 @@
                     isStatus:false
                 }],
                 columnData:[
-                    { prop: 'number', label: '合同号'},
-                    { prop: 'name', label: '版本号' },
-                    { prop: 'name', label: '商户名称' },
-                    { prop: 'superior1', label: '经营品牌' },
-                    { prop: 'superior1', label: '物业性质' },
-                    { prop: 'number', label: '签约日期' },
-                    { prop: 'number', label: '合同有效期' },
-                    { prop: 'name', label: '状态' }
+                    { prop: 'contractCode', label: '合同号'},
+                    { prop: 'version', label: '版本号' },
+                    { prop: 'merchantName', label: '商户名称' },
+                    { prop: 'brandName', label: '经营品牌' },
+                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'signDate', label: '签约日期' },
+                    { prop: 'validStartDate', label: '合同有效期' },
+                    { prop: 'status', label: '状态' }
                 ]
             }
         },

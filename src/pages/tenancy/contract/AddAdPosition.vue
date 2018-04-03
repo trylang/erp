@@ -1115,12 +1115,12 @@
                     number:'117.98㎡',
                 }],
                 columnData:[
-                    { prop: 'number', label: '费用项目', click:'1'},
-                    { prop: 'name', label: '起止时间' },
-                    { prop: 'name', label: '结算周期' },
-                    { prop: 'superior1', label: '结算组别' },
-                    { prop: 'superior1', label: '滞纳金' },
-                    { prop: 'superior1', label: '条款金额' }
+                    { prop: 'costItem', label: '费用项目', click:'1'},
+                    { prop: 'startDate', label: '起止时间' },
+                    { prop: 'cycleTotal', label: '结算周期' },
+                    { prop: 'settleGroup', label: '结算组别' },
+                    { prop: 'lateFee', label: '滞纳金' },
+                    { prop: 'rentMoney', label: '条款金额' }
                 ],
                 datalist:[],
                 stepNumber:0,

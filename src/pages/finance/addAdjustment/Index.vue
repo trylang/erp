@@ -1,10 +1,9 @@
 <template>
   <con-head title="结算单调整">
-    <el-button type="primary" slot="append" @click="linkTo('collectMoney')">提交</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入收款单号\合同号\账单号\票据号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入收款单号\合同号\账单号\票据号" v-model="query.filterName" @keyup.enter="filterTree(query.filterName)"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
     </el-row>
@@ -12,22 +11,29 @@
       <el-col :span="12">
         <div class="erp_container">
           <el-tree
-            :data="data2"
-            show-checkbox
+            :data="createTree"
+            ref="tree"
             default-expand-all
             highlight-current
             :props="defaultProps"
-            @check-change="handleCheckChange">
+            node-key="id"
+            :default-checked-keys="query.routerIds"                       
+            @node-click="handleCheckChange">
           </el-tree>
         </div>
       </el-col>
       <el-col :span="12">
         <div class="erp_container" style="padding:0;">
-          <erp-table :header="header" :content="content"></erp-table>
+          <erp-table :header="header" :content="content" :noPage="true"></erp-table>
         </div>
       </el-col>   
     </el-row>
-    <erp-dialog :title="dialog.param.id? '修改结算单调整': '添加结算单调整'" :dialog="dialog"></erp-dialog>
+    <el-row>
+      <el-col :span="2" :offset="22">
+        <el-button type="primary" @click="addCostAdjust" :disabled="!this.query.billId">提交</el-button>
+      </el-col>
+    </el-row>
+    <erp-dialog :title="'结算单调整'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -38,6 +44,10 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
+
+import { queryCost, queryDicsByCode } from "@/utils/rest/financeAPI";
+import { _changeJson, _replace, _remove, _uuid, formatTree, filterTree } from "@/utils";
+
 export default {
   name: "account-group",
   components: {
@@ -47,127 +57,42 @@ export default {
   },
   data() {
     return {
-      data2: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1"
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1"
-            },
-            {
-              id: 6,
-              label: "二级 2-2"
-            }
-          ]
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1"
-            },
-            {
-              id: 8,
-              label: "二级 3-2"
-            }
-          ]
-        }
-      ],
+      createTree: [],
+      originalTree: [],
       defaultProps: {
         children: "children",
         label: "label"
       },
-      selects: {
-        methods: [
-          {
-            id: 1,
-            label: "一次性全部收取"
-          },
-          {
-            id: 2,
-            label: "部分收取"
-          }
-        ],
-        banks: [
-          {
-            id: 11,
-            label: "工商银行"
-          },
-          {
-            id: 22,
-            label: "建设银行"
-          }
-        ],
-        status: [
-          {
-            isStatus: true,
-            label: "全部"
-          },
-          {
-            isStatus: false,
-            label: "新增"
-          },
-          {
-            isStatus: false,
-            label: "已确认"
-          },
-          {
-            isStatus: false,
-            label: "取消"
-          }
-        ]
-      },
       header: [
         {
-          label: "费用调整",
+          label: "费用项目",
           type: "text",
           class: "font12",
-          name: "id"
+          name: "costItemName"
         },
         {
           label: "结算金额",
           type: "text",
           class: "font12",
-          name: "name"
+          name: "amountReceivable"
         },{
           label: "本次调整",
           type: "text",
           class: "font12",
-          name: "name"
+          name: "adjustAmount"
         },{
           label: "剩余金额",
           type: "text",
           class: "font12",
-          name: "name"
+          name: "surplusAmount"
         },{
-          label: "调整",
+          label: "调整类型",
           class: "font12",
-          type: "text",
-          name: "name"
+          type: "selectText",
+          name: "adjustTypeId",
+          value: "value",
+          valueLabel: 'name',
+          option: {} 
         },
         {
           label: "操作",
@@ -176,7 +101,7 @@ export default {
           type: "buttons",
           operations: [
             {
-              label: "编辑",
+              label: "调整",
               name: "edit",
               type: "",
               style:{
@@ -192,57 +117,48 @@ export default {
           ]
         }
       ],
+      content: {
+        list: []
+      },
       dialog: {
         models: [
           {
-            label: "税码",
-            name: "shui",
-            type: "select",
-            value: "id",
-            options: [
-              { id: 1, label: "haha" },
-              { id: 12, label: "heihie" },
-              { id: 3, label: "enen" }
-            ],
-            placeholder: "请输入税码"
+            label: "费用项目",
+            valueLabel: "costItemName",
+            name: "costItemId",
+            type: "word",
+            value: 'id',
+            options: {}
           },
           {
-            label: "费用类型",
-            name: "cost",
+            label: "调整类型",
+            name: "adjustTypeId",
             type: "select",
-            value: "id",
-            options: [
-              { id: 1, label: "haha" },
-              { id: 12, label: "heihie" },
-              { id: 3, label: "enen" }
-            ],
+            value: "value",
+            valueLabel: 'name',
+            options: [],
             placeholder: "请选择费用类型"
           },
           {
-            label: "费用项目",
-            name: "cost1",
-            type: "select",
-            value: "id",
-            options: [
-              { id: 1, label: "haha" },
-              { id: 12, label: "heihie" },
-              { id: 3, label: "enen" }
-            ],
+            label: "调整金额",
+            name: "adjustAmount",
+            type: "text",
             placeholder: "请选择费用项目"
           },
           {
-            label: "生效日期",
-            name: "daterange",
-            type: "daterange",
-            placeholder: "请选择费用项目"
+            label: "备注",
+            name: "remark",
+            type: "textarea",
+            placeholder: "请输入..."
           }
         ],
         dialogVisible: false,
         param: {
-          shui: "",
-          cost: "",
-          cost1: "",
-          daterange: ""
+          adjustAmount: "",
+          adjustTypeId: "",
+          costItemId: "",
+          remark: "",
+          amountReceivable: ""
         },
         options: [
           {
@@ -250,12 +166,16 @@ export default {
             name: "submit",
             type: "primary",
             disabledFun: param => {
-              return Object.values(param).some(item => {
-                return item === (undefined || "");
+              const selParams = {
+                adjustAmount: this.dialog.param.adjustAmount,
+                adjustTypeId: this.dialog.param.adjustTypeId,
+                costItemId: this.dialog.param.costItemId,
+              };
+              return Object.values(selParams).some(item => {
+                return item === (undefined || "" || null);
               });
             },
             click: () => {
-              console.log(this.dialog.param);
               this.confirmDialog();
             }
           },
@@ -269,93 +189,211 @@ export default {
           }
         ]
       },
+      select: {
+        adjustTypes: [],
+        cost: {},
+        adjustTypes: {}
+      },
       query: {
-        name: ""
+        filterName: "",
+        billId: "",
+        routerIds: []
       }
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
-    linkTo(path) {
-      this.$router.push({ path });
+    filterTree(name) {
+      if (!name) this.createTree = this.originalTree;
+      this.createTree = filterTree(this.originalTree, name);
     },
-    handleCheckChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate);
+    selectedIds() {
+      if (this.$refs.tree) {
+        const ids = [];
+        const nodes = this.$refs.tree.getCheckedNodes();
+        nodes.forEach(item => {
+          if (!item.children) {
+            ids.push(item.id);
+          }
+        });
+        return ids;
+      }
+    },
+    handleCheckChange(data) {
+      if (data.children) return;
+      this.query.billId = data.id;
+      this.getAdjustlistByAid(data.id);
+    },
+    getCurrentPage(pageNum) {
+      this.getCostAdjust({pageNum});
+    },
+    getpageSize(pageSize) {
+      this.getCostAdjust({pageSize});
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
-      if (this.dialog.param.id >= 0) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message(
-              "error",
-              !error.message ? "无法修改，请重试!" : error.message
-            );
-          });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message(
-                "error",
-                !error.message ? "无法添加，请重试!" : error.message
-              );
-            });
-        }
-      }
+      this.editItem(this.dialog.param);
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该费用调整, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
+          this.deleteItem(item);
         })
         .catch(() => {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    editItem(param) {
+      _replace('id', this.content.list, param);   
+      this.dialog.dialogVisible = false;
+    },
+    deleteItem(param) {
+      if (param.id) {
+        _remove('id', param.id, this.content.list);
+      } else {
+        _remove('itemId', param.itemId, this.content.list);
+      }
+    },
+    // 获取树
+    async getAdjustTree() {
+      await this.$api.financeapi.getTreeUsingGET({}).then(res => {
+        if(res.data.status === 200) {
+          this.createTree = formatTree(res.data.data, {onlyChild: true});
+          Object.assign(this.originalTree, this.createTree);
+        }        
+      })
+    },
+    // 根据结算单查询费用调整项目
+    async getAdjustlistByAid(billId) {
+      await this.$api.financeapi.getByBillIdUsingGET({billId}).then(res => {
+        if (res.data.status === 200) {
+          res.data.data.forEach(item => {
+            item.costItemName = this.select.cost[item.costItemId].costItemName; 
+          });
+          this.content.list = res.data.data;
+        }
+      })
+    },
+    async getCostAdjust(page={}, callback) {
+      if(!this.$route.query.id) return;
+      const params = {
+        id: this.$route.query.id,
+        pageNum: page.pageNum,
+        pageSize: page.pageSize
+      };
+      this.$api.financeapi.listUsingGET_1(params).then(res => {
+        const data = res.data;
+        if (data.status === 200) {
+          data.data.list.forEach(item => {
+            item.expenseDate = item.cycleDate;
+          });    
+          this.content = data.data;
+          if (callback) callback();
+        } else {
+          return data.message;
+        }
+      });
+    },
+    async addCostAdjust() {
+      const billAdjustRequest = {
+        billId: this.$route.query.id ? this.$route.query.id : this.query.billId,
+        adjustCostItems: this.content.list.filter(item => !!item.adjustAmount)
+      }
+      const apiFunc = (api, billAdjustRequest) => {
+        this.$api.financeapi[api]({billAdjustRequest}).then(returnObj => {
+          if (returnObj.data.status === 200) {
+            $message("success", "提交成功!");
+            this.$router.push({path: '/finance/accountAdjust'});
+          } else {
+            $message("error", "修改失败!");
+          }
+        });
+      };
+
+      await apiFunc('saveUsingPOST_1', billAdjustRequest);  
+    },
+    async editCostAdjust(param) {
+      let params = {
+        id: param.id,
+        param: param
+      };
+      await this.$api.financeapi.updateUsingPUT_9(params).then(returnObj => {
+        if (returnObj.data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "修改成功!");
+            this.dialog.dialogVisible = false;
+          });
+        } else {
+          $message("error", "修改失败!");
+        }
+      });
+    },
+    async deleteCostAdjust(item) {
+      const param = {
+        id: item.id
+      };
+      this.$api.financeapi.delUsingDELETE_3(param).then(res => {
+        const data = res.data;
+        if (data.code === 200) {
+          this.getCost(0, () => {
+            $message("success", "删除成功");
+          });
+        } else {
+          $message("error", "删除失败");
+          return data.message;
+        }
+      });
+    },
+    async queryContracts(param) {
+      await queryContract({merchantId: this.dialog.param.merchantId}).then(res => {
+        this.selects.contracts = res.data.list;
+      })
+    },
+    async getCyclePeriod(params, callback) {
+      const param = {
+        contractId: this.query.contractId,
+        costItemId: params.costItemId,
+        expenseDate: params.expenseDate
+      };   
+      this.$api.rentapi.cycleUsingGET(param).then(res => {
+        if (callback) callback();
+      });
+    },
+    async init(routeId) {
+      let [adjustTypes, cost] = await Promise.all([queryDicsByCode('0009'), queryCost()]);
+      this.select.cost = cost.json;
+      this.select.adjustTypes = adjustTypes.json;
+      this.header[4].option = adjustTypes.json;
+      console.log(this.header[4].option)
+      this.dialog.models[0].options = cost.json;
+      this.dialog.models[1].options = adjustTypes.data;
+      await this.getAdjustTree();
+      if (routeId) await this.getAdjustlistByAid(routeId);
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
+  computed: {},
+  watch: {
+    '$route': 'init'
   },
-  created() {
-    this.$store.dispatch("getAccountGroups");
+  mounted() {
+    this.init();
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if (vm.$route.query.billId) {
+        vm.query.billId = vm.$route.query.billId;
+        vm.query.routerIds = [];
+        vm.query.routerIds.push(parseInt(vm.$route.query.billId));
+        vm.init(vm.$route.query.billId);
+      }
+    })
   }
 };
 </script>

@@ -1,17 +1,25 @@
 <template>
     <div>
         <con-head title="货品管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码/名称" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
-                        <div class="searchbox">
-                            <input type="text" placeholder="请输入名称"><i class="iconfont icon-sousuo"></i>
+                        <div class="searchselect">
+                            <span class="inputname">店铺</span>
+                            <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
+                                <el-option
+                                        v-for="item in shopOptions"
+                                        :key="item.id"
+                                        :label="item.shopName"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
                         </div>
                     </el-col>
                 </el-row>
@@ -19,11 +27,12 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname">货品组别</span>
-                            <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                            <el-select v-model="goodsValue" placeholder="请选择" class="dialogselect" @change="goodsSelect()">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :value="item.value">
+                                        v-for="item in goodsOptions"
+                                        :key="item.id"
+                                        :label="item.goodsTypeName"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -33,60 +42,74 @@
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
+                <data-table :tableData="dataList" :colConfigs="columnData">
+                    <el-table-column
+                            label="店铺"
+                            slot="operation">
+                        <template slot-scope="scope">{{ scope.row.shopVoList.map(item=>{ return item.shopName}).join() }}</template>
+                    </el-table-column>
+                    <el-table-column
+                            label="货品描述"
+                            slot="operation">
+                        <template slot-scope="scope">{{ scope.row.description }}</template>
+                    </el-table-column>
+                    <el-table-column
+                            label="更新时间"
+                            slot="operation">
+                    <template slot-scope="scope">{{ scope.row.updateDateStr }}</template>
+                    </el-table-column>
                     <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
+                            <button class="btn_text" @click="getInfoData(scope.row.id)">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
-                :title="listid?'编辑货品':'添加货品'"
+                :title="goodsInfoData.id?'编辑货品':'添加货品'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="add.number">
-                </div>
-                <div class="dialoginput">
                     <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.name">
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="goodsInfoData.goodsName">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname">业态</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <span class="inputname">货品组别</span>
+                    <el-select v-model="goodsInfoData.goodsTypeId" placeholder="请选择" class="dialogselect">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in goodsOptions"
+                                :key="item.id"
+                                :label="item.goodsTypeName"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">店铺</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="goodsInfoData.shopId" placeholder="请选择" class="dialogselect">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in shopOptions"
+                                :key="item.id"
+                                :label="item.shopName"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput noline">
                     <span class="inputname">货品描述</span>
-                    <textarea class="textareabox" placeholder="请输入"></textarea>
+                    <textarea class="textareabox" placeholder="请输入" v-model="goodsInfoData.description"></textarea>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
+                <el-button type="primary" @click="submitFormData()">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -94,106 +117,174 @@
 
 <script>
     import ConHead from '../../../components/ConHead'
-    import PageContent from '../../../components/Pagination'
+    import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
     export default {
         name: "index",
         data(){
             return{
                 dialogVisible:false,
-                datalist:[],
-                add:{
-                    number: '',
-                    name: '',
-                    englishname:'',
-                    value: ''
+                dataList:[],
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
+                searchText:'',
+                shopValue:'',
+                goodsValue:'',
+                shopOptions:[],
+                goodsOptions:[],
+                goodsInfoData:{
+                    description: '',
+                    goodsCode: '',
+                    goodsName: '',
+                    goodsTypeId: '',
+                    id: '',
+                    shopId: []
                 },
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
                 columnData:[
-                    { prop: 'number', label: '编码'},
-                    { prop: 'name', label: '名称' },
+                    { prop: 'goodsCode', label: '编码'},
+                    { prop: 'goodsName', label: '名称' },
                     { prop: 'superior2', label: '货品组别' },
-                    { prop: 'superior2', label: '店铺名称' },
-                    { prop: 'number', label: '店铺号' },
-                    { prop: 'name', label: '货品描述' },
-                    { prop: 'name', label: '状态' },
-                    { prop: 'datetime', label: '更新时间' }
+                    /*{ prop: 'shopVoList', label: '店铺' },
+                    { prop: 'description', label: '货品描述' },
+                    { prop: 'updateDateStr', label: '更新时间' }*/
                 ],
-                oneData:{},
-                listid:''
+                listId:''
             }
         },
         mounted(){
-            this.getbuilding();
+            this.getShopList();
+            this.getGoodsList();
+        },
+        watch:{
+            searchText(){
+                this.$delay(()=>{
+                    this.getDataList(1);
+                },300)
+            }
         },
         methods:{
+            handleOpen() {
+                this.dialogVisible = true;
+                this.goodsInfoData={
+                    description: '',
+                    goodsCode: '',
+                    goodsName: '',
+                    goodsTypeId: '',
+                    id: '',
+                    shopId: []
+                }
+            },
             handleClose(){
                 this.dialogVisible = false;
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            async getDataList(pageNum,pageSize){
+                await this.$api.rentapi.listpgUsingGET_2({
+                    pageNum:pageNum,
+                    pageSize:this.$refs.page.pageSize,
+                    goodsCode:this.searchText,
+                    goodsName:this.searchText,
+                    goodsTypeId:this.goodsValue,
+                    shopId:this.shopValue
+                }).then(res=>{
+                    this.dataList = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                })
             },
-            async addbuilding(id){
-                if(id){
-                    let params = {
-                        id:id,
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.updateData(id,params);
-                }else{
-                    let params = {
-                        number:this.add.number,
-                        name:this.add.name,
-                        superior1:this.add.superior1,
-                        superior2:this.add.superior2,
-                        datetime:'2017-12-03 16:05:09'
-                    };
-                    await this.$api.addBuilding(params);
+            async getShopList(){
+                await this.$api.rentapi.listUsingGET_14({
+                    pageNum:'',
+                    pageSize:'',
+                    shopCode:'',
+                    shopName:'',
+                    merchantId:'',
+                    status:''
+                }).then(res=>{
+                    this.shopOptions = res.data.data;
+                })
+            },
+            async getGoodsList(){
+                await this.$api.rentapi.listUsingGET_10({
+                    pageNum:'',
+                    pageSize:'',
+                    goodsTypeCode:'',
+                    goodsTypeName:''
+                }).then(res=>{
+                    this.goodsOptions = res.data.data;
+                })
+            },
+            async getInfoData(id){
+                this.dialogVisible = true;
+                this.listId = id;
+                this.goodsInfoData={
+                    description: '',
+                    goodsCode: '',
+                    goodsName: '',
+                    goodsTypeId: '',
+                    id: '',
+                    shopId: []
                 }
-                this.dialogVisible = false;
-                this.getbuilding();
+                this.$api.rentapi.detailUsingGET_4({
+                    id: id
+                }).then(res => {
+                    this.goodsInfoData = res.data.data;
+                })
             },
-            async deleteList(id){
-                let params = {
-                    id:id
-                };
+            async submitFormData(){
+                if(this.listId == '') {
+                    await this.$api.rentapi.addUsingPOST_5({
+                        request: this.goodsInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.getDataList(1);
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    this.goodsInfoData.id = this.listId;
+                    await this.$api.rentapi.updateUsingPUT_7({
+                        request: this.goodsInfoData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.getDataList(1);
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }
+            },
+            async deleteListData(id){
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.deleteData(params);
-                    this.datalist = this.datalist.filter(item=>item.id!==id);
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                }).catch(() => {});
+                    this.$api.rentapi.deleteUsingDELETE_2({
+                        id:id
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.getDataList(1);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                })
             },
-            async dialogData(id){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = await this.$api.getOneData(id);
-                }else{
-                    this.add = {};
-                }
+            shopSelect(){
+                this.getDataList(1);
+            },
+            goodsSelect(){
+                this.getDataList(1);
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

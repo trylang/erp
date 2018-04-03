@@ -5,14 +5,14 @@
       <!-- 导航tab栏 -->
       <el-row>
         <el-col class="tab_item" v-for="(item, index) in tabs" :key="index" :span="3">
-          <h4 :class="{active: item.id === variables.isActive}" @click="activeFunc(item)">{{item.label}}</h4>
+          <h3 :class="{active: item.id === variables.isActive}" @click="activeFunc(item)">{{item.label}}</h3>
         </el-col>
         <el-col class="btn_item" :offset="9" :span="6">
-          <el-button type="primary" v-if="variables.isActive === 'first'">取消确认</el-button>
-          <el-button v-if="variables.isActive === 'second'" type="primary">确认</el-button>
-          <el-button v-if="variables.isActive === 'third'" type="primary">发布</el-button>
-          <el-button type="primary" @click="printContent">打印</el-button>          
-          <el-button type="primary" v-if="variables.isActive === 'first'">删除</el-button>         
+          <!-- <el-button type="primary" v-if="variables.isActive === 'first'" @click="cancelBill">取消确认</el-button> -->
+          <el-button v-if="variables.isActive === 'second'" type="primary" @click="confirmBill">确认</el-button>
+          <el-button v-if="variables.isActive === 'third'" type="primary" @click="publishBill">发布</el-button>
+          <!-- <el-button type="primary" @click="printContent">打印</el-button>           -->
+          <el-button type="primary" v-if="variables.isActive === 'first'" @click="deleteBill">删除</el-button>         
         </el-col>
       </el-row>
       <!-- tab1当中的搜索框 -->
@@ -20,17 +20,18 @@
         <el-row>
           <el-col :span="9">
             <div class="searchbox">
-              <input type="text" placeholder="请输入结算单号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+              <input type="text" placeholder="请输入结算单号" v-model="query.settleNo" @keyup.enter="getAccountManagement"><i class="iconfont icon-sousuo"></i>
             </div>
           </el-col>
           <el-col :span="9" :offset="6">
             <div class="searchselect">
                 <span class="inputname">商户</span>
-                <el-select v-model="query.name" placeholder="商户名称" class="dialogselect">
+                <el-select v-model="query.merchantId" @change="getAccountManagement" placeholder="商户名称" class="dialogselect">
                   <el-option
-                    v-for="item in selects.expenses"
+                    v-for="item in selects.merchants"
                     :key="item.id"
-                    :value="item.label">
+                    :label="item.merchantName"
+                    :value="item.id">
                   </el-option>
                 </el-select>
             </div>
@@ -40,11 +41,12 @@
           <el-col :span="9">
             <div class="searchselect">
                 <span class="inputname">结算组别</span>
-                <el-select v-model="query.name" placeholder="结算组别" class="dialogselect">
+                <el-select v-model="query.settleGroupId" @change="getAccountManagement" placeholder="结算组别" class="dialogselect">
                   <el-option
-                    v-for="item in selects.expenses"
+                    v-for="item in selects.accountGroup"
                     :key="item.id"
-                    :value="item.label">
+                    :label="item.settleGroupName"
+                    :value="item.id">
                   </el-option>
                 </el-select>
             </div>
@@ -52,11 +54,12 @@
           <el-col :span="9" :offset="6">
             <div class="searchselect">
                 <span class="inputname">合同</span>
-                <el-select v-model="query.name" placeholder="合同名称" class="dialogselect">
+                <el-select v-model="query.contractId" @change="getAccountManagement" placeholder="合同名称" class="dialogselect">
                   <el-option
-                    v-for="item in selects.shops"
+                    v-for="item in selects.contracts"
                     :key="item.id"
-                    :value="item.label">
+                    :label="item.contractCode"
+                    :value="item.id">
                   </el-option>
                 </el-select>
             </div>
@@ -65,19 +68,19 @@
         <el-row>
           <el-col :span="9">
             <div class="searchselect">
-                <span class="inputname">结算日</span>
-                <el-select v-model="query.name" placeholder="结算日" class="dialogselect">
-                  <el-option
-                    v-for="item in selects.expenses"
-                    :key="item.id"
-                    :value="item.label">
-                  </el-option>
-                </el-select>
+              <span class="inputname">结算日</span>
+              <el-date-picker
+                v-model="query.settleDate"
+                @change="getAccountManagement"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>                
             </div>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <account-tree :header="header" :content="content"></account-tree>  
+          <account-tree :createTree="createTree" :header="header" :content="content"></account-tree>  
         </el-row>
       </section>
     <!-- tab2当中的内容 --> 
@@ -85,12 +88,12 @@
         <el-row>
           <el-col :span="9">
             <div class="searchbox">
-              <input type="text" placeholder="请输入商户号/合同号/结算单号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+              <input type="text" placeholder="请输入商户号/合同号/结算单号" v-model="query.settleNo" @keyup.enter="getAccountConfirm"><i class="iconfont icon-sousuo"></i>
             </div>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <account-tree :header="header" :content="content"></account-tree>  
+          <account-tree :createTree="createTree" :header="header" :content="content"></account-tree>  
         </el-row>
       </section>
     <!-- tab3当中的内容 -->  
@@ -98,12 +101,12 @@
         <el-row>
           <el-col :span="9">
             <div class="searchbox">
-              <input type="text" placeholder="请输入商户号/合同号/结算单号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+              <input type="text" placeholder="请输入商户号/合同号/结算单号" v-model="query.settleNo" @keyup.enter="getAccountPulish"><i class="iconfont icon-sousuo"></i>
             </div>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <account-tree :header="header" :content="content"></account-tree>  
+          <account-tree :createTree="createTree" :header="header" :content="content"></account-tree>  
         </el-row>
       </section>
     </div>
@@ -117,6 +120,13 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import AccountTree from "../../../components/AccountTree";
+import { formatTree } from '@/utils';
+import {
+  queryAccountGroup,
+  queryMerchant,
+  queryContract
+} from "@/utils/rest/financeAPI";
+
 
 export default {
   name: "account-group",
@@ -128,64 +138,7 @@ export default {
   },
   data() {
     return {
-      data2: [
-        {
-          id: 1,
-          label: "一级 1",
-          children: [
-            {
-              id: 4,
-              label: "二级 1-1",
-              children: [
-                {
-                  id: 9,
-                  label: "三级 1-1-1"
-                },
-                {
-                  id: 10,
-                  label: "三级 1-1-2"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: "一级 2",
-          children: [
-            {
-              id: 5,
-              label: "二级 2-1"
-            },
-            {
-              id: 6,
-              label: "二级 2-2"
-            }
-          ]
-        },
-        {
-          id: 3,
-          label: "一级 3",
-          children: [
-            {
-              id: 7,
-              label: "二级 3-1"
-            },
-            {
-              id: 8,
-              label: "二级 3-2"
-            }
-          ]
-        }
-      ],
-      defaultProps: {
-        children: "children",
-        label: "label",
-        title: {
-          ifBorder: true,
-          label: 'POS租金'
-        }
-      },
+      createTree: [],
       header: [
         {
           label: "收费项目",
@@ -224,6 +177,7 @@ export default {
             "border-bottom": "1px solid #e4e4e4"
           }
         }],
+      content: [],
       dialog: {
         models: [
           {
@@ -277,47 +231,12 @@ export default {
         ]
       },
       selects: {
-        shops: [
-          {
-            id: 1,
-            label: "商铺1"
-          },
-          {
-            id: 2,
-            label: "商铺2"
-          }
-        ],
-        expenses: [
-          {
-            id: 11,
-            label: "费用11"
-          },
-          {
-            id: 22,
-            label: "费用22"
-          }
-        ],
-        status: [
-          {
-            isStatus: true,
-            label: "全部"
-          },
-          {
-            isStatus: false,
-            label: "新增"
-          },
-          {
-            isStatus: false,
-            label: "已确认"
-          },
-          {
-            isStatus: false,
-            label: "取消"
-          }
-        ]
+        accountGroup: [],
+        merchants: [],
+        contracts: []
       },
       query: {
-        name: ""
+        id: []
       },
       variables: {
         isActive: "first"
@@ -338,49 +257,42 @@ export default {
       ]
     };
   },
-  mounted() {
-    console.log(this);
-  },
+  mounted() {},
   methods: {
+    initParam() {
+      this.query = {
+        settleNo: "",
+        merchantId: "",
+        contractId: "",
+        settleGroupId: "",
+        settleDate: "",
+      }
+    },
     handleClick() {
       console.log(23);
     },
     activeFunc(item) {
       this.variables.isActive = item.id;
+      this.initParam();
       if (item.id === 'first') this.getAccountManagement();
-      else if (index === 'second') this.getAccountConfirm();
-      else if (index === 'third') this.getAccountPulish();
+      else if (item.id === 'second') this.getAccountConfirm();
+      else if (item.id === 'third') this.getAccountPulish();
     },
     printContent() {
-      this.$root.eventEmit.$emit('print');
-
-    //   // 1.设置要打印的区域 div的className
-    //   var newstr = document.getElementById('printOrder-data')[0].innerHTML
-    //   // 2. 复制给body，并执行window.print打印功能
-    //   document.body.innerHTML = newstr
-    //   // 3. 还原：将旧的页面储存起来，当打印完成后返给给页面。
-    //   var oldstr = document.body.innerHTML
-    //   window.print()
-    //   document.body.innerHTML = oldstr
-    //   return false
-
-
-      // let subOutputRankPrint = document.getElementById('subOutputRank-print');  
-      // console.log(subOutputRankPrint.innerHTML);  
-      // let newContent =subOutputRankPrint.innerHTML;  
-      // let oldContent = document.body.innerHTML;  
-      // document.body.innerHTML = newContent;  
-      // window.print();  
-      // window.location.reload();  
-      // document.body.innerHTML = oldContent;  
-      // return false;
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'printBill'});
     },
-    statusHandler(status) {
-      this.selects.status.forEach(function(obj) {
-        obj.isStatus = false;
-      });
-      status.isStatus = !status.isStatus;
+    cancelBill() {
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'cancelBill'});
     },
+    confirmBill() {
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'confirmBill'});
+    },
+    publishBill() {
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'publishBill'});
+    },
+    deleteBill() {
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'deleteBill'});
+    }, 
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
@@ -441,37 +353,61 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
-    },
     // 结算单管理
-    async getAccountManagement(query) {
-      await this.$api.financeapi.manageListUsingGET_2({}).then(returnObj => {
-        console.log(returnObj);
+    async getAccountManagement() {
+      const param = {
+        settleNo: this.query.settleNo,
+        merchantId: this.query.merchantId,
+        contractId: this.query.contractId,
+        settleGroupId: this.query.settleGroupId,
+        settleDate: this.query.settleDate,
+      };
+      await this.$api.financeapi.manageListUsingGET(param).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          this.createTree = formatTree(returnObj.data.data);
+        }        
       });
     },
     // 结算单确认
-    async getAccountConfirm(query) {
-      await this.$api.financeapi.confirmListUsingGET_2({}).then(returnObj => {
-        console.log(returnObj);
+    async getAccountConfirm() {
+      const param = {
+        settleNo: this.query.settleNo,
+      };
+      await this.$api.financeapi.confirmListUsingGET(param).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          console.log(returnObj);
+          this.createTree = formatTree(returnObj.data.data);
+        }  
       });
     },
     // 结算单发布
-    async getAccountPulish(query) {
-      await this.$api.financeapi.publishListUsingGET({}).then(returnObj => {
-        console.log(returnObj);
+    async getAccountPulish() {
+      const param = {
+        settleNo: this.query.settleNo,
+      };
+      await this.$api.financeapi.publishListUsingGET(param).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          console.log(returnObj);
+          this.createTree = formatTree(returnObj.data.data);
+        }  
       });
     },
+    async init() {
+      this.initParam();
+      let [accountGroup, merchants, contracts] = await Promise.all([
+        queryAccountGroup(),
+        queryMerchant(),
+        queryContract()
+      ]);
+      this.selects.accountGroup = accountGroup.data.list;
+      this.selects.merchants = merchants.data.list;
+      this.selects.contracts = contracts.data.list;
+      await this.getAccountManagement();
+    }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    this.getAccountManagement();
-    // this.$store.dispatch("getAccountGroups");
+    this.init();
   }
 };
 </script>
@@ -482,7 +418,7 @@ export default {
   .account_tabs {
     padding: 0 1.2rem;
     .tab_item {
-      h4 {
+      h3 {
         color: #666;
         cursor: pointer;
         &.active {
@@ -500,7 +436,7 @@ export default {
       }
     }
     .btn_item {
-      text-align: right;      
+      text-align: right;
     }
   }
 }
@@ -509,5 +445,4 @@ export default {
   margin: 0 0 15px;
   background: url(../../../assets/yuan-long.png) left center repeat-x;
 }
-
 </style>

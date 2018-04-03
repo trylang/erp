@@ -2,22 +2,34 @@
   <con-head title="商户预付款">
     <el-row slot="preappend">
       <el-col :span="9">
-        <div class="searchbox">
-            <input type="text" placeholder="请输入合同编号" v-model="query.name"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+        <div class="searchselect">
+            <span class="inputname">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" @change="getmerchantList()" class="dialogselect">
+              <el-option
+                v-for="item in selects.merchants"
+                :key="item.id"
+                :label="item.merchantName"
+                :value="item.id">
+              </el-option>
+            </el-select>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
-        <div class="texttitle">
-            <span class="inputname">合同阶段：</span>
-            <div class="line-nav">
-                <a href="javascript:void(0)" v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}" @click="statusHandler(status)">{{status.label}}</a>
-                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
-            </div>
+        <div class="searchselect">
+            <span class="inputname">合同</span>
+            <el-select v-model="query.contractCode" placeholder="请选择"  @change="getmerchantList()" class="dialogselect">
+              <el-option
+                v-for="item in selects.contracts"
+                :key="item.id"
+                :label="item.contractCode"
+                :value="item.contractCode">
+              </el-option>
+            </el-select>
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
-    <erp-dialog title='保证金处理' :dialog="dialog"></erp-dialog>
+    <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
+    <erp-dialog title='商户预付款处理' :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -41,37 +53,37 @@ export default {
         {
           label: "合同编号",
           type: "text",
-          name: "id"
+          name: "contractCode"
         },
         {
           label: "店铺",
           type: "text",
-          name: "desc"
+          name: "shopName"
         },
         {
           label: "商户",
           type: "text",
-          name: "desc"
+          name: "merchantName"
         },
         {
           label: "应收金额",
           type: "text",
-          name: "desc"
+          name: "receivedAmount"
         },
         {
           label: "核销金额",
           type: "text",
-          name: "desc"
+          name: "canceledAmount"
         },
         {
           label: "处理金额",
           type: "text",
-          name: "desc"
+          name: "dealtAmount"
         },
         {
           label: "剩余金额",
           type: "text",
-          name: "desc"
+          name: "restAmount"
         },
         {
           label: "操作",
@@ -98,39 +110,25 @@ export default {
         }
       ],
       selects: {
-        status: [{
-          isStatus:true,
-          label: '全部'
-        }, {
-          isStatus:false,
-          label: '意向'
-        }, {
-          isStatus:false,
-          label: '正式'
-        }]
+        merchants: [],
+        contracts: []
       },
       dialog: {
         models: [{
-          label: '编码',
-          name: 'id',
+          label: '处理金额',
+          name: 'dealtAmount',
           type: 'text',
-          placeholder: '请输入编号'
-        }, {
-          label: '名称',
-          name: 'name',
-          type: 'text',
-          placeholder: '请输入名称'
+          placeholder: '请输入处理金额'
         }, {
           label: '备注',
-          name: 'desc',
-          type: 'text',
+          name: 'remark',
+          type: 'textarea',
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
         param: {
-          id: "",
-          name: "",
-          desc: ""
+          dealtAmount: "",
+          remark: ""
         },
         options: [{
           label: "确 定",
@@ -138,7 +136,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -155,87 +152,58 @@ export default {
         }]
       },
       query: {
-        name: ""
-      }
+        contractCode: "",
+        merchantId: ''
+      },
+      dataList: [],
     };
   },
-  mounted() {
-    console.log(this);
-  },
-  methods: {
-    statusHandler(status){
-			this.selects.status.forEach(function(obj){
-					obj.isStatus = false;
-			});
-			status.isStatus = !status.isStatus
-    },
-    cancelDialog: function() {
-      this.dialog.dialogVisible = false;
-      this.dialog.param = {};
-    },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
-          })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
-        }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
+    mounted() {
+        this.getmerchantList();
+        this.$api.rentapi.listUsingGET_12({status: 4}).then(res=>{ //商户列表 status:4 已确定状态
+            this.selects.merchants = res.data.data;
+        }).catch(res=>{
+            this.$message.error(res.data.msg);
+        });
+        this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表 status:30 已确定状态
+            this.selects.contracts = res.data.data.list;
+        }).catch(res=>{
+            this.$message.error(res.data.msg);
         });
     },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
+    methods: {
+        getmerchantList(page={}, callback){
+            let params ={
+                contractCode: this.query.contractCode,
+                merchantId: this.query.merchantId,
+                pageNum: page.pageNum,
+                pageSize: page.pageSize
+            }
+            this.$api.financeapi.listUsingGET_8(params).then(res=>{
+                this.dataList = res.data.data;
+            })
+        },
+        getCurrentPage(pageNum) {
+          this.getmerchantList({pageNum});
+        },
+        getpageSize(pageSize) {
+          this.getmerchantList({pageSize});
+        },
+        cancelDialog: function() {
+            this.dialog.dialogVisible = false;
+            this.dialog.param = {};
+        },
+        confirmDialog(param){// 归还
+            this.dialog.dialogVisible = false;
+            this.$api.financeapi.saveUsingPOST_2({request: this.dialog.param}).then(res=>{
+                this.$message.success(res.data.msg);
+                this.getmerchantList();
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+            
+        },
     }
-  },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
-  created() {
-    this.$store.dispatch("getAccountGroups");
-  }
 };
 </script>
 
