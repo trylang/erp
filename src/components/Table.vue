@@ -127,8 +127,11 @@ export default {
   }
   tbody {
     tr {
-      &:hover {
+      &:nth-child(even) {
         background: #FAFAFA;
+      }
+      &:hover {
+        background: #f5f7fa;
       } 
     }
     .cell {
