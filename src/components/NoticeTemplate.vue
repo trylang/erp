@@ -108,6 +108,8 @@
     #808080
   );
   .notice {
+    margin-bottom: 3rem;
+    page-break-after:always;
     header {
       h4 {
         margin: auto;
@@ -176,9 +178,13 @@
         flex-wrap: wrap;
       }
       .title {
-        padding-top: 5rem;
+        padding-top: 7rem;
         display: flex;
         justify-content: flex-end;
+        background: url(../assets/red.png) center right no-repeat;
+        h3 {
+          margin-top: -1rem;
+        }
       }
     }
   }

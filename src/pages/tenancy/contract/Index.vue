@@ -96,15 +96,15 @@
                 },{
                     name:"新增",
                     isStatus:false,
-                    id:0
+                    id:10
                 },{
                     name:"已确认",
                     isStatus:false,
-                    id:1
+                    id:30
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:2
+                    id:20
                 }],
                 columnData:[
                     { prop: 'contractCode', label: '合同号'},

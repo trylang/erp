@@ -86,15 +86,11 @@
                 },{
                     name:"新增",
                     isStatus:false,
-                    id:0
-                },{
-                    name:"已确认",
-                    isStatus:false,
-                    id:1
+                    id:10
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:2
+                    id:20
                 }],
                 columnData:[
                     { type: 'selection', width:'50'},
@@ -104,7 +100,7 @@
                     { prop: 'propertyType', label: '物业性质' },
                     { prop: 'signDate', label: '签约日期' },
                     { prop: 'validStartDate', label: '合同有效期' },
-                    { prop: 'status', label: '状态' }
+                    { prop: 'statusText', label: '状态' }
                 ],
                 multipleSelection:[]
             }
@@ -126,12 +122,9 @@
                 localStorage.setItem('activeName',1)
             },
             async getDataList(pageNum,pageSize){
-                await this.$api.rentapi.getListForPageUsingGET_1({
+                await this.$api.rentapi.getListForPageByStatusUsingGET({
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize,
-                    contractCode:this.searchText,
-                    merchantId:this.merchantValue,
-                    brandId:this.brandValue,
                     status:this.statusId
                 }).then(res=>{
                     this.dataList = res.data.data.list;

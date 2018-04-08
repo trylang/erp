@@ -106,7 +106,7 @@
                     await this.$api.rentapi.addUsingPOST_4({
                         param: this.addBuild
                     }).then(res => {
-                        if (res.data.code == 200) {
+                        if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
                             this.getBuildingTreeList();
@@ -125,7 +125,7 @@
                     await this.$api.rentapi.updateUsingPUT_6({
                         param:this.addBuild
                     }).then(res=>{
-                        if (res.data.code == 200) {
+                        if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
                             this.getBuildingTreeList();
@@ -167,7 +167,7 @@
                         this.$api.rentapi.updateUsingDELETE_1({
                             id:this.buildingData.id
                         }).then(res=>{
-                            if (res.data.code == 200) {
+                            if (res.data.status == 200) {
                                 this.$message.success(res.data.msg);
                                 this.getBuildingTreeList();
                             } else {

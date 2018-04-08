@@ -115,7 +115,7 @@
                         marketId: this.add.marketId,
                         departmentName: this.add.departmentName
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -129,7 +129,7 @@
                         marketId: this.add.marketId,
                         departmentName: this.add.departmentName
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -167,7 +167,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$api.systemapi.deleteUsingDELETE({id: id}).then(res =>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{

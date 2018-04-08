@@ -1,12 +1,39 @@
 <template>
     <div>
-        <con-head title="手续费设置">
+        <con-head tab="tab">
+            <div slot="appendtab" class="tabmenu">
+                <router-link to="/rebates/poundage">手续费设置</router-link>
+                <router-link to="/rebates/poundageOut">例外店手续费设置</router-link>
+            </div>
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
-                        <div class="searchbox">
-                            <input type="text" placeholder="请输入店铺号"><i class="iconfont icon-sousuo"></i>
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">渠道：</span>
+                            <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option
+                                        v-for="item in contracts"
+                                        :key="item.id"
+                                        :label="item.contractCode"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="2">
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">类型：</span>
+                            <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option
+                                        v-for="item in contracts"
+                                        :key="item.id"
+                                        :label="item.contractCode"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
                         </div>
                     </el-col>
                 </el-row>
@@ -20,56 +47,62 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
+                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
+                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
                 :title="listid?'编辑终端号':'添加终端号'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">店铺号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                <div class="dialoginput">
+                    <span class="inputname inputnameauto">渠道</span>
+                    <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-option label="全部" value=""></el-option>
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in contracts"
+                                :key="item.id"
+                                :label="item.contractCode"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">POS机号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                <div class="dialoginput">
+                    <span class="inputname">手续费</span>
+                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname inputnameauto">类型</span>
+                    <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-option label="全部" value=""></el-option>
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in contracts"
+                                :key="item.id"
+                                :label="item.contractCode"
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">终端号</span>
-                    <input class="inputtext" type="text" placeholder="请输入终端号" v-model="add.superior1">
-                </div>
-                <div class="dialoginput rentcontent">
-                    <span class="inputname inputnameCenter">有效期</span>
+                <div class="dialoginput">
+                    <span class="inputname inputnameauto">有效期截止</span>
                     <el-date-picker
-                            class="inputtext datetext"
-                            v-model="datevalue"
-                            type="daterange"
-                            range-separator="-"
-                            start-placeholder="选择日期"
-                            end-placeholder="选择日期">
+                        class="inputtext"
+                        v-model="searchData"
+                        type="date"
+                        placeholder="选择日期"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
+                        @change="pageHandler(1)">
                     </el-date-picker>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose">取 消</el-button>
+                <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
             </span>
         </el-dialog>
@@ -78,77 +111,143 @@
 
 <script>
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
+    import RtPage from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
     export default {
         name: "index",
         data(){
             return{
-                listid:0,
-                datevalue:'',
-                activeName: 'first',
                 dialogVisible:false,
                 datalist:[],
+                listid:'',
+                searchName: '',
+                contractId: '',
+                contracts: [],
+                searchData: '',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
                 add:{
-                    number:"",
-                    name:""
+                    id: '',
+                    pid: '',
+                    regionName: '',
+                    regionEnglishName: '',
+                    pname: '',
                 },
-                value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                statusData:[{
-                    name:"全部",
-                    isStatus:true
-                },{
-                    name:"银行",
-                    isStatus:false
-                },{
-                    name:"资和信",
-                    isStatus:false
-                }],
                 columnData:[
-                    { prop: 'number', label: '渠道'},
-                    { prop: 'superior1', label: '手续费率' },
-                    { prop: 'superior1', label: '有效期' },
-                    { prop: 'datetime', label: '更新时间' }
-                ]
+                    { prop: 'regionCode', label: '渠道'},
+                    { prop: 'regionName', label: '手续费率' },
+                    { prop: 'regionEnglishName', label: '类型' },
+                    { prop: 'showUpdateDate', label: '有效期' },
+                    { prop: 'showUpdateDate', label: '更新时间' },
+                ],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
             }
         },
         mounted(){
-            this.getbuilding();
+            this.pageHandler();
         },
         methods:{
-            statusHandler(status){
-                this.statusData.forEach(function(obj){
-                    obj.isStatus = false;
-                });
-                status.isStatus = !status.isStatus
+            pageHandler(pageNum, pageSize){
+                let params = {
+                    pageNum: pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    name: this.searchName
+                }
+                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                    this.datalist = res.data.data.list;
+                    this.total = Number(res.data.data.total);
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
             },
-            handleClose(){
+            addbuilding(id){
+                if(id){
+                    if(!this.add.regionName){
+                        this.$message.warning('区域名称不能为空');
+                    }else if(!this.add.regionEnglishName){
+                        this.$message.warning('英文缩写不能为空');
+                    }else if(!this.add.pid){
+                        this.$message.warning('上级区域不能为空');
+                    }else{
+                        this.$api.systemapi.updateUsingPOST_4({request:{
+                            regionId: this.add.id,
+                            pid: this.add.pid,
+                            regionName: this.add.regionName,
+                            regionEnglishName: this.add.regionEnglishName
+                        }}).then(res=>{
+                            if(res.data.code==200){
+                                this.$message.success(res.data.msg);
+                                this.pageHandler(1);
+                            }else{
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
+                            this.$message.error(res.data.msg);
+                        });
+                    }
+                }else{
+                    this.$api.systemapi.saveUsingPOST_4({request:{
+                        // pid: this.add.treeId,
+                        regionName: this.add.regionName,
+                        regionEnglishName: this.add.regionEnglishName
+                    }}).then(res=>{
+                        if(res.data.code==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    });
+                }
                 this.dialogVisible = false;
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            dialogData(id, data){
+                this.listid = id;
+                this.dialogVisible = true;
+                if(id) {
+                    this.add = {
+                        id: data.id,
+                        pid: data.pid,
+                        regionName: data.regionName,
+                        regionEnglishName: data.regionEnglishName,
+                        pname: data.pname
+                    }
+                }else{
+                    this.add = {};
+                    // this.$api.systemapi.queryTreeUsingGET().then(res=>{
+                    //     this.treeData = res.data.data;
+                    // }).catch(res=>{
+                    //     this.$message.error(res.data.msg);
+                    // })
+                }
             },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
-            }
+            deleteList(id){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
+                        if(res.data.code==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res => {
+                        this.$message.error(res.data.msg);
+                    });
+                })
+            },
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

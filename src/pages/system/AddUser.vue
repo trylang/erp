@@ -150,7 +150,7 @@
                     await this.$api.systemapi.addUsingPOST_2({
                         newUser:this.addUser
                     }).then(res=>{
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$router.push('/system/user');
                         }else{
                             this.$message.error(res.data.msg);
@@ -161,7 +161,7 @@
                     await this.$api.systemapi.updateUsingPUT_2({
                         user:this.addUser
                     }).then(res=>{
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$router.push('/system/user');
                         }else{
                             this.$message.error(res.data.msg);

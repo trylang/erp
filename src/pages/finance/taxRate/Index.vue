@@ -56,7 +56,7 @@ export default {
           label: "更新时间",
           name: "updateDate",
           type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          filter: "yyyy-MM-dd hh:mm:ss"
         },
         {
           label: "操作",
@@ -100,17 +100,17 @@ export default {
           label: '税码',
           name: 'rateCode',
           type: 'text',
-          placeholder: '请输入编号'
+          placeholder: '请输入税码'
         }, {
           label: '税率',
           name: 'rate',
           type: 'text',
-          placeholder: '请输入名称'
+          placeholder: '请输入税率'
         }, {
           label: '有效期',
           name: 'validDate',
           type: 'date',
-          placeholder: '请输入名称'
+          placeholder: '请输入有效期'
         }, {
           label: '说明（选填）',
           name: 'description',

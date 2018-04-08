@@ -11,7 +11,7 @@
           <!-- <el-button type="primary" v-if="variables.isActive === 'first'" @click="cancelBill">取消确认</el-button> -->
           <el-button v-if="variables.isActive === 'second'" type="primary" @click="confirmBill">确认</el-button>
           <el-button v-if="variables.isActive === 'third'" type="primary" @click="publishBill">发布</el-button>
-          <!-- <el-button type="primary" @click="printContent">打印</el-button>           -->
+          <el-button type="primary" @click="printContent">打印</el-button>          
           <el-button type="primary" v-if="variables.isActive === 'first'" @click="deleteBill">删除</el-button>         
         </el-col>
       </el-row>
@@ -212,7 +212,6 @@ export default {
             type: "primary",
             disabledFun: () => {
               return Object.values(this.dialog.param).some(item => {
-                console.log(item);
                 return item === (undefined || "");
               });
             },
@@ -268,9 +267,7 @@ export default {
         settleDate: "",
       }
     },
-    handleClick() {
-      console.log(23);
-    },
+    handleClick() {},
     activeFunc(item) {
       this.variables.isActive = item.id;
       this.initParam();
@@ -376,7 +373,8 @@ export default {
       await this.$api.financeapi.confirmListUsingGET(param).then(returnObj => {
         if (returnObj.data.status === 200) {
           console.log(returnObj);
-          this.createTree = formatTree(returnObj.data.data);
+          $message('success', '结算单确认成功！');
+          // this.createTree = formatTree(returnObj.data.data);
         }  
       });
     },
@@ -388,7 +386,8 @@ export default {
       await this.$api.financeapi.publishListUsingGET(param).then(returnObj => {
         if (returnObj.data.status === 200) {
           console.log(returnObj);
-          this.createTree = formatTree(returnObj.data.data);
+          $message('success', '结算单发布成功！');
+          // this.createTree = formatTree(returnObj.data.data);
         }  
       });
     },

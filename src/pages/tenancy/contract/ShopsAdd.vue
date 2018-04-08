@@ -1095,7 +1095,7 @@
                                                     <label class="el-upload el-upload--text">
                                                         <i class="el-icon-plus avatar-uploader-icon"></i>
                                                         <div class="el-upload__text">点击添加图片</div>
-                                                        <input type="file" name="file" multiple="multiple" class="el-upload__input" ref="fileUpload" @change="addFileUpload()">
+                                                        <input type="file" name="file" multiple="multiple" class="el-upload__input" ref="fileUpload" @change="addFileData()">
                                                     </label>
                                                 </div>
                                             </div>
@@ -1236,6 +1236,7 @@
                 },
                 unitData:{
                     area: 0,
+                    contractCode:'',
                     contractId: '',
                     propertyType: this.$route.params.prototypeId,
                     rentArea: 0,
@@ -1420,6 +1421,7 @@
                 shopName:'',
                 formData:'',
                 contractId:'',
+                contractCode:'',
                 queryLogList:[]
             };
         },
@@ -1434,9 +1436,9 @@
             if(this.$route.params.contractId != 0){
                 this.getRentDataList(1);
                 this.getCostDataList(1);
+                this.getContractInfo();
             }
             this.getGoodsTypeList();
-            this.getContractInfo();
             this.getContractInfoData();
         },
         watch:{
@@ -1459,7 +1461,7 @@
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12({
+                await this.$api.rentapi.listUsingGET_11({
                     status:1
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
@@ -1529,6 +1531,7 @@
                         this.addBondData();
                         break;
                     case '6':
+                        //this.addFileUpload();
                         this.nextNum();
                         break;
                 };
@@ -1545,10 +1548,13 @@
                         this.$message.success(res.data.msg);
                         this.unitData.contractId = res.data.data.contractId;
                         this.unitData.shopId = res.data.data.shopId;
+                        this.unitData.contractCode = res.data.data.contractCode;
                         this.rentData[0].contractId = res.data.data.contractId;
                         this.shopName =  res.data.data.shopName;
                         this.contractId = res.data.data.contractId;
+                        this.contractCode = res.data.data.contractCode;
                         this.nextNum();
+                        this.getContractInfo();
                     } else {
                         this.$message.error(res.data.msg);
                     }
@@ -1600,7 +1606,8 @@
                 await this.$api.rentapi.addBondUsingPOST({
                     request :{
                         bond: parseInt(this.bondValue),
-                        contractId: this.contractId
+                        contractId: this.contractId,
+                        contractCode:this.contractCode,
                     }
                 }).then(res=>{
                     if (res.data.status == 200) {
@@ -1612,23 +1619,34 @@
                 })
             },
             async addFileUpload(){
-                this.formData= new FormData();
-                for(let i=0;i<this.$refs.fileUpload.files.length;i++){
-                    this.formData.append('files',this.$refs.fileUpload.files[i]);
+                if(this.$route.params.contractId != 0) {
+                    this.contractId = this.$route.params.contractId;
                 }
-                await this.$api.rentapi.uploadsFileUsingPOST({
-                    $config:{ headers: { 'Content-Type':'multipart/form-data'}},
-                    file:this.formData,
-                    contractId:this.$route.params.contractId,
-                    type:0
+                await this.$api.rentapi.uploadsUsingPOST({
+                    //$config:{ headers: { 'Content-Type':'multipart/form-data'}},
+                    /*request: {
+                        file: this.formData,
+                        contractId: this.$route.params.contractId,
+                        type: 0
+                    }*/
+                    file: [240],
+                    contractId: this.contractId,
+                    type: 0
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getFileInfo();
+                        //this.getFileInfo();
+                        this.nextNum();
                     } else {
                         this.$message.error(res.data.msg);
                     }
                 })
+            },
+            addFileData(){
+                this.formData= new FormData();
+                for(let i=0;i<this.$refs.fileUpload.files.length;i++){
+                    this.formData.append('formfiles',this.$refs.fileUpload.files[i]);
+                }
             },
             //获取合同信息
             async getContractInfoData(){
@@ -1643,12 +1661,13 @@
                             this.shopName =  res.data.data.shopName;
                             this.rentData[0].contractId = res.data.data.contractId;
                             this.mainBrandName = res.data.data.brandName;
+                            this.contractCode = res.data.data.contractCode;
                         } else {
                             this.$message.error(res.data.msg);
                         }
                     });
                     await this.$api.rentapi.getContractUnitInformationUsingGET({
-                        contractId: this.$route.params.contractId
+                        contractCode : this.contractCode
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.unitData = res.data.data.rentShop;
@@ -1658,7 +1677,7 @@
                         }
                     })
                     await this.$api.rentapi.getContractBondInfoUsingGET({
-                        contractId: this.$route.params.contractId
+                        contractCode : this.contractCode
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.unitData = res.data;
@@ -1928,7 +1947,7 @@
             //获取保证金的应收诚意金
             async getContractInfo(){
                 await this.$api.rentapi.getContractBondInfoUsingGET({
-                    contractId :this.$route.params.contractId
+                    contractCode : this.contractCode
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.sincerityMoney = res.data.sincerityMoney;
@@ -1948,6 +1967,9 @@
                     localStorage.setItem('step', 41);
                 }
             },
+
+            //合同变更和延期
+
         },
         components: {
             BlankHead,

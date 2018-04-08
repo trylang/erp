@@ -385,7 +385,6 @@ export const saveUsingPOSTURL = function(parameters = {}) {
  * @param  -
  */
 export const updateUsingPUT = function(parameters = {}) {
-    console.log(222,parameters)
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/adjust/cost/item/update/{id}'

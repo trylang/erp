@@ -23,7 +23,7 @@
       </el-col>
     </el-row>
     <el-row slot="preappend">
-        <el-col :span="9">
+      <el-col :span="9">
         <div class="texttitle">
             <span class="inputname">状态：</span>
             <div class="line-nav">

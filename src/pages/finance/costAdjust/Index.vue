@@ -272,7 +272,8 @@ export default {
       let params = {
         id:param
       };
-      await this.$api.financeapi.confirmUsingPUT(params).then(returnObj => {
+      console.log(params);
+      await this.$api.financeapi.confirmUsingPUT_2(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getCostAdjust({}, () => {
             $message("success", "确认成功!");

@@ -116,7 +116,7 @@
                         positionName: this.add.positionName,
                         departmentId: this.add.departmentId
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -130,7 +130,7 @@
                         positionName: this.add.positionName,
                         departmentId: this.add.departmentId      
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -167,7 +167,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$api.systemapi.deleteUsingDELETE_2({id: id}).then(res =>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{

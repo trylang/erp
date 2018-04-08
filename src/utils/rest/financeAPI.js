@@ -88,6 +88,24 @@ export async function queryMerchant() {
   }
 }
 
+// 获取店铺列表（租务）
+export async function queryShop() {
+  // const param = {
+  //   pageSize: maxPageSize
+  // };
+  const res = await API_RENT.listUsingGET_12();
+  const data = res.data;
+  if (data.status === 200) {
+    const json = _changeJson(data.data, 'id');
+    return {
+      data: data.data,
+      json: json
+    };
+  } else {
+    return data.message;
+  }
+}
+
 // 获取合同列表（租务）
 export async function queryContract(param={}) {
   const res = await API_RENT.getListForPageUsingGET(param);

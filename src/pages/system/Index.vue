@@ -135,7 +135,7 @@
                             regionName: this.add.regionName,
                             regionEnglishName: this.add.regionEnglishName
                         }}).then(res=>{
-                            if(res.data.code==200){
+                            if(res.data.status==200){
                                 this.$message.success(res.data.msg);
                                 this.pageHandler(1);
                             }else{
@@ -151,7 +151,7 @@
                         regionName: this.add.regionName,
                         regionEnglishName: this.add.regionEnglishName
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -190,7 +190,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{

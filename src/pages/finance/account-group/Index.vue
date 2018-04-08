@@ -52,7 +52,7 @@ export default {
           label: "更新时间",
           name: "updateDate",
           type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          filter: "yyyy-MM-dd hh:mm:ss"
         },
         {
           label: "操作",

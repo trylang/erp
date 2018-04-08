@@ -136,7 +136,7 @@
                         marketEnglishName: this.add.marketEnglishName,
                         marketArea: this.add.marketArea
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -152,7 +152,7 @@
                         marketEnglishName: this.add.marketEnglishName,
                         marketArea: this.add.marketArea
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -192,7 +192,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$api.systemapi.deleteUsingDELETE_1({id: id}).then(res =>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="table" ref="table_cont" @scroll.passive="handleScroll">
 		<table cellspacing="0" cellpadding="0" border="0" class="tablebox erp_table">
 			<thead class="table_header">
 				<tr v-if="header">
@@ -58,7 +58,7 @@
 <script>
 export default {
   name: "erp-table",
-  props: ["header", "content", "noPage", "oddColor"],
+  props: ["header", "content", "noPage", "oddColor", "ifScroll"],
   data() {
     return {
       currentPage: 1
@@ -71,7 +71,7 @@ export default {
         length = this.content.list.length;
       } else {
         length = this.content && this.content.length;
-      }      
+      }
       if (length <= 0) return false;
       const checkName = this.header.find(item => item.type === "checkbox").name;
       return this.content.list.every(item => {
@@ -101,15 +101,34 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
       this.$emit("currentPage", val);
+    },
+    handleScroll(e) {
+      if(!this.ifScroll) return;
+      const tableCont = this.$refs.table_cont;
+      var scrollTop = tableCont.scrollTop;
+      tableCont.querySelector("thead").style.transform =
+        "translateY(" + scrollTop + "px)";
+    }
+  },
+  mounted () {
+    if (this.ifScroll) {
+      const tableCont = this.$refs.table_cont;
+      tableCont.style.maxHeight = "380px";
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.table {
+  width: 100%;
+  // max-height: 200px;
+  margin: 1.5rem 0;
+  padding: 0 1.2rem;
+  overflow: auto;
+}
 .erp_table {
   width: 100%;
-  padding: 1.5rem 1.2rem;
   thead {
     color: #909399;
     font-weight: 500;
@@ -128,11 +147,11 @@ export default {
   tbody {
     tr {
       &:nth-child(even) {
-        background: #FAFAFA;
+        background: #fafafa;
       }
       &:hover {
         background: #f5f7fa;
-      } 
+      }
     }
     .cell {
       padding: 0.6rem;

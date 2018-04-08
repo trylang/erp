@@ -52,9 +52,9 @@
             <el-row class="dialogbox">
                 <el-col :span="24">
                     <div class="listbox" style="margin: 0;">
-                        <div class="listcont" v-for="(contactLists,index) in merchantInfoData.CCLstParams">
+                        <div class="listcont" v-for="(contactLists,index) in merchantInfoData.contactLstParams" :key="index">
                             <template>
-                                <el-radio v-model="radio" :label="index+1">主</el-radio>
+                                <el-radio v-model="contactLists.mainOrNot" :label="index+1">主</el-radio>
                             </template>
                             <div class="listcolum columbox" style="padding: 0 20px;">
                                 <div class="columboxinput">
@@ -262,13 +262,7 @@
         data(){
             return{
                 merchantInfoData:{
-                    contactLstParams:[{
-                        id:'',
-                        responsiblePerson:'',
-                        contactNumber:'',
-                        fax:'',
-                        mainOrNot:''
-                    }],
+                    contactLstParams:[],
                     id:'',
                     merchantCode:'',
                     merchantName:'',
@@ -283,44 +277,51 @@
                     legalPersonId:'',
                     otherCertificate:'',
                     mainContractId:'',
-                    busLinsNumFile:'',
-                    busPermitNumfile:'',
-                    tradeRegistNumFile:'',
-                    legalPersonIdFile:'',
-                    otherFile:''
+                    busLinsNumFile:[],
+                    busPermitNumfile:[],
+                    tradeRegistNumFile:[],
+                    legalPersonIdFile:[],
+                    otherFile:[]
                 },
                 merchantTypeOption:[{
                     name:'商场',
-                    id:'0'
+                    id:0
                 },{
                     name:'写字楼',
-                    id:'1'
+                    id:1
                 },{
                     name:'广告位',
-                    id:'2'
+                    id:2
                 },{
                     name:'场地',
-                    id:'3'
+                    id:3
                 }],
                 merchantNatureOption:[{
                     name:'法人',
-                    id:'0'
+                    id:0
                 },{
                     name:'个体',
-                    id:'1'
+                    id:1
                 }],
-                contactList:[],
-
-                radio: 1
           }
         },
         mounted(){
             this.getMerchantInfo();
         },
         methods:{
+            addItem(){
+                this.merchantInfoData.contactLstParams.push({
+                    id:'',
+                    responsiblePerson:'',
+                    contactNumber:'',
+                    fax:'',
+                    mainOrNot:''
+                });
+            },
             async submitFormData(){
                 if(this.$route.params.merchantId == 0) {
                     await this.$api.rentapi.addUsingPOST_8({
+                        //$config:{ headers: { 'Content-Type':'multipart/form-data'}},
                         request: this.merchantInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -332,7 +333,7 @@
                     })
                 }else{
                     this.merchantInfoData.id = this.$route.params.merchantId;
-                    await this.$api.rentapi.updateUsingPUT_10({
+                    await this.$api.rentapi.updateUsingPUT_9({
                         request: this.merchantInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -345,11 +346,14 @@
                 }
             },
             async delContactLists(contactLists){
-
+                let index = this.merchantInfoData.contactLstParams.indexOf(contactLists)
+                if (index !== -1) {
+                    this.merchantInfoData.contactLstParams.splice(index, 1)
+                }
             },
             async getMerchantInfo(){
                 if(this.$route.params.merchantId != 0) {
-                    this.$api.rentapi.detailUsingGET_7({
+                    this.$api.rentapi.detailUsingGET_6({
                         id: this.$route.params.merchantId
                     }).then(res => {
                         this.merchantInfoData = res.data.data;

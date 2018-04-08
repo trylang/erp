@@ -11,13 +11,13 @@
             default-expand-all
             highlight-current
             :props="defaultProps"
-            @check-change="handleCheckChange">
+            @check="handleCheckChange">
           </el-tree>
         </div>
       </el-col>
       <el-col :span="14" class="full_width">
         <div class="erp_container" id="subOutputRank-print">
-          <notice-template :header="header" :content="content" :detail="detail"></notice-template>
+          <notice-template v-for="(detail, index) in details" :key="index" :header="header" :content="content" :detail="detail"></notice-template>
         </div>
       </el-col>   
     </el-row>
@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       detail: {},
+      details: [],
       defaultProps: {
         children: "children",
         label: "label",
@@ -49,12 +50,14 @@ export default {
     };
   },
   methods: {
-    handleCheckChange(data, checked, indeterminate) {
-      if (checked) {
-        const nodes = this.$refs.tree.getCheckedNodes();
-        const lastId = nodes[nodes.length - 1].id;
-        this.billDetail(lastId);
-      }
+    handleCheckChange(data, checked) {
+      let checkedIds = [];
+      checked.checkedNodes.forEach(item => {
+        if (!item.children) {
+          checkedIds.push(item.id);
+        }
+      });
+      this.billDetailList(checkedIds);       
     },
     selectedIds() {
       if (this.$refs.tree) {
@@ -70,7 +73,6 @@ export default {
     },
     printBill() {
       let subOutputRankPrint = document.getElementById("subOutputRank-print");
-      console.log(subOutputRankPrint.innerHTML);
       let newContent = subOutputRankPrint.innerHTML;
       let oldContent = document.body.innerHTML;
       document.body.innerHTML = newContent;
@@ -79,12 +81,22 @@ export default {
       document.body.innerHTML = oldContent;
       return false;
     },
-    async billDetail(id) {
-      await this.$api.financeapi.detailUsingGET_1({ id }).then(returnObj => {
-        if (returnObj.data.status === 200) {
-          this.detail = returnObj.data.data;
-        }
+    async billDetailList(ids) {
+      if (ids.length === 0) {
+        this.details = [];
+        return;
+      };
+      let asyncFuncList = [];
+      ids.forEach(id => {
+        asyncFuncList.push(this.billDetail(id));
       });
+      this.details = await Promise.all(asyncFuncList);
+    },
+    async billDetail(id) {
+      const res = await this.$api.financeapi.detailUsingGET_1({id});
+      if (res.data.status === 200) {
+        return res.data.data;
+      };
     },
     async cancelBill() {
       const id = this.selectedIds();
@@ -94,7 +106,11 @@ export default {
         return;
       }
       await this.$api.financeapi.cancelUsingPUT_3({ id }).then(returnObj => {
-        console.log(returnObj);
+        if (returnObj.data.status === 200) {
+          console.log(returnObj);
+          $message('success', '结算单取消成功！');
+          // this.createTree = formatTree(returnObj.data.data);
+        }
       });
     },
     async confirmBill() {

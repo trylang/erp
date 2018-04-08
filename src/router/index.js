@@ -85,15 +85,44 @@ const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index'
 //销售返款
 const Terminal = r => require.ensure([], () => r(require('../pages/rebates/Index')), 'rebates');
 const Poundage = r => require.ensure([], () => r(require('../pages/rebates/Poundage')), 'rebates');
+const PoundageOut = r => require.ensure([], () => r(require('../pages/rebates/PoundageOut')), 'rebates');
 const ZhxNumber = r => require.ensure([], () => r(require('../pages/rebates/ZhxNumber')), 'rebates');
 const Account = r => require.ensure([], () => r(require('../pages/rebates/Account')), 'rebates');
 const Upload = r => require.ensure([], () => r(require('../pages/rebates/Upload')), 'rebates');
 const TaskCenter = r => require.ensure([], () => r(require('../pages/rebates/TaskCenter')), 'rebates');
 const Bank = r => require.ensure([], () => r(require('../pages/rebates/Bank')), 'rebates');
+const Wechat = r => require.ensure([], () => r(require('../pages/rebates/wechat')), 'rebates');
+const Paytreasure = r => require.ensure([], () => r(require('../pages/rebates/paytreasure')), 'rebates');
+const Yzfbill = r => require.ensure([], () => r(require('../pages/rebates/yzfbill')), 'rebates');
+const Zhxbill = r => require.ensure([], () => r(require('../pages/rebates/zhxbill')), 'rebates');
 
 const Visualization = r => require.ensure([], () => r(require('../pages/visual/Index')), 'visual');
 const Merchant = r => require.ensure([], () => r(require('../pages/merchant/Index')), 'merchant');
-const Dataview = r => require.ensure([], () => r(require('../pages/database/Index')), 'database');
+
+//数据中心
+const Sign = r => require.ensure([], () => r(require('../pages/database/contractModel/Index')), 'database');
+const SignTrade = r => require.ensure([], () => r(require('../pages/database/contractModel/signTrade')), 'database');
+const SignUnit = r => require.ensure([], () => r(require('../pages/database/contractModel/signUnit')), 'database');
+const ShopInfo = r => require.ensure([], () => r(require('../pages/database/contractModel/shopInfo')), 'database');
+const ExpiryContract = r => require.ensure([], () => r(require('../pages/database/contractModel/expiryContract')), 'database');
+const MonthSaleTotal = r => require.ensure([], () => r(require('../pages/database/saleModel/monthSaleTotal')), 'database');
+const SalesData = r => require.ensure([], () => r(require('../pages/database/saleModel/salesData')), 'database');
+const FloorSale = r => require.ensure([], () => r(require('../pages/database/saleModel/floorSale')), 'database');
+const ShopSale = r => require.ensure([], () => r(require('../pages/database/saleModel/shopSale')), 'database');
+const SaleRanking = r => require.ensure([], () => r(require('../pages/database/saleModel/saleRanking')), 'database');
+const PaymentTotal = r => require.ensure([], () => r(require('../pages/database/saleModel/paymentTotal')), 'database');
+const PaymentDetail = r => require.ensure([], () => r(require('../pages/database/saleModel/paymentDetail')), 'database');
+const SaleDetails = r => require.ensure([], () => r(require('../pages/database/saleModel/saleDetails')), 'database');
+const ShopWeekSale = r => require.ensure([], () => r(require('../pages/database/saleModel/shopWeekSale')), 'database');
+const ShopRanking = r => require.ensure([], () => r(require('../pages/database/saleModel/shopRanking')), 'database');
+const BusinessAble = r => require.ensure([], () => r(require('../pages/database/settleModel/businessAble')), 'database');
+const Businessed = r => require.ensure([], () => r(require('../pages/database/settleModel/businessed')), 'database');
+const SettlementDetail = r => require.ensure([], () => r(require('../pages/database/settleModel/settlementDetail')), 'database');
+const SettlementTotal = r => require.ensure([], () => r(require('../pages/database/settleModel/settlementTotal')), 'database');
+const MarketAble = r => require.ensure([], () => r(require('../pages/database/settleModel/marketAble')), 'database');
+const Marketed = r => require.ensure([], () => r(require('../pages/database/settleModel/marketed')), 'database');
+const FreeRecord = r => require.ensure([], () => r(require('../pages/database/settleModel/freeRecord')), 'database');
+const BillRecord = r => require.ensure([], () => r(require('../pages/database/settleModel/billRecord')), 'database');
 
 //系统管理
 const Area = r => require.ensure([], () => r(require('../pages/system/Index')), 'system');
@@ -427,6 +456,10 @@ const router = new Router({
                     component: Poundage
                 },
                 {
+                    path: 'poundageOut',
+                    component: PoundageOut
+                },
+                {
                     path: 'zhxnumber',
                     component: ZhxNumber
                 },
@@ -444,23 +477,19 @@ const router = new Router({
                 },
                 {
                     path: 'wechat',
-                    component: Bank
+                    component: Wechat
                 },
                 {
                     path: 'paytreasure',
-                    component: Bank
+                    component: Paytreasure
                 },
                 {
                     path: 'yzfbill',
-                    component: Bank
+                    component: Yzfbill
                 },
                 {
                     path: 'zhxbill',
-                    component: Bank
-                },
-                {
-                    path: 'etc',
-                    component: Bank
+                    component: Zhxbill
                 },
                 {
                     path: 'taskcenter',
@@ -492,11 +521,100 @@ const router = new Router({
         {
             path: '/database',
             component: Inner,
+            redirect: '/database/sign',
             children: [
                 {
-                    path: 'dataview',
-                    component: Dataview
-                }
+                    path: 'sign',
+                    component: Sign
+                },
+                {
+                    path: 'signTrade',
+                    component: SignTrade
+                },
+                {
+                    path: 'signUnit',
+                    component: SignUnit
+                },
+                {
+                    path: 'shopInfo',
+                    component: ShopInfo
+                },
+                {
+                    path: 'expiryContract',
+                    component: ExpiryContract
+                },
+                {
+                    path: 'monthSaleTotal',
+                    component: MonthSaleTotal
+                },
+                {
+                    path: 'salesData',
+                    component: SalesData
+                },
+                {
+                    path: 'floorSale',
+                    component: FloorSale
+                },
+                {
+                    path: 'shopSale',
+                    component: ShopSale
+                },
+                {
+                    path: 'saleRanking',
+                    component: SaleRanking
+                },
+                {
+                    path: 'paymentTotal',
+                    component: PaymentTotal
+                },
+                {
+                    path: 'paymentDetail',
+                    component: PaymentDetail
+                },
+                {
+                    path: 'saleDetails',
+                    component: SaleDetails
+                },
+                {
+                    path: 'shopWeekSale',
+                    component: ShopWeekSale
+                },
+                {
+                    path: 'shopRanking',
+                    component: ShopRanking
+                },
+                {
+                    path: 'businessAble',
+                    component: BusinessAble
+                },
+                {
+                    path: 'businessed',
+                    component: Businessed
+                },
+                {
+                    path: 'settlementDetail',
+                    component: SettlementDetail
+                },
+                {
+                    path: 'settlementTotal',
+                    component: SettlementTotal
+                },
+                {
+                    path: 'marketAble',
+                    component: MarketAble
+                },
+                {
+                    path: 'marketed',
+                    component: Marketed
+                },
+                {
+                    path: 'freeRecord',
+                    component: FreeRecord
+                },
+                {
+                    path: 'billRecord',
+                    component: BillRecord
+                },
             ]
         },
         {

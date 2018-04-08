@@ -28,17 +28,18 @@
               :value="item[model.value]">
             </el-option>
           </el-select>
-          <el-select v-if="model.type==='custom_select'" filterable v-model="dialog.param[model.name]" 
+          <el-select v-if="model.type==='custom_select'" v-model="dialog.param[model.name]" 
             @change="toggleVal(model, dialog.param[model.name])">
-            <el-option-group v-for="group in model.optionsGroups"
-              :key="group.label"
+            <span>{{dialog.param[model.name]}}</span>
+            <el-option-group v-for="(group, groupIndex) in model.optionsGroups"
+              :key="groupIndex"
               :label="group.label">
               <el-option
                 v-for="(item, index) in group.options"
                 :key="index"
                 :label="item[model.valueLabel]"
                 :value="item">
-                <span :style="model.optionsStyle" v-for="(optionlabel, index) in model.optionsLabels" :key="index">{{item[optionlabel]}}</span>
+                <!-- <span :style="model.optionsStyle" v-for="(optionlabel, index) in model.optionsLabels" :key="index">{{item[optionlabel]}}</span> -->
               </el-option>
             </el-option-group>
             
@@ -66,6 +67,8 @@ export default {
   props: ["title", "dialog"],
   methods: {
     toggleVal(model, val) {
+      console.log('model', model)
+      console.log('value', val)
       if (model.event) {
         model.event(this.dialog.param[model.name]);
       }

@@ -34,18 +34,18 @@ export default {
     return {
       header: [
         {
-          label: "开户行",
+          label: "开户银行",
           type: "text",
           name: "openingBank"
         },
         {
-          label: "银行账户",
+          label: "开户名称",
+          type: "text",
+          name: "receiptName"
+        },{
+          label: "开户账号",
           type: "text",
           name: "bankAccount"
-        },{
-          label: "购物中心",
-          type: "text",
-          name: "shoppingCenterName"
         },{
           label: "结算组别",
           type: "text",
@@ -55,7 +55,7 @@ export default {
           label: "更新时间",
           name: "updateDate",
           type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          filter: "yyyy-MM-dd hh:mm:ss"
         },
         {
           label: "操作",

@@ -445,7 +445,7 @@ export default {
       // 获取收款详情及确认金额
       let [content, bankBalance] = await Promise.all([
         this.getBilllistByAid(billId),
-        this.getBankBalance(data.shopId ? data.shopId: data.merchantId)
+        this.getBankBalance(data.shopId)
       ]);
       this.content = content;
       this.query.needBillInfo.bankBalance = bankBalance;

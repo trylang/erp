@@ -307,7 +307,7 @@
     }
 
     .dialoginput .inputname {
-        width: 76px;
+        width: 80px;
         padding: 0 10px;
         line-height: 30px;
         display: inline-block;
@@ -612,7 +612,7 @@
     }
 
     .searchselect .inputname {
-        width: 76px;
+        width: 80px;
         padding: 0 5px;
         line-height: 30px;
         display: inline-block;

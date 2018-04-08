@@ -120,7 +120,7 @@
                     userId:this.userid,
                     password:this.passwordCont
                 }).then(res=>{
-                    if(res.data.code == 200){
+                    if(res.data.status == 200){
                         this.$message.success(res.data.msg);
                     }else{
                         this.$message.error(res.data.msg);
@@ -132,7 +132,7 @@
                     await this.$api.systemapi.setForbiddenUsingGET({
                         id: userid
                     }).then(res => {
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                         }else{
                             this.$message.error(res.data.msg);
@@ -143,7 +143,7 @@
                     await this.$api.systemapi.setUnForbiddenUsingGET({
                         id: userid
                     }).then(res => {
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                         }else{
                             this.$message.error(res.data.msg);

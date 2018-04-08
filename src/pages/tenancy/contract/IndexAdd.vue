@@ -240,7 +240,7 @@
                         <el-row class="dialogbox">
                             <el-col :span="24">
                                 <div class="listbox" style="margin: 0;">
-                                    <div class="listcont contractcont" v-for="(UnitItem,index) in checkedUnit">
+                                    <div class="listcont contractcont" v-for="(UnitItem,index) in checkedUnitList">
                                         <div class="listcolum contractlist">
                                             <span>单元号</span>
                                             <p>{{UnitItem.unitCode}}</p>
@@ -258,7 +258,7 @@
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
                                         <div class="deletebtn">
-                                            <button class="btn_text" @click="delUnitItem(UnitItem.id,UnitItem)">删除</button>
+                                            <button class="btn_text" @click="delUnitItem(UnitItem.unitId,UnitItem)">删除</button>
                                         </div>
                                     </div>
                                 </div>
@@ -422,7 +422,7 @@
                 </el-row>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleUnit()">取 消</el-button>
+                <el-button @click="cancelUnit()">取 消</el-button>
                 <el-button type="primary" @click="handleUnit()">确 定</el-button>
             </span>
         </el-dialog>
@@ -525,19 +525,13 @@
                 }],
                 unitDataList:[],
                 checkedUnit:[],
+                checkedUnitList:[],
                 unitData:{
-                    area: 0,
                     contractId: 0,
-                    id: 0,
                     propertyType: 0,
-                    rentArea: 0,
-                    rentWay: 0,
-                    shopId: 0,
                     siteId: 0,
-                    swingArea: 0,
-                    unitIds: [],
-                    useArea: 0
-            },
+                    unitIds: []
+                },
                 rentList:[],
                 rentData:{
                     contractId:0,
@@ -562,7 +556,7 @@
                     sincerityMoney:'',
                     id:0
                 },
-                earnestMoney:''
+                contractId:''
             };
         },
         created(){
@@ -590,7 +584,9 @@
         },
         methods: {
             async getMerchantList(){
-                await this.$api.rentapi.auditListUsingGET_1().then(res=>{
+                await this.$api.rentapi.listUsingGET_11({
+                    status:1
+                }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
@@ -661,7 +657,7 @@
                         this.addBondData();
                         break;
                     case '6':
-
+                        this.addFileData();
                         break;
                 };
             },
@@ -669,8 +665,27 @@
                 this.dialogVisible = true;
                 this.getUnitDataList();
             },
-            handleUnit(){
+            cancelUnit(){
                 this.dialogVisible = false;
+            },
+            async handleUnit(){
+                this.checkedUnit.forEach(item=>{
+                    this.checkedUnitList.push(item);
+                });
+                if(this.$route.params.contractId != 0) {
+                    await this.$api.rentapi.updateShopUnitUsingPUT_1({
+                        request: this.unitData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.dialogVisible = false;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    this.dialogVisible = false;
+                }
             },
             unitSelect(){
                 this.unitData.unitIds = this.checkedUnit.map(item=>{
@@ -678,6 +693,27 @@
                 });
             },
             addRentItem(){
+                if(this.$route.params.contractId != 0) {
+                    this.rentData = {
+                        contractId:this.$route.params.contractId,
+                        drawRate: 0,
+                        endRent: 0,
+                        id: 0,
+                        period: 0,
+                        periodEndDate: "",
+                        periodStartDate: ""
+                    }
+                }else{
+                    this.rentData = {
+                        contractId:this.contractId,
+                        drawRate: 0,
+                        endRent: 0,
+                        id: 0,
+                        period: 0,
+                        periodEndDate: "",
+                        periodStartDate: ""
+                    }
+                }
                 this.rentList.push(this.rentData);
             },
             async addContract(){
@@ -699,7 +735,7 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.contractId = res.data.data.contractId;
+                            this.contractId = res.data.data;
                             this.nextNum();
                         } else {
                             this.$message.error(res.data.msg);
@@ -711,13 +747,14 @@
                 if(this.$route.params.contractId != 0) {
                     this.unitData.contractId = this.$route.params.contractId;
                     this.unitData.unitIds = this.checkedUnit;
+                    this.nextNum();
                 }else {
+                    this.unitData.contractId = this.contractId;
                     await this.$api.rentapi.addShopUnitUsingPOST_1({
                         request: this.unitData
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.contractId = res.data.data.contractId;
                             this.nextNum();
                         } else {
                             this.$message.error(res.data.msg);
@@ -738,7 +775,7 @@
                         }
                     })
                 }else {
-                    await this.$api.rentapi.addRentOrCostUsingPOST_1({
+                    await this.$api.rentapi.addRentOrCostUsingPOST_2({
                         request: this.rentList
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -752,10 +789,21 @@
             },
             async addCostData(){
                 if(this.$route.params.contractId != 0) {
-
+                    this.costData.id = this.$route.params.contractId;
+                    await this.$api.rentapi.updateRentOrCostUsingPOST({
+                        request: this.costData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.nextNum();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
                 }else{
+                    this.costData.id = this.contractId;
                     await this.$api.rentapi.addRentOrCostUsingPOST_1({
-                        request: this.sincerityMoneyData
+                        request: this.costData
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
@@ -768,8 +816,19 @@
             },
             async addBondData(){
                 if(this.$route.params.contractId != 0) {
-
+                    this.sincerityMoneyData.id = this.$route.params.contractId;
+                    await this.$api.rentapi.updateSincerityMoneyUsingPOST({
+                        request: this.sincerityMoneyData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.nextNum();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
                 }else{
+                    this.sincerityMoneyData.id = this.contractId;
                     await this.$api.rentapi.addSincerityMoneyUsingPOST({
                         request: this.sincerityMoneyData
                     }).then(res => {
@@ -782,10 +841,32 @@
                     })
                 }
             },
+            async addFileData(){
+                if(this.$route.params.contractId != 0) {
+                    this.contractId = this.$route.params.contractId;
+                }
+                await this.$api.rentapi.uploadsFileUsingPOST({
+                    $config:{ headers: { 'Content-Type':'multipart/form-data'}},
+                    /*file:this.formData,
+                    contractId:this.$route.params.contractId,
+                    type:0*/
+                    file:[240],
+                    contractId:this.contractId,
+                    type:0
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.$message.success(res.data.msg);
+                        this.getFileInfo();
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+            },
 
             async delUnitItem(id,unitItem){
+                console.log(id)
                 await this.$api.rentapi.delShopUnitUsingPUT({
-                    intentUnitId  : id
+                    intentUnitId : id
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
@@ -833,7 +914,7 @@
                         id: this.$route.params.contractId
                     }).then(res => {
                         if (res.data.status == 200) {
-                            this.checkedUnit = res.data.data;
+                            this.checkedUnitList = res.data.data;
                         } else {
                             this.$message.error(res.data.msg);
                         }
@@ -879,12 +960,6 @@
                     })
                 }
             }
-
-
-
-
-
-
         },
         components: {
             BlankHead

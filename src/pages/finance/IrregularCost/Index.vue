@@ -262,7 +262,7 @@ export default {
       let params = {
         id: param
       };
-      await this.$api.financeapi.confirmUsingPUT_4(params).then(returnObj => {
+      await this.$api.financeapi.confirmUsingPUT_3(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getIrregularCost({}, () => {
             $message("success", "确认成功!");
@@ -296,7 +296,6 @@ export default {
             $message("success", "取消成功!");
           });
         } else {
-          console.log('cuowu')
           $message("error", "取消失败!");
         }       
       });

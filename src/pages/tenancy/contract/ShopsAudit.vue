@@ -192,7 +192,7 @@
             async auditbtn(){
                 console.log(this.multipleSelection)
                 await this.$api.rentapi.confirmUsingPUT({
-                    ids:this.multipleSelection
+                    contractVoList:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);

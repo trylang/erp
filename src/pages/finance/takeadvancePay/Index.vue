@@ -183,6 +183,7 @@ export default {
             options: [],
             placeholder: "请选择商户",
             async event(id) {//dialog 根据商户id查询合同
+                _this.dialog.models[1].optionsGroups = [];
                 await _this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: id}).then(res => {
                     if (res.data.status === 200) {
                         res.data.data.forEach(item => {
@@ -199,10 +200,10 @@ export default {
             name: "contractItem", //这里需要给他传shopId和contractCode，下拉列表必须传两个值
             type: "custom_select",
             //value: "contractCode", // 传值参数
-            valueLabel: "label", // 显示名称参数
+            valueLabel: "contractAndShop", // 显示名称参数
             optionsStyle: { "padding-right": "10px" },
             optionsGroups: [],
-            optionsLabels: ["contractAndShop"], // 自定义需要显示的字段
+            // optionsLabels: ["contractAndShop"], // 自定义需要显示的字段
             placeholder: "请选择合同编号"
           },
           {

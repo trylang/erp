@@ -87,7 +87,7 @@
                     this.$api.systemapi.deleteUsingDELETE_5({
                         roleId:rId
                     }).then(res=>{
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.getRoleList();
                             this.$message.success(res.data.msg);
                         }else{

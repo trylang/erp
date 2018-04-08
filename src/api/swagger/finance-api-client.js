@@ -618,12 +618,14 @@ export const cancelUsingPUT_3URL = function(parameters = {}) {
  * @param id - 主键
  */
 export const confirmUsingPUT_2 = function(parameters = {}) {
+  console.log(123);
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/finance/bill/adjust/confirm'
   let body
   let queryParameters = {}
   let form = {}
+  
   if (parameters['id'] !== undefined) {
     queryParameters['id'] = parameters['id']
   }

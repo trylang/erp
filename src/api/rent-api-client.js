@@ -796,9 +796,9 @@ export const generatedUsingPUT = function(parameters = {}) {
  * @param token - header中token字段
  * @param id - 主键
  */
-export const infoUsingGET = function(parameters = {}) {
+/*export const infoUsingGET = function(parameters = {}) {
     return rentapi.infoUsingGET(parameters);
-}
+}*/
 
 /**
  * 根据合同ID和结算组别的ID查询不规则费用信息
@@ -1474,9 +1474,22 @@ export const getListForPageUsingGET_1 = function(parameters = {}) {
  * @param request - request
  */
 export const updateShopUnitUsingPUT_1 = function(parameters = {}) {
-    return rentapi.editUsingPUT(parameters);
+    return rentapi.updateShopUnitUsingPUT_1(parameters);
 }
-
+/**
+ * 根据状态查询意向合同列表
+ * request: getListForPageByStatusUsingGET
+ * url: getListForPageByStatusUsingGETURL
+ * method: getListForPageByStatusUsingGET_TYPE
+ * raw_url: getListForPageByStatusUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param status - 状态
+ */
+export const getListForPageByStatusUsingGET = function(parameters = {}) {
+    return rentapi.getListForPageByStatusUsingGET(parameters);
+}
 /**
  * 查看意向合同租金条款
  * request: rentTermsdetailUsingGET
@@ -1492,14 +1505,14 @@ export const rentTermsdetailUsingGET = function(parameters = {}) {
 
 /**
  * 添加意向合同租金条款
- * request: addRentOrCostUsingPOST_1
+ * request: addRentOrCostUsingPOST_2
  * url: addRentOrCostUsingPOST_1URL
  * method: addRentOrCostUsingPOST_1_TYPE
  * raw_url: addRentOrCostUsingPOST_1_RAW_URL
  * @param token - header中token字段
  * @param request - request
  */
-export const addRentOrCostUsingPOST_1 = function(parameters = {}) {
+export const addRentOrCostUsingPOST_2 = function(parameters = {}) {
     return rentapi.addRentOrCostUsingPOST_2(parameters);
 }
 
@@ -1515,7 +1528,30 @@ export const addRentOrCostUsingPOST_1 = function(parameters = {}) {
 export const updateRentOrCostUsingPUT_1 = function(parameters = {}) {
     return rentapi.updateRentOrCostUsingPUT_1(parameters);
 }
-
+/**
+ * 修改费用条款
+ * request: updateRentOrCostUsingPOST
+ * url: updateRentOrCostUsingPOSTURL
+ * method: updateRentOrCostUsingPOST_TYPE
+ * raw_url: updateRentOrCostUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateRentOrCostUsingPOST = function(parameters = {}) {
+    return rentapi.updateRentOrCostUsingPOST(parameters);
+}
+/**
+ * 修改诚意金
+ * request: updateSincerityMoneyUsingPOST
+ * url: updateSincerityMoneyUsingPOSTURL
+ * method: updateSincerityMoneyUsingPOST_TYPE
+ * raw_url: updateSincerityMoneyUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateSincerityMoneyUsingPOST = function(parameters = {}) {
+    return rentapi.updateSincerityMoneyUsingPOST(parameters);
+}
 /**
  * 添加意向合同关意向单元信息
  * request: addShopUnitUsingPOST_1
@@ -1540,6 +1576,18 @@ export const addShopUnitUsingPOST_1 = function(parameters = {}) {
  */
 export const unitDetailUsingGET = function(parameters = {}) {
     return rentapi.unitDetailUsingGET(parameters);
+}
+/**
+ * 添加费用条款
+ * request: addRentOrCostUsingPOST_1
+ * url: addRentOrCostUsingPOST_1URL
+ * method: addRentOrCostUsingPOST_1_TYPE
+ * raw_url: addRentOrCostUsingPOST_1_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const addRentOrCostUsingPOST_1 = function(parameters = {}) {
+    return rentapi.addRentOrCostUsingPOST_1(parameters);
 }
 /**
  * 添加诚意金
@@ -1588,7 +1636,30 @@ export const addSincerityMoneyUsingPOST = function(parameters = {}) {
 export const addUsingPOST_8 = function(parameters = {}) {
     return rentapi.addUsingPOST_8(parameters);
 }
-
+/**
+ * 删除意向单元信息
+ * request: delShopUnitUsingPUT
+ * url: delShopUnitUsingPUTURL
+ * method: delShopUnitUsingPUT_TYPE
+ * raw_url: delShopUnitUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param intentUnitId - intentUnitId
+ */
+export const delShopUnitUsingPUT = function(parameters = {}) {
+    return rentapi.delShopUnitUsingPUT(parameters);
+}
+/**
+ * 删除租金条款
+ * request: delRentTemsUsingPUT
+ * url: delRentTemsUsingPUTURL
+ * method: delRentTemsUsingPUT_TYPE
+ * raw_url: delRentTemsUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param rentTermsId - rentTermsId
+ */
+export const delRentTemsUsingPUT = function(parameters = {}) {
+    return rentapi.delRentTemsUsingPUT(parameters);
+}
 /**
  * 修改商户状态为空置
  * request: emptyUsingPOST_1
@@ -1673,13 +1744,19 @@ export const listUsingGET_12 = function(parameters = {}) {
 }
 
 /**
- * 多个住键查询商户列表
+ * 查询商户列表
  * request: listUsingGET_11
  * url: listUsingGET_11URL
  * method: listUsingGET_11_TYPE
  * raw_url: listUsingGET_11_RAW_URL
  * @param token - header中token字段
- * @param ids - 住键List
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param merchantCode - 商户编码
+ * @param merchantName - 商户名称
+ * @param merchantEnglishName - 商户英文名称
+ * @param merchantType - 商户类型 类型：0商场1写字楼2广告位3场地
+ * @param status - 状态：0新增1已确认2.取消
  */
 export const listUsingGET_11 = function(parameters = {}) {
     return rentapi.listUsingGET_11(parameters);
@@ -1923,7 +2000,7 @@ export const listUsingGET_14 = function(parameters = {}) {
  * @param ids - 住键List
  */
 export const listUsingGET_13 = function(parameters = {}) {
-    return rentapi.listUsingGET_13(parameters);
+    return rentapi.listUsingGET_12(parameters);
 }
 
 /**

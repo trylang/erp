@@ -88,7 +88,7 @@
                     await this.$api.systemapi.addUsingPOST_1({
                         role:this.addRole
                     }).then(res => {
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                             this.$router.push('/system/role');
                         }else{
@@ -100,7 +100,7 @@
                     await this.$api.systemapi.updateUsingPUT_1({
                         role:this.addRole
                     }).then(res => {
-                        if(res.data.code == 200){
+                        if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                             this.$router.push('/system/role');
                         }else{

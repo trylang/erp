@@ -188,7 +188,7 @@
                 await this.$api.systemapi.itemSaveUsingPOST({
                     request:this.addDict
                 }).then(res => {
-                    if (res.data.code == 200) {
+                    if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
                         this.getItemList(this.addDict.dictTypeCode);
                         this.addDict = {
@@ -215,7 +215,7 @@
                         sort: itemlist.sort
                     }
                 }).then(res => {
-                    if (res.data.code == 200) {
+                    if (res.data.status == 200) {
                         itemlist.isEditShow = false;
                         this.$message.success(res.data.msg);
                         this.getItemList(this.addDict.dictTypeCode);

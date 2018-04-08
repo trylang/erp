@@ -297,10 +297,6 @@
                                 {
                                     path: '/rebates/zhxbill',
                                     title: '资和信账单'
-                                },
-                                {
-                                    path: '/rebates/etc',
-                                    title: 'ETC账单'
                                 }
                             ]
                         },
@@ -332,11 +328,98 @@
                         ]
                     }],
                     database: [{
-                        title: '数据中心',
+                        title: '合同统计',
                         children: [
                             {
-                                path: '/inner/building',
-                                title: '数据中心'
+                                path: '/database/sign',
+                                title: '签约统计'
+                            },
+                            {
+                                path: '/database/signTrade',
+                                title: '签约统计（商铺业态）'
+                            },
+                            // {
+                            //     path: '/database/signUnit',
+                            //     title: '签约统计（单元）'
+                            // },
+                            {
+                                path: '/database/shopInfo',
+                                title: '店铺租约信息'
+                            },
+                            {
+                                path: '/database/expiryContract',
+                                title: '到期合同'
+                            },
+                        ]
+                    },{
+                        title: '销售统计',
+                        children: [
+                            {
+                                path: '/database/monthSaleTotal',
+                                title: '月销售汇总'
+                            },
+                            {
+                                path: '/database/salesData',
+                                title: '销售数据'
+                            },
+                            {
+                                path: '/database/floorSale',
+                                title: '业态楼层销售'
+                            },
+                            {
+                                path: '/database/shopSale',
+                                title: '店铺销售报表'
+                            },
+                            {
+                                path: '/database/saleRanking',
+                                title: '店铺业态销售汇总表'
+                            },
+                            {
+                                path: '/database/paymentTotal',
+                                title: '付款方式汇总'
+                            },
+                            {
+                                path: '/database/paymentDetail',
+                                title: '付款方式明细'
+                            },
+                            
+                            
+                        ]
+                    },
+                    {
+                        title: '结算统计',
+                        children: [
+                            {
+                                path: '/database/businessAble',
+                                title: '商户结算（应收）'
+                            },
+                            {
+                                path: '/database/businessed',
+                                title: '商户结算（已收）'
+                            },
+                            {
+                                path: '/database/settlementDetail',
+                                title: '结算费用明细'
+                            },
+                            {
+                                path: '/database/settlementTotal',
+                                title: '结算费用汇总'
+                            },
+                            {
+                                path: '/database/marketAble',
+                                title: '商场及写字楼（应收）'
+                            },
+                            {
+                                path: '/database/marketed',
+                                title: '商场及写字楼（已收）'
+                            },
+                            {
+                                path: '/database/freeRecord',
+                                title: '免租维护记录'
+                            },
+                            {
+                                path: '/database/billRecord',
+                                title: '账单维护记录'
                             }
                         ]
                     }],
