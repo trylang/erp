@@ -2,37 +2,39 @@
   <el-row style="margin: 30px">
     <el-upload
     class="upload-demo"
-    action="https://jsonplaceholder.typicode.com/posts/"
-    :on-change="handleChange"
-    :file-list="fileList3">
+    :on-success="handleSuccess"
+    :on-error="handleError"
+    :file-list="fileList"
+    :action="Upload()">
     <el-button size="small" type="primary">点击导入</el-button>
-    <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
   </el-upload>
   </el-row>
 </template>
 <script>
+import { $message } from "@/utils/notice";
+
 export default {
   data() {
     return {
-      fileList3: [
-        // {
-        //   name: "food.jpeg",
-        //   url:
-        //     "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        //   status: "finished"
-        // },
-        // {
-        //   name: "food2.jpeg",
-        //   url:
-        //     "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        //   status: "finished"
-        // }
-      ]
+      fileList: []
     };
   },
   methods: {
-    handleChange(file, fileList) {
-      this.fileList3 = fileList.slice(-3);
+    Upload() {
+      return this.HOST + "/finance/irregular/cost/import";
+    },
+    handleSuccess(res,file, fileList) {
+      if (res.status === 200) {
+        $message("success", '上传成功');
+        this.fileList = fileList;
+      } else {
+        fileList.splice(fileList.indexOf(file),1);
+        this.fileList = fileList;
+        $message("error", res.msg);        
+      }
+    },
+    handleError(err) {
+      $message("error", err.message);
     }
   }
 };

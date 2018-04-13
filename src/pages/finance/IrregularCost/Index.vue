@@ -83,7 +83,9 @@ export default {
         },
         {
           label: "费用单号",
-          type: "text",
+          type: "link",
+          basehref: "#/finance/irregularCost/detail/",
+          urlId: 'id',
           name: "costNo"
         },
         {
@@ -216,7 +218,7 @@ export default {
       param.forEach(item => {
         ids.push(item.id);
       });
-      return ids.toString();
+      return ids;
     },
     batchConfirm() {
       this.confirmIrregularCost(this.filterIds());
@@ -259,16 +261,13 @@ export default {
       })
     },
     async confirmIrregularCost(param) {
-      let params = {
-        id: param
-      };
-      await this.$api.financeapi.confirmUsingPUT_3(params).then(returnObj => {
+      await this.$api.financeapi.confirmUsingPUT_3({id: param}).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getIrregularCost({}, () => {
-            $message("success", "确认成功!");
+            $message("success", returnObj.data.msg);
           });  
         } else {
-          $message("error", "确认失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -282,7 +281,7 @@ export default {
             $message("success", "删除成功!");
           });  
         } else {
-          $message("error", "删除失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -302,7 +301,7 @@ export default {
     },
     async init() {
       let [accountGroup, merchants, contracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract()]); 
-      this.selects.merchants = merchants.data.list;
+      this.selects.merchants = merchants.data;
       this.selects.contracts = contracts.data.list;
       await this.getIrregularCost();
     }

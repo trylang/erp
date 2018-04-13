@@ -10,7 +10,7 @@
         <aside class="head_part_r">
           <p class="mar_bottom_03"><span>电话：{{detail.shopTelephone}}</span></p>
           <p class="mar_bottom_03"><span>传真：{{detail.shopFox}}</span></p>
-          <p><span>结算单号：1234567891243232323</span></p>
+          <p><span>结算单号：{{detail.billNo}}</span></p>
         </aside>
       </div>
     </header>
@@ -25,12 +25,12 @@
           <span>发单日期：{{detail.releaseDate}}</span>
           <span>页数：400</span>
         </p>
-        <strong>上期结余：{{detail.totalOwed}}</strong>
+        <strong>上期结余：{{detail.remainOwed}}</strong>
       </div>
-      <erp-table class="templete_table" :header="header" :content="content" noPage="true" :oddColor="oddColor">
+      <erp-table class="templete_table" :header="header" :content="detail" noPage="true" :oddColor="oddColor">
         <tr class="last_tr" slot="lastTr">
           <td colspan="2"><div class="cell"><span>合计欠款</span></div></td>
-          <td><div class="cell"><span>{{detail.remainOwed}}</span></div></td>
+          <td><div class="cell"><span>{{detail.totalOwed}}</span></div></td>
         </tr>
       </erp-table>
     </main>

@@ -44,6 +44,11 @@
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
+                            label="货品组别"
+                            slot="operation">
+                        <template slot-scope="scope">{{ scope.row.goodsTypeVo.goodsTypeName}}</template>
+                    </el-table-column>
+                    <el-table-column
                             label="店铺"
                             slot="operation">
                         <template slot-scope="scope">{{ scope.row.shopVoList.map(item=>{ return item.shopName}).join() }}</template>
@@ -93,7 +98,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">店铺</span>
-                    <el-select v-model="goodsInfoData.shopId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="goodsInfoData.shopId" multiple placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in shopOptions"
                                 :key="item.id"
@@ -143,8 +148,8 @@
                 columnData:[
                     { prop: 'goodsCode', label: '编码'},
                     { prop: 'goodsName', label: '名称' },
-                    { prop: 'superior2', label: '货品组别' },
-                    /*{ prop: 'shopVoList', label: '店铺' },
+                    /*{ prop: 'goodsTypeVo', label: '货品组别' },
+                    { prop: 'shopVoList', label: '店铺' },
                     { prop: 'description', label: '货品描述' },
                     { prop: 'updateDateStr', label: '更新时间' }*/
                 ],
@@ -223,7 +228,7 @@
                     id: '',
                     shopId: []
                 }
-                this.$api.rentapi.detailUsingGET_4({
+                this.$api.rentapi.getGoodsDetail({
                     id: id
                 }).then(res => {
                     this.goodsInfoData = res.data.data;
@@ -244,7 +249,7 @@
                     })
                 }else{
                     this.goodsInfoData.id = this.listId;
-                    await this.$api.rentapi.updateUsingPUT_7({
+                    await this.$api.rentapi.updateUsingPUT_6({
                         request: this.goodsInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -263,7 +268,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE_2({
+                    this.$api.rentapi.goodsDelete({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {

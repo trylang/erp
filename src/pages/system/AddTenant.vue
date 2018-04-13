@@ -51,7 +51,7 @@
             }
         },
         mounted(){
-            this.$api.rentapi.listUsingGET_11({status:4}).then(res=>{
+            this.$api.rentapi.listUsingGET_12({status:1}).then(res=>{
                 this.options = res.data.data;
             }).catch(res=>{
                 this.$message.error(res.data.msg);

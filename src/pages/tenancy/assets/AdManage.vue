@@ -56,12 +56,22 @@
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
+                            label="更新时间"
+                            width="150"
+                            slot="operation">
+                        <template slot-scope="scope">
+                            {{scope.row.updateDateLong | formatDate('yyyy-MM-dd hh:mm:ss')}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getUnitInfo(scope.row.id)">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
+                            <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -115,9 +125,9 @@
                     <el-select v-model="unitInfoData.rentAdvertisingTypeId" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in typeOptions"
-                                :key="item.id"
-                                :label="item.typeName"
-                                :value="item.id">
+                                :key="item.value"
+                                :label="item.text"
+                                :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
@@ -166,10 +176,7 @@
                     id:1
                 }],
                 floorOptions:[],
-                typeOptions:[{
-                    typeName:'LED大屏',
-                    id:1
-                }],
+                typeOptions:[],
                 unitInfoData:{
                     advertisingStandard: '',
                     area: '',
@@ -178,7 +185,7 @@
                     marketId: 1,
                     remark: '',
                     rentAdvertisingTypeId: '',
-                    type: 2,
+                    type: 3,
                     unitCode: '',
                     useArea: ''
                 },
@@ -189,8 +196,7 @@
                     { prop: 'rentAdvertisingTypeName', label: '类型'},
                     { prop: 'advertisingStandard', label: '规格' },
                     { prop: 'remark', label: '备注'},
-                    { prop: 'statusName', label: '状态' },
-                    { prop: 'updateDateLong', label: '更新时间', width:'180'}
+                    { prop: 'statusName', label: '状态' }
                 ],
                 statusData:[{
                     name:"全部",
@@ -207,20 +213,21 @@
                 },{
                     name:"预定",
                     isStatus:false,
-                    id:2
+                    id:3
                 },{
                     name:"使用中",
                     isStatus:false,
-                    id:3
+                    id:4
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 },{
                     name:"失效",
                     isStatus:false,
                     id:5
-                }]
+                }],
+                statesId:'',
             }
         },
         mounted(){
@@ -236,17 +243,41 @@
         methods:{
             handleOpen(){
                 this.dialogVisible = true;
+                this.unitInfoData={
+                    advertisingStandard: '',
+                    area: '',
+                    buildId: 1,
+                    floorId: '',
+                    marketId: 1,
+                    remark: '',
+                    rentAdvertisingTypeId: '',
+                    type: 3,
+                    unitCode: '',
+                    useArea: ''
+                },
+                this.getAdType();
             },
             statusHandler(status){
                 this.statusData.forEach(function(obj){
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus
-                this.statusId = status.id;
+                if(status.id == 1){
+                    this.statesId = [1,6],
+                        this.statusId = '';
+                }else{
+                    this.statesId = '';
+                    this.statusId = status.id;
+                }
                 this.getDataList(1);
             },
             handleClose(){
                 this.dialogVisible = false;
+            },
+            async getAdType(){
+                await this.$api.rentapi.getAdList().then(res=>{
+                    this.typeOptions = res.data.data;
+                });
             },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.listUsingGET_15({
@@ -255,8 +286,9 @@
                     code:this.searchText,
                     buildId:this.buildValue,
                     floorId:this.floorValue,
-                    type:2,
-                    status:this.statusId
+                    type:3,
+                    status:this.statusId,
+                    states:this.statesId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
@@ -283,7 +315,7 @@
                         }
                     })
                 }else{
-                    await this.$api.rentapi.updateUsingPUT_13({
+                    await this.$api.rentapi.updateUsingPUT_12({
                         id:this.listId,
                         param: this.unitInfoData
                     }).then(res => {
@@ -308,7 +340,7 @@
                     marketId: 1,
                     remark: '',
                     rentAdvertisingTypeId: '',
-                    type: 2,
+                    type: 3,
                     unitCode: '',
                     useArea: ''
                 }
@@ -324,7 +356,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE_6({
+                    this.$api.rentapi.deleteUsingDELETE_7({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
@@ -334,6 +366,19 @@
                             this.$message.error(res.data.msg);
                         }
                     })
+                })
+            },
+            async cancelFailure(id,stauts){
+                await this.$api.rentapi.updateCancelFailure({
+                    id:id,
+                    stauts:stauts
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.getDataList(1);
+                        this.$message.success(res.data.msg);
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
                 })
             },
             buildSelect(){

@@ -424,7 +424,7 @@
     .dialoginput .el-date-editor .el-range-input {
         height: 28px;
         text-align: left;
-        width: 72px;
+        width: 110px;
     }
 
     .dialoginput .el-date-editor .el-range__icon {
@@ -1442,5 +1442,20 @@
         color: #353c5f;
         border-left: 4px solid #353c5f;
         padding-left: 5px;
+    }
+    .addContractBtn{
+        padding: 0px 40px 20px 40px;
+    }
+    .addContractBtn button{
+        background: #ff5400;
+        border: none;
+        color: #fff;
+        padding: 5px 28px;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+
+    .el-message {
+        z-index: 3000 !important;
     }
 </style>

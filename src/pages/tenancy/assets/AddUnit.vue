@@ -79,7 +79,7 @@
                     marketId: 1,
                     remark: '',
                     rentAdvertisingTypeId: '',
-                    type: 1,
+                    type: 0,
                     unitCode: '',
                     useArea: ''
                 },
@@ -112,7 +112,7 @@
                         }
                     })
                 }else{
-                    await this.$api.rentapi.updateUsingPUT_13({
+                    await this.$api.rentapi.updateUsingPUT_12({
                         id:this.$route.params.unitId,
                         param: this.unitInfoData
                     }).then(res => {

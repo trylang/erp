@@ -40,6 +40,7 @@ const Contract = r => require.ensure([], () => r(require('../pages/tenancy/contr
 const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract/Shops')), 'contract');
 const ShopsAudit = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAudit')), 'contract');
 const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')), 'contract');
+const ShopsInfo = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsInfo')), 'contract');
 const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')), 'contract');
 const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')), 'contract');
 const AdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AdPosition')), 'contract');
@@ -69,6 +70,7 @@ const MerchantAdvancePay = r => require.ensure([], () => r(require('../pages/fin
 const DealAdvancePay = r => require.ensure([], () => r(require('../pages/finance/dealAdvancePay/Index')), 'finance');
 const Entering = r => require.ensure([], () => r(require('../pages/finance/entering/Index')), 'finance');
 const IrregularCost = r => require.ensure([], () => r(require('../pages/finance/IrregularCost/Index')), 'finance');
+const IrregularCostDetail = r => require.ensure([], () => r(require('../pages/finance/IrregularCost/Detail')), 'finance');
 const CostAdjust = r => require.ensure([], () => r(require('../pages/finance/costAdjust/Index')), 'finance');
 const CostAdjustDetail = r => require.ensure([], () => r(require('../pages/finance/costAdjust/Detail')), 'finance');
 const AddCostAdjust = r => require.ensure([], () => r(require('../pages/finance/addCostAdjust/Index')), 'finance');
@@ -79,6 +81,7 @@ const GenerateAccount = r => require.ensure([], () => r(require('../pages/financ
 const AccountManagement = r => require.ensure([], () => r(require('../pages/finance/accountManagement/Index')), 'finance');
 const ImportIrregularCost = r => require.ensure([], () => r(require('../pages/finance/importIrregularCost/Index')), 'finance');
 const BillGeneration = r => require.ensure([], () => r(require('../pages/finance/billGeneration/Index')), 'finance');
+const BillGenerationDetail = r => require.ensure([], () => r(require('../pages/finance/billGeneration/detail')), 'finance');
 
 //销售管理
 const Salmanage = r => require.ensure([], () => r(require('../pages/sales/Index')), 'sales');
@@ -115,14 +118,15 @@ const PaymentDetail = r => require.ensure([], () => r(require('../pages/database
 const SaleDetails = r => require.ensure([], () => r(require('../pages/database/saleModel/saleDetails')), 'database');
 const ShopWeekSale = r => require.ensure([], () => r(require('../pages/database/saleModel/shopWeekSale')), 'database');
 const ShopRanking = r => require.ensure([], () => r(require('../pages/database/saleModel/shopRanking')), 'database');
+const ContractReport = r => require.ensure([], () => r(require('../pages/database/settleModel/contractReport')), 'database');
 const BusinessAble = r => require.ensure([], () => r(require('../pages/database/settleModel/businessAble')), 'database');
 const Businessed = r => require.ensure([], () => r(require('../pages/database/settleModel/businessed')), 'database');
-const SettlementDetail = r => require.ensure([], () => r(require('../pages/database/settleModel/settlementDetail')), 'database');
-const SettlementTotal = r => require.ensure([], () => r(require('../pages/database/settleModel/settlementTotal')), 'database');
+const BusinessArrears = r => require.ensure([], () => r(require('../pages/database/settleModel/businessArrears')), 'database');
 const MarketAble = r => require.ensure([], () => r(require('../pages/database/settleModel/marketAble')), 'database');
 const Marketed = r => require.ensure([], () => r(require('../pages/database/settleModel/marketed')), 'database');
 const FreeRecord = r => require.ensure([], () => r(require('../pages/database/settleModel/freeRecord')), 'database');
 const BillRecord = r => require.ensure([], () => r(require('../pages/database/settleModel/billRecord')), 'database');
+const DataTaskCenter = r => require.ensure([], () => r(require('../pages/database/taskCenter/Index')), 'database');
 
 //系统管理
 const Area = r => require.ensure([], () => r(require('../pages/system/Index')), 'system');
@@ -263,8 +267,12 @@ const router = new Router({
                     component: ShopsAudit
                 },
                 {
-                    path: 'addshops/:contractId/:prototypeId',
+                    path: 'addshops/:contractId/:prototypeId/:delayChange',
                     component: AddShops
+                },
+                {
+                    path:'shopsinfo/:prototypeId/:contractId',
+                    component: ShopsInfo
                 },
                 {
                     path: 'field/:prototypeId',
@@ -275,7 +283,7 @@ const router = new Router({
                     component: ShopsAudit
                 },
                 {
-                    path: 'addfidle/:contractId/:prototypeId',
+                    path: 'addfidle/:contractId/:prototypeId/:delayChange',
                     component: AddShops
                 },
                 {
@@ -287,7 +295,7 @@ const router = new Router({
                     component: ShopsAudit
                 },
                 {
-                    path: 'addadposition/:contractId/:prototypeId',
+                    path: 'addadposition/:contractId/:prototypeId/:delayChange',
                     component: AddShops
                 },
                 {
@@ -299,7 +307,7 @@ const router = new Router({
                     component: ShopsAudit
                 },
                 {
-                    path: 'addoffice/:contractId/:prototypeId',
+                    path: 'addoffice/:contractId/:prototypeId/:delayChange',
                     component: AddShops
                 }
             ]
@@ -394,6 +402,10 @@ const router = new Router({
                     component: IrregularCost
                 },
                 {
+                    path: 'irregularCost/detail/:id',
+                    component: IrregularCostDetail
+                },
+                {
                     path: 'irregularCost/entering',
                     component: Entering
                 }, {
@@ -423,6 +435,9 @@ const router = new Router({
                 }, {
                     path: 'billGeneration',
                     component: BillGeneration
+                }, {
+                    path: 'billGeneration/:id',
+                    component: BillGenerationDetail
                 }, {
                     path: 'importIrregularCost',
                     component: ImportIrregularCost
@@ -584,6 +599,10 @@ const router = new Router({
                     component: ShopRanking
                 },
                 {
+                    path: 'contractReport',
+                    component: ContractReport
+                },
+                {
                     path: 'businessAble',
                     component: BusinessAble
                 },
@@ -592,12 +611,8 @@ const router = new Router({
                     component: Businessed
                 },
                 {
-                    path: 'settlementDetail',
-                    component: SettlementDetail
-                },
-                {
-                    path: 'settlementTotal',
-                    component: SettlementTotal
+                    path: 'businessArrears',
+                    component: BusinessArrears
                 },
                 {
                     path: 'marketAble',
@@ -614,6 +629,10 @@ const router = new Router({
                 {
                     path: 'billRecord',
                     component: BillRecord
+                },
+                {
+                    path: 'taskCenter',
+                    component: DataTaskCenter
                 },
             ]
         },

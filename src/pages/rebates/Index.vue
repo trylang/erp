@@ -1,20 +1,12 @@
 <template>
     <div>
         <con-head title="银行终端号管理">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogVisible = true">添加</el-button>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="addHandler">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入店铺号/店铺/终端号"><i class="iconfont icon-sousuo"></i>
-                        </div>
-                    </el-col>
-                    <el-col :span="9" :offset="6" style="display: none">
-                        <div class="texttitle">
-                            <span class="inputname">类型：</span>
-                            <div class="line-nav">
-                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
-                            </div>
+                            <input type="text" placeholder="请输入店铺号/店铺/终端号" v-model.trim="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
@@ -28,12 +20,13 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text">编辑</button>
-                            <button class="btn_text">删除</button>
+                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
+                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
                 :title="listid?'编辑终端号':'添加终端号'"
@@ -42,37 +35,37 @@
             <div class="dialogbox">
                 <div class="rentcontent">
                     <span class="inputname inputnameCenter">店铺号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="add.shopId" value-key="id" placeholder="请选择" class="dialogselect" @change="checkShopHandler(add.shopId)" :disabled="!!this.add.id">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                                v-for="item in shopOptions"
+                                :label="item.shopName+'（'+item.shopCode+'）'"
+                                :key="item.id"
+                                :value="item">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="rentcontent">
                     <span class="inputname inputnameCenter">POS机号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="add.posNumber" placeholder="请选择" class="dialogselect">
                         <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
+                            v-for="item in posArr"
+                            :key="item"
+                            :value="item">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="rentcontent">
                     <span class="inputname inputnameCenter">终端号</span>
-                    <input class="inputtext" type="text" placeholder="请输入终端号" v-model="add.superior1">
+                    <input class="inputtext" type="number" oninput="if(value.length>20)value=value.slice(0,20)" placeholder="请输入终端号" v-model="add.terminalNumber">
                 </div>
                 <div class="dialoginput rentcontent">
                     <span class="inputname inputnameCenter">有效期</span>
                     <el-date-picker
                             class="inputtext datetext"
-                            v-model="datevalue"
-                            type="daterange"
-                            range-separator="-"
-                            start-placeholder="选择日期"
-                            end-placeholder="选择日期">
+                            v-model="add.validStartDate"
+                            type="date"
+                            format="yyyy 年 MM 月 dd 日"
+                            value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
             </div>
@@ -85,80 +78,168 @@
 </template>
 
 <script>
+    import { $message } from "../../utils/notice";
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
+    import RtPage from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
     export default {
         name: "index",
         data(){
             return{
                 listid:0,
-                datevalue:'',
-                activeName: 'first',
                 dialogVisible:false,
+                posLength: 0,
+                posArr: [],
                 datalist:[],
+                searchName: '',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
                 add:{
-                    number:"",
-                    name:""
+                    type: 0,
+                    id: '',
+                    shopId: '',
+                    posNumber: '',
+                    terminalNumber: '',
+                    validStartDate: ''
                 },
                 value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                statusData:[{
-                    name:"全部",
-                    isStatus:true
-                },{
-                    name:"银行",
-                    isStatus:false
-                },{
-                    name:"资和信",
-                    isStatus:false
-                }],
+                shopOptions: [],
                 columnData:[
-                    { prop: 'number', label: '店铺号'},
-                    { prop: 'name', label: '店铺' },
-                    { prop: 'name', label: 'POS机号' },
-                    { prop: 'superior1', label: '终端号' },
-                    { prop: 'superior1', label: '有效期' },
-                    { prop: 'datetime', label: '更新时间' }
+                    { prop: 'shopCode', label: '店铺号'},
+                    { prop: 'shopName', label: '店铺' },
+                    { prop: 'posNumber', label: 'POS机号' },
+                    { prop: 'terminalNumber', label: '终端号' },
+                    { prop: 'validDate', label: '有效期' },
+                    { prop: 'updateDate', label: '更新时间' }
                 ]
             }
         },
+        watch:{
+            searchName(){
+                this.$delay(()=>{
+                    this.pageHandler(1);
+                },300)
+            }
+        },
         mounted(){
-            this.getbuilding();
+            this.getShopList();
         },
         methods:{
-            statusHandler(status){
-                this.statusData.forEach(function(obj){
-                    obj.isStatus = false;
-                });
-                status.isStatus = !status.isStatus
+            pageHandler(pageNum, pageSize){
+                let params = {
+                    pageNum: pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    type: 0,
+                    queryParam: this.searchName
+                }
+                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                    if(res.data.status === 200){
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
             },
             handleClose(){
                 this.dialogVisible = false;
             },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
+            addbuilding(id){
+                if(id){
+                    this.$api.systemapi.updateUsingPOST_4({request:{//编辑
+                        id: this.add.id,
+                        type: 0,
+                        shopId: this.add.shopId,
+                        posNumber: this.add.posNumber,
+                        terminalNumber: this.add.terminalNumber,
+                        validStartDate: this.add.validDate
+                    }}).then(res=>{
+                        if(res.data.status==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    });
+                }else{
+                    this.$api.systemapi.saveUsingPOST_4({request:{//新增
+                        type: 0,
+                        shopId: this.add.shopId,
+                        posNumber: this.add.posNumber,
+                        terminalNumber: this.add.terminalNumber,
+                        validStartDate: this.add.validDate
+                    }}).then(res=>{
+                        if(res.data.status==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    });
+                }
+                this.dialogVisible = false;
             },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
+            dialogData(id, data){
+                this.listid = id;
+                this.dialogVisible = true;
+                if(id) {
+                    this.add = {
+                        id: data.id,
+                        type: 0,
+                        shopId: data.shopId,
+                        posNumber: data.posNumber,
+                        terminalNumber: data.terminalNumber,
+                        validStartDate: data.validDate
+                    }
+                }else{
+                    this.add = {};
+                }
+            },
+            deleteList(id){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
+                        if(res.data.status==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res => {
+                        this.$message.error(res.data.msg);
+                    });
+                }).catch(() => {
+                    $message("info", "已取消删除!");
+                });
+            },
+            getShopList(){
+                this.$api.rentapi.listUsingGET_13({status: 1}).then(res=>{//只能是 空置，预定，使用中的状态
+                    this.shopOptions = res.data.data;
+                })
+            },
+            checkShopHandler(shopId){
+                console.log('店铺号',shopId);
+                this.posLength = 5;//需从新调一个接口根据店铺id查询
+                for(var i=1; i<=this.posLength; i++){
+                    this.posArr.push("0"+i);
+                }
+                console.log(this.posArr)
+            },
+            addHandler(){
+                this.dialogVisible = true;
+                this.add = {};
             }
         },
         components:{
             ConHead,
-            PageContent,
+            RtPage,
             DataTable
         }
     }

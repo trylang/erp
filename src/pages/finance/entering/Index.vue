@@ -64,7 +64,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryCost } from "@/utils/rest/financeAPI";
+import { queryCost, queryContract } from "@/utils/rest/financeAPI";
 import { _changeJson, _replace, _remove, _uuid } from "@/utils";
 import { formatDate } from "@/utils/filter";
 
@@ -115,7 +115,14 @@ export default {
               click: item => {
                 this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
+                if (this.$route.query.settleGroupId && item.id) {                  
+                  this.checkjsHandler(this.$route.query.settleGroupId, ()=>{
+                    this.dialog.dialogVisible = true;
+                  });
+                } else {
+                  this.dialog.dialogVisible = true;
+                }
+                               
               }
             },
             {
@@ -165,7 +172,7 @@ export default {
         ],
         dialogVisible: false,
         param: {
-          itemId: 1,
+          itemId: "",
           costItemId: "",
           amount: "",
           expenseDate: ""
@@ -211,9 +218,11 @@ export default {
   },
   mounted() {
     this.$api.rentapi
-      .listUsingGET_12({})
+      .listUsingGET_12({
+          status:1
+      })
       .then(res => {
-        //商户列表 status:4 已确定状态没加
+        //商户列表 status:1 已确定状态没加
         this.selects.merchants = res.data.data;
       })
       .catch(res => {
@@ -245,7 +254,7 @@ export default {
           this.$message.error(res.data.msg);
         });
     },
-    checkjsHandler(id) {
+    checkjsHandler(id, cb) {
       this.$api.rentapi
         .getIrregularCostInfoUsingGET({
           contractId: this.query.contractId,
@@ -254,6 +263,7 @@ export default {
         .then(res => {
           this.dialog.models[0].options =
             res.data.data.settleGroups[0].costItems;
+            if(cb) cb();
         })
         .catch(res => {
           this.$message.error(res.data.msg);
@@ -369,11 +379,14 @@ export default {
       this.$api.rentapi.cycleUsingGET(param).then(res => {
         if (res.data.status === 200) {
           if (callback) callback(res);
+        } else {
+          $message('error', res.data.msg);
         }        
       });
     },
     async addEntering() {
       this.content.list.forEach(item => {
+        item.replaceExpenseDate = item.expenseDate;
         item.expenseDate = item.expenseDate.replace(/(\(\d+-\d+-\d+~\d+-\d+-\d+\))/, '');
       });
       const param = {
@@ -382,21 +395,27 @@ export default {
         item: this.content.list
       };
       const apiFunc = (api, param) => {
-        this.$api.financeapi[api]({ request: param }).then(returnObj => {
-          if (returnObj.data.code === 200) {
+        this.$api.financeapi[api](param).then(returnObj => {
+          if (returnObj.data.status === 200) {
             $message("success", "提交成功!");
             this.$router.push({ path: "/finance/irregularCost" });
           } else {
-            $message("error", "修改失败!");
+            this.content.list.forEach(item => {
+              item.expenseDate = item.replaceExpenseDate;
+            });
+            $message("error", returnObj.data.msg);
           }
         });
       };
 
       if (this.$route.query.id) {
         param.id = this.$route.query.id;
-        await apiFunc("updateUsingPUT_8", param);
+        await apiFunc("updateUsingPUT_8", {param});
       } else {
-        await apiFunc("saveUsingPOST_3", param);
+        let request = {
+          request: param
+        };
+        await apiFunc("saveUsingPOST_3", request);
       }
     },
     async editEntering(param) {
@@ -405,13 +424,13 @@ export default {
         param: param
       };
       await this.$api.financeapi.updateUsingPUT_9(params).then(returnObj => {
-        if (returnObj.data.code === 200) {
+        if (returnObj.data.status === 200) {
           this.getCost(0, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
           });
         } else {
-          $message("error", "修改失败!");
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -421,18 +440,17 @@ export default {
       };
       this.$api.financeapi.delUsingDELETE_3(param).then(res => {
         const data = res.data;
-        if (data.code === 200) {
+        if (data.status === 200) {
           this.getCost(0, () => {
             $message("success", "删除成功");
           });
         } else {
-          $message("error", "删除失败");
-          return data.message;
+          $message("error", data.msg);
         }
       });
     },
     async queryContracts(param) {
-      await queryContract({ merchantId: this.query.merchantId }).then(res => {
+      await queryContract({ merchantId: this.query.merchantId || param }).then(res => {
         this.selects.contracts = res.data.list;
       });
     },
@@ -450,15 +468,19 @@ export default {
       let [cost] = await Promise.all([queryCost()]);
       this.selects.queryCost = cost.json;
       if (!this.$route.query.id) return;
-      await this.getEntering();
-      this.query.contractId = this.$route.query.contractId;
       this.query.merchantId = this.$route.query.merchantId;
+      this.query.contractId = this.$route.query.contractId;
       this.query.settleGroupId = this.$route.query.settleGroupId;
+      await this.getEntering();      
+      
+      await this.queryContracts(this.$route.query.merchantId);
+      await this.checkHetongHandler(this.$route.query.contractId);
+      await this.checkjsHandler(this.$route.query.settleGroupId);
     }
   },
   computed: {},
   watch: {
-    $route: "getEntering"
+    $route: "init"
   },
   created() {
     this.init();

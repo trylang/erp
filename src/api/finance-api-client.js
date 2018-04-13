@@ -2,6 +2,7 @@ import * as financeapi from './swaggerAPI/finance-api-client'
 /* eslint-disable */
 import axios from 'axios'
 import qs from 'qs'
+import * as rentapi from "./swaggerAPI/rent-api-client";
 let domain = ''
 export const getDomain = () => {
     return domain
@@ -84,24 +85,7 @@ export const cancelUsingPUTURL = function(parameters = {}) {
  * @param id - 主键数组
  */
 export const confirmUsingPUT = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/adjust/cost/confirm'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.confirmUsingPOST(parameters);
 }
 export const confirmUsingPUT_RAW_URL = function() {
     return '/finance/adjust/cost/confirm'
@@ -385,48 +369,9 @@ export const saveUsingPOSTURL = function(parameters = {}) {
  * @param  -
  */
 export const updateUsingPUT = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/adjust/cost/item/update/{id}'
-    let body
-    let queryParameters = {}
-    let form = {}
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters['param'] !== undefined) {
-        body = parameters['param']
-    }
-    if (parameters['param'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: param'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.updateUsingPOST(parameters);
 }
-export const updateUsingPUT_RAW_URL = function() {
-    return '/finance/adjust/cost/item/update/{id}'
-}
-export const updateUsingPUT_TYPE = function() {
-    return 'put'
-}
-export const updateUsingPUTURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/adjust/cost/item/update/{id}'
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 获取详情
  * request: getByIdUsingGET
@@ -619,24 +564,7 @@ export const cancelUsingPUT_3URL = function(parameters = {}) {
  * @param id - 主键
  */
 export const confirmUsingPUT_2 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/bill/adjust/confirm'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.confirmUsingPOST_3(parameters);
 }
 export const confirmUsingPUT_2_RAW_URL = function() {
     return '/finance/bill/adjust/confirm'
@@ -1050,46 +978,9 @@ export const delUsingDELETE_4URL = function(parameters = {}) {
  * @param id - 主键
  */
 export const cancelUsingPUT_1 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/bill/cancel'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.cancelUsingPUT_1(parameters);
 }
-export const cancelUsingPUT_1_RAW_URL = function() {
-    return '/finance/bill/cancel'
-}
-export const cancelUsingPUT_1_TYPE = function() {
-    return 'put'
-}
-export const cancelUsingPUT_1URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/bill/cancel'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 确认
  * request: confirmUsingPUT_1
@@ -1099,46 +990,9 @@ export const cancelUsingPUT_1URL = function(parameters = {}) {
  * @param id - 主键
  */
 export const confirmUsingPUT_1 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/bill/confirm'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.confirmUsingPOST_1(parameters);
 }
-export const confirmUsingPUT_1_RAW_URL = function() {
-    return '/finance/bill/confirm'
-}
-export const confirmUsingPUT_1_TYPE = function() {
-    return 'put'
-}
-export const confirmUsingPUT_1URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/bill/confirm'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 结算单确认列表
  * request: confirmListUsingGET
@@ -1273,46 +1127,9 @@ export const createListUsingGETURL = function(parameters = {}) {
  * @param id - 主键
  */
 export const delUsingDELETE_2 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/bill/del'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('delete', domain + path, body, queryParameters, form, config)
+    return financeapi.delUsingPOST_1(parameters);
 }
-export const delUsingDELETE_2_RAW_URL = function() {
-    return '/finance/bill/del'
-}
-export const delUsingDELETE_2_TYPE = function() {
-    return 'delete'
-}
-export const delUsingDELETE_2URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/bill/del'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 结算单管理列表
  * request: manageListUsingGET
@@ -1361,46 +1178,9 @@ export const manageListUsingGETURL = function(parameters = {}) {
  * @param id - 主键
  */
 export const publishUsingPUT = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/bill/publish'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.publishUsingPUT(parameters);
 }
-export const publishUsingPUT_RAW_URL = function() {
-    return '/finance/bill/publish'
-}
-export const publishUsingPUT_TYPE = function() {
-    return 'put'
-}
-export const publishUsingPUTURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/bill/publish'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 结算单发布列表
  * request: publishListUsingGET
@@ -2458,43 +2238,8 @@ export const confirmlistUsingGETURL = function(parameters = {}) {
  * raw_url: confirmsUsingPUT_RAW_URL
  * @param ids - 主键数组
  */
-export const confirmsUsingPUT = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/contractbond/operaterecord/confirms'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['ids'] !== undefined) {
-        body = parameters['ids']
-    }
-    if (parameters['ids'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: ids'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
-}
-export const confirmsUsingPUT_RAW_URL = function() {
-    return '/finance/contractbond/operaterecord/confirms'
-}
-export const confirmsUsingPUT_TYPE = function() {
-    return 'put'
-}
-export const confirmsUsingPUTURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/contractbond/operaterecord/confirms'
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const confirmsUsingPOST = function(parameters = {}) {
+    return financeapi.confirmsUsingPOST(parameters);
 }
 /**
  * 根据id编辑回显
@@ -2552,86 +2297,19 @@ export const detailUsingGET_2URL = function(parameters = {}) {
  * method: merchantinfoUsingGET_TYPE
  * raw_url: merchantinfoUsingGET_RAW_URL
  */
-export const merchantinfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/merchantinfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const merchantinfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/merchantinfo'
-}
-export const merchantinfoUsingGET_TYPE = function() {
-  return 'get'
-}
-export const merchantinfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/merchantinfo'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const getEarnestMerchant = function(parameters = {}) {
+    return financeapi.merchantinfoUsingGET(parameters);
 }
 /**
- * 获取店铺信息
+ * 获取合同信息
  * request: shopinfoUsingGET
  * url: shopinfoUsingGETURL
  * method: shopinfoUsingGET_TYPE
  * raw_url: shopinfoUsingGET_RAW_URL
  * @param merchantId - 商户id
  */
-export const shopinfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/shopinfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters['merchantId'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: merchantId'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const shopinfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/shopinfo'
-}
-export const shopinfoUsingGET_TYPE = function() {
-  return 'get'
-}
-export const shopinfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/shopinfo'
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const getContractSelect = function(parameters = {}) {
+    return financeapi.shopinfoUsingGET(parameters);
 }
 /**
  * 保证金处理列表
@@ -2865,43 +2543,8 @@ export const cancelsUsingPUT_1URL = function(parameters = {}) {
  * raw_url: confirmsUsingPOST_RAW_URL
  * @param receiptNumbers - 收款单号数组
  */
-export const confirmsUsingPOST = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/contractbond/receiverecord/confirms'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['receiptNumbers'] !== undefined) {
-        body = parameters['receiptNumbers']
-    }
-    if (parameters['receiptNumbers'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: receiptNumbers'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('post', domain + path, body, queryParameters, form, config)
-}
-export const confirmsUsingPOST_RAW_URL = function() {
-    return '/finance/contractbond/receiverecord/confirms'
-}
-export const confirmsUsingPOST_TYPE = function() {
-    return 'post'
-}
-export const confirmsUsingPOSTURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/contractbond/receiverecord/confirms'
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const bondConfirmsUsingPOST = function(parameters = {}) {
+    return financeapi.confirmsUsingPOST_1(parameters);
 }
 /**
  * 保证金/诚意金收取详情
@@ -2964,73 +2607,8 @@ export const detailUsingGET_3URL = function(parameters = {}) {
  * @param shopId - 店铺id
  * @param contractCode - 合同编号
  */
-export const infoUsingGET = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/contractbond/receiverecord/info'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['stage'] !== undefined) {
-        queryParameters['stage'] = parameters['stage']
-    }
-    if (parameters['stage'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: stage'))
-    }
-    if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
-    }
-    if (parameters['merchantId'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: merchantId'))
-    }
-    if (parameters['shopId'] !== undefined) {
-        queryParameters['shopId'] = parameters['shopId']
-    }
-    if (parameters['shopId'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: shopId'))
-    }
-    if (parameters['contractCode'] !== undefined) {
-        queryParameters['contractCode'] = parameters['contractCode']
-    }
-    if (parameters['contractCode'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: contractCode'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('get', domain + path, body, queryParameters, form, config)
-}
-export const infoUsingGET_RAW_URL = function() {
-    return '/finance/contractbond/receiverecord/info'
-}
-export const infoUsingGET_TYPE = function() {
-    return 'get'
-}
-export const infoUsingGETURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/contractbond/receiverecord/info'
-    if (parameters['stage'] !== undefined) {
-        queryParameters['stage'] = parameters['stage']
-    }
-    if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
-    }
-    if (parameters['shopId'] !== undefined) {
-        queryParameters['shopId'] = parameters['shopId']
-    }
-    if (parameters['contractCode'] !== undefined) {
-        queryParameters['contractCode'] = parameters['contractCode']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const getContractMoney = function(parameters = {}) {
+    return financeapi.infoUsingGET(parameters);
 }
 /**
  * 保证金/诚意金收取页列表
@@ -3921,24 +3499,7 @@ export const cancelUsingPUT_4URL = function(parameters = {}) {
  * @param id - 主键数组
  */
 export const confirmUsingPUT_3 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/irregular/cost/confirm'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.confirmUsingPOST_4(parameters);
 }
 export const confirmUsingPUT_3_RAW_URL = function() {
     return '/finance/irregular/cost/confirm'
@@ -3970,46 +3531,9 @@ export const confirmUsingPUT_3URL = function(parameters = {}) {
  * @param id - 主键数组
  */
 export const delUsingDELETE_5 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/irregular/cost/del'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('delete', domain + path, body, queryParameters, form, config)
+    return financeapi.delUsingPOST_2(parameters);
 }
-export const delUsingDELETE_5_RAW_URL = function() {
-    return '/finance/irregular/cost/del'
-}
-export const delUsingDELETE_5_TYPE = function() {
-    return 'delete'
-}
-export const delUsingDELETE_5URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/irregular/cost/del'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 不规则费用管理列表详情
  * request: detailUsingGET_4
@@ -4222,48 +3746,9 @@ export const saveUsingPOST_3URL = function(parameters = {}) {
  * @param  -
  */
 export const updateUsingPUT_8 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/irregular/cost/item/update/{id}'
-    let body
-    let queryParameters = {}
-    let form = {}
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters['param'] !== undefined) {
-        body = parameters['param']
-    }
-    if (parameters['param'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: param'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.updateUsingPOST_1(parameters);
 }
-export const updateUsingPUT_8_RAW_URL = function() {
-    return '/finance/irregular/cost/item/update/{id}'
-}
-export const updateUsingPUT_8_TYPE = function() {
-    return 'put'
-}
-export const updateUsingPUT_8URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/irregular/cost/item/update/{id}'
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 获取详情
  * request: getByIdUsingGET_1
@@ -4525,43 +4010,8 @@ export const cancelsUsingPUT_2URL = function(parameters = {}) {
  * raw_url: confirmsUsingPUT_1_RAW_URL
  * @param ids - 主键数组
  */
-export const confirmsUsingPUT_1 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/prepayment/operaterecord/confirms'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['ids'] !== undefined) {
-        body = parameters['ids']
-    }
-    if (parameters['ids'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: ids'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
-}
-export const confirmsUsingPUT_1_RAW_URL = function() {
-    return '/finance/prepayment/operaterecord/confirms'
-}
-export const confirmsUsingPUT_1_TYPE = function() {
-    return 'put'
-}
-export const confirmsUsingPUT_1URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/prepayment/operaterecord/confirms'
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const confirmsPrepayment = function(parameters = {}) {
+    return financeapi.confirmsUsingPOST_2(parameters);
 }
 /**
  * 预付款处理确认列表
@@ -5890,24 +5340,7 @@ export const cancelUsingPUT_5URL = function(parameters = {}) {
  * @param id - 主键数组
  */
 export const confirmUsingPUT_4 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/reduce/cost/confirm'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+   return financeapi.confirmUsingPOST_5(parameters);
 }
 export const confirmUsingPUT_4_RAW_URL = function() {
     return '/finance/reduce/cost/confirm'
@@ -6191,48 +5624,9 @@ export const saveUsingPOST_6URL = function(parameters = {}) {
  * @param  -
  */
 export const updateUsingPUT_11 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/reduce/cost/item/update/{id}'
-    let body
-    let queryParameters = {}
-    let form = {}
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters['param'] !== undefined) {
-        body = parameters['param']
-    }
-    if (parameters['param'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: param'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return financeapi.updateUsingPOST_2(parameters);
 }
-export const updateUsingPUT_11_RAW_URL = function() {
-    return '/finance/reduce/cost/item/update/{id}'
-}
-export const updateUsingPUT_11_TYPE = function() {
-    return 'put'
-}
-export const updateUsingPUT_11URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/reduce/cost/item/update/{id}'
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 获取详情
  * request: getByIdUsingGET_2
@@ -6664,4 +6058,27 @@ export const updateUsingDELETE_3URL = function(parameters = {}) {
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 预付款收确认添加到商户预付款中
+ * request: confirmsUsingPOST_3
+ * url: confirmsUsingPOST_3URL
+ * method: confirmsUsingPOST_3_TYPE
+ * raw_url: confirmsUsingPOST_3_RAW_URL
+ * @param ids - 收款记录id
+ */
+export const confirmsTakeadvancePay = function(parameters = {}) {
+    return financeapi.confirmsUsingPOST_3(parameters);
+}
+
+/**
+ * 不规则费导入
+ * request: importExcelUsingPOST
+ * url: importExcelUsingPOSTURL
+ * method: importExcelUsingPOST_TYPE
+ * raw_url: importExcelUsingPOST_RAW_URL
+ * @param file - file
+ */
+export const importExcelUsingPOST = function(parameters = {}) {
+    return financeapi.importExcelUsingPOST(parameters);
 }

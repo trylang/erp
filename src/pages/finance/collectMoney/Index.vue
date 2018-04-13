@@ -418,11 +418,18 @@ export default {
       });
       this.part_dialogVisible = false;
     },
+    
     // 多选中提交按钮操作
     async mulSubmit() {
       let ary = Object.values(this.total_bill_Info).filter(
         item => !!item.payType
       );
+      if (!this.$route.query.financeId) {
+        ary.forEach(item => {
+          delete item.id;
+        });
+      }
+      // console.log('mul', ary);
       await this.$api.financeapi
         .manyOffSaveUsingPOST({ paramList: ary })
         .then(res => {

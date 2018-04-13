@@ -89,7 +89,7 @@
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 }],
                 formatsOptions:[],
                 countryOptions:[],
@@ -159,7 +159,7 @@
             },
             async auditbtn(){
                 console.log(this.multipleSelection)
-                await this.$api.rentapi.emptyUsingPUT({
+                await this.$api.rentapi.emptyUsingPOST({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {

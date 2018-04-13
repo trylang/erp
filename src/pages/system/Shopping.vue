@@ -32,6 +32,10 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
+                    <span class="inputname inputnameWidth" style="width:140px;">购物中心编码</span>
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.marketCode">
+                </div>
+                <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">购物中心名称</span>
                     <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.marketName">
                 </div>
@@ -54,6 +58,14 @@
                         @node-click="checkHandler"
                         :props="defaultProps">
                     </el-tree>
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname inputnameWidth" style="width:140px;">电话</span>
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.phone">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname inputnameWidth" style="width:140px;">传真</span>
+                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.fax">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -81,12 +93,14 @@
                 treeData: [],
                 add:{
                     id: '',
+                    marketCode:'',
                     marketName: '',
                     marketEnglishName: '',
-                    regionName: '',
-                    regionId: '',
                     marketArea: '',
-                    treeId: ''
+                    regionName:'',
+                    regionId: '',
+                    phone:'',
+                    fax:''
                 },
                 options: [],
                 columnData:[
@@ -134,7 +148,10 @@
                         regionId: this.add.regionId,
                         marketName: this.add.marketName,
                         marketEnglishName: this.add.marketEnglishName,
-                        marketArea: this.add.marketArea
+                        marketArea: this.add.marketArea,
+                        marketCode: this.add.marketCode,
+                        phone: this.add.phone,
+                        fax: this.add.fax
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
@@ -147,10 +164,13 @@
                     });
                 }else{
                     this.$api.systemapi.saveUsingPOST_1({request:{
-                        regionId: this.add.treeId,
+                        regionId: this.add.regionId,
                         marketName: this.add.marketName,
                         marketEnglishName: this.add.marketEnglishName,
-                        marketArea: this.add.marketArea
+                        marketArea: this.add.marketArea,
+                        marketCode: this.add.marketCode,
+                        phone: this.add.phone,
+                        fax: this.add.fax
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
@@ -174,7 +194,10 @@
                         marketEnglishName: data.marketEnglishName,
                         regionName: data.regionName,
                         regionId: data.regionId,
-                        marketArea: data.marketArea
+                        marketArea: data.marketArea,
+                        marketCode: data.marketCode,
+                        phone: data.phone,
+                        fax: data.fax
                     }
                 }else{
                     this.add = {};
@@ -204,7 +227,7 @@
                 })
             },
             checkHandler(data){
-                this.add.treeId = data.id;
+                this.add.regionId = data.id;
             }
         },
         components:{

@@ -18,49 +18,49 @@ export default {
           {
             label: "收款单号",
             name: "receiptNumber",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "合同号",
             name: "contractCode",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户名称",
             name: "merchantName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "店铺号",
             name: "shopCode",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "店铺名称",
             name: "shopName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "收款金额",
             name: "totalAmount",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "收款时间",
             name: "receivedDate",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
             // filter: "yyyy-MM-dd"
@@ -68,7 +68,7 @@ export default {
           {
             label: "阶段",
             name: "stage",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "status",
             option: {
@@ -79,7 +79,7 @@ export default {
           {
             label: "状态",
             name: "status",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "status",
             option: {
@@ -91,7 +91,7 @@ export default {
           {
             label: "调整内容",
             name: "methods",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "table",
             table: [

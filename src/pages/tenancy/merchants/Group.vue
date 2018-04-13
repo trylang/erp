@@ -23,11 +23,11 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入货品组别编号" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
+                    <input class="inputtext" type="text" placeholder="请输入货品组别编号" v-model="addInfoData.goodsTypeCode" :disabled="addInfoData.id != ''">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入货品组别名称" v-model="addInfoData.businessName">
+                    <input class="inputtext" type="text" placeholder="请输入货品组别名称" v-model="addInfoData.goodsTypeName">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -48,8 +48,8 @@
                 dialogVisible:false,
                 dataTreeList:[],
                 addInfoData:{
-                    businessCode: '',
-                    businessName: '',
+                    goodsTypeCode: '',
+                    goodsTypeCode: '',
                     id:'',
                     pid: null
                 },
@@ -90,7 +90,7 @@
                 this.addInfoData.id = this.treeData.id;
                 if(this.treeData.id){
                     this.dialogVisible = true;
-                    await this.$api.rentapi.detailUsingGET_5({
+                    await this.$api.rentapi.goodsGroupDetailData({
                         id:this.treeData.id
                     }).then(res=>{
                         this.addInfoData = res.data.data;
@@ -113,7 +113,7 @@
                         }
                     })
                 }else{
-                    await this.$api.rentapi.updateUsingPUT_8({
+                    await this.$api.rentapi.goodsGroupUpdate({
                         request: this.addInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -133,7 +133,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.$api.rentapi.deleteUsingDELETE_3({
+                        this.$api.rentapi.goodsGroupDelete({
                             id: this.treeData.id
                         }).then(res => {
                             if (res.data.status == 200) {

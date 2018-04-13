@@ -65,7 +65,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryCost } from "@/utils/rest/financeAPI";
+import { queryCost, queryContract } from "@/utils/rest/financeAPI";
 import { _changeJson, _replace, _remove, _uuid } from "@/utils";
 import { formatDate } from "@/utils/filter";
 
@@ -86,8 +86,13 @@ export default {
         },
         {
           label: "免租类型",
-          type: "text",
-          name: "reduceType"
+          type: "status",
+          name: "reduceType",
+          option: {
+            10: '指定金额', 
+            20: '全免', 
+            30: '比例'
+          }
         },
         {
           label: "免租金额",
@@ -121,7 +126,13 @@ export default {
               click: item => {
                 this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
+                if (this.$route.query.settleGroupId && item.id) {                  
+                  this.checkjsHandler(this.$route.query.settleGroupId, ()=>{
+                    this.dialog.dialogVisible = true;
+                  });
+                } else {
+                  this.dialog.dialogVisible = true;
+                }
               }
             },
             {
@@ -234,6 +245,8 @@ export default {
     this.query.merchantId = this.querys.merchantId;
     this.query.contractId = this.querys.contractId;
     this.query.settleGroupId = this.querys.settleGroupId;
+    this.checkHetongHandler(this.query.contractId);
+    this.checkjsHandler(this.query.settleGroupId);
     this.$api.rentapi
       .listUsingGET_12({})
       .then(res => {
@@ -269,7 +282,7 @@ export default {
           this.$message.error(res.data.msg);
         });
     },
-    checkjsHandler(id) {
+    checkjsHandler(id,cb) {
       this.$api.rentapi
         .getIrregularCostInfoUsingGET({
           contractId: this.query.contractId,
@@ -278,6 +291,7 @@ export default {
         .then(res => {
           this.dialog.models[0].options =
             res.data.data.settleGroups[0].costItems;
+            if (cb) cb();
         })
         .catch(res => {
           this.$message.error(res.data.msg);
@@ -369,6 +383,11 @@ export default {
         }
       });
     },
+    async queryContracts(param) {
+      await queryContract({ merchantId: this.query.merchantId }).then(res => {
+        this.selects.contracts = res.data.list;
+      });
+    },
     async getEntering(page = {}, callback) {
       if (!this.$route.query.id) return;
       const params = {
@@ -400,11 +419,11 @@ export default {
       };
       const apiFunc = (api, param) => {
         this.$api.financeapi[api](param).then(returnObj => {
-          if (returnObj.data.status === 200) {
+          if (returnObj.status === 200) {
             $message("success", "提交成功!");
             this.$router.push({ path: "/finance/rentFree" });
           } else {
-            $message("error", "修改失败!");
+            $message("error", returnObj.msg);
           }
         });
       };
@@ -429,7 +448,7 @@ export default {
             this.dialog.dialogVisible = false;
           });
         } else {
-          $message("error", "修改失败!");
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -454,9 +473,12 @@ export default {
       this.selects.queryCost = cost.json;
       if (!this.$route.query.id) return;
       await this.getEntering();
-      // this.query.contractId = this.$route.query.contractId;
-      // this.query.merchantId = this.$route.query.merchantId;
-      // this.query.settleGroupId = this.$route.query.settleGroupId;
+      this.query.merchantId = this.$route.query.merchantId;
+      await this.queryContracts();
+      this.query.contractId = this.$route.query.contractId;
+      this.query.settleGroupId = this.$route.query.settleGroupId;
+      await this.checkHetongHandler(this.query.contractId);
+      await this.checkjsHandler(this.query.settleGroupId);
     }
   },
   computed: {
@@ -472,7 +494,6 @@ export default {
   }
 };
 
-// TODO: 1. 租务接口的商户和合同列表接口没有； 2. 点添加确定时，需要调用租务接口（账单周期接口，返回cycleId）；
 </script>
 
 <style scoped>

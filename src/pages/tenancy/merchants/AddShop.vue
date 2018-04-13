@@ -25,7 +25,7 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth" style="line-height: 40px;">经营品牌</span>
-                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" class="dialogselect" @change="selectshopBrand()">
+                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" class="dialogselect" @change="selectshopBrand(data)">
                             <el-option
                                     v-for="item in shopBrandOptions"
                                     :key="item.id"
@@ -66,6 +66,10 @@
                                     :value="item.id">
                             </el-option>
                         </el-select>
+                        <div class="dialoginput" style="position: absolute; left: 100%; margin-left: 20px;" v-if="shopInfoData.shopType == '0'">
+                            <span class="inputname" style="width: 50px;">数量</span>
+                            <input class="inputtext" type="text" placeholder="POS机数量" v-model="shopInfoData.posNum">
+                        </div>
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">是否主力店</span>
@@ -109,6 +113,7 @@
                     id: 0,
                     mainStoreOrNot: '',
                     merchantId: '',
+                    posNum:'',
                     shopBrandId: [],
                     shopCode: '',
                     shopMainBrandId: '',
@@ -132,13 +137,13 @@
                 }],
                 shopTypeOptions:[{
                     shopTypeName:'租用POS机',
-                    id:1
+                    id:0
                 },{
                     shopTypeName:'报表',
-                    id:2
+                    id:1
                 },{
                     shopTypeName:'接口',
-                    id:3
+                    id:2
                 }],
                 merchantOptions:[],
                 shopBrandOptions:[],
@@ -167,7 +172,7 @@
                     })
                 }else{
                     this.shopInfoData.id = this.$route.params.shopId;
-                    await this.$api.rentapi.updateUsingPUT_12({
+                    await this.$api.rentapi.updateUsingPUT_11({
                         request: this.shopInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -181,10 +186,11 @@
             },
             async getUnitInfo(){
                 if(this.$route.params.shopId != 0) {
-                    this.$api.rentapi.detailUsingGET_8({
+                    this.$api.rentapi.detailUsingGET_7({
                         id: this.$route.params.shopId
                     }).then(res => {
                         this.shopInfoData = res.data.data;
+                        this.shopBrand = res.data.data.shopBrandId;
                     })
                 }
             },
@@ -205,7 +211,8 @@
                     this.floorOptions = res.data.data;
                 })
             },
-            selectshopBrand(){
+            selectshopBrand(data){
+                console.log(data)
                 this.shopMainBrandOptions = this.shopBrand;
                 this.shopInfoData.shopBrandId = this.shopBrand.map(item=>{
                     return item.id;

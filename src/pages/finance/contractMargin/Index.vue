@@ -170,8 +170,16 @@ export default {
       dialog: {
         models: [{
           label: '处理方式：',
-          name: 'typeText',
-          type: 'text'
+          name: 'type',
+          type: 'word',
+          valueLabel: 'label',
+          options: [{
+            id: 0,
+            label: '罚没'
+          }, {
+            id: 1,
+            label: '归还'
+          }]
         }, {
           label: '处理金额：',
           name: 'dealtAmount',
@@ -228,7 +236,9 @@ export default {
   },
   mounted() {
     this.getContractList();
-    this.$api.rentapi.listUsingGET_12({}).then(res=>{ //商户列表 status:4 已确定状态没加
+    this.$api.rentapi.listUsingGET_12({
+        status:1
+    }).then(res=>{ //商户列表 status:4 已确定状态没加
         this.selects.merchants = res.data.data;
     }).catch(res=>{
         this.$message.error(res.data.msg);
@@ -288,12 +298,12 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog() {
-        this.dialog.dialogVisible = false;
         let params = {
             request: this.dialog.param
         }
-        this.$api.financeapi.givebackUsingPOST({params}).then(res=>{ //罚没，归还
+        this.$api.financeapi.givebackUsingPOST(params).then(res=>{ //罚没，归还
             if(res.data.status === 200){
+                this.dialog.dialogVisible = false;
                 this.$message.success(res.data.msg);
                 this.getContractList();
             }else{

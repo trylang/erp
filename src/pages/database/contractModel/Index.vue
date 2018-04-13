@@ -5,7 +5,7 @@
             <el-row slot="preappend">
                 <el-col :span="10">
                     <div class="searchinput">
-                        <span class="inputname inputnameauto">操作时间：</span>
+                        <span class="inputname inputnameauto">合同时间：</span>
                         <el-date-picker
                             v-model="searchData"
                             type="daterange"
@@ -23,9 +23,9 @@
                         <div class="line-nav">
                             <a href="javascript:void(0)" 
                                 v-for="status in selects.status" 
-                                :key="status.id" 
+                                :key="status.value" 
                                 :class="{active:status.isStatus}" 
-                                @click="statusHandler(status)">{{status.label}}
+                                @click="statusHandler(status)">{{status.name}}
                             </a>
                         </div>
                     </div>
@@ -50,77 +50,68 @@
             return{
                 datalist:[],
                 searchData: [],
+                status: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
                 selects: {
-                    status: [
-                        {
-                            isStatus:true,
-                            label: '全部',
-                            id: ''
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '商铺',
-                            id: 0
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '场地',
-                            id: 1
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '广告位',
-                            id: 2
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '写字楼',
-                            id: 3
-                        }
-                    ],
+                    status: [],
                 },
                 columnData:[
-                    { prop: 'regionCode', label: '商户号'},
-                    { prop: 'regionName', label: '商户名称' },
-                    { prop: 'regionEnglishName', label: '店铺号' },
-                    { prop: 'pname', label: '店铺名称' },
-                    { prop: 'pname', label: '合同号' },
-                    { prop: 'pname', label: '物业性质' },
-                    { prop: 'pname', label: '品牌' },
-                    { prop: 'pname', label: '合同状态' },
-                    { prop: 'pname', label: '业态' },
-                    { prop: 'pname', label: '楼层' },
-                    { prop: 'pname', label: '签约面积' },
-                    { prop: 'showUpdateDate', label: '合同有效期' },
-                    { prop: 'pname', label: '铺位' }
+                    { prop: 'merchantCode', label: '商户号'},
+                    { prop: 'merchantName', label: '商户名称' },
+                    { prop: 'shopCode', label: '店铺号' },
+                    { prop: 'shopName', label: '店铺名称' },
+                    { prop: 'contractCode', label: '合同号' },
+                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'brandName', label: '品牌' },
+                    { prop: 'status', label: '合同状态' },
+                    { prop: 'businessName', label: '业态' },
+                    { prop: 'floorCode', label: '楼层' },
+                    { prop: 'areanum', label: '签约面积(m²)' },
+                    { prop: 'showStartAndEndDate', label: '合同有效期' },
+                    { prop: 'berth', label: '铺位' }
                 ]
             }
         },
         mounted(){
-
+            this.$api.reportapi.listUsingGET_4({flag: 1}).then(res=>{//物业性质 1
+                this.selects.status = res.data.data;
+                this.selects.status = res.data.data.map(item=>{
+                    return {
+                        name: item.name,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.selects.status[0].isStatus = true;
+            })
         },
         methods:{
             pageHandler(pageNum, pageSize){
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    propertyNature: this.status,
+                    startDate: this.searchData[0],
+                    endDate: this.searchData[1]
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
+                if(this.searchData.length > 0){
+                    this.$api.reportapi.signUsingPOST({request: params}).then(res=>{
+                        if(res.data.status === 200){
+                            this.datalist = res.data.data.list;
+                            this.total = Number(res.data.data.total);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             statusHandler(status){
                 this.selects.status.forEach(function(obj){
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus;
-                this.status = status.id;
+                this.status = status.value;
                 this.pageHandler(1);
             },
             exportHandler(){

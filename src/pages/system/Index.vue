@@ -129,7 +129,7 @@
                     }else if(!this.add.pid){
                         this.$message.warning('上级区域不能为空');
                     }else{
-                        this.$api.systemapi.updateUsingPOST_4({request:{
+                        this.$api.systemapi.putRegion({request:{
                             regionId: this.add.id,
                             pid: this.add.pid,
                             regionName: this.add.regionName,

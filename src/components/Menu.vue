@@ -364,7 +364,7 @@
                             },
                             {
                                 path: '/database/floorSale',
-                                title: '业态楼层销售'
+                                title: '业态楼层销售报表'
                             },
                             {
                                 path: '/database/shopSale',
@@ -380,7 +380,7 @@
                             },
                             {
                                 path: '/database/paymentDetail',
-                                title: '付款方式明细'
+                                title: '店铺付款方式明细表'
                             },
                             
                             
@@ -390,20 +390,20 @@
                         title: '结算统计',
                         children: [
                             {
+                                path: '/database/contractReport',
+                                title: '合同结算统计报表'
+                            },
+                            {
                                 path: '/database/businessAble',
-                                title: '商户结算（应收）'
+                                title: '商户结算(确认收入)'
                             },
                             {
                                 path: '/database/businessed',
-                                title: '商户结算（已收）'
+                                title: '商户结算(已收)'
                             },
                             {
-                                path: '/database/settlementDetail',
-                                title: '结算费用明细'
-                            },
-                            {
-                                path: '/database/settlementTotal',
-                                title: '结算费用汇总'
+                                path: '/database/businessArrears',
+                                title: '商户结算(欠款)'
                             },
                             {
                                 path: '/database/marketAble',
@@ -419,7 +419,7 @@
                             },
                             {
                                 path: '/database/billRecord',
-                                title: '账单维护记录'
+                                title: '账单调整维护记录'
                             }
                         ]
                     }],

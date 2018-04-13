@@ -23,9 +23,9 @@
                         <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
                             <el-option label="全部" value=""></el-option>
                             <el-option
-                                    v-for="item in contracts"
+                                    v-for="item in contractOptions"
                                     :key="item.id"
-                                    :label="item.contractCode"
+                                    :label="item.show"
                                     :value="item.id">
                             </el-option>
                         </el-select>
@@ -52,77 +52,48 @@
                 datalist:[],
                 searchData: [],
                 contractId: '',
+                contractOptions: [],
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
-                selects: {
-                    status: [
-                        {
-                            isStatus:true,
-                            label: '全部',
-                            id: ''
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '商铺',
-                            id: 0
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '场地',
-                            id: 1
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '广告位',
-                            id: 2
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '写字楼',
-                            id: 3
-                        }
-                    ],
-                },
                 columnData:[
-                    { prop: 'regionCode', label: '商户号'},
-                    { prop: 'regionName', label: '商户名称' },
-                    { prop: 'regionEnglishName', label: '店铺号' },
-                    { prop: 'pname', label: '店铺名称' },
-                    { prop: 'pname', label: '合同号' },
-                    { prop: 'pname', label: '品牌' },
-                    { prop: 'pname', label: '费用项目' },
-                    { prop: 'showUpdateDate', label: '合同有效期' },
-                    { prop: 'pname', label: '固租信息' },
-                    { prop: 'pname', label: '抽成类型' },
-                    { prop: 'pname', label: '抽成比例' }
+                    { prop: 'merchantCode', label: '商户号'},
+                    { prop: 'merchantName', label: '商户名称' },
+                    { prop: 'shopCode', label: '店铺号' },
+                    { prop: 'shopName', label: '店铺名称' },
+                    { prop: 'contractCode', label: '合同号' },
+                    { prop: 'brandName', label: '品牌' },
+                    { prop: 'costItem', label: '费用项目' },
+                    { prop: 'showStartAndEndDate', label: '阶段时间' },
+                    { prop: 'fixedInfo', label: '固租信息' },
+                    { prop: 'extractType', label: '抽成类型' },
+                    { prop: 'extractPrpo', label: '抽成比例' }
                 ],
-                contracts: [{id:1,contractCode:'121223213'}]
             }
         },
         mounted(){
-
+            this.$api.reportapi.selectUsingGET().then(res=>{//合同
+                this.contractOptions = res.data.data;
+            })
         },
         methods:{
             pageHandler(pageNum, pageSize){
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    startDate: this.searchData[0],
+                    endDate: this.searchData[1],
+                    contractId: this.contractId
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
-            },
-            statusHandler(status){
-                this.selects.status.forEach(function(obj){
-                    obj.isStatus = false;
-                });
-                status.isStatus = !status.isStatus;
-                this.status = status.id;
-                this.pageHandler(1);
+                if(this.searchData.length > 0 && this.contractId){
+                    this.$api.reportapi.shopUsingPOST({request: params}).then(res=>{
+                        if(res.data.status === 200){
+                            this.datalist = res.data.data.list;
+                            this.total = Number(res.data.data.total);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             exportHandler(){
 

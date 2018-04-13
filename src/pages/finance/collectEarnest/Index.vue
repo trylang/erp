@@ -200,8 +200,12 @@ export default {
         this.query.merchantId = this.querys.merchantId;
         this.query.contractCode = this.querys.contractCode;
         this.query.shopId = this.querys.shopId;
-        this.query.stage = this.querys.stage;
-        this.$api.rentapi.listUsingGET_11({stage: this.query.stage}).then(res=>{ //诚意金下 的所有商户列表
+        if(this.$route.query.stage) {
+            this.query.stage = this.querys.stage;
+        }else{
+            this.query.stage = 0;
+        }
+        this.$api.financeapi.getEarnestMerchant({stage: this.query.stage}).then(res=>{ //诚意金下 的所有商户列表
             this.selects.merchants = res.data.data;
         }).catch(res=>{
             this.$message.error(res.data.msg);
@@ -218,23 +222,28 @@ export default {
             let params = {
                 merchantId: merchantId || null, //可根据该商户查询意向合同，也可直接展示所有意向合同
             }
-
+            this.$api.financeapi.shopinfoUsingGET({
+                stage: this.query.stage,
+                merchantId : merchantId
+            }).then(res => {//根据code查询付款方式
+                this.dialog.models[0].options = res.data.data;
+            });
         },
         checkMoneyHandler(){
             let params = {
                 stage: 0,
                 merchantId: this.query.merchantId,
-                shopId: this.query.shopId,
+                shopId: null,
                 contractCode: this.query.contractCode
             }
-            this.$api.rentapi.infoUsingGET( params ).then(res=>{//点击意向合同后查出三个金额
+            this.$api.rentapi.getContractMoney( params ).then(res=>{//点击意向合同后查出三个金额
                 let data = res.data.data;
                 this.content.receivableAmount = data.receivableAmount;//应收金额
                 this.content.receivedAmount = data.receivedAmount;  //已收金额
                 this.content.notAmount = data.notAmount;        //未收金额
-                thia.query.shopId = data.shopId;
+                this.query.shopId = data.shopId;
             }).catch(res=>{
-                this.$message.error(res.data.msg);
+                this.$message.error(res);
             });
         },
         getCurrentPage(pageNum) {

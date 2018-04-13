@@ -141,6 +141,8 @@ export default {
                 this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
+                this.dialog.param.contractItem = item.contractCode;
+                this.getSelectedcontracts(item.merchantId);
               }
             },
             {
@@ -183,27 +185,18 @@ export default {
             options: [],
             placeholder: "请选择商户",
             async event(id) {//dialog 根据商户id查询合同
-                _this.dialog.models[1].optionsGroups = [];
-                await _this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: id}).then(res => {
-                    if (res.data.status === 200) {
-                        res.data.data.forEach(item => {
-                          item.label = item.contractAndShop;
-                        });
-                        const contractsObj = Object.assign({label: '合同编号 店铺号 店铺'}, {options: res.data.data});
-                        _this.dialog.models[1].optionsGroups = new Array(contractsObj);
-                    } 
-                });
+              _this.dialog.models[1].optionsGroups = [];
+              await _this.getSelectedcontracts(id);               
             },
           },
           {
             label: "合同编号",
             name: "contractItem", //这里需要给他传shopId和contractCode，下拉列表必须传两个值
             type: "custom_select",
-            //value: "contractCode", // 传值参数
+            value: "contractCode", // 传值参数
             valueLabel: "contractAndShop", // 显示名称参数
             optionsStyle: { "padding-right": "10px" },
             optionsGroups: [],
-            // optionsLabels: ["contractAndShop"], // 自定义需要显示的字段
             placeholder: "请选择合同编号"
           },
           {
@@ -269,6 +262,7 @@ export default {
         ]
       },
       selects: {
+        dialogGroupContracts: [],
         contracts: [], //合同
         merchants: [], //商户
         status: [
@@ -312,7 +306,7 @@ export default {
   },
   mounted() {
     this.getAdvanceList();
-    this.$api.rentapi.listUsingGET_12({status: 4}).then(res => {//商户列表 status:4 已确定状态
+    this.$api.rentapi.listUsingGET_12({status: 1}).then(res => {//商户列表 status:4 已确定状态
         this.selects.merchants = res.data.data;
     }).catch(res => {
         this.$message.error(res.data.msg);
@@ -386,7 +380,7 @@ export default {
       let params = {
         ids: param
       };
-      this.$api.financeapi.confirmsUsingPOST_3(params).then(res => {
+      this.$api.financeapi.confirmsTakeadvancePay(params).then(res => {
         if (res.data.status === 200) {
           this.getAdvanceList({}, () => {
             $message("success", "确认成功!");
@@ -426,7 +420,18 @@ export default {
         this.addAccountGroup(this.dialog.param);
       }
     },
+    async getSelectedcontracts(id) {
+      await this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: id}).then(res => {
+        if (res.data.status === 200) {
+          this.selects.dialogGroupContracts = res.data.data;
+          const contractsObj = Object.assign({label: '合同编号 店铺号 店铺'}, {options: res.data.data});
+          this.dialog.models[1].optionsGroups = new Array(contractsObj);
+        } 
+      });  
+    },
     addAccountGroup(param) {
+      const contractItem = this.selects.dialogGroupContracts.find(item => item.contractCode === this.dialog.param.contractItem);
+      console.log(contractItem);
       //收取 新增      
       let params = {
         merchantId: this.dialog.param.merchantId,
@@ -434,17 +439,18 @@ export default {
         receivedAmount: this.dialog.param.receivedAmount,
         receivedDate: this.dialog.param.receivedDate,
         remark: this.dialog.param.remark,
-        shopId: this.dialog.param.contractItem.shopId,
-        contractCode: this.dialog.param.contractItem.contractCode
+        shopId: contractItem.shopId,
+        contractCode: contractItem.contractCode
       }; //合同列表需要多传一个shopId
       this.$api.financeapi.saveUsingPOST_5({ request: params }).then(res => {
         if (res.data.status === 200) {
+            this.dialog.dialogVisible = false;
           this.getAdvanceList({}, () => {
-            $message("success", "添加成功!");
+            $message("success", res.data.msg);
             this.dialog.dialogVisible = false;
           });
         } else {
-          $message("error", "添加失败!");
+          $message("error", res.data.msg);
         }
       });
     },

@@ -264,7 +264,9 @@ export default {
     },
     mounted() {
         this.getTakeMarginList();
-        this.$api.rentapi.listUsingGET_12({}).then(res=>{ //商户列表 status:4 已确定状态没加
+        this.$api.rentapi.listUsingGET_12({
+            status:1
+        }).then(res=>{ //商户列表 status:4 已确定状态没加
             this.selects.merchants = res.data.data;
             this.dialog.models[0].options = res.data.data;
         }).catch(res=>{
@@ -347,15 +349,16 @@ export default {
         },
         async confirmIrregularCost(param) {
           let params = {
-            ids: param
+              receiptNumbers: param
           };
-          await this.$api.financeapi.confirmsUsingPUT_1(params).then(returnObj => {
+          await this.$api.financeapi.bondConfirmsUsingPOST(params).then(returnObj => {
             if(returnObj.data.status === 200) {
+                $message("success", returnObj.data.msg);
               this.getTakeMarginList({}, () => {
                 $message("success", "确认成功!");
               });  
             } else {
-              $message("error", "确认失败!");
+              $message("error",  returnObj.data.msg);
             }       
           });
         },

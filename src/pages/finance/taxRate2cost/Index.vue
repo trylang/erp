@@ -50,7 +50,7 @@ export default {
         },{
           label: "费用类型",
           type: "text",
-          name: "costName"
+          name: "costTypeName"
         },{
           label: "物业类型",
           type: "text",

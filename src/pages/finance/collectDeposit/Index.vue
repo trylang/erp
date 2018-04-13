@@ -24,7 +24,7 @@
                   <el-option
                     v-for="item in selects.contracts"
                     :key="item.id"
-                    :label="item.contractCode"
+                    :label="item.codeInfo"
                     :value="item.contractCode">
                   </el-option>
                 </el-select>
@@ -190,7 +190,6 @@ export default {
         shopId: '', //店铺id
         bondId: '', //保证金id
         stage: '',    //正式
-        shopId: ''
       },
       bondId: ''
     };
@@ -200,8 +199,12 @@ export default {
         this.query.merchantId = this.querys.merchantId;
         this.query.contractCode = this.querys.contractCode;
         this.query.shopId = this.querys.shopId;
-        this.query.stage = this.querys.stage;
-        this.$api.rentapi.listUsingGET_11({stage: this.query.stage}).then(res=>{ //保证金下 的所有商户列表
+        if(this.$route.query.stage) {
+            this.query.stage = this.querys.stage;
+        }else{
+            this.query.stage = 1;
+        }
+        this.$api.financeapi.getEarnestMerchant({stage: this.query.stage}).then(res=>{ //保证金下 的所有商户列表
             this.selects.merchants = res.data.data;
         }).catch(res=>{
             this.$message.error(res.data.msg);
@@ -216,25 +219,29 @@ export default {
     methods: {
         checkContractHandler(merchantId){
             let params = {
+                stage: this.query.stage,
                 merchantId: merchantId || null, //可根据该商户查询正式合同，也可直接展示所有正式合同
             }
-
+            this.$api.financeapi.getContractSelect(params).then(res => {//根据code查询付款方式
+                this.selects.contracts = res.data.data;
+            });
         },
         checkMoneyHandler(){
             let params = {
-                stage: 0,
+                stage: 1,
                 merchantId: this.query.merchantId,
-                shopId: this.query.shopId,
+                shopId: null,
                 contractCode: this.query.contractCode
-            }
-            this.$api.rentapi.infoUsingGET( params ).then(res=>{//点击正式合同后查出三个金额
+            };
+            this.$api.financeapi.getContractMoney(params).then(res=>{//点击正式合同后查出三个金额
                 let data = res.data.data;
                 this.content.receivableAmount = data.receivableAmount;//应收金额
                 this.content.receivedAmount = data.receivedAmount;  //已收金额
                 this.content.notAmount = data.notAmount;        //未收金额
-                thia.query.shopId = data.shopId;
+                this.query.shopId = data.shopId;
+                this.query.bondId = data.id;
             }).catch(res=>{
-                this.$message.error(res.data.msg);
+                console.log(res)
             });
         },
         getCurrentPage(pageNum) {
@@ -310,13 +317,14 @@ export default {
           }
         },
         async addEntering() {
+            console.log(this.query.bondId)
           const param = {
             merchantId: this.query.merchantId,
             contractCode: this.query.contractCode,
             shopId: this.querys.shopId,
             stage: this.query.stage,
             receiptNumber: this.$route.query.receiptNumber?this.querys.receiptNumber:null,//编辑传收款单号，新增不用传
-            id: this.bondId,    //保证金id
+            id: this.query.bondId,    //保证金id
             list: this.content.list
           }
           const apiFunc = (api, param) => {
@@ -324,7 +332,7 @@ export default {
             this.$api.financeapi[api]({request: param}).then(returnObj => {
               if (returnObj.data.status === 200) {
                 $message("success", "提交成功!");
-                this.$router.push({path: '/finance/collectDeposit'});
+                this.$router.push({path: '/finance/takeMargin'});
               } else {
                 $message("error", "修改失败!");
               }

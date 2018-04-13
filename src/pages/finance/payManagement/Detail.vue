@@ -20,63 +20,63 @@ export default {
           {
             label: "收款单号",
             name: "receiptCode",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "合同号",
             name: "contractNumber",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "结算单号",
             name: "settleNumber",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户名称",
             name: "merchantName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "店铺名称",
             name: "name",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "应收金额",
             name: "amountReceivable",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "text"
           },
           {
             label: "已收金额",
             name: "amountReceived",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "text"
           },
           {
             label: "未收金额",
             name: "name",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "text"
           },
           {
             label: "收款日期",
             name: "createDate",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
             // filter: "yyyy-MM-dd"
@@ -84,7 +84,7 @@ export default {
           {
             label: "状态",
             name: "receiptStatus",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "status",
             option: {
@@ -96,14 +96,14 @@ export default {
           {
             label: "收款形式",
             name: "receiptTypeText",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "费用项目及收费方式",
             name: "methods",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "table",
             table: [

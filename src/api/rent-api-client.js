@@ -402,7 +402,7 @@ export const deleteUsingDELETE_1 = function(parameters = {}) {
  * @param id - 主键id
  * @param status - 状态
  */
-export const updateUsingPUT_2 = function(parameters = {}) {
+export const updateBrandStatus = function(parameters = {}) {
     return rentapi.updateUsingPUT_2(parameters);
 }
 
@@ -1200,7 +1200,7 @@ export const listpgUsingGET_2 = function(parameters = {}) {
  * @param token - header中token字段
  * @param id - 主键id
  */
-export const detailUsingGET_3 = function(parameters = {}) {
+export const getGoodsDetail = function(parameters = {}) {
     return rentapi.detailUsingGET_3(parameters);
 }
 
@@ -1226,7 +1226,7 @@ export const updateUsingPUT_6 = function(parameters = {}) {
  * @param token - header中token字段
  * @param id - 主键id
  */
-export const deleteUsingDELETE_3 = function(parameters = {}) {
+export const goodsDelete = function(parameters = {}) {
     return rentapi.deleteUsingDELETE_3(parameters);
 }
 
@@ -1312,8 +1312,8 @@ export const treeUsingGET_1 = function(parameters = {}) {
  * @param token - header中token字段
  * @param id - 主键id
  */
-export const detailUsingGET_4 = function(parameters = {}) {
-    return rentapi.treeUsingGET_1(parameters);
+export const goodsGroupDetailData = function(parameters = {}) {
+    return rentapi.detailUsingGET_4(parameters);
 }
 
 /**
@@ -1325,7 +1325,7 @@ export const detailUsingGET_4 = function(parameters = {}) {
  * @param token - header中token字段
  * @param request - request
  */
-export const updateUsingPUT_7 = function(parameters = {}) {
+export const goodsGroupUpdate = function(parameters = {}) {
     return rentapi.updateUsingPUT_7(parameters);
 }
 
@@ -1338,7 +1338,7 @@ export const updateUsingPUT_7 = function(parameters = {}) {
  * @param token - header中token字段
  * @param id - 主键id
  */
-export const deleteUsingDELETE_4 = function(parameters = {}) {
+export const goodsGroupDelete = function(parameters = {}) {
     return rentapi.deleteUsingDELETE_4(parameters);
 }
 
@@ -1724,12 +1724,13 @@ export const auditListpgUsingGET_1 = function(parameters = {}) {
     return rentapi.auditListpgUsingGET_1(parameters);
 }
 
+
 /**
  * 查询商户列表
- * request: listUsingGET_12
- * url: listUsingGET_12URL
- * method: listUsingGET_12_TYPE
- * raw_url: listUsingGET_12_RAW_URL
+ * request: listUsingGET_11
+ * url: listUsingGET_11URL
+ * method: listUsingGET_11_TYPE
+ * raw_url: listUsingGET_11_RAW_URL
  * @param token - header中token字段
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
@@ -1740,7 +1741,7 @@ export const auditListpgUsingGET_1 = function(parameters = {}) {
  * @param status - 状态：0新增1已确认2.取消
  */
 export const listUsingGET_12 = function(parameters = {}) {
-    return rentapi.listUsingGET_12(parameters);
+    return rentapi.listUsingGET_11(parameters);
 }
 
 /**
@@ -1758,8 +1759,8 @@ export const listUsingGET_12 = function(parameters = {}) {
  * @param merchantType - 商户类型 类型：0商场1写字楼2广告位3场地
  * @param status - 状态：0新增1已确认2.取消
  */
-export const listUsingGET_11 = function(parameters = {}) {
-    return rentapi.listUsingGET_11(parameters);
+export const getAdList = function(parameters = {}) {
+    return rentapi.optionUsingGET(parameters);
 }
 
 /**
@@ -1879,7 +1880,7 @@ export const getNameUsingGET = function(parameters = {}) {
  * @param id - 主键id
  * @param password - 密码
  */
-export const updtpassUsingPUT = function(parameters = {}) {
+export const resetMerchantPsd = function(parameters = {}) {
     return rentapi.updtpassUsingPUT(parameters);
 }
 
@@ -1893,7 +1894,7 @@ export const updtpassUsingPUT = function(parameters = {}) {
  * @param id - 主键id
  * @param status - 状态
  */
-export const updateUsingPUT_8 = function(parameters = {}) {
+export const updateMerchantStatus = function(parameters = {}) {
     return rentapi.updateUsingPUT_8(parameters);
 }
 
@@ -2019,6 +2020,19 @@ export const listUsingGET_13 = function(parameters = {}) {
  */
 export const listpgUsingGET_5 = function(parameters = {}) {
     return rentapi.listpgUsingGET_5(parameters);
+}
+
+/**
+ * 查询店铺下拉列表
+ * request: getByStatusUsingPOST
+ * url: getByStatusUsingPOSTURL
+ * method: getByStatusUsingPOST_TYPE
+ * raw_url: getByStatusUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param status - 状态id
+ */
+export const getByStatusUsingPOST = function(parameters = {}) {
+    return rentapi.getByStatusUsingPOST(parameters);
 }
 
 /**
@@ -2183,4 +2197,29 @@ export const updateUsingPUT_12 = function(parameters = {}) {
  */
 export const deleteUsingDELETE_7 = function(parameters = {}) {
     return rentapi.deleteUsingDELETE_7(parameters);
+}
+
+/**
+ * 合同下拉列表基础数据
+ * request: baseDataOptionsUsingGET
+ * url: baseDataOptionsUsingGETURL
+ * method: baseDataOptionsUsingGET_TYPE
+ * raw_url: baseDataOptionsUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const baseDataOptionsUsingGET = function(parameters = {}) {
+    return rentapi.baseDataOptionsUsingGET(parameters);
+}
+/**
+ * 取消/失效
+ * request: updateStatusUsingPUT
+ * url: updateStatusUsingPUTURL
+ * method: updateStatusUsingPUT_TYPE
+ * raw_url: updateStatusUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ * @param stauts - stauts
+ */
+export const updateCancelFailure = function(parameters = {}) {
+    return rentapi.updateStatusUsingPUT(parameters);
 }

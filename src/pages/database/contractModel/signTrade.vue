@@ -24,10 +24,11 @@
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
                     legend: {
-                        orient: 'horizontal',
-                        left: 'center',
-                        top:'bottom',
-                        data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                        orient: 'vertical',
+                        left: 'right',
+                        top:'center',
+                        data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎'],
+                        padding: [0,20,10,10]
                     },
                     series : [
                         {
@@ -55,16 +56,16 @@
             }
         },
         mounted(){
-            // this.$api.systemapi.listUsingGET_6().then(res=>{
-            //     let newLegend = [];
-            //     this.pie.series[0].data = res.data.data;
-            //     res.data.data.forEach((item)=>{
-            //         newLegend.push(item.name);
-            //     })
-            //     this.pie.legend.data = newLegend;
-            // }).catch(res=>{
-            //     this.$message.error(res.data.msg);
-            // })
+            this.$api.reportapi.signTypeUsingGET().then(res=>{
+                let newLegend = [];
+                this.pie.series[0].data = res.data.data;
+                res.data.data.forEach((item)=>{
+                    newLegend.push(item.name);
+                })
+                this.pie.legend.data = newLegend;
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
         },
         methods:{
             

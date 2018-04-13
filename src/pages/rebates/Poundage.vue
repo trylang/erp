@@ -74,7 +74,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">手续费</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
+                    <input class="inputtext" type="number" min="0" max="100" placeholder="请输入手续费" v-model="add.regionEnglishName">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">类型</span>

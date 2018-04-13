@@ -52,14 +52,35 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addmerchant/'+scope.row.id" class="btn_text">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
+                            <router-link :to="'/inner/addmerchant/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" v-if="scope.row.status == 1" @click="cancelMerchant(scope.row.id,2)">取消</button>
+                            <button class="btn_text" v-if="scope.row.status == 1" @click="handleOpen(scope.row.id)">重置密码</button>
                         </template>
                     </el-table-column>
                 </data-table>
             </div>
             <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
+        <el-dialog
+                title="修改密码"
+                :visible.sync="dialogVisible"
+                custom-class="customdialog">
+            <div class="dialogbox">
+                <div class="dialoginput">
+                    <span class="inputname inputnameWidth">新密码</span>
+                    <input class="inputtext" type="password" placeholder="请输入新密码" v-model="newPassword">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname inputnameWidth">确认新密码</span>
+                    <input class="inputtext" type="password" placeholder="请确认新密码" v-model="password">
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleClose">取 消</el-button>
+                <el-button type="primary" @click="resetPassword()">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -71,6 +92,7 @@
         name: "index",
         data(){
             return{
+                dialogVisible:false,
                 dataList:[],
                 searchText:'',
                 searchName:'',
@@ -85,7 +107,7 @@
                     { prop: 'enumMerchantType', label: '类型' },
                     { prop: 'enumMerchantNature', label: '商户性质' },
                     { prop: 'responsiblePerson', label: '联系人' },
-                    { prop: 'contactNumber', label: '电话'},
+                    { prop: 'enumInvestSoursStatus', label: '状态'},
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
                 typeOptions:[{
@@ -117,7 +139,10 @@
                     name:"取消",
                     isStatus:false,
                     id:2
-                }]
+                }],
+                newPassword:'',
+                password:'',
+                merchantid:''
             }
         },
         mounted(){
@@ -135,6 +160,15 @@
             }
         },
         methods:{
+            handleOpen(id) {
+                this.dialogVisible = true;
+                this.newPassword='';
+                this.password='';
+                this.merchantid = id;
+            },
+            handleClose(){
+                this.dialogVisible = false;
+            },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.listpgUsingGET_4({
                     pageNum:pageNum,
@@ -155,7 +189,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE_4({
+                    this.$api.rentapi.deleteUsingDELETE_5({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
@@ -165,6 +199,36 @@
                             this.$message.error(res.data.msg);
                         }
                     })
+                })
+            },
+            async cancelMerchant(id,status){
+                await this.$api.rentapi.updateMerchantStatus({
+                    id:id,
+                    status:status
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.getDataList(1);
+                        this.$message.success(res.data.msg);
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+            },
+            async resetPassword(){
+                if(this.password != this.newPassword){
+                    this.$message.error('密码不一致，请确认');
+                    return false;
+                }
+                await this.$api.rentapi.resetMerchantPsd({
+                    id:this.merchantid,
+                    password:this.password
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.getDataList(1);
+                        this.$message.success(res.data.msg);
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
                 })
             },
             statusHandler(status){

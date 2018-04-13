@@ -83,7 +83,7 @@
                                     </div>
                                     <div class="statusbtn">
                                         <button class="btnenable" @click="saveDataInfo()">保存</button>
-                                        <button class="btnenable" @click="cancelDataInfo()">取消</button>
+                                        <button class="btnenable" @click="cancelEditDataInfo()">取消</button>
                                     </div>
                                 </div>
                             </div>
@@ -236,6 +236,16 @@
                         sort: null
                     };
                     this.isAddItem = false;
+                }
+            },
+            cancelEditDataInfo(){
+                this.isAddItem = false;
+                this.addDict = {
+                    dictTypeId :null,
+                    dictTypeCode:'',
+                    name:'',
+                    value:'',
+                    sort:null
                 }
             },
             async updateSort(id,sortnum,index,type){

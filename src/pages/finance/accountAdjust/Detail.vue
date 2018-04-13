@@ -15,54 +15,54 @@ export default {
   data() {
     return {
       header: {
-        title: "费用调整详情",
+        title: "结算单调整详情",
         content: [
           {
             label: "调整单号",
             name: "adjustNumber",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "合同号",
             name: "contractCode",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "结算单号",
             name: "settleNumber",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户名称",
             name: "merchantName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "店铺名称",
             name: "shopName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "调整日期",
             name: "adjustDate",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "text"
           },
           {
             label: "状态",
             name: "statusName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text",
             option: {
@@ -73,7 +73,7 @@ export default {
           {   
             label: "调整内容",
             name: "methods",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "table",
             table: [
@@ -119,7 +119,9 @@ export default {
     async fetchData(id) {
       await this.$api.financeapi.getDetailUsingGET({id}).then(returnObj => {
         if (returnObj.data.status === 200) {
-          this.details = returnObj.data.data;
+          let data = returnObj.data.data;
+          data.list = data.adjustCostItemVos;
+          this.details = data;
           console.log(this.details);
         }        
       });

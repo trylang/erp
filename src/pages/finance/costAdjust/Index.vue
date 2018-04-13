@@ -10,7 +10,7 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" @change="getCostAdjust" placeholder="商户名称" class="dialogselect">
+            <el-select v-model="query.merchantId" @change="getCostAdjust(),getMerchantId()" placeholder="商户名称" class="dialogselect">
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -63,7 +63,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import { queryAccountGroup, queryMerchant, queryContract } from "@/utils/rest/financeAPI";
+import { queryAccountGroup, queryMerchant, queryContract,queryMerchantContract } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -162,7 +162,7 @@ export default {
               },
               class: "delete",
               click: (item, data) => {
-                this.deleteCostAdjust(item, data);
+                this.deleteCostAdjust(item.id);
               }
             }
           ]
@@ -233,9 +233,6 @@ export default {
     batchConfirm() {
       this.confirmCostAdjust(this.filterIds());
     },
-    batchDelete() {
-      this.deleteCostAdjust(this.filterIds());
-    },
     async getCostAdjust(page={}, callback) {
       let params = {
         costNo: this.query.costNo,
@@ -269,11 +266,7 @@ export default {
       })
     },
     async confirmCostAdjust(param) {
-      let params = {
-        id:param
-      };
-      console.log(params);
-      await this.$api.financeapi.confirmUsingPUT_2(params).then(returnObj => {
+      await this.$api.financeapi.confirmUsingPUT({id:param}).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getCostAdjust({}, () => {
             $message("success", "确认成功!");
@@ -283,19 +276,27 @@ export default {
         }       
       });
     },
-    async deleteCostAdjust(param) {
-      let params = {
-        id: param
-      };
-      await this.$api.financeapi.delUsingDELETE(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getCostAdjust({}, () => {
-            $message("success", "删除成功!");
-          });  
-        } else {
-          $message("error", "删除失败!");
-        }       
-      });
+    async deleteCostAdjust(id) {
+      this.$confirm("此操作将永久删除该费用调整, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$api.financeapi.delUsingDELETE({id}).then(returnObj => {
+            if(returnObj.data.status === 200) {
+              this.getCostAdjust({}, () => {
+                $message("success", "删除成功!");
+              });  
+            } else {
+              $message("error", returnObj.data.msg);
+            }       
+          });
+        })
+        .catch(() => {
+          $message("info", "已取消删除!");
+        });
+      
     },
     async cancelCostAdjust(param) {
       let params = {
@@ -312,10 +313,13 @@ export default {
         }       
       });
     },
+      async getMerchantId(){
+          let [merchantsContracts] = await Promise.all([queryMerchantContract(this.query.merchantId)]);
+          this.selects.contracts = merchantsContracts.data;
+      },
     async init() {
-      let [accountGroup, merchants, contracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract()]); 
-      this.selects.merchants = merchants.data.list;
-      this.selects.contracts = contracts.data.list;
+      let [accountGroup, merchants, contracts,merchantsContracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract(),queryMerchantContract(8)]);
+      this.selects.merchants = merchants.data;
       await this.getCostAdjust();
     }
   },

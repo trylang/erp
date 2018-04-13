@@ -1,7 +1,7 @@
 <template>
   <con-head title="结算组别">
     <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
-    dialog.param={settleGroupCode:'', settleGroupName:''}">添加</el-button>
+    dialog.param={settleGroupCode:'',propertyTypeId:'', settleGroupName:''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
@@ -42,6 +42,11 @@ export default {
           label: "名称",
           type: "text",
           name: "settleGroupName"
+        },
+        {
+          label: "物业性质",
+          type: "text",
+          name: "propertyTypeName"
         },
         {
           label: "备注",
@@ -104,6 +109,14 @@ export default {
           type: 'text',
           placeholder: '请输入名称'
         }, {
+          label: '物业名称',
+          name: 'propertyTypeId',
+          valueLabel: "label",
+          value: 'id',
+          type: 'select',
+          options: [{id: 0, label: '商铺'}, {id: 1, label: '写字楼'}, {id: 2, label: '场地'}, {id: 3, label: '广告位'}],
+          placeholder: '请输入物业名称'
+        }, {
           label: '备注',
           name: 'remark',
           type: 'text',
@@ -114,6 +127,7 @@ export default {
           id: "",
           settleGroupCode: "",
           settleGroupName: "",
+          propertyTypeId: "",
           remark: ""
         },
         options: [{

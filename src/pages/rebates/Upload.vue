@@ -1,7 +1,7 @@
 <template>
     <div class="savebox">
         <div class="el-tabs__content">
-            <blank-head title="销售数据导入"></blank-head>
+            <blank-head title="对账文件上传"></blank-head>
             <div class="commonbox">
                 <el-row class="dialogbox">
                     <el-col :span="10">
@@ -10,7 +10,7 @@
                             <input class="inputtext" type="text" placeholder="请输入任务名称">
                         </div>
                         <div class="dialoginput">
-                            <span class="inputname">文件类型</span>
+                            <span class="inputname">对账类型</span>
                             <el-select v-model="value" placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"

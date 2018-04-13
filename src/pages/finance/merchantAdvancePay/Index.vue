@@ -160,7 +160,7 @@ export default {
   },
     mounted() {
         this.getmerchantList();
-        this.$api.rentapi.listUsingGET_12({status: 4}).then(res=>{ //商户列表 status:4 已确定状态
+        this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表 status:1 已确定状态
             this.selects.merchants = res.data.data;
         }).catch(res=>{
             this.$message.error(res.data.msg);

@@ -1,62 +1,68 @@
 <template>
     <div>
         <con-head title="商场及写字楼（已收）">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="exportHandler()">导出</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
-                    <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                    <div class="searchinput">
+                        <span class="inputname inputnameauto" style="width: 100px;">日期：</span>
+                        <el-date-picker
+                            style="padding-left:30px;"
+                            v-model="startMonth"
+                            type="month"
+                            placeholder="选择月"
+                            format="yyyy 年 M 月"
+                            value-format="yyyy-M"
+                            @change="pageHandler(1)">
+                        </el-date-picker>
+                        <span style="line-height: 30px;">~</span>
+                        <el-date-picker
+                            style="padding-left:30px;"
+                            v-model="endMonth"
+                            type="month"
+                            placeholder="选择月"
+                            format="yyyy 年 M 月"
+                            value-format="yyyy-M"
+                            @change="pageHandler(1)">
+                        </el-date-picker>
+                    </div>
+                </el-col>
+                <el-col :span="9" :offset="2">
+                    <div class="texttitle">
+                        <span class="inputname">物业性质：</span>
+                        <div class="line-nav">
+                            <a href="javascript:void(0)" 
+                                v-for="status in selects.status" 
+                                :key="status.value" 
+                                :class="{active:status.isStatus}" 
+                                @click="statusHandler(status)">{{status.name}}
+                            </a>
+                        </div>
                     </div>
                 </el-col>
             </el-row>
+            <!-- <el-row slot="preappend">
+                <el-col :span="9">
+                    <div class="searchselect">
+                        <span class="inputname inputnameauto">费用项目：</span>
+                        <el-select v-model="costItemIds" multiple placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-option
+                                v-for="item in costItems"
+                                :key="item.id"
+                                :label="item.merchantName+'('+item.merchantCode+')'"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </el-col>
+            </el-row> -->
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="110"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <data-table :tableData="datalist" :colConfigs="columnData"></data-table>
             </div>
             <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
-        <el-dialog
-                :title="listid?'编辑区域':'添加区域'"
-                :visible.sync="dialogVisible"
-                custom-class="customdialog">
-            <div class="dialogbox">
-                <div class="dialoginput">
-                    <span class="inputname">区域名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.regionName">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">英文缩写</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">上级区域</span>
-                    <input class="inputtext" type="text" v-if="listid" v-model="add.pname==null?'无':add.pname+'（不可更改）'" disabled>
-                    <el-tree
-                        v-if="!listid"
-                        :data="treeData"
-                        node-key="id"
-                        ref="tree"
-                        @node-click="checkHandler"
-                        :props="defaultProps">
-                    </el-tree>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
@@ -69,140 +75,102 @@
         data(){
             return{
                 dialogVisible:false,
+                startMonth: '',
+                endMonth: '',
+                costItemIds: '',
                 datalist:[],
-                listid:'',
-                searchName: '',
+                costItems: [],
+                status: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
-                treeData: [],
-                add:{
-                    id: '',
-                    pid: '',
-                    regionName: '',
-                    regionEnglishName: '',
-                    pname: '',
-                    treeId: ''
+                selects:{
+                    status:[
+                        {
+                            isStatus:true,
+                            name: '全部',
+                            value: 0
+                        }, 
+                        {
+                            isStatus:false,
+                            name: '商铺',
+                            value: 1
+                        },
+                        {
+                            isStatus:false,
+                            name: '写字楼',
+                            value: 4
+                        }
+                    ]
                 },
                 columnData:[
-                    { prop: 'regionCode', label: '编码'},
-                    { prop: 'regionName', label: '区域名称' },
-                    { prop: 'regionEnglishName', label: '英文缩写' },
-                    { prop: 'pname', label: '上级区域' },
-                    { prop: 'showUpdateDate', label: '更新时间' }
-                ],
-                defaultProps: {
-                    children: 'children',
-                    label: 'label'
-                }
+                    { prop: 'units', label: '单位'},
+                    { prop: 'years', label: '年度' },
+                    { prop: 'months', label: '月份' },
+                    { prop: 'settleNumber', label: '结算单号' },
+                    { prop: 'prepaymentNumber', label: '预收款单号' },
+                    { prop: 'cancelsNumber', label: '核销单号' },
+                    { prop: 'contractCode', label: '合同号' },
+                    { prop: 'shopCode', label: '店铺编码' },
+                    { prop: 'merchantCode', label: '商户编码' },
+                    { prop: 'costProjectCode', label: '收费项编码' },
+                    { prop: 'receiptDate', label: '收款日期' },
+                    { prop: 'paymentName', label: '收款方式' },
+                    { prop: 'statementRule', label: '结算规则' },
+                    { prop: 'receiptCost', label: '收款金额' },
+                    { prop: 'notTallageCost', label: '未税金额' },
+                    { prop: 'tallageCost', label: '税金' },
+                    { prop: 'tallageCode', label: '税码' },
+                ]
             }
         },
         mounted(){
-
-        },
-        watch:{
-            searchName(){
-                this.$delay(()=>{
-                    this.pageHandler(1);
-                },300)
-            }
+            // this.$api.rentapi.listUsingGET_14({status: 3}).then(res=>{//物业性质
+            //     this.selects.status = res.data.data;
+            //     this.selects.status = res.data.data.map(item=>{
+            //         return {
+            //             name: item.name,
+            //             value: item.value,
+            //             isStatus: false
+            //         }
+            //     });
+            //     this.selects.status[0].isStatus = true;
+            // })
+            this.getMerchantList();
         },
         methods:{
             pageHandler(pageNum, pageSize){
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    costItemIds: this.costItemIds,
+                    propertyType: this.status,
+                    startTime: this.startMonth,
+                    endTime: this.endMonth
                 }
                 this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
                 }).catch(res=>{
                     this.$message.error(res.data.msg);
                 })
             },
-            addbuilding(id){
-                if(id){
-                    if(!this.add.regionName){
-                        this.$message.warning('区域名称不能为空');
-                    }else if(!this.add.regionEnglishName){
-                        this.$message.warning('英文缩写不能为空');
-                    }else if(!this.add.pid){
-                        this.$message.warning('上级区域不能为空');
-                    }else{
-                        this.$api.systemapi.updateUsingPOST_4({request:{
-                            regionId: this.add.id,
-                            pid: this.add.pid,
-                            regionName: this.add.regionName,
-                            regionEnglishName: this.add.regionEnglishName
-                        }}).then(res=>{
-                            if(res.data.code==200){
-                                this.$message.success(res.data.msg);
-                                this.pageHandler(1);
-                            }else{
-                                this.$message.error(res.data.msg);
-                            }
-                        }).catch(res=>{
-                            this.$message.error(res.data.msg);
-                        });
-                    }
-                }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{
-                        pid: this.add.treeId,
-                        regionName: this.add.regionName,
-                        regionEnglishName: this.add.regionEnglishName
-                    }}).then(res=>{
-                        if(res.data.code==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
-                }
-                this.dialogVisible = false;
+            statusHandler(status){
+                this.selects.status.forEach(function(obj){
+                    obj.isStatus = false;
+                });
+                status.isStatus = !status.isStatus;
+                this.status = status.value;
+                this.pageHandler(1);
             },
-            dialogData(id, data){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = {
-                        id: data.id,
-                        pid: data.pid,
-                        regionName: data.regionName,
-                        regionEnglishName: data.regionEnglishName,
-                        pname: data.pname
-                    }
-                }else{
-                    this.add = {};
-                    this.$api.systemapi.queryTreeUsingGET().then(res=>{
-                        this.treeData = res.data.data;
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    })
-                }
-            },
-            deleteList(id){
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.code==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res => {
-                        this.$message.error(res.data.msg);
-                    });
+            getMerchantList(){
+                this.$api.rentapi.listUsingGET_12().then(res=>{//费用项目
+                    this.costItems = res.data.data;
                 })
             },
-            checkHandler(data){
-                this.add.treeId = data.id;
+            exportHandler(){
+
             }
         },
         components:{
@@ -214,5 +182,20 @@
 </script>
 
 <style scoped>
-
+    .line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
 </style>

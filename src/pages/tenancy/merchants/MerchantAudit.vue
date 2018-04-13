@@ -77,7 +77,7 @@
                     { prop: 'enumMerchantType', label: '类型' },
                     { prop: 'enumMerchantNature', label: '商户性质' },
                     { prop: 'responsiblePerson', label: '联系人' },
-                    { prop: 'contactNumber', label: '电话'},
+                    { prop: 'enumInvestSoursStatus', label: '状态'},
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
                 typeOptions:[{
@@ -104,7 +104,7 @@
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 }],
                 multipleSelection:[]
             }

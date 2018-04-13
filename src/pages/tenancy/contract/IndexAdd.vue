@@ -12,9 +12,9 @@
                                     <el-select v-model="mainData.contractType" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in typeOptions"
-                                                :key="item.id"
-                                                :label="item.typeName"
-                                                :value="item.id">
+                                                :key="item.value"
+                                                :label="item.text"
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -84,9 +84,9 @@
                                     <el-select v-model="mainData.operationMode" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in operationOptions"
-                                                :key="item.id"
-                                                :label="item.operationName"
-                                                :value="item.id">
+                                                :key="item.value"
+                                                :label="item.text"
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -123,6 +123,7 @@
                                             class="inputtext"
                                             v-model="mainData.validStartDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="开始日期">
                                     </el-date-picker>
                                     ~
@@ -130,6 +131,7 @@
                                             class="inputtext"
                                             v-model="mainData.validEndDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
@@ -146,6 +148,7 @@
                                             class="inputtext"
                                             v-model="mainData.pavingDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="请输入交铺日期">
                                     </el-date-picker>
                                 </div>
@@ -159,6 +162,7 @@
                                             class="inputtext"
                                             v-model="mainData.openingDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="请输入开业日期">
                                     </el-date-picker>
                                 </div>
@@ -181,6 +185,7 @@
                                             class="inputtext"
                                             v-model="mainData.decorationStartDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="开始日期">
                                     </el-date-picker>
                                     ~
@@ -188,6 +193,7 @@
                                             class="inputtext"
                                             v-model="mainData.decorationEndDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
@@ -204,6 +210,7 @@
                                             class="inputtext"
                                             v-model="mainData.signDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="请输入签约日期">
                                     </el-date-picker>
                                 </div>
@@ -217,6 +224,7 @@
                                             class="inputtext"
                                             v-model="mainData.invalidDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
                                             placeholder="请输入起租日期">
                                     </el-date-picker>
                                 </div>
@@ -282,6 +290,7 @@
                                                         class="inputtext"
                                                         v-model="rentlists.periodStartDate"
                                                         type="date"
+                                                        value-format="yyyy-MM-dd"
                                                         placeholder="开始日期">
                                                 </el-date-picker>
                                                 ~
@@ -289,6 +298,7 @@
                                                         class="inputtext"
                                                         v-model="rentlists.periodEndDate"
                                                         type="date"
+                                                        value-format="yyyy-MM-dd"
                                                         placeholder="结束日期">
                                                 </el-date-picker>
                                             </div>
@@ -430,7 +440,7 @@
             <button @click="submitnNext()">保存并下一步</button>
         </div>
         <div class="savebtn" v-show="isShow">
-            <button>保存</button>
+            <button @click="historyGo()">保存</button>
         </div>
     </div>
 </template>
@@ -472,16 +482,7 @@
                     validStartDate: "",
                     version: ""
                 },
-                typeOptions:[{
-                    typeName:'比高',
-                    id:0
-                },{
-                    typeName:'抽成',
-                    id:1
-                },{
-                    typeName:'固定',
-                    id:2
-                }],
+                typeOptions:[],
                 rateTypeOptions:[{
                     rateTypeName:'不含税',
                     id:0
@@ -494,22 +495,7 @@
                 }],
                 merchantOptions:[],
                 brandOptions:[],
-                operationOptions:[{
-                    operationName:'自营',
-                    id:0
-                },{
-                    operationName:'代销',
-                    id:1
-                },{
-                    operationName:'专柜',
-                    id:2
-                },{
-                    operationName:'租赁',
-                    id:3
-                },{
-                    operationName:'联营',
-                    id:4
-                }],
+                operationOptions:[],
                 propertyOptions:[{
                     propertyName:'商铺',
                     id:0
@@ -567,13 +553,13 @@
         mounted(){
             this.getMerchantList();
             this.getBrandList();
-            this.getOperationList();
             this.getpPropertyList();
             this.getContractInfo();
             this.getUnitInfo();
             this.getRentTermsInfo();
             this.getCostInfo();
             this.getBondInfo();
+            this.getBaseDataOptions();
         },
         watch:{
             searchText(){
@@ -584,7 +570,7 @@
         },
         methods: {
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_11({
+                await this.$api.rentapi.listUsingGET_12({
                     status:1
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
@@ -593,13 +579,6 @@
             async getBrandList(){
                 await this.$api.rentapi.listUsingGET_3().then(res=>{
                     this.brandOptions = res.data.data;
-                })
-            },
-            async getOperationList(){
-                await this.$api.rentapi.getListForPageUsingGET_1({
-                    propertyType:this.$route.params.prototypeId
-                }).then(res=>{
-                    this.intentionOptions = res.data.data.list;
                 })
             },
             async getpPropertyList(){
@@ -620,6 +599,13 @@
                     status:''
                 }).then(res=>{
                     this.unitDataList = res.data.data.list;
+                })
+            },
+            async getBaseDataOptions(){
+                await this.$api.rentapi.baseDataOptionsUsingGET().then(res=>{
+                    this.typeOptions = res.data.data.contract_type;
+                    this.operationOptions = res.data.data.operation_mode;
+                    this.settleLevelOptions = res.data.data.settle_level;
                 })
             },
             nextNum(){
@@ -959,6 +945,9 @@
                         }
                     })
                 }
+            },
+            historyGo(){
+                this.$router.go(-1)
             }
         },
         components: {

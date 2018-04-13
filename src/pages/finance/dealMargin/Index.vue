@@ -261,7 +261,7 @@ export default {
   },
   mounted() {
     this.getDealMarginList();
-    this.$api.rentapi.listUsingGET_12({status: 4}).then(res=>{ //商户列表 status:4 已确定
+    this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表 status:1 已确定
         this.selects.merchants = res.data.data;
     }).catch(res=>{
         this.$message.error(res.data.msg);
@@ -334,11 +334,12 @@ export default {
         };
         this.$api.financeapi.confirmsUsingPOST(params).then(returnObj => {
             if(returnObj.data.status === 200) {
+                $message("success", returnObj.data.msg);
               this.getDealMarginList({}, () => {
-                $message("success", "确认成功!");
+                $message("success", returnObj.data.msg);
               });
             } else {
-              $message("error", "确认失败!");
+              $message("error", returnObj.data.msg);
             }       
         });
     },

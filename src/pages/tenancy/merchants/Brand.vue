@@ -52,8 +52,9 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getInfoData(scope.row.id)">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
+                            <button class="btn_text" @click="getInfoData(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" v-if="scope.row.status == 1" @click="cancelBrand(scope.row.id,2)">取消</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -66,11 +67,11 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname inputnameauto">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="addInfoData.brandName">
+                    <span class="inputname">名称</span>
+                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="addInfoData.brandName">
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname inputnameauto">业态</span>
+                    <span class="inputname">一级业态</span>
                     <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in formatsOptions"
@@ -81,7 +82,29 @@
                     </el-select>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname inputnameauto">国别</span>
+                    <span class="inputname">二级业态</span>
+                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
+                        <el-option
+                                v-for="item in formatsOptions"
+                                :key="item.id"
+                                :label="item.businessName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">三级业态</span>
+                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
+                        <el-option
+                                v-for="item in formatsOptions"
+                                :key="item.id"
+                                :label="item.businessName"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname">国别</span>
                     <el-select v-model="addInfoData.countryId" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in countryOptions"
@@ -127,7 +150,9 @@
                 columnData:[
                     { prop: 'brandCode', label: '编码'},
                     { prop: 'brandName', label: '名称' },
-                    { prop: 'businessVo.businessName', label: '业态' },
+                    { prop: 'businessVo.businessName', label: '一级业态' },
+                    { prop: 'businessVo.parentBusVo.businessName', label: '二级业态' },
+                    { prop: 'businessVo.parentBusVo.parentBusVo.businessName', label: '三级业态' },
                     { prop: 'country.countryName', label: '国别' },
                     { prop: 'investSoursStatus', label: '状态' },
                     { prop: 'updateDateStr', label: '更新时间' }
@@ -264,7 +289,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE({
+                    this.$api.rentapi.deleteUsingDELETE_1({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
@@ -274,6 +299,19 @@
                             this.$message.error(res.data.msg);
                         }
                     })
+                })
+            },
+            async cancelMerchant(id,status){
+                await this.$api.rentapi.updateBrandStatus({
+                    id:id,
+                    status:status
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.getDataList(1);
+                        this.$message.success(res.data.msg);
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
                 })
             },
             statusHandler(status){

@@ -286,7 +286,7 @@ export default {
     },
     mounted() {
         this.getDealList();
-        this.$api.rentapi.listUsingGET_12({status: 4}).then(res=>{ //商户列表
+        this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表
             this.selects.merchants = res.data.data;
             // this.dialog.models[0].options = res.data.data;
         }).catch(res=>{
@@ -364,7 +364,7 @@ export default {
             let params = {
                 ids: param
             };
-            this.$api.financeapi.confirmsUsingPOST_2(params).then(returnObj => {
+            this.$api.financeapi.confirmsPrepayment(params).then(returnObj => {
                 if(returnObj.data.status === 200) {
                   this.getDealList({}, () => {
                     $message("success", "确认成功!");

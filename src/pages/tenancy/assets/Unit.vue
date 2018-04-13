@@ -43,12 +43,22 @@
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
+                            label="更新时间"
+                            width="150"
+                            slot="operation">
+                        <template slot-scope="scope">
+                            {{scope.row.updateDateLong | formatDate('yyyy-MM-dd hh:mm:ss')}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addunit/'+scope.row.id" class="btn_text">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
+                            <router-link :to="'/inner/addunit/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
+                            <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -77,8 +87,7 @@
                     { prop: 'area', label: '建筑面积'},
                     { prop: 'useArea', label: '使用面积' },
                     { prop: 'statusName', label: '状态' },
-                    { prop: 'remark', label: '备注'},
-                    { prop: 'updateDateLong', label: '更新时间', width:'180'}
+                    { prop: 'remark', label: '备注'}
                 ],
                 floorOptions:[],
                 floorValue:'',
@@ -97,21 +106,22 @@
                 },{
                     name:"预定",
                     isStatus:false,
-                    id:2
+                    id:3
                 },{
                     name:"使用中",
                     isStatus:false,
-                    id:3
+                    id:4
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 },{
                     name:"失效",
                     isStatus:false,
                     id:5
                 }],
                 statusId:'',
+                statesId:'',
                 multipleSelection:[]
             }
         },
@@ -131,7 +141,13 @@
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus;
-                this.statusId = status.id;
+                if(status.id == 1){
+                    this.statesId = [1,6],
+                    this.statusId = '';
+                }else{
+                    this.statesId = '';
+                    this.statusId = status.id;
+                }
                 this.getDataList(1);
             },
             async getDataList(pageNum,pageSize){
@@ -141,8 +157,9 @@
                     code:this.searchText,
                     buildId:'',
                     floorId:this.floorValue,
-                    type:1,
-                    status:this.statusId
+                    type:0,
+                    status:this.statusId,
+                    states:this.statesId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
@@ -161,7 +178,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE_6({
+                    this.$api.rentapi.deleteUsingDELETE_7({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
@@ -171,6 +188,19 @@
                             this.$message.error(res.data.msg);
                         }
                     })
+                })
+            },
+            async cancelFailure(id,stauts){
+                await this.$api.rentapi.updateCancelFailure({
+                    id:id,
+                    stauts:stauts
+                }).then(res=>{
+                    if (res.data.status == 200) {
+                        this.getDataList(1);
+                        this.$message.success(res.data.msg);
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
                 })
             },
             floorSelect(){

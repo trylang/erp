@@ -3,7 +3,7 @@
 		<el-col class="card_col" :span="7" v-for="(item, index) in cash" :key="index">
 			<div class="erp_card">
 				<span class="card_text">{{item.name}}</span>
-				<strong>￥{{item.id}}</strong>
+				<strong><label v-if="!notCash">￥</label>{{item.id}}</strong>
 			</div>
 		</el-col>
 	</el-row>
@@ -12,7 +12,7 @@
 <script>
 export default {
   name: "cash-card",
-  props: ["cash"]
+  props: ["cash", "notCash"]
 };
 </script>
 

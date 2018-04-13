@@ -21,6 +21,9 @@ export async function queryCollectList(param={}) {
 
 // 获取结算组别列表
 export async function queryAccountGroup(param={}) {
+    param = {
+        pageSize: maxPageSize
+    };
   const res = await API_FINANCE.listUsingGET_11(param);
   const data = res.data;
   if (data.status === 200) {
@@ -32,6 +35,21 @@ export async function queryAccountGroup(param={}) {
   } else {
     return data.message;
   }
+}
+
+//获取下拉选项
+export async function queryCostType() {
+    const res = await API_RENT.baseDataOptionsUsingGET();
+    const data = res.data;
+    if (data.status === 200) {
+        const json = _changeJson(data.data.cost_type, 'id');
+        return {
+            data: data.data,
+            json: json
+        };
+    } else {
+        return data.message;
+    }
 }
 
 // 获取合同项目费用列表
@@ -72,13 +90,13 @@ export async function queryTaxRate() {
 
 // 获取商户列表（租务）
 export async function queryMerchant() {
-  // const param = {
-  //   pageSize: maxPageSize
-  // };
-  const res = await API_RENT.listpgUsingGET_4();
+  const param = {
+      status: 1
+  };
+  const res = await API_RENT.listUsingGET_12(param);
   const data = res.data;
   if (data.status === 200) {
-    const json = _changeJson(data.data.list, 'id');
+    const json = _changeJson(data.data, 'id');
     return {
       data: data.data,
       json: json
@@ -93,7 +111,22 @@ export async function queryShop() {
   // const param = {
   //   pageSize: maxPageSize
   // };
-  const res = await API_RENT.listUsingGET_12();
+  const res = await API_RENT.listUsingGET_13({status: 1});
+  const data = res.data;
+  if (data.status === 200) {
+    const json = _changeJson(data.data, 'id');
+    return {
+      data: data.data,
+      json: json
+    };
+  } else {
+    return data.message;
+  }
+}
+
+// 获取商场楼层列表（租务）
+export async function queryFloor() {
+  const res = await API_RENT.selectByBuildIdUsingGET({buildId: 1});
   const data = res.data;
   if (data.status === 200) {
     const json = _changeJson(data.data, 'id');
@@ -119,6 +152,20 @@ export async function queryContract(param={}) {
   } else {
     return data.message;
   }
+}
+// 获取商户下的合同列表（租务）
+export async function queryMerchantContract(merchantId) {
+    const res = await API_RENT.getContractShopByMerchantUsingGET({merchantId});
+    const data = res.data;
+    if (data.status === 200) {
+        const json = _changeJson(data.data, 'id');
+        return {
+            data: data.data,
+            json: json
+        };
+    } else {
+        return data.message;
+    }
 }
 
 // 获取字典数据（code）

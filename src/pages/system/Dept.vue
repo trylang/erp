@@ -110,7 +110,7 @@
             },
             addbuilding(id){
                 if(id){
-                    this.$api.systemapi.updateUsingPOST({request:{
+                    this.$api.systemapi.putDepartment({request:{
                         id: this.add.id,
                         marketId: this.add.marketId,
                         departmentName: this.add.departmentName

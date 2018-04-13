@@ -111,7 +111,7 @@
             addbuilding(id){
                 console.log(11,id)
                 if(id){
-                    this.$api.systemapi.updateUsingPOST_3({request:{
+                    this.$api.systemapi.putJob({request:{
                         id: this.add.id,
                         positionName: this.add.positionName,
                         departmentId: this.add.departmentId
@@ -128,7 +128,7 @@
                 }else{
                     this.$api.systemapi.saveUsingPOST_3({request:{
                         positionName: this.add.positionName,
-                        departmentId: this.add.departmentId      
+                        departmentId: this.add.departmentId
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);

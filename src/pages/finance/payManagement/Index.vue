@@ -144,6 +144,7 @@ export default {
             {
               label: "编辑",
               name: "edit",
+              show: "showEdit",
               type: "",
               style: {
                 // color: "#902323"
@@ -155,8 +156,20 @@ export default {
               }.bind(this)
             },
             {
+              label: "取消",
+              show: "showCancel",
+              style: {
+                // color: "#093216"
+              },
+              class: "delete",
+              click: (item, data) => {
+                this.cancelRecept(item, data);
+              }
+            },
+            {
               label: "删除",
               name: "delete",
+              show: "showEdit",
               type: "",
               style: {
                 // color: "#093216"
@@ -294,10 +307,10 @@ export default {
     },
     async getReceptList(page={}, callback) {
       let params = {
-        // receiptId: this.query.receiptId,
-        // merchantId: this.query.merchantId,
-        // contractId: this.query.contractId,
-        // status: this.query.status,
+        receiptId: this.query.receiptId,
+        merchantId: this.query.merchantId,
+        contractId: this.query.contractId,
+        status: this.query.status,
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
@@ -354,7 +367,7 @@ export default {
       let params = {
         id: param.id
       };
-      await this.$api.financeapi.cancelUsingPUT_4(params).then(returnObj => {
+      await this.$api.financeapi.cancelUsingPUT_2(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getReceptList({}, () => {
             $message("success", "取消成功!");
@@ -366,7 +379,7 @@ export default {
     },
     async init() {
       let [merchants, contracts] = await Promise.all([queryMerchant(), queryContract()]); 
-      this.selects.merchants = merchants.data.list;
+      this.selects.merchants = merchants.data;
       this.selects.contracts = contracts.data.list;
       await this.getReceptList();
     }

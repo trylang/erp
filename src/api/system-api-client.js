@@ -72,7 +72,7 @@ export const saveUsingPOST = function(parameters = {}) {
  * raw_url: updateUsingPOST_RAW_URL
  * @param request - 部门信息主体
  */
-export const updateUsingPOST = function(parameters = {}) {
+export const putDepartment = function(parameters = {}) {
     return systemapi.updateUsingPOST(parameters);
 }
 
@@ -493,7 +493,7 @@ export const saveUsingPOST_3 = function(parameters = {}) {
  * raw_url: updateUsingPOST_2_RAW_URL
  * @param request - 职位信息主体
  */
-export const updateUsingPOST_2 = function(parameters = {}) {
+export const putJob = function(parameters = {}) {
     return systemapi.updateUsingPOST_2(parameters);
 }
 
@@ -578,7 +578,7 @@ export const saveUsingPOST_4 = function(parameters = {}) {
  * raw_url: updateUsingPOST_3_RAW_URL
  * @param request - 区域信息主体
  */
-export const updateUsingPOST_3 = function(parameters = {}) {
+export const putRegion = function(parameters = {}) {
     return systemapi.updateUsingPOST_3(parameters);
 }
 

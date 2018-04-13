@@ -7,7 +7,7 @@
         <el-col :span="11">
           <div class="searchselect">
             <span class="inputname">店铺范围：</span>
-            <el-select v-model="query.shopCodeFrom" clearable filterable @change="getetail" placeholder="请输入店铺号" class="dialogselect">
+            <el-select v-model="query.shopCodeFrom" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
                 :key="item.shopCode"
@@ -31,6 +31,7 @@
             <span class="inputname">消费时间：</span>
             <el-date-picker
               @change="getList"
+              value-format="yyyy-MM-dd"
               v-model="query.time"
               type="daterange"
               range-separator="~"
@@ -41,7 +42,16 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <erp-table :header="header" :content="content" @currentPage="getListCurrentPage" @pageSize="getListpageSize"></erp-table>
+        <erp-table :header="header" :content="content" @currentPage="getListCurrentPage" @pageSize="getListpageSize">
+          <tr class="last_tr" slot="lastTr" v-if="this.detail.hasDetail === 200">
+            <td colspan="3"><div class="cell"><span>合计</span></div></td>           
+            <td><div class="cell"><span>{{detail.paymentAmount}}</span></div></td>
+            <td><div class="cell"><span>{{detail.fee}}</span></div></td>
+            <td><div class="cell"><span>{{detail.feeMarket}}</span></div></td>
+            <td><div class="cell"><span>{{detail.feeTotal}}</span></div></td>
+            <td><div class="cell"><span>{{detail.refundAmount}}</span></div></td>
+          </tr>
+        </erp-table>
       </el-row>
     </div>
     <div slot="content_second">
@@ -73,6 +83,7 @@
             <span class="inputname">交易时间：</span>
             <el-date-picker
               @change="getListDetail"
+              value-format="yyyy-MM-dd"
               v-model="query2.time"
               type="daterange"
               range-separator="~"
@@ -81,22 +92,23 @@
             </el-date-picker>
           </div>
         </el-col>
-        <!-- <el-col :span="11">
-          <div class="texttitle">
-            <span class="inputname">方式：</span>
-            <div class="line-nav">
-              <a href="javascript:void(0)" 
-                v-for="method in selects.methods" 
-                :key="method.id" 
-                :class="{active:method.isStatus}" 
-                @click="methodsHandler(method)">{{method.label}}</a>
-            </div>
-          </div>
-        </el-col> -->
         
       </el-row>
       <el-row :gutter="20">
-        <erp-table :header="header2" :content="content2" @currentPage="getDetailCurrentPage" @pageSize="getDetailpageSize"></erp-table>
+        <erp-table :header="header2" :content="content2" @currentPage="getDetailCurrentPage" @pageSize="getDetailpageSize">
+          <tr class="last_tr" slot="lastTr" v-if="this.detail2.hasDetail === 200">
+            <td colspan="2"><div class="cell"><span>合计</span></div></td>           
+            <td><div class="cell"><span>{{detail2.paymentAmount}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.fee}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.feeMarket}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.feeTotal}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.refundAmount}}</span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+          </tr>
+        </erp-table>
       </el-row>
     </div>
   </item-tab>
@@ -131,12 +143,12 @@ export default {
         {
           label: "购买金额",
           type: "text",
-          name: "paymentAmout"
+          name: "paymentAmount"
         },
         {
           label: "手续费（渠道）",
           type: "text",
-          name: "feeEpay"
+          name: "fee"
         },
         {
           label: "手续费（商场）",
@@ -169,12 +181,12 @@ export default {
         {
           label: "购买金额",
           type: "text",
-          name: "paymentAmout"
+          name: "paymentAmount"
         },
         {
           label: "手续费（渠道）",
           type: "text",
-          name: "feeEpay"
+          name: "fee"
         },
         {
           label: "手续费（商场）",
@@ -210,11 +222,17 @@ export default {
         {
           label: "交易类型",
           type: "text",
-          name: "tradeType"
+          name: "tradeTypeText"
         }
       ],
       content: [],
       content2: [],
+      detail: {
+        hasDetail: ''
+      },
+      detail2: {
+        hasDetail: ''
+      },
       selects: {
         shops: [],
         cards: [
@@ -252,8 +270,12 @@ export default {
           }
         ]
       },
-      query: {},
-      query2: {},
+      query: {
+        channel: 3
+      },
+      query2: {
+        channel: 3
+      },
       tabs: [
         {
           id: "first",
@@ -309,9 +331,19 @@ export default {
       this.query.pageNum = page.pageNum;
       this.query.pageSize = page.pageSize;
       console.log(this.query);
-      await this.$api.financeapi.manageListUsingGET(this.query).then(returnObj => {
+      await this.$api.refundapi.getListForPageUsingGET_3(this.query).then(returnObj => {
         if (returnObj.data.status === 200) {
           this.content = returnObj.data.data;
+          if (returnObj.data.data.isLastPage) {
+            this.$api.refundapi.billTotalUsingGET_2(this.query2).then(returnObj => {
+              if (returnObj.data.status === 200) {             
+                this.detail = returnObj.data.data;
+                this.detail.hasDetail = 200;
+              }
+            });
+          } else {            
+            this.detail.hasDetail = '';
+          }
         }
       });
     },
@@ -323,9 +355,19 @@ export default {
       this.query2.pageNum = page.pageNum;
       this.query2.pageSize = page.pageSize;
       console.log(this.query2);
-       await this.$api.financeapi.manageListUsingGET(this.query2).then(returnObj => {
+       await this.$api.refundapi.getDetailListForPageUsingGET_2(this.query2).then(returnObj => {
         if (returnObj.data.status === 200) {
           this.content2 = returnObj.data.data;
+          if (returnObj.data.data.isLastPage) {
+            this.$api.refundapi.billDetailTotalUsingGET_2(this.query2).then(returnObj => {
+              if (returnObj.data.status === 200) {             
+                this.detail2 = returnObj.data.data;
+                this.detail2.hasDetail = 200;
+              }
+            });
+          } else {            
+            this.detail2.hasDetail = '';
+          }
         }
       });
     },
@@ -335,8 +377,6 @@ export default {
         queryShop()
       ]);
       this.selects.shops = shop.data || [];
-      await this.getList();
-      await this.getListDetail();
     }
   },
   computed: {},

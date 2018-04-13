@@ -185,12 +185,9 @@
                 this.getDataList(1);
             },
             childData(data){
-                this.multipleSelection = data.map(item=>{
-                    return item.id
-                });
+                this.multipleSelection = data;
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.confirmUsingPUT({
                     contractVoList:this.multipleSelection
                 }).then(res=>{

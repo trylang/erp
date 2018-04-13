@@ -39,44 +39,15 @@
                 searchData: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
-                selects: {
-                    status: [
-                        {
-                            isStatus:true,
-                            label: '全部',
-                            id: ''
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '商铺',
-                            id: 0
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '场地',
-                            id: 1
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '广告位',
-                            id: 2
-                        }, 
-                        {
-                            isStatus:false,
-                            label: '写字楼',
-                            id: 3
-                        }
-                    ],
-                },
                 columnData:[
-                    { prop: 'regionCode', label: '商户号'},
-                    { prop: 'regionName', label: '商户名称' },
-                    { prop: 'regionEnglishName', label: '店铺号' },
-                    { prop: 'pname', label: '店铺名称' },
-                    { prop: 'pname', label: '合同号' },
-                    { prop: 'pname', label: '物业性质' },
-                    { prop: 'pname', label: '品牌' },
-                    { prop: 'showUpdateDate', label: '合同有效期' }
+                    { prop: 'merchantCode', label: '商户号'},
+                    { prop: 'merchantName', label: '商户名称' },
+                    { prop: 'shopCode', label: '店铺号' },
+                    { prop: 'shopName', label: '店铺名称' },
+                    { prop: 'contractCode', label: '合同号' },
+                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'brandName', label: '品牌' },
+                    { prop: 'showStartAndEndDate', label: '合同有效期' }
                 ]
             }
         },
@@ -85,26 +56,21 @@
         },
         methods:{
             pageHandler(pageNum, pageSize){
-                console.log(this.searchData)
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    startDate: this.searchData
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
-            },
-            statusHandler(status){
-                this.selects.status.forEach(function(obj){
-                    obj.isStatus = false;
-                });
-                status.isStatus = !status.isStatus;
-                this.status = status.id;
-                this.pageHandler(1);
+                if(this.searchData){
+                    this.$api.reportapi.expireUsingPOST({request: params}).then(res=>{
+                        if(res.data.status === 200){
+                            this.datalist = res.data.data.list;
+                            this.total = Number(res.data.data.total);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             exportHandler(){
 

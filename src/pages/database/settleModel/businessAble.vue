@@ -1,62 +1,83 @@
 <template>
     <div>
-        <con-head title="商户结算（应收）">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
+        <con-head title="商户结算（确认收入）">
+            <el-button type="primary" icon="el-icon-plus" slot="append" @click="exportHandler()">导出</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
-                    <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                    <div class="searchinput">
+                        <span class="inputname inputnameauto" style="width: 100px;">日期：</span>
+                        <el-date-picker
+                            style="padding-left:30px;"
+                            v-model="startMonth"
+                            type="month"
+                            placeholder="选择月"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
+                            @change="pageHandler(1)">
+                        </el-date-picker>
+                        <span style="line-height: 30px;">~</span>
+                        <el-date-picker
+                            style="padding-left:30px;"
+                            v-model="endMonth"
+                            type="month"
+                            placeholder="选择月"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
+                            @change="pageHandler(1)">
+                        </el-date-picker>
+                    </div>
+                </el-col>
+                <el-col :span="9" :offset="2">
+                    <div class="texttitle">
+                        <span class="inputname">物业性质：</span>
+                        <div class="line-nav">
+                            <a href="javascript:void(0)" 
+                                v-for="status in selects.status" 
+                                :key="status.value" 
+                                :class="{active:status.isStatus}" 
+                                @click="statusHandler(status)">{{status.name}}
+                            </a>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row slot="preappend">
+                <el-col :span="9">
+                    <div class="searchselect">
+                        <span class="inputname inputnameauto">商户：</span>
+                        <el-select v-model="merchantId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option
+                                    v-for="item in merchantOptions"
+                                    :key="item.id"
+                                    :label="item.merchantName+'（'+item.merchantCode+'）'"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </el-col>
+                <el-col :span="9" :offset="2">
+                    <div class="searchselect">
+                        <span class="inputname inputnameauto">合同：</span>
+                        <el-select v-model="contractCode" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option
+                                    v-for="item in contractOptions"
+                                    :key="item.id"
+                                    :label="item.show"
+                                    :value="item.code">
+                            </el-option>
+                        </el-select>
                     </div>
                 </el-col>
             </el-row>
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="110"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <data-table :tableData="datalist" :colConfigs="columnData"></data-table>
             </div>
             <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
-        <el-dialog
-                :title="listid?'编辑区域':'添加区域'"
-                :visible.sync="dialogVisible"
-                custom-class="customdialog">
-            <div class="dialogbox">
-                <div class="dialoginput">
-                    <span class="inputname">区域名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.regionName">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">英文缩写</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname">上级区域</span>
-                    <input class="inputtext" type="text" v-if="listid" v-model="add.pname==null?'无':add.pname+'（不可更改）'" disabled>
-                    <el-tree
-                        v-if="!listid"
-                        :data="treeData"
-                        node-key="id"
-                        ref="tree"
-                        @node-click="checkHandler"
-                        :props="defaultProps">
-                    </el-tree>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
@@ -69,140 +90,131 @@
         data(){
             return{
                 dialogVisible:false,
+                startMonth: '',
+                endMonth: '',
+                merchantId: '',
+                contractCode: '',
                 datalist:[],
-                listid:'',
-                searchName: '',
+                merchantOptions: [],
+                contractOptions: [],
+                status: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
-                treeData: [],
-                add:{
-                    id: '',
-                    pid: '',
-                    regionName: '',
-                    regionEnglishName: '',
-                    pname: '',
-                    treeId: ''
+                selects:{
+                    status:[
+                        {
+                            isStatus:true,
+                            name: '全部',
+                            value: 0
+                        }, 
+                        {
+                            isStatus:false,
+                            name: '商铺',
+                            value: 1
+                        }, 
+                        {
+                            isStatus:false,
+                            name: '场地',
+                            value: 2
+                        }, 
+                        {
+                            isStatus:false,
+                            name: '广告位',
+                            value: 3
+                        }, 
+                        {
+                            isStatus:false,
+                            name: '写字楼',
+                            value: 4
+                        }
+                    ]
                 },
                 columnData:[
-                    { prop: 'regionCode', label: '编码'},
-                    { prop: 'regionName', label: '区域名称' },
-                    { prop: 'regionEnglishName', label: '英文缩写' },
-                    { prop: 'pname', label: '上级区域' },
-                    { prop: 'showUpdateDate', label: '更新时间' }
+                    { prop: 'contractCode', label: '合同号'},
+                    { prop: 'shopCode', label: '店铺号' },
+                    { prop: 'shopName', label: '店铺名称' },
+                    { prop: 'merchantCode', label: '商户号' },
+                    { prop: 'merchantName', label: '商户名' },
+                    { prop: 'area', label: '面积(㎡)' },
+                    { prop: 'brandName', label: '品牌' },
+                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'cycleDate', label: '周期月份' },
                 ],
-                defaultProps: {
-                    children: 'children',
-                    label: 'label'
-                }
+                afterData: [
+                    {prop: 'posRent', label: 'POS租金'},
+                    {prop: 'fixationRent', label: '固定租金'},
+                    {prop: 'generalizeCost', label: '推广费'},
+                    {prop: 'estateManagementCost', label: '物业管理费'},
+                    {prop: 'telephoneLineCost', label: '电话线路维护费'},
+                    {prop: 'airConditionerAddtimeCost', label: '加时空调费'},
+                    {prop: 'networkPortMaintenanceCost', label: '网络端口维护费'},
+                    {prop: 'posRentDiffCost', label: 'POS租金补差'},
+                    {prop: 'generalizeDiffCost', label: '推广费用补差'},
+                    {prop: 'totalCost', label: '应收合计'},
+                ],
+                lastData: [
+                    {prop: 'regionCode', label: '应收合计'},
+                ]
             }
         },
         mounted(){
-
-        },
-        watch:{
-            searchName(){
-                this.$delay(()=>{
-                    this.pageHandler(1);
-                },300)
-            }
+            // this.$api.rentapi.listUsingGET_14({status: 1}).then(res=>{//物业性质
+            //     this.selects.status = res.data.data;
+            //     this.selects.status = res.data.data.map(item=>{
+            //         return {
+            //             name: item.name,
+            //             value: item.value,
+            //             isStatus: false
+            //         }
+            //     });
+            //     this.selects.status[0].isStatus = true;
+            // })
+            this.columnData = this.columnData.concat(this.afterData);
+            // this.columnData = this.columnData.concat(this.lastData);
+            this.getMerchantList();
+            this.getContractList();
         },
         methods:{
             pageHandler(pageNum, pageSize){
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    merchantId: this.merchantId,
+                    contractCode: this.contractCode,
+                    propertyType: this.status,
+                    cycleStartMonth: this.startMonth,
+                    cycleEndMonth: this.endMonth,
                 }
                 this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
                 }).catch(res=>{
                     this.$message.error(res.data.msg);
                 })
             },
-            addbuilding(id){
-                if(id){
-                    if(!this.add.regionName){
-                        this.$message.warning('区域名称不能为空');
-                    }else if(!this.add.regionEnglishName){
-                        this.$message.warning('英文缩写不能为空');
-                    }else if(!this.add.pid){
-                        this.$message.warning('上级区域不能为空');
-                    }else{
-                        this.$api.systemapi.updateUsingPOST_4({request:{
-                            regionId: this.add.id,
-                            pid: this.add.pid,
-                            regionName: this.add.regionName,
-                            regionEnglishName: this.add.regionEnglishName
-                        }}).then(res=>{
-                            if(res.data.code==200){
-                                this.$message.success(res.data.msg);
-                                this.pageHandler(1);
-                            }else{
-                                this.$message.error(res.data.msg);
-                            }
-                        }).catch(res=>{
-                            this.$message.error(res.data.msg);
-                        });
-                    }
-                }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{
-                        pid: this.add.treeId,
-                        regionName: this.add.regionName,
-                        regionEnglishName: this.add.regionEnglishName
-                    }}).then(res=>{
-                        if(res.data.code==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
-                }
-                this.dialogVisible = false;
+            statusHandler(status){
+                this.selects.status.forEach(function(obj){
+                    obj.isStatus = false;
+                });
+                status.isStatus = !status.isStatus;
+                this.status = status.value;
+                this.pageHandler(1);
             },
-            dialogData(id, data){
-                this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = {
-                        id: data.id,
-                        pid: data.pid,
-                        regionName: data.regionName,
-                        regionEnglishName: data.regionEnglishName,
-                        pname: data.pname
-                    }
-                }else{
-                    this.add = {};
-                    this.$api.systemapi.queryTreeUsingGET().then(res=>{
-                        this.treeData = res.data.data;
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    })
-                }
-            },
-            deleteList(id){
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.code==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res => {
-                        this.$message.error(res.data.msg);
-                    });
+            getMerchantList(){
+                this.$api.rentapi.listUsingGET_12().then(res=>{//商户结算（已收）里永明写的商户接口
+                    this.merchantOptions = res.data.data;
+                    console.log(123,this.merchantOptions)
                 })
             },
-            checkHandler(data){
-                this.add.treeId = data.id;
+            getContractList(){
+                this.$api.rentapi.getListForPageUsingGET().then(res=>{//合同
+                    this.contractOptions = res.data.data;
+                })
+            },
+            exportHandler(){
+
             }
         },
         components:{
@@ -214,5 +226,20 @@
 </script>
 
 <style scoped>
-
+    .line-nav{
+        flex:1;
+        line-height: 30px;
+    }
+    .line-nav a{
+        margin: 0 10px;
+        color: #666;
+        font-weight: bold;
+        height: 30px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .line-nav a.active{
+        color: #457fcf;
+        border-bottom: 2px solid #457fcf;
+    }
 </style>

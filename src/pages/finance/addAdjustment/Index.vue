@@ -235,6 +235,7 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.param.surplusAmount = parseInt(this.dialog.param.amountReceivable) + parseInt(this.dialog.param.adjustAmount);
       this.editItem(this.dialog.param);
     },
     deleteDialog: function(item) {

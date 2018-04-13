@@ -42,6 +42,14 @@
             <div class="btn"><button @click="auditbtn">确定</button></div>
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData" @listSelected="childData">
+                    <el-table-column
+                            label="更新时间"
+                            width="150"
+                            slot="operation">
+                        <template slot-scope="scope">
+                            {{scope.row.updateDateLong | formatDate('yyyy-MM-dd hh:mm:ss')}}
+                        </template>
+                    </el-table-column>
                 </data-table>
             </div>
             <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
@@ -69,8 +77,7 @@
                     { prop: 'area', label: '建筑面积'},
                     { prop: 'useArea', label: '使用面积' },
                     { prop: 'statusName', label: '状态' },
-                    { prop: 'remark', label: '备注'},
-                    { prop: 'updateDateLong', label: '更新时间', width:'180'}
+                    { prop: 'remark', label: '备注'}
                 ],
                 dataFloorList:[],
                 floorValue:'',
@@ -85,9 +92,10 @@
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 }],
                 statusId:'',
+                statesId:[0,2],
                 multipleSelection:[]
             }
         },
@@ -107,7 +115,13 @@
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus;
-                this.statusId = status.id;
+                if(status.id === ''){
+                    this.statesId = [0,2],
+                        this.statusId = '';
+                }else{
+                    this.statesId = '';
+                    this.statusId = status.id;
+                }
                 this.getDataList(1);
             },
             async getDataList(pageNum,pageSize){
@@ -117,8 +131,9 @@
                     code:this.searchText,
                     buildId:'',
                     floorId:this.floorValue,
-                    type:3,
-                    status:this.statusId
+                    type:2,
+                    status:this.statusId,
+                    states:this.statesId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
@@ -141,8 +156,8 @@
             },
             async auditbtn(){
                 console.log(this.multipleSelection)
-                await this.$api.rentapi.updateStatusUsingPUT({
-                    idList:this.multipleSelection
+                await this.$api.rentapi.updateStatusUsingPOST({
+                    ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);

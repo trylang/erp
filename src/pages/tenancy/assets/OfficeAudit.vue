@@ -89,17 +89,18 @@
                 },{
                     name:"预定",
                     isStatus:false,
-                    id:2
+                    id:3
                 },{
                     name:"使用中",
                     isStatus:false,
-                    id:3
+                    id:4
                 },{
                     name:"失效",
                     isStatus:false,
                     id:5
                 }],
                 statusId:'',
+                statesId:'',
                 multipleSelection:[]
             }
         },
@@ -119,7 +120,13 @@
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus;
-                this.statusId = status.id;
+                if(status.id == 1){
+                    this.statesId = [1,6],
+                        this.statusId = '';
+                }else{
+                    this.statesId = '';
+                    this.statusId = status.id;
+                }
                 this.getDataList(1);
             },
             async getDataList(pageNum,pageSize){
@@ -129,8 +136,9 @@
                     code:this.searchText,
                     buildId:'',
                     floorId:this.floorValue,
-                    type:4,
-                    status:this.statusId
+                    type:1,
+                    status:this.statusId,
+                    states:this.statesId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
@@ -153,8 +161,8 @@
             },
             async auditbtn(){
                 console.log(this.multipleSelection)
-                await this.$api.rentapi.updateStatusUsingPUT({
-                    idList:this.multipleSelection
+                await this.$api.rentapi.updateStatusUsingPOST({
+                    ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);

@@ -1,30 +1,33 @@
 <template>
-  <con-head title="业态楼层销售">
+  <con-head title="业态楼层销售报表">
     <el-button type="primary" slot="append">导出</el-button>
     <el-row slot="preappend">
-      <el-col :span="9">
+      <el-col :span="12">
         <div class="searchselect">
           <span class="inputname">销售日期：</span>
 					<el-date-picker
 						v-model="query.time"
-						type="date"
-						placeholder="选择日期">
+						type="daterange"
+            value-format="yyyy-MM-dd"
+            @change="getList"
+						range-separator="~"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期">
 					</el-date-picker>
         </div>
       </el-col>
-			<el-col :span="9" :offset="6">
-        <div class="searchselect">
-					<span class="inputname">楼层：</span>
-					<el-select v-model="query.settleGroupId" clearable @change="getCost()" placeholder="楼层" class="dialogselect">
-						<el-option
-							v-for="item in selects.accounts"
-							:key="item.id"
-							:label="item.settleGroupName"
-							:value="item.id">
-						</el-option>
-					</el-select>
-        </div>
-      </el-col>
+			<el-col :span="11" :offset="1">
+          <div class="texttitle">
+            <span class="inputname">楼层/业态：</span>
+            <div class="line-nav">
+              <a href="javascript:void(0)" 
+                v-for="method in selects.methods" 
+                :key="method.id" 
+                :class="{active:method.isStatus}" 
+                @click="methodsHandler(method)">{{method.label}}</a>
+            </div>
+          </div>
+        </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
@@ -36,7 +39,6 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 
-import { queryAccountGroups } from "@/utils/rest/financeAPI";
 export default {
   name: "account-group",
   components: {
@@ -49,68 +51,94 @@ export default {
         {
           label: "楼层/业态",
           type: "text",
-          name: "settleGroupCode"
+          name: "businessTypeOrFloorName"
         },
         {
           label: "签约面积",
           type: "text",
-          name: "settleGroupName"
+          name: "signedArea"
         },
         {
           label: "总面积",
           type: "text",
-          name: "remark"
+          name: "totalArea"
         },
         {
           label: "销售总额",
           type: "text",
-          name: "remark"
+          name: "salesAmount"
         },
         {
           label: "交易笔数",
           type: "text",
-          name: "remark"
+          name: "salesTimes"
         },
         {
-          label: "客单价",
+          label: "客单价（元）",
           type: "text",
-          name: "remark"
+          name: "averagePrice"
         },
         {
-          label: "签约面积坪效",
+          label: "签约面积坪效（天/平米）",
           type: "text",
-          name: "remark"
+          name: "productivenessOfSignedArea"
 				},
 				{
-          label: "总面积坪效",
+          label: "总面积坪效（天/平米）",
           type: "text",
-          name: "remark"
+          name: "productivenessOfTotalArea"
         }
       ],
       content: [],
       selects: {
-        accounts: []
+        accounts: [],
+        methods: [
+          {
+            isStatus: false,
+            label: "全部",
+            id: 1
+          },
+          {
+            isStatus: true,
+            label: "业态",
+            id: 2
+          },
+          {
+            isStatus: false,
+            label: "楼层",
+            id: 3
+          }
+        ]
       },
-      query: {
-        settleGroupName: ""
-      }
+      query: {}
     };
   },
   mounted() {},
   methods: {
     getCurrentPage(pageNum) {
-      this.getAccountGroups({ pageNum });
+      this.getList({ pageNum });
     },
     getpageSize(pageSize) {
-      this.getAccountGroups({ pageSize });
+      this.getList({ pageSize });
     },
-    async getAccountGroups(page = {}, callback) {
+    methodsHandler(method) {
+      this.selects.methods.forEach(function(obj) {
+        obj.isStatus = false;
+      });
+      method.isStatus = !method.isStatus;
+      this.query.businessTypeOrFloorCode = method.id;
+      this.getList();
+    },
+    async getList(page = {}, callback) {
       let params = {
-        settleGroupName: this.query.settleGroupName,
+        startDate: this.query.time ? this.query.time[0] : '',
+        endDate: this.query.time ? this.query.time[1] : '',
+        businessTypeOrFloorCode: this.query.businessTypeOrFloorCode || 2,
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
-      this.$api.financeapi.listUsingGET_11(params).then(res => {
+      console.log(params)
+      this.$api.reportapi.businessTypeAndFloorSalesListUsingGET(params).then(res => {
         const data = res.data;
         if (data.status === 200) {
           this.content = data.data;
@@ -123,11 +151,26 @@ export default {
   },
   computed: {},
   created() {
-    this.getAccountGroups();
+    this.getList();
   }
 };
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.line-nav {
+  flex: 1;
+  line-height: 30px;
+}
+.line-nav a {
+  margin: 0 10px;
+  color: #666;
+  font-weight: bold;
+  height: 30px;
+  text-decoration: none;
+  display: inline-block;
+}
+.line-nav a.active {
+  color: #457fcf;
+  border-bottom: 2px solid #457fcf;
+}
 </style>

@@ -148,7 +148,7 @@
             },
             async auditbtn(){
                 console.log(this.multipleSelection)
-                await this.$api.rentapi.emptyUsingPUT_1({
+                await this.$api.rentapi.emptyUsingPOST_2({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {

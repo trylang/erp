@@ -23,11 +23,11 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域编号" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
+                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="addInfoData.businessName">
+                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="addInfoData.businessName">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -146,7 +146,7 @@
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.$api.rentapi.deleteUsingDELETE_1({
+                        this.$api.rentapi.deleteUsingDELETE_2({
                             id: this.treeData.id
                         }).then(res => {
                             if (res.data.status == 200) {

@@ -241,7 +241,7 @@ export default {
       param.forEach(item => {
         ids.push(item.id);
       });
-      return ids.toString();
+      return ids;
     },
     batchConfirm() {
       this.confirmCostAdjust(this.filterIds());
@@ -260,11 +260,11 @@ export default {
         if(data.status === 200) {
           data.data.list.forEach(item => {
             item.checked = false;
-            if (item.status === 0) {
+            if (item.status === 0 || item.status === 2) {
               item.showEdit = true;
               item.showCancel = false;
             }
-            if (item.status > 0) {
+            if (item.status === 1) {
               item.showEdit = false;
               item.showCancel = true;
             }
@@ -277,10 +277,7 @@ export default {
       })
     },
     async confirmCostAdjust(param) {
-      let params = {
-        id: param
-      };
-      await this.$api.financeapi.confirmUsingPUT_2(params).then(returnObj => {
+      await this.$api.financeapi.confirmUsingPUT_2({id: param}).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getCostAdjust({}, () => {
             $message("success", "确认成功!");
@@ -309,7 +306,7 @@ export default {
       let params = {
         id: param.id
       };
-      await this.$api.financeapi.cancelUsingPUT_2(params).then(returnObj => {
+      await this.$api.financeapi.cancelUsingPUT_3(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getCostAdjust({}, () => {
             $message("success", "取消成功!");
@@ -322,7 +319,7 @@ export default {
     },
     async init() {
       let [accountGroup, merchants, contracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract()]); 
-      this.selects.merchants = merchants.data.list;
+      this.selects.merchants = merchants.data;
       this.selects.contracts = contracts.data.list;
       await this.getCostAdjust();
     }

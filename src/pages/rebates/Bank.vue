@@ -7,7 +7,7 @@
         <el-col :span="11">
           <div class="searchselect">
             <span class="inputname">店铺范围：</span>
-            <el-select v-model="query.shopCodeFrom" clearable filterable @change="getetail" placeholder="请输入店铺号" class="dialogselect">
+            <el-select v-model="query.shopCodeFrom" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
                 :key="item.shopCode"
@@ -32,6 +32,7 @@
             <el-date-picker
               @change="getList"
               v-model="query.time"
+              value-format="yyyy-MM-dd"
               type="daterange"
               range-separator="~"
               start-placeholder="开始日期"
@@ -80,14 +81,6 @@
               @change="getListDetail"
               clearable>
             </el-input>
-            <!-- <el-select v-model="query.merchantId" clearable filterable @change="getAccountManagement" placeholder="请输入终端号" class="dialogselect">
-              <el-option
-                v-for="item in selects.merchants"
-                :key="item.id"
-                :label="item.merchantName"
-                :value="item.id">
-              </el-option>
-            </el-select> -->
             <span>~</span>
             <el-input
               class="dialogselect"
@@ -98,14 +91,6 @@
               @change="getListDetail"
               clearable>
             </el-input>
-            <!-- <el-select v-model="query.merchantId" clearable filterable @change="getAccountManagement" placeholder="请输入终端号" class="dialogselect">
-              <el-option
-                v-for="item in selects.merchants"
-                :key="item.id"
-                :label="item.merchantName"
-                :value="item.id">
-              </el-option>
-            </el-select> -->
           </div>
         </el-col>
         <el-col :span="11">
@@ -138,6 +123,7 @@
             <el-date-picker
               @change="getListDetail"
               v-model="query2.time"
+              value-format="yyyy-MM-dd"
               type="daterange"
               range-separator="~"
               start-placeholder="开始日期"
@@ -147,7 +133,21 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <erp-table :header="header2" :content="content2" @currentPage="getDetailCurrentPage" @pageSize="getDetailpageSize"></erp-table>
+        <erp-table :header="header2" :content="content2" @currentPage="getDetailCurrentPage" @pageSize="getDetailpageSize">
+          <tr class="last_tr" slot="lastTr" v-if="this.detail2.hasDetail === 200">
+            <td colspan="3"><div class="cell"><span>合计</span></div></td>           
+            <td><div class="cell"><span>{{detail2.paymentAmount}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.fee}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.feeMarket}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.feeTotal}}</span></div></td>
+            <td><div class="cell"><span>{{detail2.refundAmount}}</span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+            <td><div class="cell"><span></span></div></td>
+          </tr>
+        </erp-table>
       </el-row>
     </div>
   </item-tab>
@@ -225,12 +225,12 @@ export default {
         {
           label: "购买金额",
           type: "text",
-          name: "paymentAmout"
+          name: "paymentAmount"
         },
         {
           label: "手续费（银行）",
           type: "text",
-          name: "feeBank"
+          name: "fee"
         },
         {
           label: "手续费（商场）",
@@ -271,11 +271,14 @@ export default {
         {
           label: "交易方式",
           type: "text",
-          name: "tradeType"
+          name: "tradeTypeText"
         }
       ],
       content: [],
       content2: [],
+      detail2: {
+        hasDetail: ''
+      },
       selects: {
         shops: [],
         cards: [
@@ -313,8 +316,12 @@ export default {
           }
         ]
       },
-      query: {},
-      query2: {},
+      query: {
+        channel: 2
+      },
+      query2: {
+        channel: 2
+      },
       tabs: [
         {
           id: "first",
@@ -370,7 +377,7 @@ export default {
       this.query.pageNum = page.pageNum;
       this.query.pageSize = page.pageSize;
       console.log(this.query);
-      await this.$api.financeapi.manageListUsingGET(this.query).then(returnObj => {
+      await this.$api.refundapi.getListForPageUsingGET_1(this.query).then(returnObj => {
         if (returnObj.data.status === 200) {
           this.content = returnObj.data.data;
         }
@@ -384,9 +391,19 @@ export default {
       this.query2.pageNum = page.pageNum;
       this.query2.pageSize = page.pageSize;
       console.log(this.query2);
-       await this.$api.financeapi.manageListUsingGET(this.query2).then(returnObj => {
+       await this.$api.refundapi.getDetailListForPageUsingGET_1(this.query2).then(returnObj => {
         if (returnObj.data.status === 200) {
           this.content2 = returnObj.data.data;
+          if (returnObj.data.data.isLastPage) {
+            this.$api.refundapi.billDetailTotalUsingGET_1(this.query2).then(returnObj => {
+              if (returnObj.data.status === 200) {             
+                this.detail2 = returnObj.data.data;
+                this.detail2.hasDetail = 200;
+              }
+            });
+          } else {            
+            this.detail2.hasDetail = '';
+          }
         }
       });
     },
@@ -396,8 +413,6 @@ export default {
         queryShop()
       ]);
       this.selects.shops = shop.data || [];
-      await this.getList();
-      await this.getListDetail();
     }
   },
   computed: {},

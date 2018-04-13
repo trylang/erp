@@ -30,7 +30,7 @@
               <el-option
                 v-for="item in selects.costType"
                 :key="item.id"
-                :label="item.name"
+                :label="item.text"
                 :value="item.value">
               </el-option>
             </el-select>
@@ -63,7 +63,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryAccountGroup, queryDicsByCode } from "@/utils/rest/financeAPI";
+import { queryAccountGroup, queryDicsByCode,queryCostType } from "@/utils/rest/financeAPI";
 import { _changeJson } from "@/utils";
 
 export default {
@@ -94,7 +94,7 @@ export default {
         {
           label: "费用类型",
           type: "text",
-          name: "costType"
+          name: "costTypeName"
         },
         {
           label: "物业类型",
@@ -173,7 +173,7 @@ export default {
           },
           {
             label: "费用类型",
-            valueLabel: "name",
+            valueLabel: "text",
             name: "costType",
             type: "select",
             value: "value",
@@ -349,9 +349,9 @@ export default {
       });
     },
     async init() {
-      let [accountGroup, costType] = await Promise.all([queryAccountGroup(), queryDicsByCode('0004')]);
+      let [accountGroup, costType] = await Promise.all([queryAccountGroup(),queryCostType()]);
       this.selects.accountGroupJson = accountGroup.json;
-      this.selects.costType = costType.data;
+      this.selects.costType = costType.data.cost_type;
       this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
       this.dialog.models[2].options = accountGroup.data.list;
@@ -364,7 +364,7 @@ export default {
     this.init();
   }
 };
-// TODO: 1. 查询接口没有测；2. 费用类型没有查字典；3. 修改时候没办法实时变化数据
+
 </script>
 
 <style scoped>

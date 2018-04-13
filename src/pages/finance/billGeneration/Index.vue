@@ -13,7 +13,7 @@
     </el-row>
     <erp-table :header="header" :content="content"></erp-table>
 
-    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+    <!-- <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog> -->
   </con-head>
 
 </template>
@@ -37,22 +37,23 @@ export default {
         {
           label: "任务名称",
           type: "text",
-          name: "id"
+          name: "taskName"
         },
         {
           label: "开始时间",
-          type: "text",
-          name: "name"
+          type: "time",
+          name: "startTime",
+          filter: "yyyy-MM-dd hh:mm:ss"
         },
         {
           label: "运行时间",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          name: "processTime",
+          type: "text",
         },
         {
           label: "运行状态",
-          name: "text"
+          name: "statusText",
+          type: "text"
         },
         {
           label: "操作",
@@ -66,18 +67,16 @@ export default {
               label: "处理结果",
               name: "edit",
               type: "",
-              style: {
-                // color: "#902323"
-              },
+              show: 'showEdit',
               class: "edit",
               click: (item) => {
-                Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
+                this.$router.push({path: `billGeneration/${item.id}`})
               }
             }
           ]
         }
       ],
+      content: [],
       dialog: {
         models: [{
           label: '编码',
@@ -126,15 +125,19 @@ export default {
       selects: {
         status: [{
           isStatus:true,
+          id: '',
           label: '全部'
         }, {
           isStatus:false,
+          id: 30,
           label: '成功'
         }, {
           isStatus:false,
+          id: 0,
           label: '进行中'
         }, {
           isStatus:false,
+          id: 20,
           label: '失败'
         }]
       },
@@ -142,9 +145,6 @@ export default {
         name: ""
       }
     };
-  },
-  mounted() {
-    console.log(this);
   },
   methods: {
     linkTo(path) {
@@ -154,74 +154,27 @@ export default {
 			this.selects.status.forEach(function(obj){
 					obj.isStatus = false;
 			});
-			status.isStatus = !status.isStatus
+      status.isStatus = !status.isStatus;
+      this.query.status = status.id;
     },
-    cancelDialog: function() {
-      this.dialog.dialogVisible = false;
-      this.dialog.param = {};
-    },
-    confirmDialog: function() {
-      if (this.dialog.param.id) {
-        // 修改
-        this.dialog.dialogVisible = false;
-        this.$store
-          .dispatch("updateAccountGroup", {
-            id: this.dialog.param.id,
-            param: this.dialog.param
+    async getBillList() {
+      await this.$api.financeapi.listUsingGET_2().then(res => {
+        if (res.data.status === 200) {
+          res.data.data.list.forEach(item => {
+            if (item.status === 10 || item.status === 20) {
+              item.showEdit = true;
+            }
           })
-          .then(() => {
-            $message("success", "修改成功!");
-          })
-          .catch(error => {
-            $message("error", !error.message? "无法修改，请重试!" : error.message);
-          });
-      } else {
-        // 新增
-        if (this.dialog.param.id && this.dialog.param.name) {
-          this.dialog.dialogVisible = false;
-          this.$store
-            .dispatch("addAccountGroup", this.dialog.param)
-            .then(() => {
-              $message("success", "添加成功!");
-            })
-            .catch(error => {
-              $message("error", !error.message? "无法添加，请重试!" : error.message);
-            });
+          this.content = res.data.data;
+        } else {
+          $message('error', res.data.msg);
         }
-      }
-    },
-    deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
       })
-        .then(() => {
-          this.$store
-            .dispatch("delAccountGroup", item.id)
-            .then(() => {
-              $message("success", "删除成功!");
-            })
-            .catch(() => {
-              $message("error", "无法删除，请重试!");
-            });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
-        });
-    },
-    ...mapActions(["getAccountGroups"]),
-    queryList: function(query) {
-      this.getAccountGroups(query);
     }
   },
-  computed: {
-    ...mapGetters({
-      content: "accountGroups"
-    })
-  },
+  computed: {},
   created() {
-    //this.$store.dispatch("getAccountGroups");
+    this.getBillList();
   }
 };
 </script>

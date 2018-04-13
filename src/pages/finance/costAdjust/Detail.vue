@@ -20,49 +20,49 @@ export default {
           {
             label: "费用单号",
             name: "costNo",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "合同号",
             name: "contractCode",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "结算组别",
             name: "settleGroupName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户名称",
             name: "merchantName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "店铺名称",
             name: "shopName",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "text"
           },
           {
             label: "调整日期",
             name: "updateDate",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "text",
           },
           {
             label: "状态",
             name: "status",
-            left_span: 6,
+            left_span: 2,
             right_span: 5,
             type: "status",
             option: {
@@ -73,7 +73,7 @@ export default {
           {   
             label: "调整内容",
             name: "methods",
-            left_span: 6,
+            left_span: 2,
             right_span: 18,
             type: "table",
             table: [
@@ -89,7 +89,7 @@ export default {
               },
               {
                 label: "费用日期",
-                name: "expenseDate",
+                name: "cycleDate",
                 type: "time",
                 filter: "yyyy-MM-dd"
               },
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     async fetchData(id) {
-      await this.$api.financeapi.detailUsingGET_5({id}).then(returnObj => {        
+      await this.$api.financeapi.detailUsingGET({id}).then(returnObj => {        
         if(returnObj.data.status === 200) {
           let data = returnObj.data.data;
           data.list = data.itemDetailVoList;

@@ -131,7 +131,9 @@ export default {
       };
       await this.$api.financeapi.createUsingPOST({ request }).then(returnObj => {
         if (returnObj.data.status === 200) {
-          $message("success", "生成成功!");
+          $message("success", returnObj.data.msg);
+        } else {
+          $message('error', returnObj.data.msg);
         }
       });
     },

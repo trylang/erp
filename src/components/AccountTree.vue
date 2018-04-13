@@ -17,7 +17,7 @@
       </el-col>
       <el-col :span="14" class="full_width">
         <div class="erp_container" id="subOutputRank-print">
-          <notice-template v-for="(detail, index) in details" :key="index" :header="header" :content="content" :detail="detail"></notice-template>
+          <notice-template v-for="(detail, index) in details" :key="index" :header="header" :content="detail.item" :detail="detail"></notice-template>
         </div>
       </el-col>   
     </el-row>
@@ -31,7 +31,7 @@ import { $message } from "@/utils/notice";
 // import print from '@/utils/directive/print';
 export default {
   name: "account-tree",
-  props: ["createTree", "header", "content"],
+  props: ["createTree", "header"],
   components: {
     NoticeTemplate
   },
@@ -95,6 +95,7 @@ export default {
     async billDetail(id) {
       const res = await this.$api.financeapi.detailUsingGET_1({id});
       if (res.data.status === 200) {
+        res.data.data.list = res.data.data.item;
         return res.data.data;
       };
     },
@@ -107,9 +108,10 @@ export default {
       }
       await this.$api.financeapi.cancelUsingPUT_3({ id }).then(returnObj => {
         if (returnObj.data.status === 200) {
-          console.log(returnObj);
           $message('success', '结算单取消成功！');
           // this.createTree = formatTree(returnObj.data.data);
+        }  else {
+          $message('error', returnObj.data.msg);
         }
       });
     },
@@ -120,8 +122,12 @@ export default {
         $message("info", "请先选择结算单!");
         return;
       }
-      await this.$api.financeapi.confirmUsingPUT_3({ id }).then(returnObj => {
-        console.log(returnObj);
+      await this.$api.financeapi.confirmUsingPUT_1({ id }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          $message("success", "结算单确认成功!");
+        }  else {
+          $message('error', returnObj.data.msg);
+        }
       });
     },
     async publishBill() {
@@ -131,8 +137,12 @@ export default {
         $message("info", "请先选择结算单!");
         return;
       }
-      await this.$api.financeapi.publishUsingPUT({ id }).then(returnObj => {
-        console.log(returnObj);
+      await this.$api.financeapi.publishUsingPUT({ id }).then(returnObj => {        
+        if (returnObj.data.status === 200) {
+          $message("success", "结算单发布成功");
+        } else {
+          $message('error', returnObj.data.msg);
+        }
       });
     },
     async deleteBill() {
@@ -143,7 +153,11 @@ export default {
         return;
       }
       await this.$api.financeapi.delUsingDELETE_2({ id }).then(returnObj => {
-        console.log(returnObj);
+        if (returnObj.data.status === 200) {
+          $message("success", "结算单删除成功!");
+        } else {
+          $message('error', returnObj.data.msg);
+        }
       });
     }
   },
@@ -174,6 +188,8 @@ export default {
 //   }
 // }
 </style>
+
+
 
 
 

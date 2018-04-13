@@ -164,7 +164,7 @@ export default {
                   },
                   class: "delete",
                   click: (item, data) => {
-                    this.deleteIrregularCost(item, data);
+                    this.deleteIrregularCost(item.id);
                   }
                 }
             ]
@@ -204,7 +204,9 @@ export default {
     };
   },
   mounted() {
-    this.$api.rentapi.listUsingGET_12({}).then(res=>{ //商户列表 status:4 已确定状态没加
+    this.$api.rentapi.listUsingGET_12({
+        status:1
+    }).then(res=>{ //商户列表 status:4 已确定状态没加
         this.selects.merchants = res.data.data;
     }).catch(res=>{
         this.$message.error(res.data.msg);
@@ -274,7 +276,7 @@ export default {
           this.content = data.data;
           if(callback) callback();
         } else {
-          return data.message;
+          $message('error', data.msg);
         }        
       })
     },
@@ -292,19 +294,26 @@ export default {
         }       
       });
     },
-    async deleteIrregularCost(param) {
-      let params = {
-        id: param
-      };
-      await this.$api.financeapi.delUsingDELETE_7(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getIrregularCost({}, () => {
-            $message("success", "删除成功!");
-          });  
-        } else {
-          $message("error", "删除失败!");
-        }       
-      });
+    async deleteIrregularCost(id) {
+      this.$confirm("此操作将永久删除该费用调整, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$api.financeapi.delUsingDELETE_7({id}).then(returnObj => {
+            if(returnObj.data.status === 200) {
+              this.getIrregularCost({}, () => {
+                $message("success", "删除成功!");
+              });  
+            } else {
+              $message("error", returnObj.data.msg);
+            }       
+          });
+        })
+        .catch(() => {
+          $message("info", "已取消删除!");
+        });
     },
     async cancelIrregularCost(param) {
       let params = {

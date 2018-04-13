@@ -47,8 +47,9 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addshop/'+scope.row.id" class="btn_text">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)">删除</button>
+                            <router-link :to="'/inner/addshop/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" v-if="scope.row.status == 6">失效</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -74,7 +75,7 @@
                 total: 0,
                 merchantOptions:[],
                 columnData:[
-                    { prop: 'shopCode', label: '编码'},
+                    { prop: 'shopCode', label: '店铺号'},
                     { prop: 'shopName', label: '名称' },
                     { prop: 'shopBrandNames', label: '经营品牌'},
                     { prop: 'shopMainBrandName', label: '主品牌' },
@@ -100,15 +101,15 @@
                 },{
                     name:"预定",
                     isStatus:false,
-                    id:2
+                    id:3
                 },{
                     name:"使用中",
                     isStatus:false,
-                    id:3
+                    id:4
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id:2
                 },{
                     name:"失效",
                     isStatus:false,
@@ -159,7 +160,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.deleteUsingDELETE_5({
+                    this.$api.rentapi.deleteUsingDELETE_6({
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {

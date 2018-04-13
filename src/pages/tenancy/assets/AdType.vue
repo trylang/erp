@@ -7,6 +7,14 @@
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
+                            label="更新时间"
+                            width="150"
+                            slot="operation">
+                        <template slot-scope="scope">
+                            {{scope.row.updateDate | formatDate('yyyy-MM-dd hh:mm:ss')}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                             label="操作"
                             width="110"
                             slot="operation">
@@ -69,8 +77,7 @@
                 columnData:[
                     { prop: 'advertisingTypeCode', label: '编码'},
                     { prop: 'advertisingTypeName', label: '名称' },
-                    { prop: 'remark', label: '备注' },
-                    { prop: 'updateDate', label: '更新时间' }
+                    { prop: 'remark', label: '备注' }
                 ]
             }
         },
@@ -95,7 +102,7 @@
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize
                 }).then(res=>{
-                    this.dataList = res.data.data;
+                    this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
                 })
             },

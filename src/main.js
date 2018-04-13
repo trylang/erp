@@ -13,6 +13,7 @@ import api from './api/apilist'
 
 axios.defaults.baseURL = process.env.API_ROOT;
 Vue.prototype.$api = api;
+Vue.prototype.HOST = process.env.API_ROOT;
 Vue.use(ElementUI);
 
 Object.keys(filter).forEach(key => {
@@ -28,6 +29,26 @@ const delay = (function() {
     };
 })();
 Vue.prototype.$delay = delay;
+// Vue.prototype.Echarts = window.echarts;
+
+const dateNumber = function(StartDate,EndDate){
+    let date1 = StartDate.split('-');
+    let date2 = EndDate.split('-');
+    let year_month = (parseInt(date2[0])-parseInt(date1[0]))*12;
+    let months = parseInt(date2[1])-parseInt(date1[1]);
+    let total_month = year_month+months;
+    let dates = parseInt(date2[2])-parseInt(date1[2]);
+    if(dates < 0) {
+        total_month--;
+        let temp = new Date(parseInt(date2[0]), parseInt(date2[1]) - 1, 0);
+        let days = temp.getDate() + dates;
+        console.log(total_month,dates)
+        return total_month+"个月"+ days +"天"
+    }else{
+        return total_month+"个月"+ dates +"天"
+    }
+};
+Vue.prototype.$dateNumber = dateNumber;
 
 new Vue({
     el: '#app',

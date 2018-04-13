@@ -6,7 +6,9 @@
         <div class="searchselect">
             <span class="inputname">月份</span>
             <el-date-picker
-              v-model="query.month"
+              value-format="yyyy-MM"
+              @change="getList()"
+              v-model="query.yearAndMonth"
               type="month"
               placeholder="选择月份">
             </el-date-picker>
@@ -15,12 +17,12 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">楼层</span>
-            <el-select v-model="query.propertyType" @change="getCost()" placeholder="楼层" class="dialogselect">
+            <el-select v-model="query.floor" @change="getList()" placeholder="楼层" class="dialogselect">
               <el-option
-                v-for="item in selects.accounts"
+                v-for="item in selects.floors"
                 :key="item.id"
                 :value="item.id"
-                :label="item.label">
+                :label="item.floorName">
               </el-option>
             </el-select>
         </div>
@@ -30,11 +32,11 @@
       <el-col :span="9">
         <div class="searchselect">
             <span class="inputname">店铺</span>
-            <el-select v-model="query.settleGroupId" @change="getCost()" placeholder="店铺" class="dialogselect">
+            <el-select v-model="query.shopCode" @change="getList()" placeholder="店铺" class="dialogselect">
               <el-option
                 v-for="item in selects.shops"
-                :key="item.shopCode"
-                :label="item.shopCode"
+                :key="item.id"
+                :label="item.shopName"
                 :value="item.shopCode">
               </el-option>
             </el-select>
@@ -51,7 +53,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 
-import { queryShop } from "@/utils/rest/financeAPI";
+import { queryShop, queryFloor } from "@/utils/rest/financeAPI";
 export default {
   name: "account-group",
   components: {
@@ -79,188 +81,185 @@ export default {
         {
           label: "销售额",
           type: "text",
-          name: "salesAmount"
+          name: "totalAmount"
         },
         {
           label: "1日",
           type: "text",
-          name: "remark"
+          name: "amountDay1"
         },
         {
           label: "2日",
           type: "text",
-          name: "remark"
+          name: "amountDay2"
         },
         {
           label: "3日",
           type: "text",
-          name: "remark"
+          name: "amountDay3"
         },
         {
           label: "4日",
           type: "text",
-          name: "remark"
+          name: "amountDay4"
         },
         {
           label: "5日",
           type: "text",
-          name: "remark"
+          name: "amountDay5"
         },
         {
           label: "6日",
           type: "text",
-          name: "remark"
+          name: "amountDay6"
         },
         {
           label: "7日",
           type: "text",
-          name: "remark"
+          name: "amountDay7"
         },
         {
           label: "8日",
           type: "text",
-          name: "remark"
+          name: "amountDay8"
         },
         {
           label: "9日",
           type: "text",
-          name: "remark"
+          name: "amountDay9"
         },
         {
           label: "10日",
           type: "text",
-          name: "remark"
+          name: "amountDay10"
         },
         {
           label: "11日",
           type: "text",
-          name: "remark"
+          name: "amountDay11"
         },
         {
           label: "12日",
           type: "text",
-          name: "remark"
+          name: "amountDay12"
         },
         {
           label: "13日",
           type: "text",
-          name: "remark"
+          name: "amountDay13"
         },
         {
           label: "14日",
           type: "text",
-          name: "remark"
+          name: "amountDay14"
         },
         {
           label: "15日",
           type: "text",
-          name: "remark"
+          name: "amountDay15"
         },
         {
           label: "16日",
           type: "text",
-          name: "remark"
+          name: "amountDay16"
         },
         {
           label: "17日",
           type: "text",
-          name: "remark"
+          name: "amountDay17"
         },
         {
           label: "18日",
           type: "text",
-          name: "remark"
+          name: "amountDay18"
         },
         {
           label: "19日",
           type: "text",
-          name: "remark"
+          name: "amountDay19"
         },
         {
           label: "20日",
           type: "text",
-          name: "remark"
+          name: "amountDay20"
         },
         {
           label: "21日",
           type: "text",
-          name: "remark"
+          name: "amountDay21"
         },
         {
           label: "22日",
           type: "text",
-          name: "remark"
+          name: "amountDay22"
         },
         {
           label: "23日",
           type: "text",
-          name: "remark"
+          name: "amountDay23"
         },
         {
           label: "24日",
           type: "text",
-          name: "remark"
+          name: "amountDay24"
         },
         {
           label: "25日",
           type: "text",
-          name: "remark"
+          name: "amountDay25"
         },
         {
           label: "26日",
           type: "text",
-          name: "remark"
+          name: "amountDay26"
         },
         {
           label: "27日",
           type: "text",
-          name: "remark"
+          name: "amountDay27"
         },
         {
           label: "28日",
           type: "text",
-          name: "remark"
+          name: "amountDay28"
         },
         {
           label: "29日",
           type: "text",
-          name: "remark"
+          name: "amountDay29"
         },
         {
           label: "30日",
           type: "text",
-          name: "remark"
+          name: "amountDay30"
         },
         {
           label: "31日",
           type: "text",
-          name: "remark"
+          name: "amountDay31"
         }
       ],
       content: [],
       selects: {
-        shops: []
+        shops: [],
+        floors: []
       },
-      query: {
-        settleGroupName: ""
-      }
+      query: {}
     };
   },
   mounted() {},
   methods: {
     getCurrentPage(pageNum) {
-      this.getAccountGroups({ pageNum });
+      this.getList({ pageNum });
     },
     getpageSize(pageSize) {
-      this.getAccountGroups({ pageSize });
+      this.getList({ pageSize });
     },
-    async getAccountGroups(page = {}, callback) {
-      let params = {
-        settleGroupName: this.query.settleGroupName,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
-      };
-      this.$api.financeapi.listUsingGET_11(params).then(res => {
+    async getList(page = {}, callback) {
+      this.query.pageNum = page.pageNum;
+      this.query.pageSize = page.pageSize;
+      console.log(this.query);
+      this.$api.reportapi.monthSalesListUsingGET(this.query).then(res => {
         const data = res.data;
         if (data.status === 200) {
           this.content = data.data;
@@ -271,10 +270,10 @@ export default {
       });
     },
     async init() {
-      let [shop] = await Promise.all([queryShop()]);
-      console.log(shop.data);
+      let [shop, floor] = await Promise.all([queryShop(), queryFloor()]);
       this.selects.shops = shop.data;
-      await this.getAccountGroups();
+      this.selects.floors = floor.data;
+      await this.getList();
     }
   },
   computed: {},
@@ -283,7 +282,6 @@ export default {
   }
 };
 
-// TODO: 查询字段没有对；
 </script>
 
 <style scoped>

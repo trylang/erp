@@ -106,7 +106,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <account-tree :createTree="createTree" :header="header" :content="content"></account-tree>  
+          <account-tree :createTree="createTree" :header="header"></account-tree>  
         </el-row>
       </section>
     </div>
@@ -143,7 +143,7 @@ export default {
         {
           label: "收费项目",
           type: "text",
-          name: "id",
+          name: "costItemName",
           style: {
             "background": "#fff",
             "border-bottom": "1px solid #e4e4e4"
@@ -151,9 +151,9 @@ export default {
         },
         {
           label: "日期范围（年/月/日）",
-          name: "update_time",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S",
+          name: "period",
+          type: "text",
+          // filter: "yyyy-MM-dd hh:mm:ss.S",
           style: {
             "background": "#fff",
             "border-bottom": "1px solid #e4e4e4"
@@ -162,7 +162,7 @@ export default {
         {
           label: "金额（元）",
           type: "text",
-          name: "name",
+          name: "amount",
           style: {
             "background": "#fff",
             "border-bottom": "1px solid #e4e4e4"
@@ -171,7 +171,7 @@ export default {
         {
           label: "备注",
           type: "text",
-          name: "desc",
+          name: "remark",
           style: {
             "background": "#fff",
             "border-bottom": "1px solid #e4e4e4"
@@ -372,9 +372,7 @@ export default {
       };
       await this.$api.financeapi.confirmListUsingGET(param).then(returnObj => {
         if (returnObj.data.status === 200) {
-          console.log(returnObj);
-          $message('success', '结算单确认成功！');
-          // this.createTree = formatTree(returnObj.data.data);
+          this.createTree = formatTree(returnObj.data.data);
         }  
       });
     },
@@ -385,9 +383,7 @@ export default {
       };
       await this.$api.financeapi.publishListUsingGET(param).then(returnObj => {
         if (returnObj.data.status === 200) {
-          console.log(returnObj);
-          $message('success', '结算单发布成功！');
-          // this.createTree = formatTree(returnObj.data.data);
+          this.createTree = formatTree(returnObj.data.data);
         }  
       });
     },
@@ -399,7 +395,7 @@ export default {
         queryContract()
       ]);
       this.selects.accountGroup = accountGroup.data.list;
-      this.selects.merchants = merchants.data.list;
+      this.selects.merchants = merchants.data;
       this.selects.contracts = contracts.data.list;
       await this.getAccountManagement();
     }

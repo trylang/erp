@@ -90,6 +90,13 @@
             handleOpen(){
                 this.dialogVisible = true;
                 this.getBuildingList();
+                this.addBuild = {
+                    buildId: '',
+                    floorArea: '',
+                    floorCode: '',
+                    floorName: '',
+                    id: 0
+                }
             },
             async getBuildingTreeList(){
                 await this.$api.rentapi.treeListUsingGET().then(res=>{
@@ -122,7 +129,7 @@
                         }
                     })
                 }else{
-                    await this.$api.rentapi.updateUsingPUT_6({
+                    await this.$api.rentapi.updateUsingPUT_5({
                         param:this.addBuild
                     }).then(res=>{
                         if (res.data.status == 200) {

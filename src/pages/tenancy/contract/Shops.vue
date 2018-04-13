@@ -5,7 +5,7 @@
                 <router-link :to="routerUrl+this.$route.params.prototypeId">合同管理</router-link>
                 <router-link :to="routerAuditUrl+this.$route.params.prototypeId">合同确认</router-link>
             </div>
-            <router-link class="el-button" slot="append" :to="routerAddUrl+'0/'+this.$route.params.prototypeId">录入</router-link>
+            <router-link class="el-button" slot="append" :to="routerAddUrl+'0/'+this.$route.params.prototypeId+'/0'">录入</router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
@@ -19,29 +19,42 @@
                             <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
                                 <el-option
                                         v-for="item in merchantOptions"
-                                        :key="item.id"
-                                        :label="item.merchantName+'（'+item.merchantCode+'）'"
-                                        :value="item.id">
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="9" v-if="this.$route.params.prototypeId == 0">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">店铺</span>
                             <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
                                 <el-option
                                         v-for="item in shopOptions"
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                    <el-col :span="9" :offset="6" v-if="this.$route.params.prototypeId == 0">
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">状态</span>
+                            <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
+                                <el-option
+                                        v-for="item in statusOptions"
                                         :key="item.id"
-                                        :label="item.shopName+'（'+item.shopCode+'）'"
+                                        :label="item.statusName"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="9" v-if="this.$route.params.prototypeId != 0">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">状态</span>
                             <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
@@ -65,11 +78,11 @@
                             width="154"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20 || scope.row.status == 50 || scope.row.status == 60 || scope.row.status == 61">编辑</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20 || scope.row.status == 50 || scope.row.status == 60 || scope.row.status == 61">编辑</router-link>
                             <button class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20" @click="deleteContract(scope.row.id)">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 30 || scope.row.status == 40" @click="stopContract(scope.row.id)">终止</button>
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId" class="btn_text" v-if="scope.row.status == 40">延期</router-link>
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId" class="btn_text" v-if="scope.row.status == 40">变更</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 40">延期</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+2" class="btn_text" v-if="scope.row.status == 40">变更</router-link>
                             <button class="btn_text" v-if="scope.row.status == 30" @click="cancelContract(scope.row.id)">取消</button>
                         </template>
                     </el-table-column>
@@ -88,6 +101,7 @@
                             class="inputtext"
                             v-model="stopContractData.stopDate"
                             type="date"
+                            value-format="yyyy-MM-dd"
                             placeholder="退租日期">
                     </el-date-picker>
                 </div>
@@ -96,9 +110,9 @@
                     <el-select v-model="stopContractData.stopType" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in stopTypeOption"
-                                :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
+                                :key="item.value"
+                                :label="item.text"
+                                :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
@@ -170,16 +184,6 @@
                     isStatus:false,
                     id:70
                 }],
-                columnData:[
-                    { prop: 'contractCode', label: '合同号'},
-                    { prop: 'version', label: '版本号' },
-                    { prop: 'merchantName', label: '商户名称' },
-                    { prop: 'shopName', label: '店铺名称' },
-                    { prop: 'brandName', label: '经营品牌' },
-                    { prop: 'signDate', label: '签约日期' },
-                    { prop: 'validStartDate', label: '合同有效期' },
-                    { prop: 'statusText', label: '状态' }
-                ],
                 stopContractData:{
                     id:'',
                     stopDate:'',
@@ -191,10 +195,9 @@
             }
         },
         mounted(){
-            this.getShopList();
             this.getMerchantList();
             this.activeNameSwitch();
-            this.getDictList();
+            this.getBaseDataOptions();
         },
         watch:{
             searchText(){
@@ -204,6 +207,12 @@
             },
             '$route'(to,from){
                 this.getDataList(1);
+                this.getMerchantList();
+                this.prototypeId=this.$route.params.prototypeId;
+                this.searchText = '';
+                this.merchantValue = '';
+                this.shopValue = '';
+                this.statusValue = '';
             }
         },
         computed:{
@@ -254,6 +263,55 @@
                         return '/inner/adaudit/'
                         break;
                 }
+            },
+            columnData(){
+                switch (this.$route.params.prototypeId){
+                    case '0':
+                        return [
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/0',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'shopName', label: '店铺名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }
+                        ];
+                        break;
+                    case '1':
+                        return [
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'shopName', label: '店铺名称' },
+                            { prop: 'propertyType', label: '物业性质' },
+                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }
+                        ];
+                        break;
+                    case '2':
+                        return [
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/2',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }
+                        ];
+                        break;
+                    case '3':
+                        return [
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/3',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }
+                        ];
+                        break;
+                }
             }
         },
         methods:{
@@ -261,7 +319,8 @@
                 this.dialogVisible = false;
             },
             activeNameSwitch(){
-                localStorage.setItem('activeName',1)
+                localStorage.setItem('activeName',1);
+                localStorage.setItem('step',0)
             },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.getListForPageUsingGET({
@@ -295,27 +354,22 @@
                     })
                 })
             },
-            async getDictList(){
-                await this.$api.systemapi.typeListUsingGET({
-                    nameOrCode:''
-                }).then(res=>{
-                    this.getItemList(res.data.data[3].code);
-                });
+            async getBaseDataOptions(){
+                await this.$api.rentapi.baseDataOptionsUsingGET().then(res=>{
+                    this.stopTypeOption = res.data.data.stop_type;
+                })
             },
-            async getItemList(code){
-                await this.$api.systemapi.itemListUsingGET({
-                    code:code
+            async getShopList(merchantId){
+                await this.$api.rentapi.getMerchantShopOption({
+                    merchantId:merchantId
                 }).then(res=>{
-                    this.stopTypeOption = res.data.data;
-                });
-            },
-            async getShopList(){
-                await this.$api.rentapi.listUsingGET_14().then(res=>{
                     this.shopOptions = res.data.data;
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12().then(res=>{
+                await this.$api.rentapi.getMerchantOption({
+                    type:this.$route.params.prototypeId
+                }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
@@ -329,6 +383,7 @@
                         this.stopContractData
                     ).then(res => {
                         if (res.data.status == 200) {
+                            this.dialogVisible=false;
                             this.getDataList(1);
                             this.$message.success(res.data.msg);
                         } else {
@@ -356,6 +411,7 @@
                 });
             },
             merchantSelect(){
+                this.getShopList(this.merchantValue);
                 this.getDataList(1);
             },
             shopSelect(){
