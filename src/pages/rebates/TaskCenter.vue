@@ -7,15 +7,15 @@
                         <div class="texttitle">
                             <span class="inputname">类型：</span>
                             <div class="line-nav">
-                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
+                                <a href="javascript:void(0)" v-for="typelist in typeData" :class="{active:typelist.isStatus}" @click="typeHandler(typelist)">{{typelist.text}}</a>
                             </div>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="9" :offset="2">
                         <div class="texttitle">
-                            <span class="inputname">类型：</span>
+                            <span class="inputname">状态：</span>
                             <div class="line-nav">
-                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.name}}</a>
+                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.text}}</a>
                             </div>
                         </div>
                     </el-col>
@@ -24,142 +24,129 @@
         </con-head>
         <con-head>
             <div class="mainbox">
-                <data-table :tableData="datalist" :colConfigs="columnData">
-                    <el-table-column
-                            label="操作"
-                            width="70"
-                            slot="operation">
-                        <template slot-scope="scope">
-                            <button class="btn_text">下载</button>
-                        </template>
-                    </el-table-column>
-                </data-table>
+                <table class="el-table table_box">
+                    <thead class="table_header">
+                        <tr>
+                            <th><div class="cell">任务名称</div></th>
+                            <th><div class="cell">任务类型</div></th>
+                            <th><div class="cell">开始时间</div></th>
+                            <th><div class="cell">运行时间</div></th>
+                            <th><div class="cell">运行状态</div></th>
+                            <th width="190"><div class="cell">操作</div></th>
+                            <th class="gutter" style="width: 0px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="dataList != null">
+                        <tr v-for="item in dataList">
+                            <td><div class="cell" v-text="item.taskName"></div></td>
+                            <td><div class="cell" v-text="item.typeStr"></div></td>
+                            <td><div class="cell" v-text="item.startDateStr"></div></td>
+                            <td><div class="cell" v-text="item.runTime"></div></td>
+                            <td><div class="cell" :class="['gray',item.status==1?'green':'',item.status==2?'red':'']" v-text="item.statusStr"></div></td>
+                            <td>
+                                <div class="cell">
+                                    <a :href="$downLoadUrl+'/refund/task/download?id='+item.id"  v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</a>
+                                    <!-- <button class="btn_text" v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</bu -->tton>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="el-table__empty-block" v-if="dataList == null">
+                    <span class="el-table__empty-text">暂无数据</span>
+                </div>
             </div>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px;padding: 0 20px;"></rt-page>
         </con-head>
-        <el-dialog
-                :title="listid?'编辑终端号':'添加终端号'"
-                :visible.sync="dialogVisible"
-                custom-class="customdialog">
-            <div class="dialogbox">
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">店铺号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
-                </div>
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">POS机号</span>
-                    <el-select v-model="add.superior2" placeholder="请选择" class="dialogselect">
-                        <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
-                </div>
-                <div class="rentcontent">
-                    <span class="inputname inputnameCenter">终端号</span>
-                    <input class="inputtext" type="text" placeholder="请输入终端号" v-model="add.superior1">
-                </div>
-                <div class="dialoginput rentcontent">
-                    <span class="inputname inputnameCenter">有效期</span>
-                    <el-date-picker
-                            class="inputtext datetext"
-                            v-model="datevalue"
-                            type="daterange"
-                            range-separator="-"
-                            start-placeholder="选择日期"
-                            end-placeholder="选择日期">
-                    </el-date-picker>
-                </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="addbuilding(add.id)">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     import ConHead from '../../components/ConHead'
-    import PageContent from '../../components/Pagination'
-    import DataTable from '../../components/DataTable'
+    import RtPage from '../../components/Pagination'
     export default {
         name: "index",
         data(){
             return{
-                listid:0,
-                datevalue:'',
-                activeName: 'first',
-                dialogVisible:false,
-                datalist:[],
-                add:{
-                    number:"",
-                    name:""
-                },
-                value: '',
-                options: [{
-                    value: '中粮集团'
-                }, {
-                    value: '中粮中粮'
-                }, {
-                    value: '中粮公司'
-                }],
-                statusData:[{
-                    name:"全部",
-                    isStatus:true
-                },{
-                    name:"返款计算",
-                    isStatus:false
-                },{
-                    name:"数据导出",
-                    isStatus:false
-                }],
-                columnData:[
-                    { prop: 'number', label: '任务名称'},
-                    { prop: 'name', label: '任务类型' },
-                    { prop: 'datetime', label: '开始时间' },
-                    { prop: 'superior1', label: '运行时间' },
-                    { prop: 'name', label: '运行状态' }
-                ]
+                dataList:[],
+                typeId: '',
+                statusId: '',
+                pageNum: Number(this.$route.params.pageId)||1,
+                total: 0,
+                typeData:[],
+                statusData:[],
             }
         },
         mounted(){
-            this.getbuilding();
+            this.$api.refundapi.getTaskTypeUsingGET().then(res=>{//类型
+                this.typeData = res.data.data;
+                this.typeData = res.data.data.map(item=>{
+                    return {
+                        text: item.text,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.typeData[0].isStatus = true;
+            })
+            this.$api.refundapi.getTaskStatusUsingGET().then(res=>{//状态
+                this.statusData = res.data.data;
+                this.statusData = res.data.data.map(item=>{
+                    return {
+                        text: item.text,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.statusData[0].isStatus = true;
+            })
         },
         methods:{
+            pageHandler(pageNum, pageSize){
+                let params = {
+                    pageNum: pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    type: this.typeId,
+                    status: this.statusId
+                }
+                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
+            },
+            typeHandler(status){
+                this.typeData.forEach(function(obj){
+                    obj.isStatus = false;
+                });
+                status.isStatus = !status.isStatus;
+                this.typeId = status.value;
+                this.pageHandler(1);
+            },
             statusHandler(status){
                 this.statusData.forEach(function(obj){
                     obj.isStatus = false;
                 });
-                status.isStatus = !status.isStatus
+                status.isStatus = !status.isStatus;
+                this.statusId = status.value;
+                this.pageHandler(1);
             },
-            handleClose(){
-                this.dialogVisible = false;
-            },
-            async getbuilding(){
-                let list = await this.$api.getBuiding();
-                this.datalist = list;
-            },
-            async addbuilding(){
-                let params = {
-                    number:this.add.number,
-                    name:this.add.name,
-                    datetime:'2017-12-03 16:05:09'
-                };
-                await this.$api.addBuilding(params);
-                this.getbuilding();
+            downloadHandler(id){
+                this.$api.refundapi.downloadUsingGET({id: id}).then(res=>{
+                    if(res.data.status === 200){
+                        this.$message.success(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
             }
         },
         components:{
             ConHead,
-            PageContent,
-            DataTable
+            RtPage,
         }
     }
 </script>
@@ -180,5 +167,24 @@
     .line-nav a.active{
         color: #457fcf;
         border-bottom: 2px solid #457fcf;
+    }
+    .gray{
+        color: #606266;
+    }
+    .green{
+        color: green;
+    }
+    .red{
+        color: red;
+    }
+    table tbody tr{
+        background-color: #fff;
+    }
+    table tbody tr:hover{
+        background-color: #f5f7fa;
+    }
+    table tbody tr:nth-of-type(2n){
+        width: 100%;
+        background-color: #FAFAFA;
     }
 </style>

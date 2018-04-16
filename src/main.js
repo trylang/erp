@@ -10,6 +10,12 @@ import axios from 'axios'
 import * as filter from './utils/filter'
 import store from './store'
 import api from './api/apilist'
+import 'jquery';
+
+// import './sdk/js/ui/indoormap_control/dist/ui.floorcontrol.js';
+console.log(window);
+
+// console.log($);
 
 axios.defaults.baseURL = process.env.API_ROOT;
 Vue.prototype.$api = api;
@@ -43,9 +49,9 @@ const dateNumber = function(StartDate,EndDate){
         let temp = new Date(parseInt(date2[0]), parseInt(date2[1]) - 1, 0);
         let days = temp.getDate() + dates;
         console.log(total_month,dates)
-        return total_month+"¸öÔÂ"+ days +"Ìì"
+        return total_month+"ï¿½ï¿½ï¿½ï¿½"+ days +"ï¿½ï¿½"
     }else{
-        return total_month+"¸öÔÂ"+ dates +"Ìì"
+        return total_month+"ï¿½ï¿½ï¿½ï¿½"+ dates +"ï¿½ï¿½"
     }
 };
 Vue.prototype.$dateNumber = dateNumber;

@@ -78,7 +78,8 @@
                             width="154"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20 || scope.row.status == 50 || scope.row.status == 60 || scope.row.status == 61">编辑</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20 || scope.row.status == 50 || scope.row.status == 60">编辑</router-link>
+                            <button class="btn_text" v-if="scope.row.status == 61" @click="stopInfoBtn(scope.row.id)">编辑</button>
                             <button class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20" @click="deleteContract(scope.row.id)">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 30 || scope.row.status == 40" @click="stopContract(scope.row.id)">终止</button>
                             <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 40">延期</router-link>
@@ -274,7 +275,7 @@
                             { prop: 'shopName', label: '店铺名称' },
                             { prop: 'brandName', label: '经营品牌' },
                             { prop: 'signDate', label: '签约日期' },
-                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'validDate', label: '合同有效期' },
                             { prop: 'statusText', label: '状态' }
                         ];
                         break;
@@ -283,9 +284,8 @@
                             { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
-                            { prop: 'shopName', label: '店铺名称' },
-                            { prop: 'propertyType', label: '物业性质' },
-                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validDate', label: '合同有效期' },
                             { prop: 'statusText', label: '状态' }
                         ];
                         break;
@@ -296,7 +296,7 @@
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
                             { prop: 'signDate', label: '签约日期' },
-                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'validDate', label: '合同有效期' },
                             { prop: 'statusText', label: '状态' }
                         ];
                         break;
@@ -307,7 +307,7 @@
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
                             { prop: 'signDate', label: '签约日期' },
-                            { prop: 'validStartDate', label: '合同有效期' },
+                            { prop: 'validDate', label: '合同有效期' },
                             { prop: 'statusText', label: '状态' }
                         ];
                         break;
@@ -332,6 +332,9 @@
                     merchantId:this.merchantValue,
                     status:this.statusValue
                 }).then(res=>{
+                    res.data.data.list.forEach(item => {
+                        item.validDate = item.validStartDate + '~' + item.validEndDate;
+                    }); 
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
                 })
@@ -373,15 +376,33 @@
                     this.merchantOptions = res.data.data;
                 })
             },
+            async stopInfoBtn(id){
+                this.dialogVisible = true;
+                this.stopContractData={
+                    id:'',
+                    stopDate:'',
+                    stopType:'',
+                    stopReason:'',
+                };
+                await this.$api.rentapi.getStopInfo({
+                    id: id
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.stopContractData = res.data.data;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+            },
             async submitStop(){
                 await this.$confirm('是否终止该合同?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.stopUsingPUT(
-                        this.stopContractData
-                    ).then(res => {
+                    this.$api.rentapi.stopContractPOST({
+                        param: this.stopContractData
+                    }).then(res => {
                         if (res.data.status == 200) {
                             this.dialogVisible=false;
                             this.getDataList(1);
@@ -422,6 +443,11 @@
             },
             stopContract(id){
                 this.dialogVisible = true;
+                this.stopContractData={                    
+                    stopDate:'',
+                    stopType:'',
+                    stopReason:'',
+                };
                 this.stopContractData.id = id;
             }
         },

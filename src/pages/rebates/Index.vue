@@ -20,8 +20,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="dialogData(scope.row.id,scope.row)">编辑</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -35,12 +35,12 @@
             <div class="dialogbox">
                 <div class="rentcontent">
                     <span class="inputname inputnameCenter">店铺号</span>
-                    <el-select v-model="add.shopId" value-key="id" placeholder="请选择" class="dialogselect" @change="checkShopHandler(add.shopId)" :disabled="!!this.add.id">
+                    <el-select v-model="add.shopId" placeholder="请选择" class="dialogselect" @change="checkShopHandler(add.shopId)">
                         <el-option
                                 v-for="item in shopOptions"
                                 :label="item.shopName+'（'+item.shopCode+'）'"
                                 :key="item.id"
-                                :value="item">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
@@ -88,7 +88,6 @@
             return{
                 listid:0,
                 dialogVisible:false,
-                posLength: 0,
                 posArr: [],
                 datalist:[],
                 searchName: '',
@@ -132,7 +131,7 @@
                     type: 0,
                     queryParam: this.searchName
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.refundapi.getListForPageUsingGET_7(params).then(res=>{
                     if(res.data.status === 200){
                         this.datalist = res.data.data.list;
                         this.total = Number(res.data.data.total);
@@ -146,15 +145,15 @@
             },
             addbuilding(id){
                 if(id){
-                    this.$api.systemapi.updateUsingPOST_4({request:{//编辑
+                    this.$api.refundapi.updateUsingPUT_2({request:{//编辑
                         id: this.add.id,
                         type: 0,
                         shopId: this.add.shopId,
                         posNumber: this.add.posNumber,
                         terminalNumber: this.add.terminalNumber,
-                        validStartDate: this.add.validDate
+                        validStartDate: this.add.validStartDate
                     }}).then(res=>{
-                        if(res.data.status==200){
+                        if(res.data.status === 200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -164,12 +163,13 @@
                         this.$message.error(res.data.msg);
                     });
                 }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{//新增
+                    this.$api.refundapi.addUsingPOST_2({request:{//新增
+                        id: '',
                         type: 0,
                         shopId: this.add.shopId,
                         posNumber: this.add.posNumber,
                         terminalNumber: this.add.terminalNumber,
-                        validStartDate: this.add.validDate
+                        validStartDate: this.add.validStartDate
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
@@ -185,52 +185,67 @@
             },
             dialogData(id, data){
                 this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = {
-                        id: data.id,
-                        type: 0,
-                        shopId: data.shopId,
-                        posNumber: data.posNumber,
-                        terminalNumber: data.terminalNumber,
-                        validStartDate: data.validDate
-                    }
+                if(id) {   //无结束日期可编辑，还有--开始日期必须大于系统日期
+                    this.$api.refundapi.isValidUsingGET_1({id: data.id}).then(res=>{//可编辑时判断开始日期
+                        if(res.data.status === 200){
+                            this.dialogVisible = true;
+                            this.add = {
+                                id: data.id,
+                                type: 0,
+                                shopId: data.shopId,
+                                posNumber: data.posNumber,
+                                terminalNumber: data.terminalNumber,
+                                validStartDate: data.validStartDate
+                            }
+                        }else{
+                            this.$message.warning(res.data.msg);
+                        }
+                    })
                 }else{
+                    this.dialogVisible = true;
                     this.add = {};
                 }
             },
             deleteList(id){
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res => {
-                        this.$message.error(res.data.msg);
-                    });
-                }).catch(() => {
-                    $message("info", "已取消删除!");
-                });
+                this.$api.refundapi.isValidUsingGET_1({id: id}).then(res=>{//可删除时判断开始日期
+                    if(res.data.status === 200){
+                        this.$confirm('是否删除该条数据?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api.refundapi.deleteUsingDELETE_2({id: id}).then(res =>{
+                                if(res.data.status==200){
+                                    this.$message.success(res.data.msg);
+                                    this.pageHandler(1);
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
+                            }).catch(res => {
+                                this.$message.error(res.data.msg);
+                            });
+                        }).catch(() => {
+                            $message("info", "已取消删除!");
+                        });
+                    }else{
+                        this.$message.warning(res.data.msg);
+                    }
+                })
             },
             getShopList(){
-                this.$api.rentapi.listUsingGET_13({status: 1}).then(res=>{//只能是 空置，预定，使用中的状态
+                this.$api.rentapi.getByStatusUsingPOST({status: [1, 3, 4]}).then(res=>{//只能是 空置，预定，使用中的状态
                     this.shopOptions = res.data.data;
                 })
             },
             checkShopHandler(shopId){
-                console.log('店铺号',shopId);
-                this.posLength = 5;//需从新调一个接口根据店铺id查询
-                for(var i=1; i<=this.posLength; i++){
-                    this.posArr.push("0"+i);
-                }
-                console.log(this.posArr)
+                this.posArr = [];
+                this.$api.refundapi.getPosNumUsingGET({id: shopId}).then(res =>{//根据店铺id查询
+                    if(res.data.status === 200){
+                        for(var i=1; i<=res.data.data; i++){
+                            this.posArr.push("0"+i);
+                        }
+                    }
+                })
             },
             addHandler(){
                 this.dialogVisible = true;

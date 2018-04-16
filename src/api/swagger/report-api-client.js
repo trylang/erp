@@ -982,6 +982,53 @@ export const queryAlreadyUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 根据物业性质获取费用项目下拉框
+ * request: getCostItemUsingGET
+ * url: getCostItemUsingGETURL
+ * method: getCostItemUsingGET_TYPE
+ * raw_url: getCostItemUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param flag - flag
+ */
+export const getCostItemUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/getCostItem/'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['flag'] !== undefined) {
+    queryParameters['flag'] = parameters['flag']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getCostItemUsingGET_RAW_URL = function() {
+  return '/report/getCostItem/'
+}
+export const getCostItemUsingGET_TYPE = function() {
+  return 'get'
+}
+export const getCostItemUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/getCostItem/'
+  if (parameters['flag'] !== undefined) {
+    queryParameters['flag'] = parameters['flag']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 前台固定数据返回接口
  * request: listUsingGET_4
  * url: listUsingGET_4URL
@@ -1327,17 +1374,18 @@ export const queryPayTypeSumUsingPOSTURL = function(parameters = {}) {
 }
 /**
  * 合同统计数据导出
- * request: poiUsingPOST
- * url: poiUsingPOSTURL
- * method: poiUsingPOST_TYPE
- * raw_url: poiUsingPOST_RAW_URL
+
+ * request: poiContractUsingPOST
+ * url: poiContractUsingPOSTURL
+ * method: poiContractUsingPOST_TYPE
+ * raw_url: poiContractUsingPOST_RAW_URL
  * @param token - header中token字段
  * @param request - request
  */
-export const poiUsingPOST = function(parameters = {}) {
+export const poiContractUsingPOST = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/report/poi'
+  let path = '/report/poi/contract'
   let body
   let queryParameters = {}
   let form = {}
@@ -1354,16 +1402,16 @@ export const poiUsingPOST = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const poiUsingPOST_RAW_URL = function() {
-  return '/report/poi'
+export const poiContractUsingPOST_RAW_URL = function() {
+  return '/report/poi/contract'
 }
-export const poiUsingPOST_TYPE = function() {
+export const poiContractUsingPOST_TYPE = function() {
   return 'post'
 }
-export const poiUsingPOSTURL = function(parameters = {}) {
+export const poiContractUsingPOSTURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/poi'
+  let path = '/report/poi/contract'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1373,18 +1421,30 @@ export const poiUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 测试批量导出
- * request: poiBigUsingPOST
- * url: poiBigUsingPOSTURL
- * method: poiBigUsingPOST_TYPE
- * raw_url: poiBigUsingPOST_RAW_URL
+ * 三个月到期合同信息导出
+ * request: expireExportUsingPOST
+ * url: expireExportUsingPOSTURL
+ * method: expireExportUsingPOST_TYPE
+ * raw_url: expireExportUsingPOST_RAW_URL
  * @param token - header中token字段
  * @param request - request
  */
-export const poiBigUsingPOST = function(parameters = {}) {
+export const expireExportUsingPOST = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/report/poiBig'
+  let path = '/report/poi/expire'
+
+ * request: poiUsingPOST
+ * url: poiUsingPOSTURL
+ * method: poiUsingPOST_TYPE
+ * raw_url: poiUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const poiUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/poi'
   let body
   let queryParameters = {}
   let form = {}

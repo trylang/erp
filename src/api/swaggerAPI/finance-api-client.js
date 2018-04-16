@@ -3776,6 +3776,7 @@ export const listUsingGET_7URL = function(parameters = {}) {
  * method: selectByCostTypeUsingGET_TYPE
  * raw_url: selectByCostTypeUsingGET_RAW_URL
  * @param costType - 费用类型
+ * @param propertyType - propertyType
  */
 export const selectByCostTypeUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -3786,34 +3787,40 @@ export const selectByCostTypeUsingGET = function(parameters = {}) {
     let form = {}
     path = path.replace('{costType}', `${parameters['costType']}`)
     if (parameters['costType'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: costType'))
+      return Promise.reject(new Error('Missing required  parameter: costType'))
+    }
+    if (parameters['propertyType'] !== undefined) {
+      queryParameters['propertyType'] = parameters['propertyType']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
     }
     return request('get', domain + path, body, queryParameters, form, config)
-}
-export const selectByCostTypeUsingGET_RAW_URL = function() {
+  }
+  export const selectByCostTypeUsingGET_RAW_URL = function() {
     return '/finance/cost/item/type/{costType}'
-}
-export const selectByCostTypeUsingGET_TYPE = function() {
+  }
+  export const selectByCostTypeUsingGET_TYPE = function() {
     return 'get'
-}
-export const selectByCostTypeUsingGETURL = function(parameters = {}) {
+  }
+  export const selectByCostTypeUsingGETURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/cost/item/type/{costType}'
     path = path.replace('{costType}', `${parameters['costType']}`)
+    if (parameters['propertyType'] !== undefined) {
+      queryParameters['propertyType'] = parameters['propertyType']
+    }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+  }
 /**
  * 根据ID查询合同费用项目
  * request: selectByIdUsingGET_1

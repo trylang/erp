@@ -30,29 +30,29 @@
                             <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
                                 <el-option
                                         v-for="item in merchantOptions"
-                                        :key="item.id"
-                                        :label="item.merchantName+'（'+item.merchantCode+'）'"
-                                        :value="item.id">
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="9" v-if="this.$route.params.prototypeId == 0 || !this.$route.params.prototypeId">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">店铺</span>
                             <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
                                 <el-option
                                         v-for="item in shopOptions"
-                                        :key="item.id"
-                                        :label="item.shopName+'（'+item.shopCode+'）'"
-                                        :value="item.id">
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="9" :offset="this.$route.params.prototypeId >= 1 ? 0:6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">状态</span>
                             <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
@@ -120,27 +120,53 @@
                     statusName:"取消",
                     isStatus:false,
                     id:20
-                },{
-                    statusName:"退租",
-                    isStatus:false,
-                    id:70
                 }],
-                columnData:[
-                    { type: 'selection', width:'50'},
-                    { prop: 'contractCode', label: '合同号'},
-                    { prop: 'version', label: '版本号' },
-                    { prop: 'merchantName', label: '商户名称' },
-                    { prop: 'shopName', label: '店铺名称' },
-                    { prop: 'brandName', label: '经营品牌' },
-                    { prop: 'signDate', label: '签约日期' },
-                    { prop: 'validStartDate', label: '合同有效期' },
-                    { prop: 'statusText', label: '状态' }
-                ],
                 multipleSelection:[]
             }
         },
+        computed: {
+            columnData() {
+                switch (this.$route.params.prototypeId) {
+                    case '1':
+                        return [
+                            { type: 'selection', width:'50'},
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }
+                        ];
+                        break;
+                    case '2':
+                    case '3':
+                        return [
+                            { type: 'selection', width:'50'},
+                            { prop: 'contractCode', label: '合同号'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' }  
+                        ];
+                        break;
+                    default: 
+                        return [
+                            { type: 'selection', width:'50'},
+                            { prop: 'contractCode', label: '合同号'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'shopName', label: '店铺名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'signDate', label: '签约日期' },
+                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' } 
+                        ]
+                }
+            }
+        },
         mounted(){
-            this.getShopList();
             this.getMerchantList();
         },
         watch:{
@@ -152,7 +178,7 @@
         },
         methods:{
             async getDataList(pageNum,pageSize){
-                await this.$api.rentapi.getListForPageUsingGET({
+                await this.$api.rentapi.getCheckListForPageUsingGET({
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize,
                     propertyType:this.$route.params.prototypeId,
@@ -161,21 +187,29 @@
                     merchantId:this.merchantValue,
                     status:this.statusValue
                 }).then(res=>{
+                    res.data.data.list.forEach(item => {
+                        item.validDate = item.validStartDate + '~' + item.validEndDate;
+                    }); 
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
                 })
             },
-            async getShopList(){
-                await this.$api.rentapi.listUsingGET_14().then(res=>{
+            async getShopList(merchantId){
+                await this.$api.rentapi.getMerchantShopOption({
+                    merchantId:merchantId
+                }).then(res=>{
                     this.shopOptions = res.data.data;
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12().then(res=>{
+                await this.$api.rentapi.getMerchantOption({
+                    type:this.$route.params.prototypeId
+                }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
             merchantSelect(){
+                this.getShopList(this.merchantValue);
                 this.getDataList(1);
             },
             shopSelect(){

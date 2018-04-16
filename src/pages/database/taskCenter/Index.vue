@@ -7,7 +7,10 @@
                         <div class="texttitle">
                             <span class="inputname">状态：</span>
                             <div class="line-nav">
-                                <a href="javascript:void(0)" v-for="statuslist in statusData" :class="{active:statuslist.isStatus}" @click="statusHandler(statuslist)">{{statuslist.text}}</a>
+                                <a href="javascript:void(0)" 
+                                    v-for="statuslist in statusData" 
+                                    :class="{active:statuslist.isStatus}" 
+                                    @click="statusHandler(statuslist)">{{statuslist.text}}</a>
                             </div>
                         </div>
                     </el-col>
@@ -34,10 +37,11 @@
                             <td><div class="cell" v-text="item.typeStr"></div></td>
                             <td><div class="cell" v-text="item.startDateStr"></div></td>
                             <td><div class="cell" v-text="item.runTime"></div></td>
-                            <td><div class="cell" v-text="item.statusStr"></div></td>
+                            <td><div class="cell" :class="['gray',item.status==1?'green':'',item.status==2?'red':'']" v-text="item.statusStr"></div></td>
                             <td>
                                 <div class="cell">
-                                    <button class="btn_text" v-if="item.status==0 || item.status ==2" @click="downloadHandler">下载</button>
+                                    <a :href="$downLoadUrl+'/refund/task/download?id='+item.id"  v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</a>
+                                    <!-- <button class="btn_text" v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</button> -->
                                 </div>
                             </td>
                         </tr>
@@ -63,29 +67,21 @@
                 statusId: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
-                statusData:[
-                    {
-                        text:"全部",
-                        isStatus:true,
-                        value: ''
-                    },{
-                        text:"成功",
-                        isStatus:false,
-                        value: 0
-                    },{
-                        text:"进行中",
-                        isStatus:false,
-                        value: 1
-                    },{
-                        text:"失败",
-                        isStatus:false,
-                        value: 2
-                    }
-                ],
+                statusData:[],
             }
         },
         mounted(){
-
+            this.$api.refundapi.getTaskStatusUsingGET().then(res=>{//状态
+                this.statusData = res.data.data;
+                this.statusData = res.data.data.map(item=>{
+                    return {
+                        text: item.text,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.statusData[0].isStatus = true;
+            })
         },
         methods:{
             pageHandler(pageNum, pageSize){
@@ -94,7 +90,7 @@
                     pageSize: this.$refs.page.pageSize,
                     status: this.statusId
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.refundapi.getListForDataCenterPageUsingGET(params).then(res=>{
                     if(res.data.status === 200){
                         this.dataList = res.data.data.list;
                         this.total = Number(res.data.data.total);
@@ -111,8 +107,14 @@
                 this.statusId = status.value;
                 this.pageHandler(1);
             },
-            downloadHandler(){
-
+            downloadHandler(id){
+                this.$api.refundapi.downloadUsingGET({id: id}).then(res=>{
+                    if(res.data.status === 200){
+                        this.$message.success(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.$message.error(res.data.msg);
+                })
             }
         },
         components:{
@@ -138,5 +140,24 @@
     .line-nav a.active{
         color: #457fcf;
         border-bottom: 2px solid #457fcf;
+    }
+    .gray{
+        color: #606266;
+    }
+    .green{
+        color: green;
+    }
+    .red{
+        color: red;
+    }
+    table tbody tr{
+        background-color: #fff;
+    }
+    table tbody tr:hover{
+        background-color: #f5f7fa;
+    }
+    table tbody tr:nth-of-type(2n){
+        width: 100%;
+        background-color: #FAFAFA;
     }
 </style>

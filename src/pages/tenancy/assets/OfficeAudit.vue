@@ -16,6 +16,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in dataFloorList"
                                         :key="item.id"
@@ -83,21 +84,9 @@
                     isStatus:false,
                     id:0
                 },{
-                    name:"空置",
+                    name:"取消",
                     isStatus:false,
-                    id:1
-                },{
-                    name:"预定",
-                    isStatus:false,
-                    id:3
-                },{
-                    name:"使用中",
-                    isStatus:false,
-                    id:4
-                },{
-                    name:"失效",
-                    isStatus:false,
-                    id:5
+                    id:2
                 }],
                 statusId:'',
                 statesId:'',
@@ -138,7 +127,7 @@
                     floorId:this.floorValue,
                     type:1,
                     status:this.statusId,
-                    states:this.statesId
+                    states:this.statesId==''?[0,2]:this.statesId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);

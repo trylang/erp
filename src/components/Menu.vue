@@ -313,7 +313,7 @@
                         title: '可视化管理',
                         children: [
                             {
-                                path: '/inner/building',
+                                path: '/visual/visualization',
                                 title: '可视化管理'
                             }
                         ]
@@ -332,7 +332,7 @@
                         children: [
                             {
                                 path: '/database/sign',
-                                title: '签约统计'
+                                title: '合同统计'
                             },
                             {
                                 path: '/database/signTrade',
@@ -422,6 +422,15 @@
                                 title: '账单调整维护记录'
                             }
                         ]
+                    },
+                    {
+                        title: '任务中心',
+                        children: [
+                            {
+                                path: '/database/taskcenter',
+                                title: '任务中心'
+                            },
+                        ]   
                     }],
                     system: [{
                         title: '组织管理',

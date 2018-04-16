@@ -16,7 +16,8 @@
                     <el-col :span="10" :offset="4">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼宇</span>
-                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect()">
+                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in buildOptions"
                                         :key="item.id"
@@ -68,8 +69,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>
@@ -100,7 +101,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼宇</span>
-                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" class="dialogselect" disabled>
+                    <el-select v-model="unitInfoData.buildId" @change="getFloorList(unitInfoData.buildId)" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in buildOptions"
                                 :key="item.id"
@@ -171,16 +172,13 @@
                     marketName:'朝阳大悦城',
                     id:1
                 }],
-                buildOptions:[{
-                    buildName:'商场',
-                    id:1
-                }],
+                buildOptions:[],
                 floorOptions:[],
                 typeOptions:[],
                 unitInfoData:{
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -231,7 +229,7 @@
             }
         },
         mounted(){
-            this.getFloorList();
+            this.getBuildingList();
         },
         watch:{
             searchText(){
@@ -246,7 +244,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -279,6 +277,11 @@
                     this.typeOptions = res.data.data;
                 });
             },
+            async getBuildingList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
+                })
+            },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:pageNum,
@@ -294,9 +297,9 @@
                     this.total = Number(res.data.data.total);
                 })
             },
-            async getFloorList(){
+            async getFloorList(buildId){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId
                 }).then(res=>{
                     this.floorOptions = res.data.data;
                 })
@@ -335,7 +338,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -381,8 +384,9 @@
                     }
                 })
             },
-            buildSelect(){
+            buildSelect(buildId){
                 this.getDataList(1);
+                this.getFloorList(buildId);
             },
             floorSelect(){
                 this.getDataList(1);

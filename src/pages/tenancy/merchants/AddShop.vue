@@ -5,10 +5,6 @@
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                     <div class="dialoginput">
-                        <span class="inputname inputnameWidth">店铺号</span>
-                        <input class="inputtext" type="text" placeholder="请输入店铺号" v-model="shopInfoData.shopCode">
-                    </div>
-                    <div class="dialoginput">
                         <span class="inputname inputnameWidth">店铺名称</span>
                         <input class="inputtext" type="text" placeholder="请输入店铺名称" v-model="shopInfoData.shopName">
                     </div>
@@ -25,7 +21,8 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth" style="line-height: 40px;">经营品牌</span>
-                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" class="dialogselect" @change="selectshopBrand(data)">
+                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" class="dialogselect" 
+                            @change="selectshopBrand()" @remove-tag="deleteTag">
                             <el-option
                                     v-for="item in shopBrandOptions"
                                     :key="item.id"
@@ -115,7 +112,7 @@
                     merchantId: '',
                     posNum:'',
                     shopBrandId: [],
-                    shopCode: '',
+                    // shopCode: '',
                     shopMainBrandId: '',
                     shopName: '',
                     shopType: ''
@@ -148,7 +145,11 @@
                 merchantOptions:[],
                 shopBrandOptions:[],
                 shopMainBrandOptions:[],
-                floorOptions:[]
+                floorOptions:[],
+                shopBrandData:{
+                    id:'',
+                    brandName:''
+                }
             }
         },
         mounted(){
@@ -190,17 +191,23 @@
                         id: this.$route.params.shopId
                     }).then(res => {
                         this.shopInfoData = res.data.data;
-                        this.shopBrand = res.data.data.shopBrandId;
+                        res.data.data.shopBrandId.map(item => {
+                            let brand = this.shopBrandOptions.find(item1 => {
+                                return item == item1.id;
+                            });
+                            this.shopBrand.push(brand);
+                        });
+                        this.shopMainBrandOptions = this.shopBrand;
                     })
                 }
             },
             async getMerchantList(){
-                this.$api.rentapi.listUsingGET_12().then(res=>{
+                this.$api.rentapi.listUsingGET_12({merchantType: 0, status: 1}).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
             async getShopBrandList(){
-                this.$api.rentapi.listUsingGET_3().then(res=>{
+                this.$api.rentapi.listUsingGET_3({status: 1}).then(res=>{//已确认状态
                     this.shopBrandOptions = res.data.data;
                 })
             },
@@ -211,12 +218,14 @@
                     this.floorOptions = res.data.data;
                 })
             },
-            selectshopBrand(data){
-                console.log(data)
+            selectshopBrand(){
                 this.shopMainBrandOptions = this.shopBrand;
                 this.shopInfoData.shopBrandId = this.shopBrand.map(item=>{
                     return item.id;
                 });
+            },
+            deleteTag(tag) {
+                if (this.shopInfoData.shopMainBrandId === tag.id) this.shopInfoData.shopMainBrandId = '';
             }
         },
         components:{

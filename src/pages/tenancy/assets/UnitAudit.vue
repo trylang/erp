@@ -16,6 +16,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in dataFloorList"
                                         :key="item.id"

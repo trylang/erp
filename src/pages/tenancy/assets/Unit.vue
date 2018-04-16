@@ -17,6 +17,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in floorOptions"
                                         :key="item.id"
@@ -55,8 +56,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addunit/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <router-link :to="'/inner/addunit/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>

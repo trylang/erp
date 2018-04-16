@@ -17,7 +17,7 @@
                                     v-for="status in selects.status" 
                                     :key="status.value" 
                                     :class="{active:status.isStatus}" 
-                                    @click="statusHandler(status)">{{status.name}}
+                                    @click="statusHandler(status)">{{status.text}}
                                 </a>
                             </div>
                         </div>
@@ -33,8 +33,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="dialogData(scope.row.id,scope.row)">编辑</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -48,12 +48,12 @@
             <div class="dialogbox">
                 <div class="rentcontent">
                     <span class="inputname inputnameCenter">店铺号</span>
-                    <el-select v-model="add.shopId" placeholder="请选择" class="dialogselect" @change="checkShopHandler(add.shopId)" :disabled="!!this.add.id">
+                    <el-select v-model="add.shopId" placeholder="请选择" class="dialogselect" @change="checkShopHandler(add.shopId)">
                         <el-option
                                 v-for="item in shopOptions"
                                 :label="item.shopName+'（'+item.shopCode+'）'"
                                 :key="item.id"
-                                :value="item">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
@@ -77,8 +77,8 @@
                         <el-option
                                 v-for="item in selects.cardType"
                                 :key="item.id"
-                                :label="item.name"
-                                :value="item.id">
+                                :label="item.text"
+                                :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
@@ -90,8 +90,7 @@
                         type="date"
                         placeholder="选择日期"
                         format="yyyy 年 MM 月 dd 日"
-                        value-format="yyyy-MM-dd"
-                        @change="pageHandler(1)">
+                        value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
             </div>
@@ -139,28 +138,28 @@
                 }],
                 selects: {
                     status:[
-                        {
-                            name:"全部",
-                            isStatus:true,
-                            id: ''
-                        },{
-                            name:"资和信商通卡",
-                            isStatus:false,
-                            id: 0
-                        },{
-                            name:"大悦城资和信卡",
-                            isStatus:false,
-                            id: 1
-                        }
+                        // {
+                        //     name:"全部",
+                        //     isStatus:true,
+                        //     id: ''
+                        // },{
+                        //     name:"资和信商通卡",
+                        //     isStatus:false,
+                        //     id: 0
+                        // },{
+                        //     name:"大悦城资和信卡",
+                        //     isStatus:false,
+                        //     id: 1
+                        // }
                     ],
                     cardType: [
-                        {
-                            name:"资和信商通卡",
-                            id: 0
-                        },{
-                            name:"大悦城资和信卡",
-                            id: 1
-                        }
+                        // {
+                        //     name:"资和信商通卡",
+                        //     id: 0
+                        // },{
+                        //     name:"大悦城资和信卡",
+                        //     id: 1
+                        // }
                     ]
                 },
                 columnData:[
@@ -183,6 +182,7 @@
         },
         mounted(){
             this.getShopList();
+            this.getCardType();
         },
         methods:{
             pageHandler(pageNum, pageSize){
@@ -193,7 +193,7 @@
                     queryParam: this.searchName,
                     cardType: this.status
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.refundapi.getListForPageUsingGET_10(params).then(res=>{
                     if(res.data.status === 200){
                         this.datalist = res.data.data.list;
                         this.total = Number(res.data.data.total);
@@ -207,7 +207,7 @@
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus
-                this.status = status.id;
+                this.status = status.value;
                 this.pageHandler(1);
             },
             handleClose(){
@@ -215,14 +215,14 @@
             },
             addbuilding(id){
                 if(id){
-                    this.$api.systemapi.updateUsingPOST_4({request:{//编辑
+                    this.$api.refundapi.updateUsingPUT_3({request:{//编辑
                         id: this.add.id,
-                        type: 0,
+                        type: 1,
                         shopId: this.add.shopId,
                         posNumber: this.add.posNumber,
                         terminalNumber: this.add.terminalNumber,
                         cardType: this.add.cardType,
-                        validStartDate: this.add.validDate
+                        validStartDate: this.add.validStartDate
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
@@ -234,13 +234,14 @@
                         this.$message.error(res.data.msg);
                     });
                 }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{//新增
-                        type: 0,
+                    this.$api.refundapi.addUsingPOST_3({request:{//新增
+                        id: '',
+                        type: 1,
                         shopId: this.add.shopId,
                         posNumber: this.add.posNumber,
                         terminalNumber: this.add.terminalNumber,
                         cardType: this.add.cardType,
-                        validStartDate: this.add.validDate
+                        validStartDate: this.add.validStartDate
                     }}).then(res=>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
@@ -256,53 +257,77 @@
             },
             dialogData(id, data){
                 this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = {
-                        id: data.id,
-                        type: 1,
-                        shopId: data.shopId,
-                        posNumber: data.posNumber,
-                        terminalNumber: data.terminalNumber,
-                        cardType: data.cardType,
-                        validStartDate: data.validDate
-                    }
+                if(id) {   //无结束日期可编辑，还有--开始日期必须大于系统日期
+                    this.$api.refundapi.isValidUsingGET_1({id: data.id}).then(res=>{//可编辑时判断开始日期
+                        if(res.data.status === 200){
+                            this.dialogVisible = true;
+                            this.add = {
+                                id: data.id,
+                                type: 1,
+                                shopId: data.shopId,
+                                posNumber: data.posNumber,
+                                terminalNumber: data.terminalNumber,
+                                cardType: data.cardType,
+                                validStartDate: data.validStartDate
+                            }
+                        }else{
+                            this.$message.warning(res.data.msg);
+                        }
+                    })
                 }else{
                     this.add = {};
+                    this.dialogVisible = true;
                 }
+                // this.getCardType();
             },
             deleteList(id){
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res => {
-                        this.$message.error(res.data.msg);
-                    });
-                }).catch(() => {
-                    $message("info", "已取消删除!");
-                });
+                this.$api.refundapi.isValidUsingGET_1({id: id}).then(res=>{//可删除时判断开始日期
+                    if(res.data.status === 200){
+                        this.$confirm('是否删除该条数据?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api.refundapi.deleteUsingDELETE_3({id: id}).then(res =>{
+                                if(res.data.status==200){
+                                    this.$message.success(res.data.msg);
+                                    this.pageHandler(1);
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
+                            }).catch(res => {
+                                this.$message.error(res.data.msg);
+                            });
+                        }).catch(() => {
+                            $message("info", "已取消删除!");
+                        });
+                    }else{
+                        this.$message.warning(res.data.msg);
+                    }
+                })
             },
             getShopList(){
-                this.$api.rentapi.listUsingGET_13({status: 1}).then(res=>{//只能是 空置，预定，使用中的状态
+                this.$api.rentapi.getByStatusUsingPOST({status: [1, 3, 4]}).then(res=>{//只能是 空置，预定，使用中的状态
                     this.shopOptions = res.data.data;
                 })
             },
             checkShopHandler(shopId){
-                console.log('店铺号',shopId);
-                this.posLength = 5;//需从新调一个接口根据店铺id查询
-                for(var i=1; i<=this.posLength; i++){
-                    this.posArr.push("0"+i);
-                }
-                console.log(this.posArr)
+                this.posArr = [];
+                this.$api.refundapi.getPosNumUsingGET({id: shopId}).then(res =>{//根据店铺id查询
+                    if(res.data.status === 200){
+                        for(var i=1; i<=res.data.data; i++){
+                            this.posArr.push("0"+i);
+                        }
+                    }
+                })
+            },
+            getCardType(){
+                this.$api.refundapi.getZHXCardTypeUsingGET().then(res=>{ //卡类型
+                    if(res.data.status === 200){
+                        this.selects.status = res.data.data;//这个需要一个全部选项，待调用
+                        this.selects.cardType = res.data.data;
+                    }
+                })
             },
             addHandler(){
                 this.dialogVisible = true;

@@ -68,7 +68,7 @@
                 },
                 defaultProps: {
                     children: 'children',
-                    label: 'name'
+                    label: 'namecode'
                 },
                 buildingData:''
             };
@@ -100,7 +100,7 @@
             },
             async getBuildingTreeList(){
                 await this.$api.rentapi.treeListUsingGET().then(res=>{
-                    this.dataTreeList = res.data.data;
+                    this.dataTreeList = this.formatTree(res.data.data);
                 })
             },
             async getBuildingList(){
@@ -152,6 +152,15 @@
             handleNodeClick(data){
                 this.buildingData = data;
                 console.log(data)
+            },
+            formatTree (tree) {
+                tree.forEach(item => {
+                    item.namecode = item.name + `（${item.code }）`;
+                    if (item.children) {
+                        this.formatTree(item.children);
+                    }
+                });
+                return tree;                       
             },
             async getFloor(){
                 if(this.buildingData.level == 3){

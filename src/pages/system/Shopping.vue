@@ -45,7 +45,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">商场面积(m²)(选填)</span>
-                    <input class="inputtext" type="number" placeholder="请输入商场面积" v-model.number="add.marketArea">
+                    <input class="inputtext" type="number" min="0" placeholder="请输入商场面积" v-model.number="add.marketArea">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">所属区域</span>
@@ -143,46 +143,55 @@
             },
             addbuilding(id){
                 if(id){
-                    this.$api.systemapi.updateUsingPOST_1({request:{
-                        id: this.add.id,
-                        regionId: this.add.regionId,
-                        marketName: this.add.marketName,
-                        marketEnglishName: this.add.marketEnglishName,
-                        marketArea: this.add.marketArea,
-                        marketCode: this.add.marketCode,
-                        phone: this.add.phone,
-                        fax: this.add.fax
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
+                    if(this.add.marketArea <= 0){
+                        this.$message.warning('商场面积不能小于0');
+                    }else{
+                        this.$api.systemapi.updateUsingPOST_1({request:{
+                            id: this.add.id,
+                            regionId: this.add.regionId,
+                            marketName: this.add.marketName,
+                            marketEnglishName: this.add.marketEnglishName,
+                            marketArea: this.add.marketArea,
+                            marketCode: this.add.marketCode,
+                            phone: this.add.phone,
+                            fax: this.add.fax
+                        }}).then(res=>{
+                            if(res.data.status==200){
+                                this.$message.success(res.data.msg);
+                                this.dialogVisible = false;
+                                this.pageHandler(1);
+                            }else{
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
                             this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                        });
+                    }
                 }else{
-                    this.$api.systemapi.saveUsingPOST_1({request:{
-                        regionId: this.add.regionId,
-                        marketName: this.add.marketName,
-                        marketEnglishName: this.add.marketEnglishName,
-                        marketArea: this.add.marketArea,
-                        marketCode: this.add.marketCode,
-                        phone: this.add.phone,
-                        fax: this.add.fax
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
+                    if(this.add.marketArea <= 0){
+                        this.$message.warning('商场面积不能小于0');
+                    }else{
+                        this.$api.systemapi.saveUsingPOST_1({request:{
+                            regionId: this.add.regionId,
+                            marketName: this.add.marketName,
+                            marketEnglishName: this.add.marketEnglishName,
+                            marketArea: this.add.marketArea,
+                            marketCode: this.add.marketCode,
+                            phone: this.add.phone,
+                            fax: this.add.fax
+                        }}).then(res=>{
+                            if(res.data.status==200){
+                                this.$message.success(res.data.msg);
+                                this.dialogVisible = false;
+                                this.pageHandler(1);
+                            }else{
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
                             this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                        });
+                    }
                 }
-                this.dialogVisible = false;
             },
             dialogData(id, data){
                 this.listid = id;

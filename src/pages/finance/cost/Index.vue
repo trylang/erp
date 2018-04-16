@@ -231,15 +231,15 @@ export default {
             label: "商铺"
           },
           {
-            id: 1,
+            id: 2,
             label: "场地"
           },
           {
-            id: 2,
+            id: 3,
             label: "广告位"
           },
           {
-            id: 3,
+            id: 1,
             label: "写字楼"
           }
         ],

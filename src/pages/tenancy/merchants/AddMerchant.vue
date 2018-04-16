@@ -14,7 +14,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">商户类型</span>
-                    <el-select v-model="merchantInfoData.merchantType" placeholder="选填" class="dialogselect">
+                    <el-select v-model="merchantInfoData.merchantType" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="item in merchantTypeOption"
                                 :key="item.id"
@@ -47,7 +47,7 @@
                 </div>
             </el-col>
         </el-row>
-        <blank-head title="联系人">
+        <blank-head title="联系人<span style='color:#ccc;'>（选填）</span>">
         <div class="commonbox">
             <el-row class="dialogbox">
                 <el-col :span="24">
@@ -97,24 +97,18 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">营业执照<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <el-upload
-                                class="avatar-uploader addimage"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="el-upload__text">点击添加图片</div>
-                        </el-upload>
-                        <div class="uploadfile">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                            <span class="spantopL"></span>
-                            <span class="spantopLname">1</span>
-                            <span class="spantopR"><i class="el-icon-close"></i></span>
-                            <span class="spanbottom">重新上传</span>
+                        <div class="avatar-uploader">
+                            <label class="el-upload el-upload--text">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="el-upload__text">点击添加图片</div>
+                                <input type="file" name="file" id="busLinsNumFile" 
+                                class="el-upload__input" @change="addFileUpload('busLinsNumFile')">
+                            </label>
                         </div>
                     </div>
+                    <el-dialog :visible.sync="merchantInfoData.busLinsNumFile && merchantInfoData.busLinsNumFile.length>0">
+                        <img width="100%" id="busLinsNumFile_img" alt="">
+                    </el-dialog>
                 </el-col>
             </el-row>
         </div>
@@ -130,22 +124,13 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">经营许可证<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <el-upload
-                                class="avatar-uploader addimage"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="el-upload__text">点击添加图片</div>
-                        </el-upload>
-                        <div class="uploadfile">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                            <span class="spantopL"></span>
-                            <span class="spantopLname">1</span>
-                            <span class="spantopR"><i class="el-icon-close"></i></span>
-                            <span class="spanbottom">重新上传</span>
+                        <div class="avatar-uploader">
+                            <label class="el-upload el-upload--text">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="el-upload__text">点击添加图片</div>
+                                <input type="file" name="file" id="busPermitNumfile" 
+                                class="el-upload__input" @change="addFileUpload('busPermitNumfile')">
+                            </label>
                         </div>
                     </div>
                 </el-col>
@@ -163,22 +148,13 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">商标注册证件<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <el-upload
-                                class="avatar-uploader addimage"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="el-upload__text">点击添加图片</div>
-                        </el-upload>
-                        <div class="uploadfile">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                            <span class="spantopL"></span>
-                            <span class="spantopLname">1</span>
-                            <span class="spantopR"><i class="el-icon-close"></i></span>
-                            <span class="spanbottom">重新上传</span>
+                        <div class="avatar-uploader">
+                            <label class="el-upload el-upload--text">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="el-upload__text">点击添加图片</div>
+                                <input type="file" name="file" id="tradeRegistNumFile" 
+                                class="el-upload__input" @change="addFileUpload('tradeRegistNumFile')">
+                            </label>
                         </div>
                     </div>
                 </el-col>
@@ -196,22 +172,13 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">法人身份证<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <el-upload
-                                class="avatar-uploader addimage"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="el-upload__text">点击添加图片</div>
-                        </el-upload>
-                        <div class="uploadfile">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                            <span class="spantopL"></span>
-                            <span class="spantopLname">1</span>
-                            <span class="spantopR"><i class="el-icon-close"></i></span>
-                            <span class="spanbottom">重新上传</span>
+                        <div class="avatar-uploader">
+                            <label class="el-upload el-upload--text">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="el-upload__text">点击添加图片</div>
+                                <input type="file" name="file" id="legalPersonIdFile" 
+                                class="el-upload__input" @change="addFileUpload('legalPersonIdFile')">
+                            </label>
                         </div>
                     </div>
                 </el-col>
@@ -229,22 +196,13 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">其他证件<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <el-upload
-                                class="avatar-uploader addimage"
-                                action="https://jsonplaceholder.typicode.com/posts/"
-                                :show-file-list="false"
-                                :on-success="handleAvatarSuccess"
-                                :before-upload="beforeAvatarUpload">
-                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="el-upload__text">点击添加图片</div>
-                        </el-upload>
-                        <div class="uploadfile">
-                            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                            <span class="spantopL"></span>
-                            <span class="spantopLname">1</span>
-                            <span class="spantopR"><i class="el-icon-close"></i></span>
-                            <span class="spanbottom">重新上传</span>
+                        <div class="avatar-uploader">
+                            <label class="el-upload el-upload--text">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="el-upload__text">点击添加图片</div>
+                                <input type="file" name="file" id="otherFile" 
+                                class="el-upload__input" @change="addFileUpload('otherFile')">
+                            </label>
                         </div>
                     </div>
                 </el-col>
@@ -291,10 +249,10 @@
                     id:1
                 },{
                     name:'广告位',
-                    id:2
+                    id:3
                 },{
                     name:'场地',
-                    id:3
+                    id:2
                 }],
                 merchantNatureOption:[{
                     name:'法人',
@@ -310,6 +268,7 @@
         },
         methods:{
             addItem(){
+                if(!this.merchantInfoData.contactLstParams) this.merchantInfoData.contactLstParams = [];
                 this.merchantInfoData.contactLstParams.push({
                     id:'',
                     responsiblePerson:'',
@@ -318,10 +277,31 @@
                     mainOrNot:''
                 });
             },
+            addFileUpload(type) {
+                const file=document.getElementById(type).files[0]; //获取文件流
+                if (!this.merchantInfoData[type]) {
+                    this.merchantInfoData[type] = [];
+                }
+                this.merchantInfoData[type].push(file);
+                this.changImg(type, file);
+                console.log(this.merchantInfoData.busLinsNumFile);
+            },
+            changImg(type, file){  
+                if (!(/^image\/.*$/i.test(file.type))) {  
+                    return; //不是图片 就跳出这一次循环  
+                }
+                //实例化FileReader API  
+                var freader = new FileReader();  
+                freader.readAsDataURL(file);  
+                freader.onload = function(e) {
+                    $(`#${type}_img`).attr("src",e.target.result);  
+                };
+            },
             async submitFormData(){
+                console.log(this.merchantInfoData);
                 if(this.$route.params.merchantId == 0) {
                     await this.$api.rentapi.addUsingPOST_8({
-                        //$config:{ headers: { 'Content-Type':'multipart/form-data'}},
+                        $config:{ headers: { 'Content-Type':'multipart/form-data'}},
                         request: this.merchantInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -368,36 +348,36 @@
 </script>
 
 <style scoped>
-    .el-radio{
-        line-height: 30px;
-    }
-    .commonbox{
-        position: relative;
-    }
-    .dialogbox{
-        padding: 0 50px;
-    }
-    .uploadtitle{
-        color: #666;
-        font-weight: normal;
-    }
-    .dialoginput .inputnameWidth{
-        width: 120px;
-    }
-    .dialoginput .inputtext{
-        margin-left: 10px;
-    }
-    .addnumber{
-        background: #fafafa;
-        color: #ccc;
-        border: 1px solid #ccc;
-        width: 24px;
-        height:24px;
-        line-height: 24px;
-        text-align: center;
-        border-radius: 12px;
-        position: absolute;
-        left: 20px;
-        top: 5px;
-    }
+.el-radio {
+  line-height: 30px;
+}
+.commonbox {
+  position: relative;
+}
+.dialogbox {
+  padding: 0 50px;
+}
+.uploadtitle {
+  color: #666;
+  font-weight: normal;
+}
+.dialoginput .inputnameWidth {
+  width: 120px;
+}
+.dialoginput .inputtext {
+  margin-left: 10px;
+}
+.addnumber {
+  background: #fafafa;
+  color: #ccc;
+  border: 1px solid #ccc;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 12px;
+  position: absolute;
+  left: 20px;
+  top: 5px;
+}
 </style>

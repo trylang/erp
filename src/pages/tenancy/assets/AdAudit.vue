@@ -15,7 +15,8 @@
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼宇</span>
-                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect()">
+                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in buildOptions"
                                         :key="item.id"
@@ -95,6 +96,9 @@
                 buildOptions:[{
                     buildName:'商场',
                     id:1
+                }, {
+                    buildName:'写字楼',
+                    id:2
                 }],
                 floorOptions:[],
                 buildValue:'',
@@ -118,7 +122,7 @@
             }
         },
         mounted(){
-            this.getFloorList();
+            // this.getFloorList();
         },
         watch:{
             searchText(){
@@ -157,15 +161,16 @@
                     this.total = Number(res.data.data.total);
                 })
             },
-            async getFloorList(){
+            async getFloorList(buildId){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId
                 }).then(res=>{
                     this.floorOptions = res.data.data;
                 })
             },
-            buildSelect(){
+            buildSelect(buildId){
                 this.getDataList(1);
+                this.getFloorList(buildId);
             },
             floorSelect(){
                 this.getDataList(1);

@@ -3403,6 +3403,124 @@ export const deleteUsingDELETE_1URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 数据中心务中心查询列表
+ * request: getListForDataCenterPageUsingGET
+ * url: getListForDataCenterPageUsingGETURL
+ * method: getListForDataCenterPageUsingGET_TYPE
+ * raw_url: getListForDataCenterPageUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param type - 任务类型 0返款计算1数据导出
+ * @param status - 任务状态 0成功1进行中2失败
+ */
+export const getListForDataCenterPageUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/refund/task/data/center'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['status'] = parameters['status']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getListForDataCenterPageUsingGET_RAW_URL = function() {
+  return '/refund/task/data/center'
+}
+export const getListForDataCenterPageUsingGET_TYPE = function() {
+  return 'get'
+}
+export const getListForDataCenterPageUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/refund/task/data/center'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['status'] = parameters['status']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 任务中心下载
+ * request: downloadUsingGET
+ * url: downloadUsingGETURL
+ * method: downloadUsingGET_TYPE
+ * raw_url: downloadUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const downloadUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/refund/task/download'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['id'] !== undefined) {
+    queryParameters['id'] = parameters['id']
+  }
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const downloadUsingGET_RAW_URL = function() {
+  return '/refund/task/download'
+}
+export const downloadUsingGET_TYPE = function() {
+  return 'get'
+}
+export const downloadUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/refund/task/download'
+  if (parameters['id'] !== undefined) {
+    queryParameters['id'] = parameters['id']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 任务中心查询列表
  * request: getListForPageUsingGET_6
  * url: getListForPageUsingGET_6URL

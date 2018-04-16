@@ -90,6 +90,9 @@
                 buildOptions:[{
                     buildName:'商场',
                     id:1
+                }, {
+                    buildName:'写字楼',
+                    id:2
                 }],
                 floorOptions:[]
             }

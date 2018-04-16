@@ -73,7 +73,20 @@
                 }
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    startDate: this.searchData
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.expireExportUsingPOST({request: params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

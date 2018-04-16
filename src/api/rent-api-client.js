@@ -978,8 +978,8 @@ export const updateShopUnitUsingPUT = function(parameters = {}) {
  * @param stopType - 终止性质
  * @param stopReason - 终止原因
  */
-export const stopUsingPUT = function(parameters = {}) {
-    return rentapi.stopUsingPUT(parameters);
+export const stopUsingPOST = function(parameters = {}) {
+    return rentapi.stopUsingPOST(parameters);
 }
 
 /**
@@ -2222,4 +2222,127 @@ export const baseDataOptionsUsingGET = function(parameters = {}) {
  */
 export const updateCancelFailure = function(parameters = {}) {
     return rentapi.updateStatusUsingPUT(parameters);
+}
+/**
+ * 根据类型查询商户下拉列表
+ * request: merchantUsingGET
+ * url: merchantUsingGETURL
+ * method: merchantUsingGET_TYPE
+ * raw_url: merchantUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param type - 商户类型（ 0：商场；, 1：写字楼；2：广告位, 3：场地;)
+ */
+export const getMerchantOption = function(parameters = {}) {
+    return rentapi.merchantUsingGET(parameters);
+}
+/**
+ * 查询商户的店铺下拉列表
+ * request: merchantShopUsingGET
+ * url: merchantShopUsingGETURL
+ * method: merchantShopUsingGET_TYPE
+ * raw_url: merchantShopUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const getMerchantShopOption = function(parameters = {}) {
+    return rentapi.merchantShopUsingGET(parameters);
+}
+/**
+ * 确认的意向合同下拉列表
+ * request: useableUsingGET_1
+ * url: useableUsingGET_1URL
+ * method: useableUsingGET_1_TYPE
+ * raw_url: useableUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ */
+export const getIntentContractOption = function(parameters = {}) {
+    return rentapi.useableUsingGET_1(parameters);
+}
+/**
+ * 确认的意向合同下拉列表
+ * request: useableUsingGET_1
+ * url: useableUsingGET_1URL
+ * method: useableUsingGET_1_TYPE
+ * raw_url: useableUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ */
+export const getListForPageByPropertyTypeUsingGET = function(parameters = {}) {
+    return rentapi.getListForPageByPropertyTypeUsingGET(parameters);
+}
+/**
+ * 根据类型,楼宇查询楼层对应单元信息
+ * request: getListUsingGET
+ * url: getListUsingGETURL
+ * method: getListUsingGET_TYPE
+ * raw_url: getListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param type - 类型(0表示店铺单元，1表示写字楼，2表示场地，3表示广告位)
+ * @param buildId - 楼宇ID
+ */
+export const getFloorUnitList = function(parameters = {}) {
+    return rentapi.getListUsingGET(parameters);
+}
+/**
+ * 正式合同终止
+ * request: stopUsingPOST
+ * url: stopUsingPOST
+ * method: stopUsingPOST_TYPE
+ * raw_url: stopUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const stopContractPOST = function(parameters = {}) {
+    return rentapi.stopUsingPOST(parameters);
+}
+/**
+ * 正式合同终止详情
+ * request: stopUsingGET
+ * url: stopUsingGETURL
+ * method: stopUsingGET_TYPE
+ * raw_url: stopUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const getStopInfo = function(parameters = {}) {
+    return rentapi.stopUsingGET(parameters);
+}
+/**
+ * 根据父业态查询子业态业态列表
+ * request: getListByPidUsingGET
+ * url: getListByPidUsingGETURL
+ * method: getListByPidUsingGET_TYPE
+ * raw_url: getListByPidUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pid - 父业态ID
+ */
+export const getListByPidUsingGET = function(parameters = {}) {
+    return rentapi.getListByPidUsingGET(parameters);
+}
+/**
+ * 根据层级查询所有业态信息
+ * request: getOptionsUsingGET
+ * url: getOptionsUsingGETURL
+ * method: getOptionsUsingGET_TYPE
+ * raw_url: getOptionsUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param level - level
+ */
+export const getOptionsUsingGET = function(parameters = {}) {
+    return rentapi.getOptionsUsingGET(parameters);
+}
+/**
+ * 意向合同确认列表列表--分页
+ * request: confirmByStatusUsingGET
+ * url: confirmByStatusUsingGETURL
+ * method: confirmByStatusUsingGET_TYPE
+ * raw_url: confirmByStatusUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param states - 多个状态(10:审核（新增）;11:已转为正式合同;20:取消;30:已确认;)
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param propertyType - 物业性质
+ * @param status - 状态
+ */
+export const confirmByStatusUsingGET = function(parameters = {}) {
+    return rentapi.confirmByStatusUsingGET(parameters);
 }

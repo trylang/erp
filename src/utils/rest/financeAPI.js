@@ -124,6 +124,24 @@ export async function queryShop() {
   }
 }
 
+// 获取店铺列表 （销售统计里用的）（接口在租务里）
+export async function saleQueryShop() {
+  // const param = {
+  //   pageSize: maxPageSize
+  // };
+  const res = await API_RENT.getByStatusUsingPOST({status: [1, 3, 4, 5]});//0新增1空置2取消空置3预定4使用中5.失效
+  const data = res.data;
+  if (data.status === 200) {
+    const json = _changeJson(data.data, 'id');
+    return {
+      data: data.data,
+      json: json
+    };
+  } else {
+    return data.message;
+  }
+}
+
 // 获取商场楼层列表（租务）
 export async function queryFloor() {
   const res = await API_RENT.selectByBuildIdUsingGET({buildId: 1});

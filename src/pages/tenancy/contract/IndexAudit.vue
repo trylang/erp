@@ -122,9 +122,12 @@
                 localStorage.setItem('activeName',1)
             },
             async getDataList(pageNum,pageSize){
-                await this.$api.rentapi.getListForPageByStatusUsingGET({
+                await this.$api.rentapi.confirmByStatusUsingGET({
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize,
+                    contractCode: this.searchText,
+                    merchantId: this.merchantValue,
+                    brandId: this.brandValue,
                     status:this.statusId
                 }).then(res=>{
                     this.dataList = res.data.data.list;
@@ -132,12 +135,16 @@
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12().then(res=>{
+                await this.$api.rentapi.listUsingGET_12({
+                    status:1
+                }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
             async getBrandList(){
-                await this.$api.rentapi.listUsingGET_3().then(res=>{
+                await this.$api.rentapi.listUsingGET_3({
+                    status:1
+                }).then(res=>{
                     this.brandOptions = res.data.data;
                 })
             },

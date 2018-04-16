@@ -71,7 +71,7 @@
                     { prop: 'shopBrandNames', label: '经营品牌'},
                     { prop: 'shopMainBrandName', label: '主品牌' },
                     { prop: 'merchantName', label: '商户名称' },
-                    { prop: 'shopType', label: '数据类型' },
+                    { prop: 'shopTypeName', label: '数据类型' },
                     { prop: 'floorStr', label: '楼层' },
                     { prop: 'centerCollectingOrNotStr', label: '中央收银' },
                     { prop: 'statusStr', label: '状态'},
@@ -88,7 +88,7 @@
                 },{
                     name:"取消",
                     isStatus:false,
-                    id:4
+                    id: 2
                 }],
                 multipleSelection:[]
             }

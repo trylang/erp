@@ -84,7 +84,7 @@
                     endDate: this.searchData[1],
                     contractId: this.contractId
                 }
-                if(this.searchData.length > 0 && this.contractId){
+                if(this.searchData.length > 0){
                     this.$api.reportapi.shopUsingPOST({request: params}).then(res=>{
                         if(res.data.status === 200){
                             this.datalist = res.data.data.list;
@@ -96,7 +96,22 @@
                 }
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    contractId: this.contractId,
+                    startDate: this.searchData[0],
+                    endDate: this.searchData[1]
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.poiUsingPOST({request: params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

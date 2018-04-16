@@ -16,14 +16,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">意向合同</span>
-                                    <el-select v-model="mainData.intentionContractId" placeholder="选填" class="dialogselect">
-                                        <el-option
-                                                v-for="item in intentionOptions"
-                                                :key="item.id"
-                                                :label="item.contractCode+'（'+item.merchantName+'）'"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <div clearable :disabled="delayChange == 2 || delayChange == 1" placeholder="选填" class="dialogtext rightcompany">{{mainData.intentionContractMerchantName}}</div>
                                 </div>
                             </el-col>
                         </el-row>
@@ -31,14 +24,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同分类</span>
-                                    <el-select v-model="mainData.contractType" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in typeOptions"
-                                                :key="item.value"
-                                                :label="item.text"
-                                                :value="item.value">
-                                        </el-option>
-                                    </el-select>
+                                    <div clearable :disabled="delayChange == 2 || delayChange == 1" placeholder="请选择" class="dialogtext rightcompany">{{mainData.contractTypeName}}</div>
                                 </div>
                             </el-col>
                         </el-row>
@@ -46,20 +32,13 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">销售计税类型</span>
-                                    <el-select v-model="mainData.rateType" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in rateTypeOptions"
-                                                :key="item.id"
-                                                :label="item.rateTypeName"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <div clearable :disabled="delayChange == 2 || delayChange == 1" placeholder="请选择" class="dialogtext rightcompany">{{mainData.rateTypeName}}</div>
                                 </div>
                             </el-col>
                             <el-col :span="5">
                                 <div class="dialoginput dialogtext">
                                     <div class="inputname">税率</div>
-                                    <input class="middleinput" type="text" placeholder="0"  v-model="mainData.rate" :disabled="mainData.rateType == '0'">
+                                    <div class="middleinput" type="text" placeholder="0"  v-model="mainData.rate" :disabled="delayChange == 2 || delayChange == 1"></div>
                                     <span class="rightcompany">%</span>
                                 </div>
                             </el-col>
@@ -70,7 +49,7 @@
                                     <div>
                                         <span class="inputname">合同说明</span>
                                     </div>
-                                    <textarea class="textareabox" placeholder="选填" v-model="mainData.description"></textarea>
+                                    <textarea class="textareabox" v-model="mainData.description" :disabled="delayChange == 2 || delayChange == 1" readonly></textarea>
                                 </div>
                             </el-col>
                         </el-row>
@@ -81,77 +60,31 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">商户</span>
-                                    <el-select v-model="mainData.merchantId" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in merchantOptions"
-                                                :key="item.id"
-                                                :label="item.merchantName+'（'+item.merchantCode+'）'"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.merchantName}}</span>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">店铺</span>
-                                    <el-select v-model="shopBrand" value-key="id" placeholder="请选择" class="dialogselect" @change="selectshopBrand()">
-                                        <el-option
-                                                v-for="item in shopOptions"
-                                                :key="item.id"
-                                                :label="item.shopName+'（'+item.shopCode+'）'"
-                                                :value="item">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.shopName}}</span>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">品牌</span>
-                                    <span class="dialogtext">{{mainBrandName}}</span>
-                                </div>
-                                <div class="dialoginput" v-if="this.$route.params.prototypeId == 2 || this.$route.params.prototypeId == 3">
-                                    <span class="inputname">品牌</span>
-                                    <el-select v-model="mainData.mainBrandId" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in brandOptions"
-                                                :key="item.id"
-                                                :label="item.brandName+'（'+item.brandCode+'）'"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.brandName}}</span>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">经营方式</span>
-                                    <el-select v-model="mainData.operationMode" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in operationOptions"
-                                                :key="item.value"
-                                                :label="item.text"
-                                                :value="item.value">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.operationModeName}}</span>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">结算等级</span>
-                                    <el-select v-model="mainData.settleLevel" placeholder="请选择" class="dialogselect">
-                                        <el-option
-                                                v-for="item in settleLevelOptions"
-                                                :key="item.value"
-                                                :label="item.text"
-                                                :value="item.value">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.settleLevelName}}</span>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">收银模式</span>
-                                    <el-select v-model="mainData.cashierMode" placeholder="请选择" class="dialogselect" disabled>
-                                        <el-option
-                                                v-for="item in cashierModeOptions"
-                                                :key="item.id"
-                                                :label="item.cashierName"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="dialogtext">{{mainData.cashierModeName}}</span>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">免租期</span>
-                                    <input class="inputtext" type="text" placeholder="请输入免租期" v-model="mainData.rentFreeNumber">
+                                    <input class="inputtext" type="text" placeholder="请输入免租期" :disabled="delayChange == 2 || delayChange == 1" v-model="mainData.rentFreeNumber" readonly>
                                     <span class="dialogtext">天</span>
                                 </div>
                             </el-col>
@@ -164,22 +97,29 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同有效期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.validStartDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="开始日期">
                                     </el-date-picker>
                                     ~
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.validEndDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            @change="tenancyTerm()"
+                                            :disabled="delayChange == 2"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：0个月</div>
+                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -187,9 +127,12 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">交铺日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.pavingDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="请输入交铺日期">
                                     </el-date-picker>
                                 </div>
@@ -200,9 +143,12 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">开业日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.openingDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="请输入开业日期">
                                     </el-date-picker>
                                 </div>
@@ -213,9 +159,12 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">入住日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.enterDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="请输入入住日期">
                                     </el-date-picker>
                                 </div>
@@ -226,22 +175,29 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">装修周期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.decorationStartDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="开始日期">
                                     </el-date-picker>
                                     ~
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.decorationEndDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            @change="cycleChange()"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：0个月</div>
+                                <div class="dialogtext">周期：{{cycleNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -249,9 +205,12 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">起租日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.rentStartDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="请输入起租日期">
                                     </el-date-picker>
                                 </div>
@@ -262,9 +221,12 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">签约日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.signDate"
                                             type="date"
+                                            value-format="yyyy-MM-dd"
+                                            :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="请输入签约日期">
                                     </el-date-picker>
                                 </div>
@@ -276,17 +238,17 @@
                                     <div>
                                         <span class="inputname">备注</span>
                                     </div>
-                                    <textarea class="textareabox" placeholder="选填" v-model="mainData.remark"></textarea>
+                                    <textarea class="textareabox" placeholder="选填" v-model="mainData.remark" :disabled="delayChange == 2 || delayChange == 1" readonly></textarea>
                                 </div>
                             </el-col>
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="2 单元信息" name="2">
-                    <blank-head title="租赁单元"></blank-head>
+                <el-tab-pane :label="'2 '+stepName+'信息'" :disabled="isStep<2 && this.$route.params.contractId ==0" name="2">
+                    <blank-head :title="'租赁'+stepName"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
-                            <el-col :span="24">
+                            <el-col :span="24" v-if="this.$route.params.prototypeId != 3">
                                 <div class="listbox contracthead" style="margin: 0;">
                                     <div class="listcont contractcont">
                                         <div class="listcolum contractlist" v-if="this.$route.params.prototypeId == 0">
@@ -294,15 +256,13 @@
                                             <p>{{shopName}}</p>
                                         </div>
                                         <div class="listcolum contractlist" v-if="this.$route.params.prototypeId != 0">
-                                            <span v-if="this.$route.params.prototypeId == 1">写字楼</span>
-                                            <span v-if="this.$route.params.prototypeId == 2">场地</span>
-                                            <span v-if="this.$route.params.prototypeId == 3">广告位</span>
+                                            <span>{{stepName}}</span>
                                         </div>
                                         <div class="listcolum contractlist">
                                             <span>
                                                 建筑面积
                                                 <template>
-                                                    <el-radio v-model="unitData.rentWay" label="0" @change="radioChange()">计租</el-radio>
+                                                    <el-radio v-model="unitData.rentWay" :disabled="delayChange == 2 || delayChange == 1 || unitData.rentWay == '1'" label="0">计租</el-radio>
                                                 </template>
                                             </span>
                                             <p>{{unitData.area}}</p>
@@ -311,7 +271,7 @@
                                             <span>
                                                 使用面积
                                                 <template>
-                                                    <el-radio v-model="unitData.rentWay" label="1" @change="radioChange()">计租</el-radio>
+                                                    <el-radio v-model="unitData.rentWay" :disabled="delayChange == 2 || delayChange == 1 || unitData.rentWay == '0'" label="1">计租</el-radio>
                                                 </template>
                                             </span>
                                             <p>{{unitData.useArea}}</p>
@@ -324,11 +284,11 @@
                                     </div>
                                 </div>
                             </el-col>
-                            <el-col :span="24">
+                            <el-col :span="24" v-if="this.$route.params.prototypeId != 3">
                                 <div class="listbox" style="margin: 0;">
-                                    <div class="listcont contractcont" v-for="(UnitItem,index) in checkedUnit">
+                                    <div class="listcont contractcont" v-for="(UnitItem,index) in unitListPush">
                                         <div class="listcolum contractlist">
-                                            <span>单元号</span>
+                                            <span>{{stepName}}号</span>
                                             <p>{{UnitItem.unitCode}}</p>
                                         </div>
                                         <div class="listcolum contractlist">
@@ -343,12 +303,26 @@
                                             <span>楼层</span>
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
-                                        <div class="deletebtn">
-                                            <button data-v-4d27413a="" class="btn_text">删除</button>
+                                    </div>
+                                </div>
+                            </el-col>
+                            <el-col :span="24" v-if="this.$route.params.prototypeId == 3">
+                                <div class="listbox" style="margin: 0;">
+                                    <div class="listcont contractcont" v-for="(UnitItem,index) in unitListPush">
+                                        <div class="listcolum contractlist">
+                                            <span>{{stepName}}号</span>
+                                            <p>{{UnitItem.unitCode}}</p>
+                                        </div>
+                                        <div class="listcolum contractlist">
+                                            <span>规格</span>
+                                            <p>{{UnitItem.advertisingStandard}}</p>
+                                        </div>
+                                        <div class="listcolum contractlist">
+                                            <span>楼层</span>
+                                            <p>{{UnitItem.floorName}}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="listcont"><el-button icon="el-icon-plus" @click="addItem">继续添加单元</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
@@ -358,31 +332,21 @@
                             <el-col :span="10" class="dialogbox">
                                 <div class="dialoginput">
                                     <span class="inputname">外摆面积</span>
-                                    <input class="inputtext" type="text" placeholder="选填" v-model="unitData.swingArea">
+                                    <input class="inputtext" type="text" placeholder="选填" :disabled="delayChange == 2" v-model="unitData.swingArea" readonly>
                                     <span class="dialogtext">㎡</span>
                                 </div>
                             </el-col>
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="3 租金条款" name="3">
+                <el-tab-pane label="3 租金条款" :disabled="isStep<3 && this.$route.params.contractId ==0" name="3">
                     <blank-head title="合同租金条款"></blank-head>
                     <div class="commonbox" v-show="stepNumber==0">
-                        <div class="addContractBtn"><button class="btn_text" @click="addClickRentInfo(31)">添加</button></div>
                         <el-row class="dialogbox">
                             <el-col :span="24">
                                 <data-table :tableData="rentDataList" :colConfigs="rentcolumnData" @tableclickemit="rentChildData">
-                                    <el-table-column
-                                            label="操作"
-                                            width="110"
-                                            slot="operation">
-                                        <template slot-scope="scope">
-                                            <button class="btn_text" @click="getRentInfo(scope.row.id,31)">编辑</button>
-                                            <button class="btn_text" @click="deleteDataList(scope.row.id)">删除</button>
-                                        </template>
-                                    </el-table-column>
                                 </data-table>
-                                <rt-page ref="page" :cur="pageNum" :total="total" @change="rentDataList" style="margin-bottom:30px"></rt-page>
+                                <rt-page ref="page" :cur="pageNum" :total="total1" @change="rentDataList" style="margin-bottom:30px"></rt-page>
                             </el-col>
                         </el-row>
                     </div>
@@ -391,63 +355,42 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="costTypeData" value-key="id" placeholder="请选择" class="dialogselect" @change="costTypeSelect()">
-                                        <el-option
-                                                v-for="item in costTypeOptions"
-                                                :key="item.id"
-                                                :label="item.name"
-                                                :value="item">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].costTypeName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <el-select v-model="costItemData" value-key="id" placeholder="请选择" class="dialogselect" @change="costItemSelect()">
-                                        <el-option
-                                                v-for="item in costItemDataList"
-                                                :key="item.id"
-                                                :label="item.costItemName"
-                                                :value="item">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].costItemName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameCenter">结算组别</span>
-                                    <span class="inputname">{{settleGroupname}}</span>
+                                    <span class="inputname">{{rentData[0].settleGroupName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">结算方式</span>
-                                    <el-select v-model="rentData[0].settleType" placeholder="请选择" class="dialogselect" @change="settleTypeSelect()">
-                                        <el-option
-                                                v-for="item in settleOptions"
-                                                :key="item.id"
-                                                :label="item.settleItemName"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].settleTypeName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <el-col :span="16">
                                     <div class="rentcontent">
                                         <span class="inputname">结算周期</span>
-                                        <input class="inputtext" type="text" placeholder="周期数" v-model="rentData[0].settleCycle">
+                                        <input class="inputtext" type="text" placeholder="周期数" v-model="rentData[0].settleCycle" readonly>
                                     </div>
                                 </el-col>
                                 <el-col :span="6" :offset="2">
                                     <div class="rentcontent">
-                                        <el-select v-model="rentData[0].settleUnit" class="dialogselect">
+                                        <el-select v-model="rentData[0].settleUnit" clearable class="dialogselect">
                                             <el-option
                                                     v-for="item in dateoption"
-                                                    :key="item.id"
+                                                    :key="item.value"
                                                     :label="item.name"
-                                                    :value="item.id">
+                                                    :value="item.value">
                                             </el-option>
                                         </el-select>
                                     </div>
@@ -457,14 +400,14 @@
                                 <el-col :span="10">
                                     <div class="rentcontent">
                                         <span class="inputname inputnameNarrow">提前</span>
-                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceMonth">
+                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceMonth" readonly>
                                         <span class="rightcompany">月</span>
                                     </div>
                                 </el-col>
                                 <el-col :span="13" :offset="1">
                                     <div class="rentcontent">
                                         <span class="inputname inputnameNarrow">第</span>
-                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceDay">
+                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceDay" readonly>
                                         <span class="rightcompany">日后结算</span>
                                     </div>
                                 </el-col>
@@ -472,28 +415,32 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">滞纳金起算日</span>
-                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate">
+                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate" readonly>
                                     <span class="rightcompany">日</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="rentData[0].countType" placeholder="选填" class="dialogselect">
+                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect" readonly>
                                         <el-option
                                                 v-for="item in countOptions"
-                                                :key="item.id"
+                                                :key="item.value"
                                                 :label="item.name"
-                                                :value="item.id">
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
-                                <div class="rentcontent">
+                                <div class="rentcontent" v-if="rentData[0].countType == 0">
                                     <span class="inputname inputnameCenter">滞纳金比例</span>
-                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="rentData[0].lateFeeRate">
+                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="rentData[0].lateFeeRate" readonly>
                                     <span class="rightcompany">‰</span>
+                                </div>
+                                <div class="rentcontent" v-if="rentData[0].countType == 1">
+                                    <span class="inputname inputnameCenter">滞纳金金额</span>
+                                    <input class="inputtext" type="text" placeholder="请输入金额" v-model="rentData[0].lateFee" readonly>
                                 </div>
                             </el-col>
                         </el-row>
@@ -503,7 +450,7 @@
                                     <div>
                                         <span class="inputname">合同说明</span>
                                     </div>
-                                    <textarea class="textareabox" placeholder="选填" v-model="rentData[0].remark"></textarea>
+                                    <textarea class="textareabox" placeholder="选填" v-model="rentData[0].remark" readonly></textarea>
                                 </div>
                             </el-col>
                         </el-row>
@@ -520,9 +467,11 @@
                                                 <div class="rentcontent">
                                                     <span class="inputname">起始日期</span>
                                                     <el-date-picker
+                                                            readonly
                                                             class="inputtext"
                                                             v-model="stageList.startDate"
                                                             type="date"
+                                                            value-format="yyyy-MM-dd"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
@@ -531,199 +480,174 @@
                                                 <div class="rentcontent">
                                                     <span class="inputname">截止日期</span>
                                                     <el-date-picker
+                                                            readonly
                                                             class="inputtext"
                                                             v-model="stageList.endDate"
                                                             type="date"
+                                                            value-format="yyyy-MM-dd"
+                                                            @change="phaseCycle(stageList.startDate,stageList.endDate)"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：12个月1天</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.phaseCycleNum}}</div>
                                             </div>
                                         </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定类型</span>
-                                                    <el-select v-model="stageList.fixedType" placeholder="请选择" class="dialogselect" @focus="typeFocus(0)">
-                                                        <el-option
-                                                                v-for="item in stageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 3">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定金额</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">面积</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea">
-                                                    <span class="rightcompany">㎡</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <template>
-                                                    <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
-                                                </template>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2">
-                                                    <span class="inputname">单价</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">抽成类型</span>
-                                                    <el-select v-model="stageList.percentType" placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList.percentType)">
-                                                        <el-option
-                                                                v-for="item in cstageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.percentType == 6">
-                                                    <span class="inputname">抽成比例</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent">
-                                                    <span class="rightcompany">%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 7 || stageList.percentType == 8">
-                                            <div class="stagesaletitle">销售额分段（单位/元）</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
-                                                <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                        <div v-if="costTypeData.value != 2">
+                                            <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount">
+                                                        <span class="inputname">固定类型</span>
+                                                        <span class="inputname">{{stageList.fixedTypeName}}</span>
                                                     </div>
                                                 </div>
-                                                <div class="salelistwidth">至</div>
-                                                <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
-                                                <div class="flexwidth" style="flex:1">
+                                                <div v-show="stageList.fixedType == 0">
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount">
+                                                        <span class="inputname">固定金额</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount" readonly>
+                                                        <span class="rightcompany">元</span>
                                                     </div>
                                                 </div>
-                                                <div class="saleselect">
+                                                <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
                                                     <div class="rentcontent">
+                                                        <span class="inputname">面积</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea" readonly>
+                                                        <span class="rightcompany">㎡</span>
+                                                    </div>
+                                                </div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
+                                                    <template>
+                                                        <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2 || stageList.fixedType == 3">
+                                                        <span class="inputname">单价</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price" readonly>
+                                                        <span class="rightcompany">元</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent">
+                                                        <span class="inputname">抽成类型</span>
+                                                        <span class="inputname">{{stageList.percentTypeName}}</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.percentType == 6">
                                                         <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent" readonly>
                                                         <span class="rightcompany">%</span>
                                                     </div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 9">
-                                            <div class="stagesaletitle">货品组别</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.goodsTypeId" placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in goodsTypeOption"
-                                                                :key="item.id"
-                                                                :label="item.goodsTypeName"
-                                                                :value="item.id">
-                                                        </el-option>
-                                                    </el-select>
+                                                <div>
                                                 </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 7 || stageList.percentType == 8">
+                                                <div class="stagesaletitle">销售额分段（单位/元）</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
+                                                    <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount" readonly>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 10">
-                                            <div class="stagesaletitle">支付方式</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.paymentWay" placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in paymentWayOption"
-                                                                :key="item.id"
-                                                                :label="item.name"
-                                                                :value="item.id">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                                    <div class="salelistwidth">至</div>
+                                                    <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
+                                                    <div class="flexwidth" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount" readonly>
+                                                        </div>
                                                     </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" readonly>
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistdel"></div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 9">
+                                                <div class="stagesaletitle">货品组别</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect">
+                                                            <el-option
+                                                                    v-for="item in goodsTypeOption"
+                                                                    :key="item.id"
+                                                                    :label="item.goodsTypeName"
+                                                                    :value="item.id">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deleteGoodsList(index,percentlist,stageList)">删除</button></div>
+                                                    <div class="salelistdel"></div>
+                                                </div>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 10">
+                                                <div class="stagesaletitle">支付方式</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect">
+                                                            <el-option
+                                                                    v-for="item in paymentWayOption"
+                                                                    :key="item.value"
+                                                                    :label="item.text"
+                                                                    :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deletePayList(index,percentlist,stageList)">删除</button></div>
+                                                    <div class="salelistdel"></div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="stageaction">
-                                        <span><button>修改</button></span>
-                                        <span><button @click="deleteStageBox(stageList)">删除</button></span>
                                     </div>
                                 </div>
-                                <div class="rentbutton stagebutton"><el-button icon="el-icon-plus" @click="addStageList()">继续添加</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="4 费用条款" name="4">
+                <el-tab-pane label="4 费用条款" :disabled="isStep<3 && this.$route.params.contractId ==0" name="4">
                     <blank-head title="合同费用条款"></blank-head>
                     <div class="commonbox" v-show="stepNumber==0">
-                        <div class="addContractBtn"><button class="btn_text" @click="addClickRentInfo(41)">添加</button></div>
                         <el-row class="dialogbox">
                             <el-col :span="24">
                                 <data-table :tableData="costDataList" :colConfigs="rentcolumnData" @tableclickemit="rentChildData">
-                                    <el-table-column
-                                            label="操作"
-                                            width="110"
-                                            slot="operation">
-                                        <template slot-scope="scope">
-                                            <button class="btn_text" @click="getRentInfo(scope.row.id,41)">编辑</button>
-                                            <button class="btn_text" @click="deleteDataList(scope.row.id)">删除</button>
-                                        </template>
-                                    </el-table-column>
                                 </data-table>
-                                <rt-page ref="page" :cur="pageNum" :total="total" @change="costDataList" style="margin-bottom:30px"></rt-page>
+                                <rt-page ref="page" :cur="pageNum" :total="total2" @change="costDataList" style="margin-bottom:30px"></rt-page>
                             </el-col>
                         </el-row>
                     </div>
@@ -732,63 +656,42 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="costTypeData" value-key="id" placeholder="请选择" class="dialogselect" @change="costTypeSelect()">
-                                        <el-option
-                                                v-for="item in costTypeOptions"
-                                                :key="item.id"
-                                                :label="item.name"
-                                                :value="item">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].costTypeName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <el-select v-model="costItemData" value-key="id" placeholder="请选择" class="dialogselect" @change="costItemSelect()">
-                                        <el-option
-                                                v-for="item in costItemDataList"
-                                                :key="item.id"
-                                                :label="item.costItemName"
-                                                :value="item">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].costItemName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameCenter">结算组别</span>
-                                    <span class="inputname">{{settleGroupname}}</span>
+                                    <span class="inputname">{{rentData[0].settleGroupName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">结算方式</span>
-                                    <el-select v-model="rentData[0].settleType" placeholder="请选择" class="dialogselect" @change="settleTypeSelect()">
-                                        <el-option
-                                                v-for="item in settleOptions"
-                                                :key="item.id"
-                                                :label="item.settleItemName"
-                                                :value="item.id">
-                                        </el-option>
-                                    </el-select>
+                                    <span class="inputname">{{rentData[0].settleTypeName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <el-col :span="16">
                                     <div class="rentcontent">
                                         <span class="inputname">结算周期</span>
-                                        <input class="inputtext" type="text" placeholder="周期数" v-model="rentData[0].settleCycle">
+                                        <input class="inputtext" type="text" placeholder="周期数" v-model="rentData[0].settleCycle" readonly>
                                     </div>
                                 </el-col>
                                 <el-col :span="6" :offset="2">
                                     <div class="rentcontent">
-                                        <el-select v-model="rentData[0].settleUnit" class="dialogselect">
+                                        <el-select v-model="rentData[0].settleUnit" clearable class="dialogselect">
                                             <el-option
                                                     v-for="item in dateoption"
-                                                    :key="item.id"
+                                                    :key="item.value"
                                                     :label="item.name"
-                                                    :value="item.id">
+                                                    :value="item.value">
                                             </el-option>
                                         </el-select>
                                     </div>
@@ -798,14 +701,14 @@
                                 <el-col :span="10">
                                     <div class="rentcontent">
                                         <span class="inputname inputnameNarrow">提前</span>
-                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceMonth">
+                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceMonth" readonly>
                                         <span class="rightcompany">月</span>
                                     </div>
                                 </el-col>
                                 <el-col :span="13" :offset="1">
                                     <div class="rentcontent">
                                         <span class="inputname inputnameNarrow">第</span>
-                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceDay">
+                                        <input class="inputtext inputtextNarrow" type="text" v-model="rentData[0].advanceDay" readonly>
                                         <span class="rightcompany">日后结算</span>
                                     </div>
                                 </el-col>
@@ -813,28 +716,32 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">滞纳金起算日</span>
-                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate">
+                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate" readonly>
                                     <span class="rightcompany">日</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="rentData[0].countType" placeholder="选填" class="dialogselect">
+                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect" readonly>
                                         <el-option
                                                 v-for="item in countOptions"
-                                                :key="item.id"
+                                                :key="item.value"
                                                 :label="item.name"
-                                                :value="item.id">
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
-                                <div class="rentcontent">
+                                <div class="rentcontent" v-if="rentData[0].countType == 0">
                                     <span class="inputname inputnameCenter">滞纳金比例</span>
-                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="rentData[0].lateFeeRate">
+                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="rentData[0].lateFeeRate" readonly>
                                     <span class="rightcompany">‰</span>
+                                </div>
+                                <div class="rentcontent" v-if="rentData[0].countType == 1">
+                                    <span class="inputname inputnameCenter">滞纳金金额</span>
+                                    <input class="inputtext" type="text" placeholder="请输入金额" v-model="rentData[0].lateFee" readonly>
                                 </div>
                             </el-col>
                         </el-row>
@@ -844,7 +751,7 @@
                                     <div>
                                         <span class="inputname">合同说明</span>
                                     </div>
-                                    <textarea class="textareabox" placeholder="选填" v-model="rentData[0].remark"></textarea>
+                                    <textarea class="textareabox" placeholder="选填" v-model="rentData[0].remark" readonly></textarea>
                                 </div>
                             </el-col>
                         </el-row>
@@ -861,9 +768,11 @@
                                                 <div class="rentcontent">
                                                     <span class="inputname">起始日期</span>
                                                     <el-date-picker
+                                                            readonly
                                                             class="inputtext"
                                                             v-model="stageList.startDate"
                                                             type="date"
+                                                            value-format="yyyy-MM-dd"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
@@ -872,191 +781,174 @@
                                                 <div class="rentcontent">
                                                     <span class="inputname">截止日期</span>
                                                     <el-date-picker
+                                                            readonly
                                                             class="inputtext"
                                                             v-model="stageList.endDate"
                                                             type="date"
+                                                            value-format="yyyy-MM-dd"
+                                                            @change="phaseCycle(stageList.startDate,stageList.endDate)"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：12个月1天</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.phaseCycleNum}}</div>
                                             </div>
                                         </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定类型</span>
-                                                    <el-select v-model="stageList.fixedType" placeholder="请选择" class="dialogselect" @focus="typeFocus(0)">
-                                                        <el-option
-                                                                v-for="item in stageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 2"></div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 3">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定金额</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">面积</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea">
-                                                    <span class="rightcompany">㎡</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <template>
-                                                    <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
-                                                </template>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2">
-                                                    <span class="inputname">单价</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">抽成类型</span>
-                                                    <el-select v-model="stageList.percentType" placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList.percentType)">
-                                                        <el-option
-                                                                v-for="item in cstageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.percentType == 6">
-                                                    <span class="inputname">抽成比例</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent">
-                                                    <span class="rightcompany">%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 7 || stageList.percentType == 8">
-                                            <div class="stagesaletitle">销售额分段（单位/元）</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
-                                                <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                        <div v-if="costTypeData.value != 2">
+                                            <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount">
+                                                        <span class="inputname">固定类型</span>
+                                                        <span class="inputname">{{stageList.fixedTypeName}}</span>
                                                     </div>
                                                 </div>
-                                                <div class="salelistwidth">至</div>
-                                                <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
-                                                <div class="flexwidth" style="flex:1">
+                                                <div v-show="stageList.fixedType == 0">
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount">
+                                                        <span class="inputname">固定金额</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount" readonly>
+                                                        <span class="rightcompany">元</span>
                                                     </div>
                                                 </div>
-                                                <div class="saleselect">
+                                                <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
                                                     <div class="rentcontent">
+                                                        <span class="inputname">面积</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea" readonly>
+                                                        <span class="rightcompany">㎡</span>
+                                                    </div>
+                                                </div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
+                                                    <template>
+                                                        <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2 || stageList.fixedType == 3">
+                                                        <span class="inputname">单价</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price" readonly>
+                                                        <span class="rightcompany">元</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent">
+                                                        <span class="inputname">抽成类型</span>
+                                                        <span class="inputname">{{stageList.percentTypeName}}</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.percentType == 6">
                                                         <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent" readonly>
                                                         <span class="rightcompany">%</span>
                                                     </div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 9">
-                                            <div class="stagesaletitle">货品组别</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.goodsTypeId" placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in goodsTypeOption"
-                                                                :key="item.id"
-                                                                :label="item.goodsTypeName"
-                                                                :value="item.id">
-                                                        </el-option>
-                                                    </el-select>
+                                                <div>
                                                 </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 7 || stageList.percentType == 8">
+                                                <div class="stagesaletitle">销售额分段（单位/元）</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
+                                                    <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount" readonly>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 10">
-                                            <div class="stagesaletitle">支付方式</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.paymentWay" placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in paymentWayOption"
-                                                                :key="item.id"
-                                                                :label="item.name"
-                                                                :value="item.id">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                                    <div class="salelistwidth">至</div>
+                                                    <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
+                                                    <div class="flexwidth" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount" readonly>
+                                                        </div>
                                                     </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" readonly>
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistdel"></div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text">删除</button></div>
-                                                <div class="salelistdel"></div>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 9">
+                                                <div class="stagesaletitle">货品组别</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect">
+                                                            <el-option
+                                                                    v-for="item in goodsTypeOption"
+                                                                    :key="item.id"
+                                                                    :label="item.goodsTypeName"
+                                                                    :value="item.id">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deleteGoodsList(index,percentlist,stageList)">删除</button></div>
+                                                    <div class="salelistdel"></div>
+                                                </div>
+                                            </div>
+                                            <div class="stagesale" v-show="stageList.percentType == 10">
+                                                <div class="stagesaletitle">支付方式</div>
+                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect">
+                                                            <el-option
+                                                                    v-for="item in paymentWayOption"
+                                                                    :key="item.value"
+                                                                    :label="item.text"
+                                                                    :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deletePayList(index,percentlist,stageList)">删除</button></div>
+                                                    <div class="salelistdel"></div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="stageaction">
-                                        <span><button>修改</button></span>
-                                        <span><button @click="deleteStageBox(stageList)">删除</button></span>
                                     </div>
                                 </div>
-                                <div class="rentbutton stagebutton"><el-button icon="el-icon-plus" @click="addStageList()">继续添加</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="5 保证金" name="5">
+                <el-tab-pane label="5 保证金" :disabled="isStep<5 && this.$route.params.contractId ==0" name="5">
                     <blank-head title="店铺租赁保证金"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">应收金额</span>
-                                    <input class="inputtext" type="text" placeholder="
- 请输入应收金额" v-model.trim="bondValue">
+                                    <input class="inputtext" type="number" placeholder=" 请输入应收金额" v-model.trim="bondValue" :disabled="delayChange == 2 || delayChange == 1" readonly>
                                 </div>
                             </el-col>
                         </el-row>
@@ -1064,36 +956,21 @@
                             <el-row class="dialogbox">
                                 <el-col :span="10">
                                     <div class="titleStyle">履约保证金</div>
-                                    <div class="bondconta">应收金额：<span class="money">¥{{depositNum}}</span></div>
-                                    <div class="bondcontb">已收金额：<span class="money">¥0</span></div>
-                                    <div class="bondcontc">未收金额：<span class="money">¥0</span></div>
+                                    <div class="bondconta">应收金额：<span class="money">¥{{lvyue.receivableAmountVO}}</span></div>
+                                    <div class="bondcontb">已收金额：<span class="money">¥{{lvyue.receivedAmountVO}}</span></div>
+                                    <div class="bondcontc">未收金额：<span class="money">¥{{lvyue.restAmountVO}}</span></div>
                                 </el-col>
                                 <el-col :span="10">
                                     <div class="titleStyle">诚意金</div>
-                                    <div class="bondconta">应收金额：<span class="money">¥{{sincerityMoney}}</span></div>
-                                    <div class="bondcontb">已收金额：<span class="money">¥0</span></div>
-                                    <div class="bondcontc">未收金额：<span class="money">¥0</span></div>
+                                    <div class="bondconta">应收金额：<span class="money">¥{{chengyi.receivableAmountVO}}</span></div>
+                                    <div class="bondcontb">已收金额：<span class="money">¥{{chengyi.receivedAmountVO}}</span></div>
+                                    <div class="bondcontc">未收金额：<span class="money">¥{{chengyi.restAmountVO}}</span></div>
                                 </el-col>
                             </el-row>
                         </div>
                     </div>
-                    <!--<blank-head title="履约保证金"></blank-head>
-                    <div class="bondcont">
-                        <div class="bondconta">
-                            <span>应收金额</span>
-                            <span class="money">¥30,000</span>
-                        </div>
-                        <div class="bondcontb">
-                            <span>已收金额</span>
-                            <span class="money">¥20,000</span>
-                        </div>
-                        <div class="bondcontc">
-                            <span>未收金额</span>
-                            <span class="money">¥10,000</span>
-                        </div>
-                    </div>-->
                 </el-tab-pane>
-                <el-tab-pane label="6 附件上传" name="6">
+                <el-tab-pane label="6 附件上传" :disabled="isStep<6 && this.$route.params.contractId ==0" name="6">
                     <blank-head title="合同附件"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -1102,25 +979,30 @@
                                     <div class="listcont contractcont">
                                         <div class="listcolum">
                                             <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
-                                            <div class="uploadlist">
-                                                <div class="avatar-uploader">
-                                                    <label class="el-upload el-upload--text">
-                                                        <i class="el-icon-plus avatar-uploader-icon"></i>
-                                                        <div class="el-upload__text">点击添加图片</div>
-                                                        <input type="file" name="file" multiple="multiple" class="el-upload__input" ref="fileUpload" @change="addFileData()">
-                                                    </label>
+                                            <form action="/api/rent/contract/uploads" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
+                                                <div class="uploadlist">
+                                                    <div class="avatar-uploader">
+                                                        <label class="el-upload el-upload--text">
+                                                            <i class="el-icon-plus avatar-uploader-icon"></i>
+                                                            <div class="el-upload__text">点击添加图片</div>
+                                                            <input type="file" name="file" multiple="multiple" class="el-upload__input" :disabled="delayChange == 2 || delayChange == 1" @change.prevent="addFileUpload($event)" readonly>
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <input type="text" name="contractId" class="el-upload__input" :value="contractId" style="display:none;">
+                                                <input type="text" name="type" class="el-upload__input" value="0" style="display:none;">
+                                            </form>
+                                            <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe>
                                         </div>
                                     </div>
                                     <div class="listcont contractcont">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle">2018-12-21</div>
+                                        <div class="listcolum" v-for="fileList in fileListData">
+                                            <div class="uploadtitle">{{fileList.dateDay}}</div>
                                             <div class="uploadlist">
-                                                <div class="uploadfile">
-                                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
+                                                <div class="uploadfile" v-for="(imageList,index) in fileList.attachmentVos">
+                                                    <img :src="imageList.filePath+imageList.fileSaveName" alt="">
                                                     <span class="spantopL"></span>
-                                                    <span class="spantopLname">1</span>
+                                                    <span class="spantopLname">{{index+1}}</span>
                                                     <span class="spantopR"><i class="el-icon-close"></i></span>
                                                     <span class="spanbottom">重新上传</span>
                                                 </div>
@@ -1132,7 +1014,7 @@
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="7 历史版本" name="7" v-if="this.$route.params.contractId != 0">
+                <el-tab-pane label="7 历史版本" :disabled="isStep<7 && this.$route.params.contractId ==0" name="7" v-if="this.$route.params.contractId != 0">
                     <blank-head title="合同历史版本"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -1168,26 +1050,29 @@
                 <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getUnitDataList()"><i class="iconfont icon-sousuo"></i>
             </div>
             <div class="dialogbox">
+                <div class="floorsearchlist" style="padding-bottom: 0px;">
+                    <ul>
+                        <li :style="buildType == 1?'color:#457fcf':''" @click="getFloorList(1)">商场</li>
+                        <li :style="buildType == 2?'color:#457fcf':''" @click="getFloorList(2)">写字楼</li>
+                    </ul>
+                </div>
                 <div class="floorsearchlist">
                     <ul>
-                        <li>全部</li>
-                        <li>F1</li>
-                        <li>F2</li>
-                        <li>F3</li>
+                        <li @click="changeFloorUnit(null)">全部</li>
+                        <li v-for="floorlist in floorListData" @click="changeFloorUnit(floorlist.id)">{{floorlist.floorName}}</li>
                     </ul>
                 </div>
                 <el-row>
-                    <el-col :span="4" v-for="(unitlist,index) in unitDataList" :key="index">
+                    <el-col :span="24">
                         <el-checkbox-group
-                                v-model="checkedUnit"
-                                @change="unitSelect()">
-                            <el-checkbox  :label="unitlist" :key="unitlist.unitCode">{{unitlist.unitCode}}</el-checkbox>
+                                v-model="checkedUnit">
+                            <el-checkbox v-for="(unitlist,index) in unitDataList" :label="unitlist.id" :key="index" @change="unitChange(unitlist.id)">{{unitlist.unitCode}}</el-checkbox>
                         </el-checkbox-group>
                     </el-col>
                 </el-row>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="handleUnit()">取 消</el-button>
+                <el-button @click="handleUnitClose()">取 消</el-button>
                 <el-button type="primary" @click="handleUnit()">确 定</el-button>
             </span>
         </el-dialog>
@@ -1209,9 +1094,10 @@
                 dialogVisible:false,
                 isShow: false,
                 pageNum: Number(this.$route.params.pageId)||1,
-                total: 0,
+                total1: 0,
+                total2: 0,
                 mainData:{
-                    cashierMode: 0,
+                    cashierMode: '',
                     contractType: '',
                     decorationEndDate: '',
                     decorationStartDate: '',
@@ -1219,7 +1105,7 @@
                     enterDate: '',
                     id: null,
                     intentionContractId: '',
-                    mainBrandId: '',
+                    brandId: '',
                     merchantId: '',
                     openingDate: '',
                     operationMode: '',
@@ -1245,6 +1131,7 @@
                     rentArea: 0,
                     rentWay: '',
                     shopId: '',
+                    siteId:'',
                     swingArea: 0,
                     unitIds: [],
                     useArea: 0
@@ -1252,24 +1139,12 @@
                 mainBrandName:'',
                 intentionOptions:[],
                 typeOptions:[],
-                rateTypeOptions:[{
-                    rateTypeName:'不含税',
-                    id:0
-                },{
-                    rateTypeName:'价内税',
-                    id:1
-                },{
-                    rateTypeName:'价外税',
-                    id:2
-                }],
+                rateTypeOptions:[],
                 merchantOptions:[],
                 shopOptions:[],
                 operationOptions:[],
                 settleLevelOptions:[],
-                cashierModeOptions:[{
-                    cashierName:'不上缴营业款',
-                    id:0
-                }],
+                cashierModeOptions:[],
                 costTypeData:'',
                 unitDataList:[],
                 checkedUnit:[],
@@ -1278,7 +1153,7 @@
                 rentDataList:[],
                 costDataList:[],
                 rentcolumnData:[
-                    { prop: 'costItem', label: '费用项目', click:'1'},
+                    { prop: 'costItem', label: '费用项目', click:'click', param:'id'},
                     { prop: 'startDate', label: '起止时间' },
                     { prop: 'endDate', label: '' },
                     { prop: 'cycleTotal', label: '结算周期' },
@@ -1312,9 +1187,11 @@
                             outsideArea: '',
                             period: '',
                             periodVersion: 1,
-                            rentMoney:'',
+                            percentRentMoney:'',
+                            fixedRentMoney:'',
                             price: '',
-                            startDate: ""
+                            startDate: "",
+                            phaseCycleNum:'0个月0天'
                         }
                     ],
                     costItemId: '',
@@ -1322,6 +1199,7 @@
                     countType: '',
                     id: null,
                     lateFeeRate: '',
+                    lateFee:'',
                     lateFeeStartDate: "",
                     remark: "",
                     highOrLow: '',
@@ -1332,64 +1210,32 @@
                     termsVersion: 1,
                     type: 0
                 }],
-                costTypeOptions:[{
-                    name:'固定费用',
-                    id:0
-                },{
-                    name:'抽成费用',
-                    id:1
-                },{
-                    name:'不规则费用',
-                    id:2
-                }],
+                costTypeOptions:[],
                 costItemDataList:[],
                 settleGroupname:'',
                 costItemData:'',
-                settleOptions:[{
-                        settleItemName:'固定费用',
-                        id:0
-                    },
-                    {
-                        settleItemName:'抽成费用',
-                        id:1
-                    },{
-                        settleItemName:'抽成比高',
-                        id:2
-                    },{
-                        settleItemName:'抽成比低',
-                        id:3
-                }],
+                settleOptions:[],
                 dateoption:[{
                     name: '年',
-                    id:2
+                    value:2
                 }, {
                     name: '月',
-                    id:1
+                    value:1
                 }, {
                     name: '日',
-                    id:0
+                    value:0
                 }],
                 countOptions:[{
                     name:'千分比',
-                    id:0
+                    value:0
+                },{
+                    name:'金额',
+                    value:1
                 }],
                 stageOption:[],
                 cstageOption:[],
-                paymentWayOption:[{
-                    name:'微信',
-                    id:0
-                },{
-                    name:'支付宝',
-                    id:1
-                },{
-                    name:'银行',
-                    id:2
-                },{
-                    name:'其他',
-                    id:3
-                }],
+                paymentWayOption:[],
                 goodsTypeOption:[],
-                sincerityMoney:0,
                 rentArrayList:[],
                 bondValue:0,
                 depositNum:0,
@@ -1399,13 +1245,31 @@
                 contractCode:'',
                 queryLogList:[],
                 brandOptions:[],
-                rentArea:''
+                rentArea:'',
+                fileListData:[],
+                isStep:'1',
+                tenancyTermNum:'0个月0天',
+                cycleNum:'0个月0天',
+                unitListPush:[],
+                chengyi:{
+                    receivableAmountVO:null,
+                    receivedAmountVO:null,
+                    restAmountVO:null
+                },
+                lvyue:{
+                    receivableAmountVO:null,
+                    receivedAmountVO:null,
+                    restAmountVO:null
+                },
+                delayChange: '',
+                buildType:1,
+                floorListData:[],
+                floorId:null
             };
         },
         mounted(){
             this.getIntentionList();
             this.getMerchantList();
-            this.getShopList();
             this.getBrandList();
             setTimeout(()=>{
                 this.stepNumber = localStorage.getItem('step')
@@ -1419,6 +1283,9 @@
             this.getGoodsTypeList();
             this.getContractInfoData();
             this.getBaseDataOptions();
+            if (this.$route.params.delayChange != 0) {
+                this.delayChange = this.$route.params.delayChange;
+            }
         },
         watch:{
             searchText(){
@@ -1427,30 +1294,69 @@
                 },300)
             },
             bondValue(){
-                this.depositNum = parseInt(this.bondValue)-parseInt(this.sincerityMoney)
+                if(!this.chengyi.receivableAmountVO) this.chengyi.receivableAmountVO = 0;
+                if(!this.lvyue.receivableAmountVO) this.lvyue.receivableAmountVO = 0;
+                if(this.bondValue == null) this.bondValue = 0;
+                this.lvyue.receivableAmountVO = parseFloat(this.bondValue)-parseFloat(this.chengyi.receivableAmountVO)
+            }
+        },
+        computed:{
+            stepName(){
+                switch (this.$route.params.prototypeId){
+                    case '0':
+                        return '单元'
+                        break;
+                    case '1':
+                        return '写字楼'
+                        break;
+                    case '2':
+                        return '场地'
+                        break;
+                    case '3':
+                        return '广告位'
+                        break;
+                }
             }
         },
         methods: {
             //获取添加合同选项的下拉列表
             async getIntentionList(){
-                await this.$api.rentapi.getListForPageUsingGET_1({
+                await this.$api.rentapi.getListForPageByPropertyTypeUsingGET({
                     propertyType:this.$route.params.prototypeId
                 }).then(res=>{
                     this.intentionOptions = res.data.data.list;
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12({
-                    status:1
+                await this.$api.rentapi.getMerchantOption({
+                    type:this.$route.params.prototypeId
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
-            async getShopList(){
-                await this.$api.rentapi.listUsingGET_14({
-                    status:1
+            merchantSelect(){
+                this.getShopList(this.mainData.merchantId);
+            },
+            async getShopList(merchantId){
+                let that = this;
+                await this.$api.rentapi.getMerchantShopOption({
+                    merchantId:merchantId
                 }).then(res=>{
-                    this.shopOptions = res.data.data;
+                    if (that.shopBrand.id) {
+                        res.data.data.push({
+                            value: that.shopBrand.id,
+                            text: that.shopBrand.shopName,
+                            code: '',
+                            child: []
+                        });
+                    }
+                    that.shopOptions = res.data.data;
+                    that.shopBrand = {
+                        value: that.shopBrand.id,
+                        text: that.shopBrand.shopName,
+                        code: '',
+                        child: []
+                    };
                 })
             },
             async getBrandList(){
@@ -1470,17 +1376,26 @@
                     this.typeOptions = res.data.data.contract_type;
                     this.operationOptions = res.data.data.operation_mode;
                     this.settleLevelOptions = res.data.data.settle_level;
+                    this.rateTypeOptions = res.data.data.rate_type;
+                    this.cashierModeOptions = res.data.data.cashier_mode;
+                    this.costTypeOptions = res.data.data.cost_type;
+                    this.settleOptions = res.data.data.settle_type;
+                    this.paymentWayOption = res.data.data.payment_way;
                 })
+            },
+            selectIntentContract(){
+
             },
             //根据店铺自动选择品牌
             selectshopBrand(){
-                this.mainData.mainBrandId = this.shopBrand.shopMainBrandId;
-                this.mainBrandName = this.shopBrand.shopMainBrandName;
-                this.mainData.shopId = this.shopBrand.id;
+                this.mainData.shopId = this.shopBrand.value;
+                this.mainData.brandId = this.shopBrand.child[0].value;
+                this.mainBrandName = this.shopBrand.child[0].text;
             },
             //下一步的序号
             nextNum(){
                 if(this.$route.params.contractId == 0) {
+                    this.isStep = parseInt(this.activeName) + 1 + '';
                     this.activeName = parseInt(this.activeName) + 1 + '';
                     localStorage.setItem('activeName', this.activeName);
                     localStorage.setItem('step', 0);
@@ -1543,6 +1458,7 @@
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
+                        this.mainData.id = res.data.data.contractId;
                         this.unitData.contractId = res.data.data.contractId;
                         if(this.$route.params.prototypeId == 0){
                             this.unitData.shopId = res.data.data.shopId;
@@ -1553,7 +1469,9 @@
                         this.contractId = res.data.data.contractId;
                         this.contractCode = res.data.data.contractCode;
                         this.nextNum();
-                        this.getContractInfo();
+                        if(this.$route.params.contractId != 0) {
+                            this.getContractInfo();
+                        }
                     } else {
                         this.$message.error(res.data.msg);
                     }
@@ -1562,25 +1480,38 @@
             async addShopUnit(){
                 if(this.$route.params.contractId != 0){
                     this.unitData.contractId = this.$route.params.contractId;
+                    this.unitData.propertyType = this.$route.params.prototypeId
+                    this.unitData.contractCode = this.contractCode;
                     this.unitData.unitIds = this.checkedUnit;
-                }
-                await this.$api.rentapi.addShopUnitUsingPOST({
-                    request:this.unitData
-                }).then(res=>{
-                    if (res.data.status == 200) {
-                        this.$message.success(res.data.msg);
-                        this.nextNum();
-                    } else {
-                        this.$message.error(res.data.msg);
-                    }
-                })
+                    await this.$api.rentapi.updateShopUnitUsingPUT({
+                        request:this.unitData
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.nextNum();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                }else{
+                    await this.$api.rentapi.addShopUnitUsingPOST({
+                        request:this.unitData
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.nextNum();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                };
             },
             async addRentData(typeNum){
                 this.rentData[0].type = typeNum;
                 if(this.$route.params.delayChange != 0){
                     this.changeRentCostInfo();
                 }else {
-                    if(this.rentData.id == null) {
+                    if(this.rentData[0].id == null) {
                         await this.$api.rentapi.addRentOrCostUsingPOST({
                             paramList: this.rentData
                         }).then(res => {
@@ -1626,12 +1557,25 @@
                 }
             },
             async addBondData(){
+                let bondValue = parseFloat(this.bondValue);
+                if (!this.bondValue || this.bondValue.indexOf('e') >= 0) {
+                    this.$message.info('请输入数字');
+                    return;
+                }
+                if (bondValue < 0 || bondValue > 999999999) {
+                    this.$message.info('请输入大于等于0，小于9位数的正数');
+                    return;
+                }
+                if (this.bondValue.indexOf('.') >=0 && this.bondValue.split('.')[1].length > 2) {
+                    this.$message.info('请输入小于三位小位数的正数');
+                    return;
+                }
                 if(this.$route.params.contractId != 0) {
                     this.contractId = this.$route.params.contractId;
                 }
                 await this.$api.rentapi.addBondUsingPOST({
                     request :{
-                        bond: parseInt(this.bondValue),
+                        bond: bondValue,
                         contractId: this.contractId,
                         contractCode:this.contractCode,
                     }
@@ -1644,38 +1588,16 @@
                     }
                 })
             },
-            async addFileUpload(){
-                if(this.$route.params.contractId != 0) {
-                    this.contractId = this.$route.params.contractId;
-                }
-                await this.$api.rentapi.uploadsUsingPOST({
-                    //$config:{ headers: { 'Content-Type':'multipart/form-data'}},
-                    /*request: {
-                        file: this.formData,
-                        contractId: this.$route.params.contractId,
-                        type: 0
-                    }*/
-                    file: [240],
-                    contractId: this.contractId,
-                    type: 0
-                }).then(res=>{
-                    if (res.data.status == 200) {
-                        this.$message.success(res.data.msg);
-                        //this.getFileInfo();
-                        this.nextNum();
-                    } else {
-                        this.$message.error(res.data.msg);
-                    }
-                })
+            async addFileUpload(event){
+                console.log(event)
+                document.getElementById('registSubmit').submit();
+                this.getFileInfo();
             },
-            addFileData(){
-                this.formData= new FormData();
-                for(let i=0;i<this.$refs.fileUpload.files.length;i++){
-                    this.formData.append('formfiles',this.$refs.fileUpload.files[i]);
-                }
-            },
-            //获取合同信息
+            //获取详细信息
             async getContractInfoData(){
+                if(this.$route.params.prototypeId == 0){
+                    this.mainData.cashierMode = 0;
+                }
                 if(this.$route.params.contractId != 0){
                     await this.$api.rentapi.getContractMainBodyUsingGET({
                         contractId: this.$route.params.contractId
@@ -1683,6 +1605,7 @@
                         if (res.data.status == 200) {
                             this.mainData = res.data.data;
                             this.unitData.contractId = res.data.data.contractId;
+                            this.unitData.contractCode = res.data.data.contractCode;
                             if(this.$route.params.prototypeId == 0){
                                 this.unitData.shopId = res.data.data.shopId;
                             }
@@ -1699,6 +1622,7 @@
                                 id: res.data.data.shopId,
                                 shopName:res.data.data.shopName
                             });
+                            this.merchantSelect();
                         } else {
                             this.$message.error(res.data.msg);
                         }
@@ -1707,8 +1631,25 @@
                         contractCode : this.contractCode
                     }).then(res => {
                         if (res.data.status == 200) {
-                            this.unitData = res.data.data.rentShop;
-                            this.checkedUnit = res.data.data.rentUnitList
+                            if (this.$route.params.prototypeId == 0) {
+                                if(res.data.data.rentShop != null) {
+                                    this.unitData = res.data.data.rentShop;
+                                    this.unitData.rentWay = res.data.data.rentShop.rentWay + '';
+                                    this.unitData.shopId = res.data.data.rentShop.id;
+                                }
+                            } else {
+                                if(res.data.data.rentSite != null) {
+                                    this.unitData = res.data.data.rentSite;
+                                    this.unitData.rentWay = res.data.data.rentSite.rentWay + '';
+                                    this.unitData.siteId = res.data.data.rentSite.id;
+                                }
+                            }
+                            if(res.data.data.rentUnitList != null) {
+                                this.unitListPush = res.data.data.rentUnitList
+                                this.checkedUnit = res.data.data.rentUnitList.map(item => {
+                                    return item.id;
+                                });
+                            }
                         } else {
                             this.$message.error(res.data.msg);
                         }
@@ -1717,20 +1658,25 @@
                         contractCode : this.contractCode
                     }).then(res => {
                         if (res.data.status == 200) {
-                            this.unitData = res.data;
+                            if(res.data.data != null) {
+                                this.bondValue = res.data.data.contractBond;
+                                this.chengyi = res.data.data.chengyi;
+                                this.lvyue = res.data.data.lvyue;
+                            }
                         } else {
                             this.$message.error(res.data.msg);
                         }
                     })
+                    //获取附件
                     await this.$api.rentapi.fileUsingGET({
                         id: this.$route.params.contractId
                     }).then(res => {
                         if (res.data.status == 200) {
-                            //this.mainData = res.data;
+                            this.fileListData = res.data.data;
                         } else {
                             this.$message.error(res.data.msg);
                         }
-                    })
+                    });
                     //历史详情
                     await this.$api.rentapi.queryLogUsingGET({
                         contractCode: this.$route.params.contractId
@@ -1743,7 +1689,7 @@
                     })
                 }
             },
-            //上传附件回调
+            //获取上传附件列表
             async getFileInfo(){
                 if(this.$route.params.contractId != 0) {
                     this.contractId = this.$route.params.contractId;
@@ -1752,43 +1698,58 @@
                     id: this.contractId
                 }).then(res => {
                     if (res.data.status == 200) {
-                        //this.mainData = res.data;
+                        this.fileListData = res.data;
                     } else {
                         this.$message.error(res.data.msg);
                     }
                 })
             },
             //获取单元的弹框列表
+            changeFloorUnit(id){
+                this.floorId = id;
+                this.getUnitDataList();
+            },
             async getUnitDataList(){
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:'1',
                     pageSize:'200000',
-                    code:'',
-                    buildId:'',
-                    floorId:'',
-                    type:1,
-                    status:''
+                    code:this.searchText,
+                    buildId:this.buildType,
+                    floorId:this.floorId,
+                    type:this.$route.params.prototypeId,
+                    status:1,
+                    states:''
                 }).then(res=>{
                     this.unitDataList = res.data.data.list;
                 })
             },
             addItem(){
                 this.dialogVisible = true;
-                this.getUnitDataList();
+                this.getFloorList(1);
+                this.getUnitDataList(null);
+            },
+            handleUnitClose(){
+                this.dialogVisible = false;
             },
             handleUnit(){
                 this.dialogVisible = false;
-            },
-            unitSelect(){
-                this.unitData.unitIds = this.checkedUnit.map(item=>{
-                    return item.id;
+                this.unitData.unitIds = this.checkedUnit;
+                this.unitListPush = [];
+                this.checkedUnit.forEach(item => {
+                    this.unitDataList.map(__item => {
+                        if (__item.id == item) {
+                            this.unitListPush.push(__item);
+                        }
+                    });
                 });
-                this.unitData.area = this.checkedUnit.reduce(function(prev, cur){
+                this.unitData.area = this.unitListPush.reduce(function(prev, cur){
                     return prev + cur.area;
                 },0);
-                this.unitData.useArea = this.checkedUnit.reduce(function(prev, cur){
+                this.unitData.useArea = this.unitListPush.reduce(function(prev, cur){
                     return prev + cur.useArea;
                 },0);
+            },
+            unitChange(id){
             },
             radioChange(){
                 if(this.unitData.rentWay == '0'){
@@ -1799,10 +1760,88 @@
                     this.rentArea = this.unitData.useArea;
                 }
             },
+            async getFloorList(typeNum){
+                this.floorId = null;
+                this.buildType = typeNum;
+                await this.$api.rentapi.selectByBuildIdUsingGET({
+                    buildId : typeNum
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.floorListData = res.data.data;
+                        this.getUnitDataList();
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+            },
+            //删除单元列表
+            async deleteUnitList(unitItem){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let index = this.unitListPush.indexOf(unitItem)
+                    if (index !== -1) {
+                        this.unitListPush.splice(index, 1)
+                    }
+                })
+            },
             //切换到添加
             addClickRentInfo(stepNum){
                 this.stepNumber = stepNum;
                 localStorage.setItem('step',stepNum);
+                let contractId = this.rentData[0].contractId;
+                this.rentData = [{
+                    advanceDay: "",
+                    advanceMonth: "",
+                    contractId: null,
+                    contractRentTermsPeriodParamList: [
+                        {
+                            contractPeriodPercentParamList: [
+                                {
+                                    endAmount: '',
+                                    goodsTypeId: '',
+                                    paymentWay: '',
+                                    percent: '',
+                                    percentVersion: 1,
+                                    startAmount: '0'
+                                }
+                            ],
+                            fixedType: '',
+                            endDate: "",
+                            fixedAmount: '',
+                            fixedArea: '',
+                            percent:'',
+                            percentType: '',
+                            outsideArea: '',
+                            period: '',
+                            periodVersion: 1,
+                            rentMoney:'',
+                            price: '',
+                            startDate: "",
+                            phaseCycleNum:'0个月0天'
+                        }
+                    ],
+                    costItemId: '',
+                    costType: '',
+                    countType: '',
+                    id: null,
+                    lateFeeRate: '',
+                    lateFee:'',
+                    lateFeeStartDate: "",
+                    remark: "",
+                    highOrLow: '',
+                    settleCycle: "",
+                    settleGroupId: '',
+                    settleType: '',
+                    settleUnit: 1,
+                    termsVersion: 1,
+                    type: 0
+                }];
+                if (contractId) this.rentData[0].contractId = contractId;
+                this.costTypeData = {value: ''};
+                this.costItemData = {id: ''};
             },
             //获取租金和费用的列表
             async getRentDataList(pageNum,pageSize){
@@ -1838,7 +1877,13 @@
                 await this.$api.rentapi.getContractFormalRentTermsUsingGET({
                     contractFormalRentTermsId: id
                 }).then(res => {
-                    this.rentData = res.data.data;
+                    this.rentData = [res.data.data];
+                    this.costTypeData = {value:res.data.data.costType};
+                    this.costItemData = {id:res.data.data.costItemId};
+                    this.rentData[0].settleGroupId = res.data.data.settleGroupId;
+                    this.settleGroupname = res.data.data.settleGroupName;
+                    this.updateCostTypeSelect();
+                    this.rentData[0].settleType = res.data.data.settleType;
                 })
             },
             async rentChildData(data){
@@ -1851,9 +1896,9 @@
                     localStorage.setItem('step', 41);
                 }
                 await this.$api.rentapi.getContractFormalRentTermsUsingGET({
-                    contractFormalRentTermsId : data.id
+                    contractFormalRentTermsId : data
                 }).then(res => {
-                    this.rentData = res.data.data.list;
+                    this.rentData = [res.data.data];
                 })
             },
             //删除租金和费用
@@ -1880,7 +1925,7 @@
                 })
             },
             //点击序号切换显示
-            handleClick() {
+            handleClick(tab, event) {
                 localStorage.setItem('activeName', this.activeName);
                 localStorage.setItem('step',0);
                 this.stepNumber = 0;
@@ -1900,28 +1945,56 @@
             },
             //根据费用类型获取费用项目和显示不同的结算方式
             async costTypeSelect(){
+                this.rentData[0].settleType = '';
                 await this.$api.financeapi.selectByCostTypeUsingGET({
-                    costType:this.costTypeData.id
+                    costType:this.costTypeData.value,
+                    propertyType: this.$route.params.prototypeId
                 }).then(res=>{
                     this.costItemDataList = res.data.data;
                 });
-                this.rentData[0].costType = this.costTypeData.id;
-                this.rentData[0].settleType = '';
-                if(this.costTypeData.id == 1){
+                this.rentData[0].costType = this.costTypeData.value;
+                if(this.costTypeData.value == 1){
                     this.settleOptions=[{
-                        settleItemName:'抽成费用',
-                        id:1
+                        text:'抽成费用',
+                        value:1
                     },{
-                        settleItemName:'抽成比高',
-                        id:2
+                        text:'抽成比高',
+                        value:2
                     },{
-                        settleItemName:'抽成比低',
-                        id:3
+                        text:'抽成比低',
+                        value:3
                     }]
                 }else{
                     this.settleOptions=[{
-                        settleItemName:'固定费用',
-                        id:0
+                        text:'固定费用',
+                        value:0
+                    }]
+                }
+
+            },
+            async updateCostTypeSelect(){
+                await this.$api.financeapi.selectByCostTypeUsingGET({
+                    costType:this.costTypeData.value,
+                    propertyType: this.$route.params.prototypeId
+                }).then(res=>{
+                    this.costItemDataList = res.data.data;
+                });
+                this.rentData[0].costType = this.costTypeData.value;
+                if(this.costTypeData.value == 1){
+                    this.settleOptions=[{
+                        text:'抽成费用',
+                        value:1
+                    },{
+                        text:'抽成比高',
+                        value:2
+                    },{
+                        text:'抽成比低',
+                        value:3
+                    }]
+                }else{
+                    this.settleOptions=[{
+                        text:'固定费用',
+                        value:0
                     }]
                 }
 
@@ -1975,50 +2048,70 @@
             },
             //添加销售额分段
             addPercentList(_index,_percentlist,_stageList){
-                if(_percentlist.startAmount == '' || _percentlist.endAmount == '' || _percentlist.percent == '') {
-                    this.$message.error('阶段不能为空');
-                }else{
-                    _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
-                        endAmount: '',
-                        goodsTypeId: '',
-                        paymentWay: '',
-                        percent: '',
-                        percentVersion: '',
-                        startAmount: ''
-                    });
+                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
+                    let item = _stageList.contractPeriodPercentParamList[i];
+                    if(item.startAmount == '' || item.endAmount == '' || item.percent == '' ) {
+                        this.$message.error('阶段不能为空');
+                        return;
+                    }
                 }
+                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
+                    endAmount: '',
+                    goodsTypeId: '',
+                    paymentWay: '',
+                    percent: '',
+                    percentVersion: '',
+                    startAmount: ''
+                });
+            },
+            //删除销售额分段
+            deletePercentList(_index,_percentlist,_stageList) {
+                _stageList.contractPeriodPercentParamList.splice(_index, 1);
             },
             addGoodsList(_index,_percentlist,_stageList){
-                if(_percentlist.goodsTypeId == '' || _percentlist.percent == '') {
-                    this.$message.error('阶段不能为空');
-                }else{
-                    _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
-                        endAmount: '',
-                        goodsTypeId: '',
-                        paymentWay: '',
-                        percent: '',
-                        percentVersion: '',
-                        startAmount: ''
-                    });
+                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
+                    let item = _stageList.contractPeriodPercentParamList[i];
+                    if(item.goodsTypeId == '' || item.percent == '' ) {
+                        this.$message.error('阶段不能为空');
+                        return;
+                    }
                 }
+                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
+                    endAmount: '',
+                    goodsTypeId: '',
+                    paymentWay: '',
+                    percent: '',
+                    percentVersion: '',
+                    startAmount: ''
+                });
+            },
+            deleteGoodsList(_index,_percentlist,_stageList) {
+                _stageList.contractPeriodPercentParamList.splice(_index, 1);
             },
             addPayList(_index,_percentlist,_stageList){
-                if(_percentlist.paymentWay == '' || _percentlist.percent == '') {
-                    this.$message.error('阶段不能为空');
-                }else{
-                    _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
-                        endAmount: '',
-                        goodsTypeId: '',
-                        paymentWay: '',
-                        percent: '',
-                        percentVersion: '',
-                        startAmount: ''
-                    });
+                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
+                    let item = _stageList.contractPeriodPercentParamList[i];
+                    if(item.paymentWay == '' || item.percent == '' ) {
+                        this.$message.error('阶段不能为空');
+                        return;
+                    }
                 }
+                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
+                    endAmount: '',
+                    goodsTypeId: '',
+                    paymentWay: '',
+                    percent: '',
+                    percentVersion: '',
+                    startAmount: ''
+                });
+            },
+            deletePayList(_index,_percentlist,_stageList) {
+                _stageList.contractPeriodPercentParamList.splice(_index, 1);
             },
             //获取固定类型及抽成类型的下拉数据
             async typeFocus(typeNum){
                 await this.$api.rentapi.getFixedPercentTypeUsingGET({
+                    propertyType:this.$route.params.prototypeId,
                     settleType:typeNum
                 }).then(res=>{
                     this.stageOption = res.data.data;
@@ -2026,26 +2119,33 @@
             },
             async ctypeFocus(typeNum){
                 await this.$api.rentapi.getFixedPercentTypeUsingGET({
+                    propertyType:this.$route.params.prototypeId,
                     settleType:typeNum
                 }).then(res=>{
                     this.cstageOption = res.data.data;
                 });
             },
-            ctypeChange(percentType){
-            },
-            //获取保证金的应收诚意金
-            /*async getContractInfo(){
-                await this.$api.rentapi.getContractBondInfoUsingGET({
-                    contractCode : this.contractCode
-                }).then(res=>{
-                    if (res.data.status == 200) {
-                        this.sincerityMoney = res.data.sincerityMoney;
-                    } else {
-                        this.$message.error(res.data.msg);
+            ctypeChange(_stageList){
+                _stageList.contractPeriodPercentParamList = [
+                    {
+                        endAmount: '',
+                        goodsTypeId: '',
+                        paymentWay: '',
+                        percent: '',
+                        percentVersion: '',
+                        startAmount: '0'
                     }
-                })
-            },*/
-
+                ];
+            },
+            tenancyTerm(){
+                this.tenancyTermNum = this.$dateNumber(this.mainData.validStartDate,this.mainData.validEndDate)
+            },
+            cycleChange(){
+                this.cycleNum = this.$dateNumber(this.mainData.decorationStartDate,this.mainData.decorationEndDate)
+            },
+            phaseCycle(startDate,endDate){
+                this.phaseCycleNum = this.$dateNumber(startDate,endDate)
+            },
             //合同变更和延期
             async delaySubjectInfo(){   //合同主体
                 await this.$api.rentapi.changeSubjectUsingPOST({

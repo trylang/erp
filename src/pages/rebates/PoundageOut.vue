@@ -16,13 +16,29 @@
                     <el-col :span="9" :offset="2">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">渠道：</span>
-                            <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-select v-model="channelId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
-                                        v-for="item in contracts"
-                                        :key="item.id"
-                                        :label="item.contractCode"
-                                        :value="item.id">
+                                        v-for="item in channelOptions"
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="9">
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">类型：</span>
+                            <el-select v-model="cardType" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option
+                                        v-for="item in cardTypeOptions"
+                                        :key="item.valeue"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
@@ -38,8 +54,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="dialogData(scope.row.id,scope.row)">编辑</button>
-                            <button class="btn_text" @click="deleteList(scope.row.id)">删除</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="dialogData(scope.row.id,scope.row)">编辑</button>
+                            <button class="btn_text" v-if="!scope.row.validEndDate" @click="deleteList(scope.row.id)">删除</button>
                         </template>
                     </el-table-column>
                 </data-table>
@@ -53,47 +69,57 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">渠道</span>
-                    <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
-                        <el-option label="全部" value=""></el-option>
+                    <el-select v-model="add.channel" placeholder="请选择" class="dialogselect" @change="checkCardtypeHandler(add.channel)" :disabled="!!add.id">
                         <el-option
-                                v-for="item in contracts"
-                                :key="item.id"
-                                :label="item.contractCode"
-                                :value="item.id">
+                                v-for="item in channelOptions"
+                                :key="item.value"
+                                :label="item.text"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname inputnameauto">类型</span>
+                    <el-select v-model="add.cardType" placeholder="请选择" class="dialogselect">
+                        <el-option
+                                v-for="item in cardTypeDialog"
+                                :key="item.value"
+                                :label="item.text"
+                                :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">手续费</span>
-                    <input class="inputtext" type="text" placeholder="请输入英文缩写" v-model="add.regionEnglishName">
-                </div>
-                <div class="dialoginput">
-                    <span class="inputname inputnameauto">类型</span>
-                    <el-select v-model="contractId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
-                        <el-option label="全部" value=""></el-option>
-                        <el-option
-                                v-for="item in contracts"
-                                :key="item.id"
-                                :label="item.contractCode"
-                                :value="item.id">
-                        </el-option>
-                    </el-select>
+                    <input class="inputtext" type="text" placeholder="请输入手续费" v-model="add.feeRate">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">有效期截止</span>
                     <el-date-picker
                         class="inputtext"
-                        v-model="searchData"
+                        v-model="add.validStartDate"
                         type="date"
                         placeholder="选择日期"
                         format="yyyy 年 MM 月 dd 日"
-                        value-format="yyyy-MM-dd"
-                        @change="pageHandler(1)">
+                        value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">选择店铺</span>
-                    <el-button type="primary" icon="el-icon-circle-plus" @click="checkShopHandler"></el-button>
+                    <div style="float: left;">
+                        <el-button type="primary" icon="el-icon-circle-plus" @click="checkShopHandler"></el-button>
+                    </div>
+                    <div style="float: left;">
+                        <el-tag
+                            style="margin: 0 0 8px 5px"
+                            v-for="item in shopTags"
+                            closable
+                            :key="item.id"
+                            :disable-transitions="false"
+                            @close="closeShopHandle(item)">
+                            {{item.shopName}}({{item.shopCode}})
+                        </el-tag>
+                    </div>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -130,30 +156,36 @@
             return{
                 dialogVisible:false,
                 dialogVisibleT:false,
-                searchData: '',
                 datalist:[],
                 shopList: {list:[]},
                 listid:'',
                 searchName: '',
+                channelId: '',
+                cardType: '',
+                channelOptions: [],
+                cardTypeOptions: [],
+                cardTypeDialog: [],
+                shopTags: [],
                 searchShopName: '',
-                contractId: '',
-                contracts: [],
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
                 totalT: 0,
                 add:{
                     id: '',
-                    pid: '',
-                    regionName: '',
-                    regionEnglishName: '',
-                    pname: '',
+                    type: 1,
+                    channel: '',
+                    cardType: '',
+                    feeRate: '',
+                    validStartDate: '',
+                    shopIds: []
                 },
                 columnData:[
-                    { prop: 'regionCode', label: '渠道'},
-                    { prop: 'regionName', label: '手续费率' },
-                    { prop: 'regionEnglishName', label: '类型' },
-                    { prop: 'showUpdateDate', label: '有效期' },
-                    { prop: 'showUpdateDate', label: '更新时间' },
+                    { prop: 'channelText', label: '渠道'},
+                    { prop: 'shopCode', label: '店铺号' },
+                    { prop: 'shopName', label: '店铺' },
+                    { prop: 'cardTypeText', label: '类型' },
+                    { prop: 'feeRate', label: '手续费率' },
+                    { prop: 'validDate', label: '有效期' }
                 ],
                 header:[
                     {
@@ -164,17 +196,17 @@
                     {
                       label: "店铺号",
                       type: "text",
-                      name: "regionCode"
+                      name: "shopCode"
                     },
                     {
                       label: "店铺名称",
                       type: "text",
-                      name: "regionCode"
+                      name: "shopName"
                     },
                     {
                       label: "所属商户",
                       type: "text",
-                      name: "regionCode"
+                      name: "merchantName"
                     },
                 ]
             }
@@ -187,18 +219,24 @@
             }
         },
         mounted(){
-            this.pageHandler();
+            this.getChannelList();
+            this.cardTypeList();
         },
         methods:{
             pageHandler(pageNum, pageSize){
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    name: this.searchName
+                    type: 1,
+                    shopQuery: this.searchName,
+                    channel: this.channelId,
+                    cardType: this.cardType
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                this.$api.refundapi.getListForPageUsingGET_5(params).then(res=>{
+                    if(res.data.status === 200){
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
                 }).catch(res=>{
                     this.$message.error(res.data.msg);
                 })
@@ -207,13 +245,15 @@
                 let params = {
                     pageNum: page.pageNum,
                     pageSize: 5,
-                    name: this.searchShopName
+                    shopName: this.searchShopName
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    res.data.data.list.forEach(item=>{
-                        item.checked = false;
-                    })
-                    this.shopList = res.data.data;
+                this.$api.rentapi.listpgUsingGET_5(params).then(res=>{
+                    if(res.data.status === 200){
+                        res.data.data.list.forEach(item=>{
+                            item.checked = false;
+                        })
+                        this.shopList = res.data.data;
+                    }
                 }).catch(res=>{
                     this.$message.error(res.data.msg);
                 })
@@ -226,36 +266,35 @@
             },
             addbuilding(id){
                 if(id){
-                    if(!this.add.regionName){
-                        this.$message.warning('区域名称不能为空');
-                    }else if(!this.add.regionEnglishName){
-                        this.$message.warning('英文缩写不能为空');
-                    }else if(!this.add.pid){
-                        this.$message.warning('上级区域不能为空');
-                    }else{
-                        this.$api.systemapi.updateUsingPOST_4({request:{
-                            regionId: this.add.id,
-                            pid: this.add.pid,
-                            regionName: this.add.regionName,
-                            regionEnglishName: this.add.regionEnglishName
-                        }}).then(res=>{
-                            if(res.data.code==200){
-                                this.$message.success(res.data.msg);
-                                this.pageHandler(1);
-                            }else{
-                                this.$message.error(res.data.msg);
-                            }
-                        }).catch(res=>{
-                            this.$message.error(res.data.msg);
-                        });
-                    }
-                }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{
-                        // pid: this.add.treeId,
-                        regionName: this.add.regionName,
-                        regionEnglishName: this.add.regionEnglishName
+                    this.$api.refundapi.updateUsingPUT_1({request:{
+                        id: this.add.id,
+                        type: 1,
+                        channel: this.add.channel,
+                        feeRate: this.add.feeRate,
+                        cardType: this.add.cardType,
+                        validStartDate: this.add.validStartDate,
+                        shopId: this.add.shopId
                     }}).then(res=>{
-                        if(res.data.code==200){
+                        if(res.data.status==200){
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    });
+                }else{
+                    let params = {
+                        type: 1,
+                        channel: this.add.channel,
+                        feeRate: this.add.feeRate,
+                        cardType: this.add.cardType,
+                        validStartDate: this.add.validStartDate,
+                        shopIds: this.add.shopIds
+                    }
+                    this.$api.refundapi.addUsingPOST_1({request:params}).then(res=>{
+                        if(res.data.status==200){
                             this.$message.success(res.data.msg);
                             this.pageHandler(1);
                         }else{
@@ -269,76 +308,86 @@
             },
             dialogData(id, data){
                 this.listid = id;
-                this.dialogVisible = true;
-                if(id) {
-                    this.add = {
-                        id: data.id,
-                        pid: data.pid,
-                        regionName: data.regionName,
-                        regionEnglishName: data.regionEnglishName,
-                        pname: data.pname
-                    }
+                if(id) {   //无结束日期可编辑，还有--开始日期必须大于系统日期
+                    this.$api.refundapi.isValidUsingGET({id: data.id}).then(res=>{//可编辑时判断开始日期
+                        if(res.data.status === 200){
+                            this.dialogVisible = true;
+                            this.add = {
+                                id: data.id,
+                                type: 1,
+                                channel: data.channel,
+                                feeRate: data.feeRate,
+                                validStartDate: data.validStartDate,
+                                shopId: data.shopId
+                            }
+                        }else{
+                            this.$message.warning(res.data.msg);
+                        }
+                    })
                 }else{
                     this.add = {};
-                    // this.$api.systemapi.queryTreeUsingGET().then(res=>{
-                    //     this.treeData = res.data.data;
-                    // }).catch(res=>{
-                    //     this.$message.error(res.data.msg);
-                    // })
+                    this.dialogVisible = true;
                 }
             },
             deleteList(id){
-                this.$confirm('是否删除该条数据?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
-                        if(res.data.code==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res => {
-                        this.$message.error(res.data.msg);
-                    });
+                this.$api.refundapi.isValidUsingGET({id: id}).then(res=>{//可删除时判断开始日期
+                    if(res.data.status === 200){
+                        this.$confirm('是否删除该条数据?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            this.$api.refundapi.deleteUsingDELETE_1({id: id}).then(res =>{
+                                if(res.data.code==200){
+                                    this.$message.success(res.data.msg);
+                                    this.pageHandler(1);
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
+                            }).catch(res => {
+                                this.$message.error(res.data.msg);
+                            });
+                        })
+                    }else{
+                        this.$message.warning(res.data.msg);
+                    }
                 })
             },
             checkShopHandler(){
                 this.dialogVisibleT = true;
                 this.pageShopHandler();
             },
-            confirmShopHandler(){
-
-            },
             filterIds() {
               const param = this.shopList.list.filter(item => {
                 return item.checked === true;
               });
-              let ids = [];
-              param.forEach(item => {
-                ids.push(item.id);
-              });
-              return ids;
+              return param;
             },
             batchConfirm() {
-              this.confirmIrregularCost(this.filterIds());
+                this.dialogVisibleT = false;
+                this.shopTags = this.filterIds();
+                this.shopTags.forEach(item =>{
+                    this.add.shopIds.push(item.id);
+                })
             },
-            async confirmIrregularCost(param) {
-              let params = {
-                id: param
-              };
-              console.log(121,params)
-              // await this.$api.financeapi.confirmsUsingPUT_1(params).then(returnObj => {
-              //   if(returnObj.data.status === 200) {
-              //     this.getTakeMarginList({}, () => {
-              //       $message("success", "确认成功!");
-              //     });  
-              //   } else {
-              //     $message("error", "确认失败!");
-              //   }       
-              // });
+            closeShopHandle(deleteId){
+                this.add.shopIds.splice(this.shopTags.indexOf(deleteId), 1);
+                this.shopTags.splice(this.shopTags.indexOf(deleteId), 1);
+            },
+            getChannelList(){
+                this.$api.refundapi.getChannelUsingGET().then(res=>{//渠道
+                    this.channelOptions = res.data.data;
+                })
+            },
+            cardTypeList(){
+                this.$api.refundapi.getCardTypeUsingGET().then(res=>{//列表搜索类型
+                    this.cardTypeOptions = res.data.data;
+                })
+            },
+            checkCardtypeHandler(channelId){
+                this.$api.refundapi.getCardTypeUsingGET().then(res=>{//添加和编辑根据渠道查类型 待调用
+                    this.cardTypeDialog = res.data.data;
+                })
             },
         },
         components:{

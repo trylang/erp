@@ -1,6 +1,6 @@
 <template>
   <con-head title="销售数据">
-    <el-button type="primary" slot="append">导出</el-button>
+    <el-button type="primary" slot="append" @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
@@ -133,6 +133,25 @@ export default {
           return data.message;
         }
       });
+    },
+    exportHandler(){
+        let params = {
+          startDate: this.query.time ? this.query.time[0] : undefined,
+          endDate: this.query.time ? this.query.time[1] : undefined,
+          shopCode: this.query.shopCode,
+          orderCode: this.query.orderCode,
+          // pageNum: page.pageNum,
+          // pageSize: page.pageSize
+        };
+        if(this.content.list.length>0){
+            this.$api.reportapi.exportOrderSalesDataListUsingGET(params).then(res=>{
+                if(res.data.status == 200){
+                    this.$message.success(res.data.msg);
+                }
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+        }
     },
     async init() {
       let [shop] = await Promise.all([

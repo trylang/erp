@@ -11,8 +11,8 @@
                             v-model="startMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 M 月"
-                            value-format="yyyy-M"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
                             @change="pageHandler(1)">
                         </el-date-picker>
                         <span style="line-height: 30px;">~</span>
@@ -21,8 +21,8 @@
                             v-model="endMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 M 月"
-                            value-format="yyyy-M"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
                             @change="pageHandler(1)">
                         </el-date-picker>
                     </div>
@@ -98,22 +98,20 @@
                     { prop: 'settleDate', label: '结算月' },
                     { prop: 'settleNumber', label: '结算单号' },
                     { prop: 'sales', label: '销售额' },
+                    { prop: 'totalAmount', label: '应收合计'}
                 ],
                 afterData: [
-                    {prop: 'posRent', label: 'POS租金'},
-                    {prop: 'fixationRent', label: '固定租金'},
-                    {prop: 'generalizeCost', label: '推广费'},
-                    {prop: 'estateManagementCost', label: '物业管理费'},
-                    {prop: 'telephoneLineCost', label: '电话线路维护费'},
-                    {prop: 'airConditionerAddtimeCost', label: '加时空调费'},
-                    {prop: 'networkPortMaintenanceCost', label: '网络端口维护费'},
-                    {prop: 'posRentDiffCost', label: 'POS租金补差'},
-                    {prop: 'generalizeDiffCost', label: '推广费用补差'},
-                    {prop: 'totalCost', label: '应收合计'},
+                    // {prop: 'posRent', label: 'POS租金'},
+                    // {prop: 'fixationRent', label: '固定租金'},
+                    // {prop: 'generalizeCost', label: '推广费'},
+                    // {prop: 'estateManagementCost', label: '物业管理费'},
+                    // {prop: 'telephoneLineCost', label: '电话线路维护费'},
+                    // {prop: 'airConditionerAddtimeCost', label: '加时空调费'},
+                    // {prop: 'networkPortMaintenanceCost', label: '网络端口维护费'},
+                    // {prop: 'posRentDiffCost', label: 'POS租金补差'},
+                    // {prop: 'generalizeDiffCost', label: '推广费用补差'},
+                    // {prop: 'totalAmount', label: '应收合计'},
                 ],
-                lastData: [
-                    {prop: 'regionCode', label: '应收合计'},
-                ]
             }
         },
         mounted(){
@@ -128,10 +126,9 @@
                 });
                 this.selects.status[0].isStatus = true;
             })
-             if(this.afterData.length > 0){
-                this.columnData = this.columnData.concat(this.afterData);
-             }
-            // this.columnData = this.columnData.concat(this.lastData);
+            // if(this.afterData.length > 0){
+            //     this.columnData = this.columnData.concat(this.afterData);
+            // }
             this.getContractList();
         },
         methods:{
@@ -144,18 +141,34 @@
                     startMonth: this.startMonth,
                     endMonth: this.endMonth,
                 }
-                this.$api.reportapi.listUsingGET_5(params).then(res=>{
-                    if(res.data.status === 200){
-                        this.datalist = res.data.data.list;
-                        this.datalist.forEach(item =>{
-                            this.afterData.push(item.someList);
-                        })
-                        console.log(11,this.afterData,this.datalist)
-                        this.total = Number(res.data.data.total);
-                    }
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
+                if(this.startMonth && this.endMonth){
+                    this.$api.reportapi.listUsingGET_5(params).then(res=>{
+                        if(res.data.status === 200){
+                            this.total = Number(res.data.data.total);
+                            this.afterData = [];
+                            this.columnData = this.columnData.slice(0, 11);
+                            if (res.data.data.list.length > 0) {
+                                res.data.data.list[0].someList.forEach(item => {
+                                    this.afterData.push({
+                                        prop: item.costItemName,
+                                        label: item.costItemName,
+                                        value: item.publicAmount
+                                    });
+                                });
+                                res.data.data.list.forEach(item => {
+                                    this.afterData.forEach(item1 => {
+                                        item[item1.prop] = item1.value
+                                    });
+                                });
+                            }
+                            this.datalist = res.data.data.list;
+                            this.columnData = this.columnData.concat(this.afterData);
+                            console.log(1,this.afterData)
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             statusHandler(status){
                 this.selects.status.forEach(function(obj){
@@ -171,7 +184,23 @@
                 })
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    contractCode: this.contractCode,
+                    propertyType: this.status,
+                    startMonth: this.startMonth,
+                    endMonth: this.endMonth
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.exportContractSettlementStatisticsUsingGET({params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

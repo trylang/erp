@@ -1,6 +1,6 @@
 <template>
   <con-head title="月销售汇总">
-    <el-button type="primary" slot="append">导出</el-button>
+    <el-button type="primary" slot="append"  @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchselect">
@@ -258,7 +258,6 @@ export default {
     async getList(page = {}, callback) {
       this.query.pageNum = page.pageNum;
       this.query.pageSize = page.pageSize;
-      console.log(this.query);
       this.$api.reportapi.monthSalesListUsingGET(this.query).then(res => {
         const data = res.data;
         if (data.status === 200) {
@@ -268,6 +267,17 @@ export default {
           return data.message;
         }
       });
+    },
+    exportHandler(){
+        if(this.content.list.length>0){
+            this.$api.reportapi.exportMmonthSalesListUsingGET(this.query).then(res=>{
+                if(res.data.status == 200){
+                    this.$message.success(res.data.msg);
+                }
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+        }
     },
     async init() {
       let [shop, floor] = await Promise.all([queryShop(), queryFloor()]);

@@ -7,12 +7,28 @@
             </div>
             <div slot="preappend">
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchbox">
                             <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="10" :offset="4">
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">楼宇</span>
+                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option
+                                        v-for="item in buildOptions"
+                                        :key="item.id"
+                                        :label="item.buildName"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
@@ -80,6 +96,8 @@
                     { prop: 'remark', label: '备注'}
                 ],
                 dataFloorList:[],
+                buildOptions: [],
+                buildValue:'',
                 floorValue:'',
                 statusData:[{
                     name:"全部",
@@ -100,7 +118,7 @@
             }
         },
         mounted(){
-            this.getFloorList();
+            this.getBuildingList();
         },
         watch:{
             searchText(){
@@ -124,12 +142,16 @@
                 }
                 this.getDataList(1);
             },
+            buildSelect(buildId){
+                this.getDataList(1);
+                this.getFloorList(buildId);
+            },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize,
                     code:this.searchText,
-                    buildId:'',
+                    buildId:this.buildValue,
                     floorId:this.floorValue,
                     type:2,
                     status:this.statusId,
@@ -139,9 +161,14 @@
                     this.total = Number(res.data.data.total);
                 })
             },
-            async getFloorList(){
+            async getBuildingList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
+                })
+            },
+            async getFloorList(buildId){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId
                 }).then(res=>{
                     this.dataFloorList = res.data.data;
                 })

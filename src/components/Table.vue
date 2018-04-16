@@ -20,6 +20,7 @@
               <a v-if="header.type==='link'" :style="header.linkStyle" :href="header.basehref+content[header.urlId]">{{content[header.name]}}</a>
               <span v-if="header.type==='time'">{{content[header.name]|formatDate(header.filter)}}</span>
               <span v-if="header.type==='status'">{{content[header.name] || (content[header.name] === 0) ? header.option[content[header.name]]: ''}}</span>
+              <span v-if="header.type==='toggleText'">{{content[header.name] && header.option[content[header.name]] && header.option[content[header.name]][header.valueLabel] ? header.option[content[header.name]][header.valueLabel]: ''}}</span>
               <span v-if="header.type==='selectText'">{{content[header.name] ? header.option[content[header.name]][header.valueLabel]: ''}}</span>
               <input v-if="header.type==='checkbox'" type="checkbox" :id="index" v-model="content[header.name]">
               <label v-if="header.type==='checkbox'" :for="index"></label>

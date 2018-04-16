@@ -71,7 +71,7 @@
                 total: 0,
                 columnData:[
                     { type: 'selection', width:'50'},
-                    { prop: 'merchantCode', label: '编码'},
+                    { prop: 'merchantCode', label: '编码', link: '/inner/merchants/detail', param: 'id'},
                     { prop: 'merchantName', label: '名称' },
                     { prop: 'merchantEnglishName', label: '英文名称' },
                     { prop: 'enumMerchantType', label: '类型' },
@@ -88,10 +88,10 @@
                     id:1
                 },{
                     typeName:'广告位',
-                    id:2
+                    id:3
                 },{
                     typeName:'场地',
-                    id:3
+                    id:2
                 }],
                 statusData:[{
                     name:"全部",

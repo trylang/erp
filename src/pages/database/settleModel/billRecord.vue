@@ -65,7 +65,7 @@
                     { prop: 'costItemName', label: '费用项目' },
                     { prop: 'adjustAmount', label: '调整金额' },
                     { prop: 'shopCode', label: '店铺号' },
-                    { prop: 'shopName   ', label: '店铺名称' },
+                    { prop: 'shopName', label: '店铺名称' },
                     { prop: 'adjustDate', label: '操作时间' }
                 ]
             }
@@ -82,7 +82,7 @@
                     endTime: this.searchData[1],
                     contractCode: this.contractCode,
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.reportapi.listUsingGET(params).then(res=>{
                     if(res.data.status === 200){
                         this.datalist = res.data.data.list;
                         this.total = Number(res.data.data.total);
@@ -92,12 +92,27 @@
                 })
             },
             getContractList(){
-                this.$api.rentapi.getListForPageUsingGET().then(res=>{//已确认过的合同
+                this.$api.reportapi.selectUsingGET().then(res=>{//合同
                     this.contractOptions = res.data.data;
                 })
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    startTime: this.searchData[0],
+                    endTime: this.searchData[1],
+                    contractCode: this.contractCode
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.exportAdjustMaintainRecordUsingGET({params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

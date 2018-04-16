@@ -69,8 +69,10 @@ export default {
       header: [
         {
           label: "收款方式",
-          type: "text",
-          name: "paymentName"
+          type: "toggleText",
+          name: "paymentCode",
+          valueLabel: 'name',
+          option: []
         },
         {
           label: "收款金额",
@@ -213,6 +215,7 @@ export default {
           let paymentCode = res.data.data[0].code;
           this.$api.systemapi.itemListUsingGET({ code: paymentCode }).then(res => {//根据code查询付款方式
             this.dialog.models[0].options = res.data.data;
+            this.header[0].option = _changeJson(res.data.data, 'id');
           });
         });
     },
@@ -317,7 +320,6 @@ export default {
           }
         },
         async addEntering() {
-            console.log(this.query.bondId)
           const param = {
             merchantId: this.query.merchantId,
             contractCode: this.query.contractCode,

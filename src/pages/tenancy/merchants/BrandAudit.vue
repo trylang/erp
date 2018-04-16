@@ -25,9 +25,9 @@
                             <el-select v-model="formatsValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
                                 <el-option
                                         v-for="item in formatsOptions"
-                                        :key="item.id"
-                                        :label="item.businessName"
-                                        :value="item.id">
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
@@ -73,9 +73,11 @@
                     { type: 'selection', width:'50'},
                     { prop: 'brandCode', label: '编码'},
                     { prop: 'brandName', label: '名称' },
-                    { prop: 'businessVo.businessName', label: '业态' },
-                    { prop: 'country.countryName', label: '国别' },
+                    { prop: 'busNames', label: '一级业态' },
+                    { prop: 'busSecondName', label: '二级业态' },
+                    { prop: 'businessIdThreeLevel', label: '三级业态' },
                     { prop: 'investSoursStatus', label: '状态' },
+                    { prop: 'country.countryName', label: '国别' },
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
                 statusData:[{
@@ -127,12 +129,7 @@
                 })
             },
             async getBusinessList(){
-                await this.$api.rentapi.listUsingGET_6({
-                    pageNum:'',
-                    pageSize:'',
-                    businessCode:'',
-                    businessName:''
-                }).then(res=>{
+                await this.$api.rentapi.getOptionsUsingGET({level: 1}).then(res=>{
                     this.formatsOptions = res.data.data;
                 })
             },

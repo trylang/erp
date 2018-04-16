@@ -12,6 +12,8 @@
 
 <style>
     @import url('assets/iconfont/iconfont.css');
+    @import url('sdk/js/sdk/rtmap_sdk.min.css');
+    @import url('sdk/js/ui/indoormap_control/dist/ui.floorcontrol.css');
 
     @font-face {
         font-family: 'iconfont';

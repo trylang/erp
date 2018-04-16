@@ -49,6 +49,7 @@
                         <template slot-scope="scope">
                             <router-link :to="'/inner/addshop/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
                             <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" @click="cancelListData(scope.row.id)" v-if="scope.row.status == 1">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6">失效</button>
                         </template>
                     </el-table-column>
@@ -80,7 +81,7 @@
                     { prop: 'shopBrandNames', label: '经营品牌'},
                     { prop: 'shopMainBrandName', label: '主品牌' },
                     { prop: 'merchantName', label: '商户名称' },
-                    { prop: 'shopType', label: '数据类型' },
+                    { prop: 'shopTypeName', label: '数据类型' },
                     { prop: 'floorStr', label: '楼层' },
                     { prop: 'centerCollectingOrNotStr', label: '中央收银' },
                     { prop: 'statusStr', label: '状态'},
@@ -149,7 +150,7 @@
                     merchantName:'',
                     merchantEnglishName:'',
                     merchantType:'',
-                    status:''
+                    status:1
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
@@ -162,6 +163,25 @@
                 }).then(() => {
                     this.$api.rentapi.deleteUsingDELETE_6({
                         id:id
+                    }).then(res=>{
+                        if (res.data.status == 200) {
+                            this.getDataList(1);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                })
+            },
+            async cancelListData(id) {
+                this.$confirm('是否取消该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.rentapi.updateUsingPUT_10({
+                        id:id,
+                        status: 2
                     }).then(res=>{
                         if (res.data.status == 200) {
                             this.getDataList(1);

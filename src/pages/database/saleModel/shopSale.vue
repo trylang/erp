@@ -1,6 +1,6 @@
 <template>
   <con-head title="店铺销售报表（按日期段）">
-    <el-button type="primary" slot="append">导出</el-button>
+    <el-button type="primary" slot="append" @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="12">
         <div class="searchselect">
@@ -9,6 +9,7 @@
 						v-model="query.time"
 						type="daterange"
             @change="getList"
+            format="yyyy 年 MM 月 dd 日"
             value-format="yyyy-MM-dd"
 						range-separator="~"
 						start-placeholder="开始日期"
@@ -49,7 +50,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 
-import { queryShop } from "@/utils/rest/financeAPI";
+import { saleQueryShop } from "@/utils/rest/financeAPI";
 export default {
   name: "account-group",
   components: {
@@ -124,9 +125,28 @@ export default {
         }
       });
     },
+    exportHandler(){
+        let params = {
+            startDate: this.query.time ? this.query.time[0] : '',
+            endDate: this.query.time ? this.query.time[1] : '',
+            startCode: this.query.startCode,
+            endCode: this.query.endCode,
+            // pageNum: page.pageNum,
+            // pageSize: page.pageSize
+        };
+        if(this.content.list.length>0 && params.startDate && params.endDate){
+            this.$api.reportapi.exportShopDaySalesListUsingGET(params).then(res=>{
+                if(res.data.status == 200){
+                    this.$message.success(res.data.msg);
+                }
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+        }
+    },
     async init() {
       let [shop] = await Promise.all([
-        queryShop()
+        saleQueryShop()
       ]);
       this.selects.shops = shop.data || [];
       await this.getList();
@@ -134,7 +154,7 @@ export default {
   },
   computed: {},
   created() {
-    // this.init();
+    this.init();
   }
 };
 </script>

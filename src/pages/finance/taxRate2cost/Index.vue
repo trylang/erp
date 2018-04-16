@@ -22,7 +22,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryCost, queryTaxRate, queryDicsByCode } from '@/utils/rest/financeAPI';
+import { queryCost, queryTaxRate, queryDicsByCode, queryCostType } from '@/utils/rest/financeAPI';
 export default {
   name: "account-group",
   components: {
@@ -88,7 +88,6 @@ export default {
               class: "edit",
               click: (item) => {               
                 Object.assign(this.dialog.param, item);
-                console.log(this.dialog.param)
                 this.dialog.dialogVisible = true;
               }
             },
@@ -119,14 +118,18 @@ export default {
           placeholder: '请输入税码'
         }, {
           label: '费用类型',
-          valueLabel: 'name',
+          valueLabel: 'text',
           name: 'costType',
           type: 'select',
           value: 'value',
           options: [],
           placeholder: '请选择费用类型',
           async event(costType) {
-            await _this.$api.financeapi.listUsingGET_7({costType}).then(res => {
+            const param = {
+              costType,
+              pageSize: 200000
+            }
+            await _this.$api.financeapi.listUsingGET_7(param).then(res => {
               if (res.data.status === 200) {
                 _this.dialog.models[2].options = res.data.data.list;
               }              
@@ -282,21 +285,15 @@ export default {
       });
     },
     async init() {
-      let [cost, taxRate, costType] = await Promise.all([queryCost(), queryTaxRate(), queryDicsByCode('0004')]);
+      let [cost, taxRate, costType] = await Promise.all([queryCost(), queryTaxRate(), queryCostType()]);
       this.selects.cost = cost.data;
       this.selects.taxRateJson = taxRate.json;
       await this.getTaxRate2cost();
       taxRate.data.list.forEach(item => {
-        item.rateFullLabel = item.rateCode +"（" + item.rate + "）";
+        item.rateFullLabel = item.rateCode +"（" + item.rateStr + "）";
       });
       this.dialog.models[0].options = taxRate.data.list;
-      this.dialog.models[1].options = costType.data;
-    }
-  },
-  computed: {},
-  watch: {
-    'dialog': function(old) {
-      console.log(old);
+      this.dialog.models[1].options = costType.data.cost_type;
     }
   },
   created() {
@@ -304,7 +301,6 @@ export default {
   }
 };
 
-// TODO: 1. 需要根据费用类型联动选择费用项目
 </script>
 
 <style scoped>

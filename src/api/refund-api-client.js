@@ -1,32 +1,4 @@
-/* eslint-disable */
 import * as refundapi from './swaggerAPI/refund-api-client.js';
-import axios from 'axios'
-import qs from 'qs'
-let domain = ''
-export const getDomain = () => {
-  return domain
-}
-export const setDomain = ($domain) => {
-  domain = $domain
-}
-export const request = (method, url, body, queryParameters, form, config) => {
-  method = method.toLowerCase()
-  let keys = Object.keys(queryParameters)
-  let queryUrl = url
-  if (keys.length > 0) {
-    queryUrl = url + '?' + qs.stringify(queryParameters)
-  }
-  // let queryUrl = url+(keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-  if (body) {
-    return axios[method](queryUrl, body, config)
-  } else if (method === 'get') {
-    return axios[method](queryUrl, {
-      params: form
-    }, config)
-  } else {
-    return axios[method](queryUrl, qs.stringify(form), config)
-  }
-}
 /*==========================================================
  *                    ERP-销售返款API.
  ==========================================================*/
@@ -460,3 +432,358 @@ export const getListForPageUsingGET_3 = function(parameters = {}) {
 export const billTotalUsingGET_2 = function(parameters = {}) {
   return refundapi.billTotalUsingGET_2(parameters);
 }
+
+/**
+ * 任务状态
+ * request: getTaskStatusUsingGET
+ * url: getTaskStatusUsingGETURL
+ * method: getTaskStatusUsingGET_TYPE
+ * raw_url: getTaskStatusUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const getTaskStatusUsingGET = function(parameters = {}) {
+  return refundapi.getTaskStatusUsingGET(parameters);
+}
+
+/**
+ * 任务类型
+ * request: getTaskTypeUsingGET
+ * url: getTaskTypeUsingGETURL
+ * method: getTaskTypeUsingGET_TYPE
+ * raw_url: getTaskTypeUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const getTaskTypeUsingGET = function(parameters = {}) {
+  return refundapi.getTaskTypeUsingGET(parameters);
+}
+
+/**
+ * 数据中心务中心查询列表
+ * request: getListForDataCenterPageUsingGET
+ * url: getListForDataCenterPageUsingGETURL
+ * method: getListForDataCenterPageUsingGET_TYPE
+ * raw_url: getListForDataCenterPageUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param type - 任务类型 0返款计算1数据导出
+ * @param status - 任务状态 0成功1进行中2失败
+ */
+export const getListForDataCenterPageUsingGET = function(parameters = {}) {
+  return refundapi.getListForDataCenterPageUsingGET(parameters);
+}
+
+/**
+ * 任务中心下载
+ * request: downloadUsingGET
+ * url: downloadUsingGETURL
+ * method: downloadUsingGET_TYPE
+ * raw_url: downloadUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const downloadUsingGET = function(parameters = {}) {
+  return refundapi.downloadUsingGET(parameters);
+}
+
+/**
+ * 终端号管理查询列表
+ * request: getListForPageUsingGET_7
+ * url: getListForPageUsingGET_7URL
+ * method: getListForPageUsingGET_7_TYPE
+ * raw_url: getListForPageUsingGET_7_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param queryParam - 店铺Code/店铺名称/终端号
+ * @param type - 类型：0银行终端号 1资和信终端号
+ * @param cardType - 资和信终端号管理：资和信卡类型：0专属卡1商通卡
+ */
+export const getListForPageUsingGET_7 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_7(parameters);
+}
+
+/**
+ * 添加银行终端号
+ * request: addUsingPOST_2
+ * url: addUsingPOST_2URL
+ * method: addUsingPOST_2_TYPE
+ * raw_url: addUsingPOST_2_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const addUsingPOST_2 = function(parameters = {}) {
+  return refundapi.addUsingPOST_2(parameters);
+}
+
+/**
+ * 编辑银行终端号
+ * request: updateUsingPUT_2
+ * url: updateUsingPUT_2URL
+ * method: updateUsingPUT_2_TYPE
+ * raw_url: updateUsingPUT_2_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateUsingPUT_2 = function(parameters = {}) {
+  return refundapi.updateUsingPUT_2(parameters);
+}
+
+/**
+ * 根据店铺id获取POS数量
+ * request: getPosNumUsingGET
+ * url: getPosNumUsingGETURL
+ * method: getPosNumUsingGET_TYPE
+ * raw_url: getPosNumUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const getPosNumUsingGET = function(parameters = {}) {
+  return refundapi.getPosNumUsingGET(parameters);
+}
+
+/**
+ * 银行终端号、资和信终端号编辑调用：该记录是否在有效期内，如果在，不允许编辑
+ * request: isValidUsingGET_1
+ * url: isValidUsingGET_1URL
+ * method: isValidUsingGET_1_TYPE
+ * raw_url: isValidUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const isValidUsingGET_1 = function(parameters = {}) {
+  return refundapi.isValidUsingGET_1(parameters);
+}
+
+/**
+ * 删除银行终端号
+ * request: deleteUsingDELETE_2
+ * url: deleteUsingDELETE_2URL
+ * method: deleteUsingDELETE_2_TYPE
+ * raw_url: deleteUsingDELETE_2_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteUsingDELETE_2 = function(parameters = {}) {
+  return refundapi.deleteUsingDELETE_2(parameters);
+}
+
+/**
+ * 资和信终端号管理查询列表
+ * request: getListForPageUsingGET_10
+ * url: getListForPageUsingGET_10URL
+ * method: getListForPageUsingGET_10_TYPE
+ * raw_url: getListForPageUsingGET_10_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param queryParam - 店铺Code/店铺名称/终端号
+ * @param type - 类型：0银行终端号 1资和信终端号
+ * @param cardType - 资和信终端号管理：资和信卡类型：0专属卡1商通卡
+ */
+export const getListForPageUsingGET_10 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_10(parameters);
+}
+
+/**
+ * 添加资和信终端号
+ * request: addUsingPOST_3
+ * url: addUsingPOST_3URL
+ * method: addUsingPOST_3_TYPE
+ * raw_url: addUsingPOST_3_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const addUsingPOST_3 = function(parameters = {}) {
+  return refundapi.addUsingPOST_3(parameters);
+}
+
+/**
+ * 编辑资和信终端号
+ * request: updateUsingPUT_3
+ * url: updateUsingPUT_3URL
+ * method: updateUsingPUT_3_TYPE
+ * raw_url: updateUsingPUT_3_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateUsingPUT_3 = function(parameters = {}) {
+  return refundapi.updateUsingPUT_3(parameters);
+}
+
+/**
+ * 删除资和信终端号
+ * request: deleteUsingDELETE_3
+ * url: deleteUsingDELETE_3URL
+ * method: deleteUsingDELETE_3_TYPE
+ * raw_url: deleteUsingDELETE_3_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteUsingDELETE_3 = function(parameters = {}) {
+  return refundapi.deleteUsingDELETE_3(parameters);
+}
+
+/**
+ * 资和信卡类型
+ * request: getZHXCardTypeUsingGET
+ * url: getZHXCardTypeUsingGETURL
+ * method: getZHXCardTypeUsingGET_TYPE
+ * raw_url: getZHXCardTypeUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const getZHXCardTypeUsingGET = function(parameters = {}) {
+  return refundapi.getZHXCardTypeUsingGET(parameters);
+}
+
+/**
+ * 手续费设置查询列表
+ * request: getListForPageUsingGET_4
+ * url: getListForPageUsingGET_4URL
+ * method: getListForPageUsingGET_4_TYPE
+ * raw_url: getListForPageUsingGET_4_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param type - 类型：0手续费设置 1例外店手续费设置
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param cardType - 手续费设置：卡类型：资和信：0大悦城资和信卡 1资和信商通卡 ；银行：2内卡3外卡 
+ * @param shopQuery - 例外店手续费设置：店铺号/店铺名
+ */
+export const getListForPageUsingGET_4 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_4(parameters);
+}
+
+/**
+ * 银行、资和信卡类型
+ * request: getCardTypeUsingGET
+ * url: getCardTypeUsingGETURL
+ * method: getCardTypeUsingGET_TYPE
+ * raw_url: getCardTypeUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const getCardTypeUsingGET = function(parameters = {}) {
+  return refundapi.getCardTypeUsingGET(parameters);
+}
+
+/**
+ * 渠道数据
+ * request: getChannelUsingGET
+ * url: getChannelUsingGETURL
+ * method: getChannelUsingGET_TYPE
+ * raw_url: getChannelUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const getChannelUsingGET = function(parameters = {}) {
+  return refundapi.getChannelUsingGET(parameters);
+}
+
+/**
+ * 编辑手续费设置
+ * request: updateUsingPUT
+ * url: updateUsingPUTURL
+ * method: updateUsingPUT_TYPE
+ * raw_url: updateUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateUsingPUT = function(parameters = {}) {
+  return refundapi.updateUsingPUT(parameters);
+}
+
+/**
+ * 添加手续费设置
+ * request: addUsingPOST
+ * url: addUsingPOSTURL
+ * method: addUsingPOST_TYPE
+ * raw_url: addUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const addUsingPOST = function(parameters = {}) {
+  return refundapi.addUsingPOST(parameters);
+}
+
+/**
+ * 删除手续费设置
+ * request: deleteUsingDELETE
+ * url: deleteUsingDELETEURL
+ * method: deleteUsingDELETE_TYPE
+ * raw_url: deleteUsingDELETE_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteUsingDELETE = function(parameters = {}) {
+  return refundapi.deleteUsingDELETE(parameters);
+}
+
+/**
+ * 手续费设置、例外店手续费设置编辑调用：该记录是否在有效期内，如果在，不允许编辑
+ * request: isValidUsingGET
+ * url: isValidUsingGETURL
+ * method: isValidUsingGET_TYPE
+ * raw_url: isValidUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const isValidUsingGET = function(parameters = {}) {
+  return refundapi.isValidUsingGET(parameters);
+}
+
+/**
+ * 例外店手续费设置查询列表
+ * request: getListForPageUsingGET_5
+ * url: getListForPageUsingGET_5URL
+ * method: getListForPageUsingGET_5_TYPE
+ * raw_url: getListForPageUsingGET_5_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param type - 类型：0手续费设置 1例外店手续费设置
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param cardType - 手续费设置：卡类型：资和信：0大悦城资和信卡 1资和信商通卡 ；银行：2内卡3外卡 
+ * @param shopQuery - 例外店手续费设置：店铺号/店铺名
+ */
+export const getListForPageUsingGET_5 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_5(parameters);
+}
+
+/**
+ * 添加例外店手续费设置
+ * request: addUsingPOST_1
+ * url: addUsingPOST_1URL
+ * method: addUsingPOST_1_TYPE
+ * raw_url: addUsingPOST_1_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const addUsingPOST_1 = function(parameters = {}) {
+  return refundapi.addUsingPOST_1(parameters);
+}
+
+/**
+ * 编辑例外店手续费设置
+ * request: updateUsingPUT_1
+ * url: updateUsingPUT_1URL
+ * method: updateUsingPUT_1_TYPE
+ * raw_url: updateUsingPUT_1_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateUsingPUT_1 = function(parameters = {}) {
+  return refundapi.updateUsingPUT_1(parameters);
+}
+
+/**
+ * 删除例外店手续费设置
+ * request: deleteUsingDELETE_1
+ * url: deleteUsingDELETE_1URL
+ * method: deleteUsingDELETE_1_TYPE
+ * raw_url: deleteUsingDELETE_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteUsingDELETE_1 = function(parameters = {}) {
+  return refundapi.deleteUsingDELETE_1(parameters);
+}
+

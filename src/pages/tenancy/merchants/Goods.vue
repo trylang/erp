@@ -196,13 +196,8 @@
                 })
             },
             async getShopList(){
-                await this.$api.rentapi.listUsingGET_14({
-                    pageNum:'',
-                    pageSize:'',
-                    shopCode:'',
-                    shopName:'',
-                    merchantId:'',
-                    status:''
+                await this.$api.rentapi.getByStatusUsingPOST({
+                    status: [1,3,4]
                 }).then(res=>{
                     this.shopOptions = res.data.data;
                 })

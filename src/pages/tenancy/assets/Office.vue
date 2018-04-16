@@ -17,6 +17,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in floorOptions"
                                         :key="item.id"
@@ -55,8 +56,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>
@@ -147,7 +148,7 @@
                 total: 0,
                 listId:'',
                 columnData:[
-                    { type: 'selection', width:'50'},
+                    // { type: 'selection', width:'50'},
                     { prop: 'unitCode', label: '编码'},
                     { prop: 'buildName', label: '楼宇' },
                     { prop: 'floorName', label: '楼层'},
@@ -191,7 +192,7 @@
                 unitInfoData:{
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: 2,
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -205,8 +206,8 @@
                     id:1
                 }],
                 buildOptions:[{
-                    buildName:'商场',
-                    id:1
+                    buildName:'写字楼',
+                    id:2
                 }],
                 floorOptions:[],
                 statesId:'',
@@ -228,7 +229,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: 2,
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -272,7 +273,7 @@
             },
             async getFloorList(){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId:2
                 }).then(res=>{
                     this.floorOptions = res.data.data;
                 })
@@ -322,7 +323,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: 2,
                     floorId: '',
                     marketId: 1,
                     remark: '',

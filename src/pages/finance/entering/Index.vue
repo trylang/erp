@@ -115,14 +115,13 @@ export default {
               click: item => {
                 this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
-                if (this.$route.query.settleGroupId && item.id) {                  
-                  this.checkjsHandler(this.$route.query.settleGroupId, ()=>{
+                if (this.$route.query.settleGroupId && item.id) {
+                  this.checkjsHandler(this.$route.query.settleGroupId, () => {
                     this.dialog.dialogVisible = true;
                   });
                 } else {
                   this.dialog.dialogVisible = true;
                 }
-                               
               }
             },
             {
@@ -216,23 +215,10 @@ export default {
       }
     };
   },
-  mounted() {
-    this.$api.rentapi
-      .listUsingGET_12({
-          status:1
-      })
-      .then(res => {
-        //商户列表 status:1 已确定状态没加
-        this.selects.merchants = res.data.data;
-      })
-      .catch(res => {
-        this.$message.error(res.data.msg);
-      });
-  },
   methods: {
-    checkUserHandler(id) {
+    async checkUserHandler(id) {
       //根据商户id查询 合同列表
-      this.$api.rentapi
+      await this.$api.rentapi
         .getListForPageUsingGET({ merchantId: id })
         .then(res => {
           this.selects.contracts = res.data.data.list;
@@ -241,9 +227,9 @@ export default {
           this.$message.error(res.data.msg);
         });
     },
-    checkHetongHandler(id) {
+    async checkHetongHandler(id) {
       //根据合同id查询 结算组别列表
-      this.$api.rentapi
+      await this.$api.rentapi
         .getIrregularCostInfoUsingGET({ contractId: id, settleGroupId: -1 })
         .then(res => {
           if (res.data.data.settleGroups) {
@@ -254,19 +240,18 @@ export default {
           this.$message.error(res.data.msg);
         });
     },
-    checkjsHandler(id, cb) {
-      this.$api.rentapi
+    async checkjsHandler(id, cb) {
+      await this.$api.rentapi
         .getIrregularCostInfoUsingGET({
-          contractId: this.query.contractId,
+          contractId: this.query.contractId || id,
           settleGroupId: id
         })
         .then(res => {
-          this.dialog.models[0].options =
-            res.data.data.settleGroups[0].costItems;
-            if(cb) cb();
-        })
-        .catch(res => {
-          this.$message.error(res.data.msg);
+          if (res.data.data) {
+            this.dialog.models[0].options =
+              res.data.data.settleGroups[0].costItems;
+          }
+          if (cb) cb();
         });
     },
     getCurrentPage(pageNum) {
@@ -313,7 +298,7 @@ export default {
           costItemId: param.costItemId,
           expenseDate
         },
-        (res) => {
+        res => {
           const data = res.data.data;
           param.cycleId = data.id; //cycleId：结算周期返回的id
           param.expenseDate = `${expenseDate}(${data.beginDate}~${
@@ -332,7 +317,7 @@ export default {
           costItemId: param.costItemId,
           expenseDate
         },
-        (res) => {
+        res => {
           const data = res.data.data;
           param.cycleId = data.id; //cycleId：结算周期返回的id
           param.expenseDate = `${expenseDate}(${data.beginDate}~${
@@ -380,14 +365,17 @@ export default {
         if (res.data.status === 200) {
           if (callback) callback(res);
         } else {
-          $message('error', res.data.msg);
-        }        
+          $message("error", res.data.msg);
+        }
       });
     },
     async addEntering() {
       this.content.list.forEach(item => {
         item.replaceExpenseDate = item.expenseDate;
-        item.expenseDate = item.expenseDate.replace(/(\(\d+-\d+-\d+~\d+-\d+-\d+\))/, '');
+        item.expenseDate = item.expenseDate.replace(
+          /(\(\d+-\d+-\d+~\d+-\d+-\d+\))/,
+          ""
+        );
       });
       const param = {
         contractId: this.query.contractId,
@@ -410,7 +398,7 @@ export default {
 
       if (this.$route.query.id) {
         param.id = this.$route.query.id;
-        await apiFunc("updateUsingPUT_8", {param});
+        await apiFunc("updateUsingPUT_8", { param });
       } else {
         let request = {
           request: param
@@ -450,9 +438,11 @@ export default {
       });
     },
     async queryContracts(param) {
-      await queryContract({ merchantId: this.query.merchantId || param }).then(res => {
-        this.selects.contracts = res.data.list;
-      });
+      await queryContract({ merchantId: this.query.merchantId || param }).then(
+        res => {
+          this.selects.contracts = res.data.list;
+        }
+      );
     },
     async getCyclePeriod(params, callback) {
       const param = {
@@ -464,29 +454,41 @@ export default {
         if (callback) callback();
       });
     },
+    async getMerchants() {
+      await this.$api.rentapi
+      .listUsingGET_12({
+        status: 1
+      })
+      .then(res => {
+        //商户列表 status:1 已确定状态没加
+        this.selects.merchants = res.data.data;
+      })
+      .catch(res => {
+        this.$message.error(res.data.msg);
+      });
+    },
     async init() {
       let [cost] = await Promise.all([queryCost()]);
       this.selects.queryCost = cost.json;
       if (!this.$route.query.id) return;
-      this.query.merchantId = this.$route.query.merchantId;
-      this.query.contractId = this.$route.query.contractId;
-      this.query.settleGroupId = this.$route.query.settleGroupId;
-      await this.getEntering();      
-      
+      await this.getEntering();
+      await this.getMerchants();
       await this.queryContracts(this.$route.query.merchantId);
       await this.checkHetongHandler(this.$route.query.contractId);
       await this.checkjsHandler(this.$route.query.settleGroupId);
+      this.query.merchantId = this.$route.query.merchantId;
+      this.query.contractId = this.$route.query.contractId;
+      this.query.settleGroupId = this.$route.query.settleGroupId;
     }
   },
   computed: {},
-  watch: {
-    $route: "init"
-  },
+  // watch: {
+  //   $route: "init"
+  // },
   created() {
     this.init();
-  }
+  },
 };
-
 </script>
 
 <style scoped>

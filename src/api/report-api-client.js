@@ -29,6 +29,19 @@ export const signUsingPOST = function(parameters = {}) {
 }
 
 /**
+ * 合同统计数据导出
+ * request: poiContractUsingPOST
+ * url: poiContractUsingPOSTURL
+ * method: poiContractUsingPOST_TYPE
+ * raw_url: poiContractUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const poiContractUsingPOST = function(parameters = {}) {
+	return reportapi.poiContractUsingPOST(parameters);
+}
+
+/**
  * 备注
  * request: signTypeUsingGET
  * url: signTypeUsingGETURL
@@ -54,6 +67,19 @@ export const shopUsingPOST = function(parameters = {}) {
 }
 
 /**
+ * 店铺租约信息导出
+ * request: poiUsingPOST
+ * url: poiUsingPOSTURL
+ * method: poiUsingPOST_TYPE
+ * raw_url: poiUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const poiUsingPOST = function(parameters = {}) {
+	return reportapi.poiUsingPOST(parameters);
+}
+
+/**
  * 到期合同统计展示接口
  * request: expireUsingPOST
  * url: expireUsingPOSTURL
@@ -64,6 +90,19 @@ export const shopUsingPOST = function(parameters = {}) {
  */
 export const expireUsingPOST = function(parameters = {}) {
   return reportapi.expireUsingPOST(parameters);
+}
+
+/**
+ * 三个月到期合同信息导出
+ * request: expireExportUsingPOST
+ * url: expireExportUsingPOSTURL
+ * method: expireExportUsingPOST_TYPE
+ * raw_url: expireExportUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const expireExportUsingPOST = function(parameters = {}) {
+	return reportapi.expireExportUsingPOST(parameters);
 }
 
 /**
@@ -109,7 +148,7 @@ export const monthSalesListUsingGET = function(parameters = {}) {
  * @param shopCode - 店铺编号
  */
 export const downloaMmonthSalesListUsingGET = function(parameters = {}) {
-  return reportapi.downloaMmonthSalesListUsingGET(parameters);
+  return reportapi.exportMmonthSalesListUsingGET(parameters);
 }
 
 /**
@@ -180,6 +219,189 @@ export const listUsingGET_5 = function(parameters = {}) {
 }
 
 /**
+ *  商户结算（确认收入）列表
+ * request: listUsingGET_1
+ * url: listUsingGET_1URL
+ * method: listUsingGET_1_TYPE
+ * raw_url: listUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期月份开始日期
+ * @param cycleEndMonth - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param  - 
+ */
+export const listUsingGET_1 = function(parameters = {}) {
+	return reportapi.listUsingGET_1(parameters);
+}
+
+/**
+ * 商户下拉选项
+ * request: merchantlistUsingGET
+ * url: merchantlistUsingGETURL
+ * method: merchantlistUsingGET_TYPE
+ * raw_url: merchantlistUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const merchantlistUsingGET = function(parameters = {}) {
+	return reportapi.merchantlistUsingGET(parameters);
+}
+
+/**
+ * 商户结算(已收)列表
+ * request: listUsingGET_3
+ * url: listUsingGET_3URL
+ * method: listUsingGET_3_TYPE
+ * raw_url: listUsingGET_3_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartDate - 周期月份开始日期
+ * @param cycleEndDate - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param  - 
+ */
+export const listUsingGET_3 = function(parameters = {}) {
+	return reportapi.listUsingGET_3(parameters);
+}
+
+/**
+ * 商户结算(欠款)
+ * request: listUsingGET_2
+ * url: listUsingGET_2URL
+ * method: listUsingGET_2_TYPE
+ * raw_url: listUsingGET_2_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartDate - 周期开始日期
+ * @param cycleEndDate - 周期结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param  - 
+ */
+export const listUsingGET_2 = function(parameters = {}) {
+	return reportapi.listUsingGET_2(parameters);
+}
+
+/**
+ * 应收列表
+ * request: queryPayTypeInfoUsingPOST_1
+ * url: queryPayTypeInfoUsingPOST_1URL
+ * method: queryPayTypeInfoUsingPOST_1_TYPE
+ * raw_url: queryPayTypeInfoUsingPOST_1_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const queryPayTypeInfoUsingPOST = function(parameters = {}) {
+	return reportapi.queryPayTypeInfoUsingPOST(parameters);
+}
+
+/**
+ * 已收列表
+ * request: queryAlreadyUsingPOST
+ * url: queryAlreadyUsingPOSTURL
+ * method: queryAlreadyUsingPOST_TYPE
+ * raw_url: queryAlreadyUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const queryAlreadyUsingPOST = function(parameters = {}) {
+	return reportapi.queryAlreadyUsingPOST(parameters);
+}
+
+/**
+ * 根据物业性质获取费用项目下拉框
+ * request: getCostItemUsingGET
+ * url: getCostItemUsingGETURL
+ * method: getCostItemUsingGET_TYPE
+ * raw_url: getCostItemUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param flag - flag
+ */
+export const getCostItemUsingGET = function(parameters = {}) {
+	return reportapi.getCostItemUsingGET(parameters);
+}
+
+/**
+ * 免租维护记录表
+ * request: listUsingGET_6
+ * url: listUsingGET_6URL
+ * method: listUsingGET_6_TYPE
+ * raw_url: listUsingGET_6_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 操作开始时间
+ * @param endDate - 操作结束时间
+ * @param contractCode - 合同编号
+ * @param  - 
+ */
+export const listUsingGET_6 = function(parameters = {}) {
+	return reportapi.listUsingGET_6(parameters);
+}
+
+/**
+ * 账单调整维护记录
+ * request: listUsingGET
+ * url: listUsingGETURL
+ * method: listUsingGET_TYPE
+ * raw_url: listUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startTime - 操作开始时间
+ * @param endTime - 操作结束时间
+ * @param contractCode - 合同编号
+ * @param  - 
+ */
+export const listUsingGET = function(parameters = {}) {
+	return reportapi.listUsingGET(parameters);
+}
+
+/**
+ * 付款方式汇总，查询
+ * request: shopPaymentListUsingGET
+ * url: shopPaymentListUsingGETURL
+ * method: shopPaymentListUsingGET_TYPE
+ * raw_url: shopPaymentListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const shopPaymentListUsingGET = function(parameters = {}) {
+	return reportapi.shopPaymentListUsingGET(parameters);
+}
+
+/**
+ * 店铺付款方式明细表,查询
+ * request: shopPaymentDetailListUsingGET
+ * url: shopPaymentDetailListUsingGETURL
+ * method: shopPaymentDetailListUsingGET_TYPE
+ * raw_url: shopPaymentDetailListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const shopPaymentDetailListUsingGET = function(parameters = {}) {
+	return reportapi.shopPaymentDetailListUsingGET(parameters);
+}
+
+/**
  * 店铺业态销售汇总表,查询
  * request: shopBusinessTypeSalesListUsingGET
  * url: shopBusinessTypeSalesListUsingGETURL
@@ -194,7 +416,264 @@ export const listUsingGET_5 = function(parameters = {}) {
  * @param endCode - 店铺编码区间：结束编码
  */
 export const shopBusinessTypeSalesListUsingGET = function(parameters = {}) {
-  return reportapi.shopBusinessTypeSalesListUsingGET(parameters);
+	return reportapi.shopBusinessTypeSalesListUsingGET(parameters);
 }
 
+/**
+ * 合同结算统计报表导出
+ * request: exportContractSettlementStatisticsUsingGET
+ * url: exportContractSettlementStatisticsUsingGETURL
+ * method: exportContractSettlementStatisticsUsingGET_TYPE
+ * raw_url: exportContractSettlementStatisticsUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startMonth - 结算月开始日期
+ * @param endMonth - 结算月结束日期
+ * @param contractCode - 合同编号
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ */
+export const exportContractSettlementStatisticsUsingGET = function(parameters = {}) {
+	return reportapi.exportContractSettlementStatisticsUsingGET(parameters);
+}
 
+/**
+ * 商户结算（确认收入）导出
+ * request: exportBusinessSettlementConfirmUsingGET
+ * url: exportBusinessSettlementConfirmUsingGETURL
+ * method: exportBusinessSettlementConfirmUsingGET_TYPE
+ * raw_url: exportBusinessSettlementConfirmUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期月份开始日期
+ * @param cycleEndMonth - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ */
+export const exportBusinessSettlementConfirmUsingGET = function(parameters = {}) {
+	return reportapi.exportBusinessSettlementConfirmUsingGET(parameters);
+}
+
+/**
+ * 商户结算(已收)导出
+ * request: exportBusinessSettlementReceivedUsingGET
+ * url: exportBusinessSettlementReceivedUsingGETURL
+ * method: exportBusinessSettlementReceivedUsingGET_TYPE
+ * raw_url: exportBusinessSettlementReceivedUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期月份开始日期
+ * @param cycleEndMonth - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ */
+export const exportBusinessSettlementReceivedUsingGET = function(parameters = {}) {
+	return reportapi.exportBusinessSettlementReceivedUsingGET(parameters);
+}
+
+/**
+ * 商户结算(欠款)导出
+ * request: exportBusinessSettlementReceivableUsingGET
+ * url: exportBusinessSettlementReceivableUsingGETURL
+ * method: exportBusinessSettlementReceivableUsingGET_TYPE
+ * raw_url: exportBusinessSettlementReceivableUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期开始日期
+ * @param cycleEndMonth - 周期结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ */
+export const exportBusinessSettlementReceivableUsingGET = function(parameters = {}) {
+	return reportapi.exportBusinessSettlementReceivableUsingGET(parameters);
+}
+
+/**
+ * 免租维护记录表导出
+ * request: exportRentFreeMaintainRecordUsingGET
+ * url: exportRentFreeMaintainRecordUsingGETURL
+ * method: exportRentFreeMaintainRecordUsingGET_TYPE
+ * raw_url: exportRentFreeMaintainRecordUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 操作开始时间
+ * @param endDate - 操作结束时间
+ * @param contractCode - 合同编号
+ */
+export const exportRentFreeMaintainRecordUsingGET = function(parameters = {}) {
+	return reportapi.exportRentFreeMaintainRecordUsingGET(parameters);
+}
+
+/**
+ * 账单调整维护记录导出
+ * request: exportAdjustMaintainRecordUsingGET
+ * url: exportAdjustMaintainRecordUsingGETURL
+ * method: exportAdjustMaintainRecordUsingGET_TYPE
+ * raw_url: exportAdjustMaintainRecordUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startTime - 操作开始时间
+ * @param endTime - 操作结束时间
+ * @param contractCode - 合同编号
+ */
+export const exportAdjustMaintainRecordUsingGET = function(parameters = {}) {
+	return reportapi.exportAdjustMaintainRecordUsingGET(parameters);
+}
+
+/**
+ * 应收列表信息导出
+ * request: exportPayTypeInfoUsingPOST
+ * url: exportPayTypeInfoUsingPOSTURL
+ * method: exportPayTypeInfoUsingPOST_TYPE
+ * raw_url: exportPayTypeInfoUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const exportPayTypeInfoUsingPOST = function(parameters = {}) {
+	return reportapi.exportPayTypeInfoUsingPOST(parameters);
+}
+
+/**
+ * 已收列表信息导出
+ * request: exportPayTypeInfoForAlreadyUsingPOST
+ * url: exportPayTypeInfoForAlreadyUsingPOSTURL
+ * method: exportPayTypeInfoForAlreadyUsingPOST_TYPE
+ * raw_url: exportPayTypeInfoForAlreadyUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const exportPayTypeInfoForAlreadyUsingPOST = function(parameters = {}) {
+	return reportapi.exportPayTypeInfoForAlreadyUsingPOST(parameters);
+}
+
+/**
+ * 月销售汇总，导出
+ * request: exportMmonthSalesListUsingGET
+ * url: exportMmonthSalesListUsingGETURL
+ * method: exportMmonthSalesListUsingGET_TYPE
+ * raw_url: exportMmonthSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param yearAndMonth - 哪一年，哪一月，格式如2018-03
+ * @param floorId - 楼层的ID
+ * @param shopCode - 店铺编号
+ */
+export const exportMmonthSalesListUsingGET = function(parameters = {}) {
+	return reportapi.exportMmonthSalesListUsingGET(parameters);
+}
+
+/**
+ * 销售数据，导出
+ * request: exportOrderSalesDataListUsingGET
+ * url: exportOrderSalesDataListUsingGETURL
+ * method: exportOrderSalesDataListUsingGET_TYPE
+ * raw_url: exportOrderSalesDataListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 开始日期
+ * @param endDate - 结束日期
+ * @param orderCode - 销售单号
+ * @param shopCode - 销售单号
+ */
+export const exportOrderSalesDataListUsingGET = function(parameters = {}) {
+	return reportapi.exportOrderSalesDataListUsingGET(parameters);
+}
+
+/**
+ * 业态楼层销售数据，导出
+ * request: exportBusinessTypeAndFloorSalesListUsingGET
+ * url: exportBusinessTypeAndFloorSalesListUsingGETURL
+ * method: exportBusinessTypeAndFloorSalesListUsingGET_TYPE
+ * raw_url: exportBusinessTypeAndFloorSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 开始日期，格式如2018-03-09
+ * @param endDate - 结束日期，开始日期，格式如2018-04-28
+ * @param businessTypeOrFloorCode - 业态/楼层的编号，比如1代表全部，2代表业态，3代表楼层
+ */
+export const exportBusinessTypeAndFloorSalesListUsingGET = function(parameters = {}) {
+	return reportapi.exportBusinessTypeAndFloorSalesListUsingGET(parameters);
+}
+
+/**
+ * 店铺销售报表，导出
+ * request: exportShopDaySalesListUsingGET
+ * url: exportShopDaySalesListUsingGETURL
+ * method: exportShopDaySalesListUsingGET_TYPE
+ * raw_url: exportShopDaySalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopDaySalesListUsingGET = function(parameters = {}) {
+	return reportapi.exportShopDaySalesListUsingGET(parameters)
+}
+
+/**
+ * 店铺业态销售汇总表，导出
+ * request: exportShopBusinessTypeSalesListUsingGET
+ * url: exportShopBusinessTypeSalesListUsingGETURL
+ * method: exportShopBusinessTypeSalesListUsingGET_TYPE
+ * raw_url: exportShopBusinessTypeSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopBusinessTypeSalesListUsingGET = function(parameters = {}) {
+	return reportapi.exportShopBusinessTypeSalesListUsingGET(parameters);
+}
+
+/**
+ * 付款方式汇总，导出
+ * request: exportShopPaymentListUsingGET
+ * url: exportShopPaymentListUsingGETURL
+ * method: exportShopPaymentListUsingGET_TYPE
+ * raw_url: exportShopPaymentListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopPaymentListUsingGET = function(parameters = {}) {
+	return reportapi.exportShopPaymentListUsingGET(parameters);
+}
+
+/**
+ * 店铺付款方式明细表，导出
+ * request: exportShopPaymentDetailListUsingGET
+ * url: exportShopPaymentDetailListUsingGETURL
+ * method: exportShopPaymentDetailListUsingGET_TYPE
+ * raw_url: exportShopPaymentDetailListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopPaymentDetailListUsingGET = function(parameters = {}) {
+	return reportapi.exportShopPaymentDetailListUsingGET(parameters);
+}

@@ -30,6 +30,81 @@ export const request = (method, url, body, queryParameters, form, config) => {
  *                    ERP-数据中心API.
  ==========================================================*/
 /**
+ * 账单调整维护记录导出
+ * request: exportAdjustMaintainRecordUsingGET
+ * url: exportAdjustMaintainRecordUsingGETURL
+ * method: exportAdjustMaintainRecordUsingGET_TYPE
+ * raw_url: exportAdjustMaintainRecordUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startTime - 操作开始时间
+ * @param endTime - 操作结束时间
+ * @param contractCode - 合同编号
+ */
+export const exportAdjustMaintainRecordUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/bamrecord/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startTime'] !== undefined) {
+    queryParameters['startTime'] = parameters['startTime']
+  }
+  if (parameters['endTime'] !== undefined) {
+    queryParameters['endTime'] = parameters['endTime']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportAdjustMaintainRecordUsingGET_RAW_URL = function() {
+  return '/report/bamrecord/export'
+}
+export const exportAdjustMaintainRecordUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportAdjustMaintainRecordUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/bamrecord/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startTime'] !== undefined) {
+    queryParameters['startTime'] = parameters['startTime']
+  }
+  if (parameters['endTime'] !== undefined) {
+    queryParameters['endTime'] = parameters['endTime']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 账单调整维护记录
  * request: listUsingGET
  * url: listUsingGETURL
@@ -106,6 +181,95 @@ export const listUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 商户结算（确认收入）导出
+ * request: exportBusinessSettlementConfirmUsingGET
+ * url: exportBusinessSettlementConfirmUsingGETURL
+ * method: exportBusinessSettlementConfirmUsingGET_TYPE
+ * raw_url: exportBusinessSettlementConfirmUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期月份开始日期
+ * @param cycleEndMonth - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
+ */
+export const exportBusinessSettlementConfirmUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/bsconfirm/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportBusinessSettlementConfirmUsingGET_RAW_URL = function() {
+  return '/report/bsconfirm/export'
+}
+export const exportBusinessSettlementConfirmUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportBusinessSettlementConfirmUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/bsconfirm/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  *  商户结算（确认收入）列表
  * request: listUsingGET_1
  * url: listUsingGET_1URL
@@ -118,7 +282,7 @@ export const listUsingGETURL = function(parameters = {}) {
  * @param cycleEndMonth - 周期月份结束日期
  * @param contractCode - 合同编号
  * @param merchantId - 商户id
- * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
  * @param  - 
  */
 export const listUsingGET_1 = function(parameters = {}) {
@@ -196,6 +360,95 @@ export const listUsingGET_1URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 商户结算(欠款)导出
+ * request: exportBusinessSettlementReceivableUsingGET
+ * url: exportBusinessSettlementReceivableUsingGETURL
+ * method: exportBusinessSettlementReceivableUsingGET_TYPE
+ * raw_url: exportBusinessSettlementReceivableUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期开始日期
+ * @param cycleEndMonth - 周期结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
+ */
+export const exportBusinessSettlementReceivableUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/bsdebt/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportBusinessSettlementReceivableUsingGET_RAW_URL = function() {
+  return '/report/bsdebt/export'
+}
+export const exportBusinessSettlementReceivableUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportBusinessSettlementReceivableUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/bsdebt/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 商户结算(欠款)
  * request: listUsingGET_2
  * url: listUsingGET_2URL
@@ -208,7 +461,7 @@ export const listUsingGET_1URL = function(parameters = {}) {
  * @param cycleEndMonth - 周期结束日期
  * @param contractCode - 合同编号
  * @param merchantId - 商户id
- * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
  * @param  - 
  */
 export const listUsingGET_2 = function(parameters = {}) {
@@ -286,6 +539,95 @@ export const listUsingGET_2URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 商户结算(已收)导出
+ * request: exportBusinessSettlementReceivedUsingGET
+ * url: exportBusinessSettlementReceivedUsingGETURL
+ * method: exportBusinessSettlementReceivedUsingGET_TYPE
+ * raw_url: exportBusinessSettlementReceivedUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param cycleStartMonth - 周期月份开始日期
+ * @param cycleEndMonth - 周期月份结束日期
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户id
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
+ */
+export const exportBusinessSettlementReceivedUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/bsreceived/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportBusinessSettlementReceivedUsingGET_RAW_URL = function() {
+  return '/report/bsreceived/export'
+}
+export const exportBusinessSettlementReceivedUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportBusinessSettlementReceivedUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/bsreceived/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['cycleStartMonth'] !== undefined) {
+    queryParameters['cycleStartMonth'] = parameters['cycleStartMonth']
+  }
+  if (parameters['cycleEndMonth'] !== undefined) {
+    queryParameters['cycleEndMonth'] = parameters['cycleEndMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 商户结算(已收)列表
  * request: listUsingGET_3
  * url: listUsingGET_3URL
@@ -298,7 +640,7 @@ export const listUsingGET_2URL = function(parameters = {}) {
  * @param cycleEndMonth - 周期月份结束日期
  * @param contractCode - 合同编号
  * @param merchantId - 商户id
- * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
  * @param  - 
  */
 export const listUsingGET_3 = function(parameters = {}) {
@@ -416,7 +758,7 @@ export const merchantlistUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 业态楼层销售查询
+ * 业态楼层销售，查询
  * request: businessTypeAndFloorSalesListUsingGET
  * url: businessTypeAndFloorSalesListUsingGETURL
  * method: businessTypeAndFloorSalesListUsingGET_TYPE
@@ -491,6 +833,88 @@ export const businessTypeAndFloorSalesListUsingGETURL = function(parameters = {}
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 合同结算统计报表导出
+ * request: exportContractSettlementStatisticsUsingGET
+ * url: exportContractSettlementStatisticsUsingGETURL
+ * method: exportContractSettlementStatisticsUsingGET_TYPE
+ * raw_url: exportContractSettlementStatisticsUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startMonth - 结算月开始日期
+ * @param endMonth - 结算月结束日期
+ * @param contractCode - 合同编号
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
+ */
+export const exportContractSettlementStatisticsUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/csstatistics/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startMonth'] !== undefined) {
+    queryParameters['startMonth'] = parameters['startMonth']
+  }
+  if (parameters['endMonth'] !== undefined) {
+    queryParameters['endMonth'] = parameters['endMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportContractSettlementStatisticsUsingGET_RAW_URL = function() {
+  return '/report/csstatistics/export'
+}
+export const exportContractSettlementStatisticsUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportContractSettlementStatisticsUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/csstatistics/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startMonth'] !== undefined) {
+    queryParameters['startMonth'] = parameters['startMonth']
+  }
+  if (parameters['endMonth'] !== undefined) {
+    queryParameters['endMonth'] = parameters['endMonth']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 合同结算统计报表
  * request: listUsingGET_5
  * url: listUsingGET_5URL
@@ -502,7 +926,7 @@ export const businessTypeAndFloorSalesListUsingGETURL = function(parameters = {}
  * @param startMonth - 结算月开始日期
  * @param endMonth - 结算月结束日期
  * @param contractCode - 合同编号
- * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼
+ * @param propertyType - 物业性质->0:商铺 1:场地 2:广告位 3:写字楼 null:全部
  * @param  - 
  */
 export const listUsingGET_5 = function(parameters = {}) {
@@ -574,320 +998,6 @@ export const listUsingGET_5URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 业态楼层销售数据导出
- * request: downloadBusinessTypeAndFloorSalesListUsingGET
- * url: downloadBusinessTypeAndFloorSalesListUsingGETURL
- * method: downloadBusinessTypeAndFloorSalesListUsingGET_TYPE
- * raw_url: downloadBusinessTypeAndFloorSalesListUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pageNum - 页码
- * @param pageSize - 每页显示数量
- * @param startDate - 开始日期，格式如2018-03-09
- * @param endDate - 结束日期，开始日期，格式如2018-04-28
- * @param businessTypeOrFloorCode - 业态/楼层的编号，比如1代表全部，2代表业态，3代表楼层
- */
-export const downloadBusinessTypeAndFloorSalesListUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/download/businesstypeandfloorsaleslist'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters['businessTypeOrFloorCode'] !== undefined) {
-    queryParameters['businessTypeOrFloorCode'] = parameters['businessTypeOrFloorCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const downloadBusinessTypeAndFloorSalesListUsingGET_RAW_URL = function() {
-  return '/report/download/businesstypeandfloorsaleslist'
-}
-export const downloadBusinessTypeAndFloorSalesListUsingGET_TYPE = function() {
-  return 'get'
-}
-export const downloadBusinessTypeAndFloorSalesListUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/download/businesstypeandfloorsaleslist'
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters['businessTypeOrFloorCode'] !== undefined) {
-    queryParameters['businessTypeOrFloorCode'] = parameters['businessTypeOrFloorCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 月销售汇总导出
- * request: downloaMmonthSalesListUsingGET
- * url: downloaMmonthSalesListUsingGETURL
- * method: downloaMmonthSalesListUsingGET_TYPE
- * raw_url: downloaMmonthSalesListUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pageNum - 页码
- * @param pageSize - 每页显示数量
- * @param yearAndMonth - 哪一年，哪一月，格式如2018-03
- * @param floorId - 楼层的ID
- * @param shopCode - 店铺编号
- */
-export const downloaMmonthSalesListUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/download/monthsaleslist'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['yearAndMonth'] !== undefined) {
-    queryParameters['yearAndMonth'] = parameters['yearAndMonth']
-  }
-  if (parameters['floorId'] !== undefined) {
-    queryParameters['floorId'] = parameters['floorId']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const downloaMmonthSalesListUsingGET_RAW_URL = function() {
-  return '/report/download/monthsaleslist'
-}
-export const downloaMmonthSalesListUsingGET_TYPE = function() {
-  return 'get'
-}
-export const downloaMmonthSalesListUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/download/monthsaleslist'
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['yearAndMonth'] !== undefined) {
-    queryParameters['yearAndMonth'] = parameters['yearAndMonth']
-  }
-  if (parameters['floorId'] !== undefined) {
-    queryParameters['floorId'] = parameters['floorId']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 销售数据导出
- * request: downloadOrderSalesDataListUsingGET
- * url: downloadOrderSalesDataListUsingGETURL
- * method: downloadOrderSalesDataListUsingGET_TYPE
- * raw_url: downloadOrderSalesDataListUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pageNum - 页码
- * @param pageSize - 每页显示数量
- * @param startDate - 开始日期
- * @param endDate - 结束日期
- * @param orderCode - 销售单号
- * @param shopCode - 销售单号
- */
-export const downloadOrderSalesDataListUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/download/ordersalesdatalist'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters['orderCode'] !== undefined) {
-    queryParameters['orderCode'] = parameters['orderCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const downloadOrderSalesDataListUsingGET_RAW_URL = function() {
-  return '/report/download/ordersalesdatalist'
-}
-export const downloadOrderSalesDataListUsingGET_TYPE = function() {
-  return 'get'
-}
-export const downloadOrderSalesDataListUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/download/ordersalesdatalist'
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters['orderCode'] !== undefined) {
-    queryParameters['orderCode'] = parameters['orderCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 为商户自助平台提供的---销售明细下载 接口
- * request: downloadSalesdetailUsingGET
- * url: downloadSalesdetailUsingGETURL
- * method: downloadSalesdetailUsingGET_TYPE
- * raw_url: downloadSalesdetailUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pageNum - 页码
- * @param pageSize - 每页显示数量
- * @param merchantCode - 商户编码
- * @param shopCode - 店铺编码
- * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
- * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
- */
-export const downloadSalesdetailUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/download/salesdetail'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['merchantCode'] !== undefined) {
-    queryParameters['merchantCode'] = parameters['merchantCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const downloadSalesdetailUsingGET_RAW_URL = function() {
-  return '/report/download/salesdetail'
-}
-export const downloadSalesdetailUsingGET_TYPE = function() {
-  return 'get'
-}
-export const downloadSalesdetailUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/download/salesdetail'
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['merchantCode'] !== undefined) {
-    queryParameters['merchantCode'] = parameters['merchantCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * 到期合同统计展示接口
  * request: expireUsingPOST
  * url: expireUsingPOSTURL
@@ -926,6 +1036,754 @@ export const expireUsingPOSTURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/report/expire/{date}'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 业态楼层销售数据，导出
+ * request: exportBusinessTypeAndFloorSalesListUsingGET
+ * url: exportBusinessTypeAndFloorSalesListUsingGETURL
+ * method: exportBusinessTypeAndFloorSalesListUsingGET_TYPE
+ * raw_url: exportBusinessTypeAndFloorSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 开始日期，格式如2018-03-09
+ * @param endDate - 结束日期，开始日期，格式如2018-04-28
+ * @param businessTypeOrFloorCode - 业态/楼层的编号，比如1代表全部，2代表业态，3代表楼层
+ */
+export const exportBusinessTypeAndFloorSalesListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/businesstypeandfloorsaleslist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['businessTypeOrFloorCode'] !== undefined) {
+    queryParameters['businessTypeOrFloorCode'] = parameters['businessTypeOrFloorCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportBusinessTypeAndFloorSalesListUsingGET_RAW_URL = function() {
+  return '/report/export/businesstypeandfloorsaleslist'
+}
+export const exportBusinessTypeAndFloorSalesListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportBusinessTypeAndFloorSalesListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/businesstypeandfloorsaleslist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['businessTypeOrFloorCode'] !== undefined) {
+    queryParameters['businessTypeOrFloorCode'] = parameters['businessTypeOrFloorCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 月销售汇总，导出
+ * request: exportMmonthSalesListUsingGET
+ * url: exportMmonthSalesListUsingGETURL
+ * method: exportMmonthSalesListUsingGET_TYPE
+ * raw_url: exportMmonthSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param yearAndMonth - 哪一年，哪一月，格式如2018-03
+ * @param floorId - 楼层的ID
+ * @param shopCode - 店铺编号
+ */
+export const exportMmonthSalesListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/monthsaleslist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['yearAndMonth'] !== undefined) {
+    queryParameters['yearAndMonth'] = parameters['yearAndMonth']
+  }
+  if (parameters['floorId'] !== undefined) {
+    queryParameters['floorId'] = parameters['floorId']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportMmonthSalesListUsingGET_RAW_URL = function() {
+  return '/report/export/monthsaleslist'
+}
+export const exportMmonthSalesListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportMmonthSalesListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/monthsaleslist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['yearAndMonth'] !== undefined) {
+    queryParameters['yearAndMonth'] = parameters['yearAndMonth']
+  }
+  if (parameters['floorId'] !== undefined) {
+    queryParameters['floorId'] = parameters['floorId']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 销售数据，导出
+ * request: exportOrderSalesDataListUsingGET
+ * url: exportOrderSalesDataListUsingGETURL
+ * method: exportOrderSalesDataListUsingGET_TYPE
+ * raw_url: exportOrderSalesDataListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 开始日期
+ * @param endDate - 结束日期
+ * @param orderCode - 销售单号
+ * @param shopCode - 销售单号
+ */
+export const exportOrderSalesDataListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/ordersalesdatalist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['orderCode'] !== undefined) {
+    queryParameters['orderCode'] = parameters['orderCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportOrderSalesDataListUsingGET_RAW_URL = function() {
+  return '/report/export/ordersalesdatalist'
+}
+export const exportOrderSalesDataListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportOrderSalesDataListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/ordersalesdatalist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['orderCode'] !== undefined) {
+    queryParameters['orderCode'] = parameters['orderCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 商户自助平台---付款管理，导出。该接口是提供给自助平台的，供跨服务调用。数据中心前端勿调用。
+ * request: exportPlatformPaymentManageListUsingGET
+ * url: exportPlatformPaymentManageListUsingGETURL
+ * method: exportPlatformPaymentManageListUsingGET_TYPE
+ * raw_url: exportPlatformPaymentManageListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param merchantCode - 商户编码
+ * @param shopCode - 店铺编码
+ * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
+ * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
+ */
+export const exportPlatformPaymentManageListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/platformpaymentmanagelist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportPlatformPaymentManageListUsingGET_RAW_URL = function() {
+  return '/report/export/platformpaymentmanagelist'
+}
+export const exportPlatformPaymentManageListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportPlatformPaymentManageListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/platformpaymentmanagelist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 商户自助平台---销售明细，导出。该接口是提供给自助平台的，供跨服务调用。数据中心前端勿调用。
+ * request: exportPlatformSalesDetailListUsingGET
+ * url: exportPlatformSalesDetailListUsingGETURL
+ * method: exportPlatformSalesDetailListUsingGET_TYPE
+ * raw_url: exportPlatformSalesDetailListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param merchantCode - 商户编码
+ * @param shopCode - 店铺编码
+ * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
+ * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
+ */
+export const exportPlatformSalesDetailListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/platformsalesdetaillist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportPlatformSalesDetailListUsingGET_RAW_URL = function() {
+  return '/report/export/platformsalesdetaillist'
+}
+export const exportPlatformSalesDetailListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportPlatformSalesDetailListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/platformsalesdetaillist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 店铺业态销售汇总表，导出
+ * request: exportShopBusinessTypeSalesListUsingGET
+ * url: exportShopBusinessTypeSalesListUsingGETURL
+ * method: exportShopBusinessTypeSalesListUsingGET_TYPE
+ * raw_url: exportShopBusinessTypeSalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopBusinessTypeSalesListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/shopbusinesstypesaleslist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportShopBusinessTypeSalesListUsingGET_RAW_URL = function() {
+  return '/report/export/shopbusinesstypesaleslist'
+}
+export const exportShopBusinessTypeSalesListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportShopBusinessTypeSalesListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/shopbusinesstypesaleslist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 店铺销售报表，导出
+ * request: exportShopDaySalesListUsingGET
+ * url: exportShopDaySalesListUsingGETURL
+ * method: exportShopDaySalesListUsingGET_TYPE
+ * raw_url: exportShopDaySalesListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopDaySalesListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/shopdaysaleslist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportShopDaySalesListUsingGET_RAW_URL = function() {
+  return '/report/export/shopdaysaleslist'
+}
+export const exportShopDaySalesListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportShopDaySalesListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/shopdaysaleslist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 店铺付款方式明细表，导出
+ * request: exportShopPaymentDetailListUsingGET
+ * url: exportShopPaymentDetailListUsingGETURL
+ * method: exportShopPaymentDetailListUsingGET_TYPE
+ * raw_url: exportShopPaymentDetailListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopPaymentDetailListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/shoppaymentdetaillist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportShopPaymentDetailListUsingGET_RAW_URL = function() {
+  return '/report/export/shoppaymentdetaillist'
+}
+export const exportShopPaymentDetailListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportShopPaymentDetailListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/shoppaymentdetaillist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 付款方式汇总，导出
+ * request: exportShopPaymentListUsingGET
+ * url: exportShopPaymentListUsingGETURL
+ * method: exportShopPaymentListUsingGET_TYPE
+ * raw_url: exportShopPaymentListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const exportShopPaymentListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/export/shoppaymentlist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportShopPaymentListUsingGET_RAW_URL = function() {
+  return '/report/export/shoppaymentlist'
+}
+export const exportShopPaymentListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportShopPaymentListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/export/shoppaymentlist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -982,6 +1840,53 @@ export const queryAlreadyUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 根据物业性质获取费用项目下拉框
+ * request: getCostItemUsingGET
+ * url: getCostItemUsingGETURL
+ * method: getCostItemUsingGET_TYPE
+ * raw_url: getCostItemUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param flag - flag
+ */
+export const getCostItemUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/getCostItem/'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['flag'] !== undefined) {
+    queryParameters['flag'] = parameters['flag']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getCostItemUsingGET_RAW_URL = function() {
+  return '/report/getCostItem/'
+}
+export const getCostItemUsingGET_TYPE = function() {
+  return 'get'
+}
+export const getCostItemUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/getCostItem/'
+  if (parameters['flag'] !== undefined) {
+    queryParameters['flag'] = parameters['flag']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 前台固定数据返回接口
  * request: listUsingGET_4
  * url: listUsingGET_4URL
@@ -1029,14 +1934,14 @@ export const listUsingGET_4URL = function(parameters = {}) {
 }
 /**
  * 应收列表
- * request: queryPayTypeInfoUsingPOST_1
- * url: queryPayTypeInfoUsingPOST_1URL
- * method: queryPayTypeInfoUsingPOST_1_TYPE
- * raw_url: queryPayTypeInfoUsingPOST_1_RAW_URL
+ * request: queryPayTypeInfoUsingPOST
+ * url: queryPayTypeInfoUsingPOSTURL
+ * method: queryPayTypeInfoUsingPOST_TYPE
+ * raw_url: queryPayTypeInfoUsingPOST_RAW_URL
  * @param token - header中token字段
  * @param request - request
  */
-export const queryPayTypeInfoUsingPOST_1 = function(parameters = {}) {
+export const queryPayTypeInfoUsingPOST = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/report/getList'
@@ -1056,13 +1961,13 @@ export const queryPayTypeInfoUsingPOST_1 = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const queryPayTypeInfoUsingPOST_1_RAW_URL = function() {
+export const queryPayTypeInfoUsingPOST_RAW_URL = function() {
   return '/report/getList'
 }
-export const queryPayTypeInfoUsingPOST_1_TYPE = function() {
+export const queryPayTypeInfoUsingPOST_TYPE = function() {
   return 'post'
 }
-export const queryPayTypeInfoUsingPOST_1URL = function(parameters = {}) {
+export const queryPayTypeInfoUsingPOSTURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/report/getList'
@@ -1075,7 +1980,101 @@ export const queryPayTypeInfoUsingPOST_1URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 月销售汇总查询
+ * 应收列表信息导出
+ * request: exportPayTypeInfoUsingPOST
+ * url: exportPayTypeInfoUsingPOSTURL
+ * method: exportPayTypeInfoUsingPOST_TYPE
+ * raw_url: exportPayTypeInfoUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const exportPayTypeInfoUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/getListExport'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
+  }
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const exportPayTypeInfoUsingPOST_RAW_URL = function() {
+  return '/report/getListExport'
+}
+export const exportPayTypeInfoUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const exportPayTypeInfoUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/getListExport'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 已收列表信息导出
+ * request: exportPayTypeInfoForAlreadyUsingPOST
+ * url: exportPayTypeInfoForAlreadyUsingPOSTURL
+ * method: exportPayTypeInfoForAlreadyUsingPOST_TYPE
+ * raw_url: exportPayTypeInfoForAlreadyUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const exportPayTypeInfoForAlreadyUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/getListExportForAlready'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
+  }
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const exportPayTypeInfoForAlreadyUsingPOST_RAW_URL = function() {
+  return '/report/getListExportForAlready'
+}
+export const exportPayTypeInfoForAlreadyUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const exportPayTypeInfoForAlreadyUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/getListExportForAlready'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 月销售汇总，查询
  * request: monthSalesListUsingGET
  * url: monthSalesListUsingGETURL
  * method: monthSalesListUsingGET_TYPE
@@ -1150,7 +2149,7 @@ export const monthSalesListUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 销售数据查询
+ * 销售数据，查询
  * request: orderSalesDataListUsingGET
  * url: orderSalesDataListUsingGETURL
  * method: orderSalesDataListUsingGET_TYPE
@@ -1232,199 +2231,11 @@ export const orderSalesDataListUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 付款方式明细查询
- * request: queryPayTypeInfoUsingPOST
- * url: queryPayTypeInfoUsingPOSTURL
- * method: queryPayTypeInfoUsingPOST_TYPE
- * raw_url: queryPayTypeInfoUsingPOST_RAW_URL
- * @param token - header中token字段
- * @param request - request
- */
-export const queryPayTypeInfoUsingPOST = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/paytype/info'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['request'] !== undefined) {
-    body = parameters['request']
-  }
-  if (parameters['request'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: request'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const queryPayTypeInfoUsingPOST_RAW_URL = function() {
-  return '/report/paytype/info'
-}
-export const queryPayTypeInfoUsingPOST_TYPE = function() {
-  return 'post'
-}
-export const queryPayTypeInfoUsingPOSTURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/paytype/info'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 付款方式汇总查询
- * request: queryPayTypeSumUsingPOST
- * url: queryPayTypeSumUsingPOSTURL
- * method: queryPayTypeSumUsingPOST_TYPE
- * raw_url: queryPayTypeSumUsingPOST_RAW_URL
- * @param token - header中token字段
- * @param request - request
- */
-export const queryPayTypeSumUsingPOST = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/paytype/sum'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['request'] !== undefined) {
-    body = parameters['request']
-  }
-  if (parameters['request'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: request'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const queryPayTypeSumUsingPOST_RAW_URL = function() {
-  return '/report/paytype/sum'
-}
-export const queryPayTypeSumUsingPOST_TYPE = function() {
-  return 'post'
-}
-export const queryPayTypeSumUsingPOSTURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/paytype/sum'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 合同统计数据导出
- * request: poiUsingPOST
- * url: poiUsingPOSTURL
- * method: poiUsingPOST_TYPE
- * raw_url: poiUsingPOST_RAW_URL
- * @param token - header中token字段
- * @param request - request
- */
-export const poiUsingPOST = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/poi'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['request'] !== undefined) {
-    body = parameters['request']
-  }
-  if (parameters['request'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: request'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const poiUsingPOST_RAW_URL = function() {
-  return '/report/poi'
-}
-export const poiUsingPOST_TYPE = function() {
-  return 'post'
-}
-export const poiUsingPOSTURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/poi'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 测试批量导出
- * request: poiBigUsingPOST
- * url: poiBigUsingPOSTURL
- * method: poiBigUsingPOST_TYPE
- * raw_url: poiBigUsingPOST_RAW_URL
- * @param token - header中token字段
- * @param request - request
- */
-export const poiBigUsingPOST = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/poiBig'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['request'] !== undefined) {
-    body = parameters['request']
-  }
-  if (parameters['request'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: request'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const poiBigUsingPOST_RAW_URL = function() {
-  return '/report/poiBig'
-}
-export const poiBigUsingPOST_TYPE = function() {
-  return 'post'
-}
-export const poiBigUsingPOSTURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/poiBig'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 为商户自助平台提供的---销售明细打印 接口
- * request: printSalesDetailUsingGET
- * url: printSalesDetailUsingGETURL
- * method: printSalesDetailUsingGET_TYPE
- * raw_url: printSalesDetailUsingGET_RAW_URL
+ * 商户自助平台---付款管理，查询。该接口是提供给自助平台的，供跨服务调用。数据中心前端勿调用。
+ * request: platformPaymentManageListUsingGET
+ * url: platformPaymentManageListUsingGETURL
+ * method: platformPaymentManageListUsingGET_TYPE
+ * raw_url: platformPaymentManageListUsingGET_RAW_URL
  * @param token - header中token字段
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
@@ -1433,10 +2244,10 @@ export const poiBigUsingPOSTURL = function(parameters = {}) {
  * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
  * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
  */
-export const printSalesDetailUsingGET = function(parameters = {}) {
+export const platformPaymentManageListUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/report/print/salesdetail'
+  let path = '/report/platformpaymentmanagelist'
   let body
   let queryParameters = {}
   let form = {}
@@ -1465,16 +2276,16 @@ export const printSalesDetailUsingGET = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const printSalesDetailUsingGET_RAW_URL = function() {
-  return '/report/print/salesdetail'
+export const platformPaymentManageListUsingGET_RAW_URL = function() {
+  return '/report/platformpaymentmanagelist'
 }
-export const printSalesDetailUsingGET_TYPE = function() {
+export const platformPaymentManageListUsingGET_TYPE = function() {
   return 'get'
 }
-export const printSalesDetailUsingGETURL = function(parameters = {}) {
+export const platformPaymentManageListUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/print/salesdetail'
+  let path = '/report/platformpaymentmanagelist'
   if (parameters['pageNum'] !== undefined) {
     queryParameters['pageNum'] = parameters['pageNum']
   }
@@ -1502,20 +2313,109 @@ export const printSalesDetailUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 付款方式查询
- * request: payTypeUsingPOST
- * url: payTypeUsingPOSTURL
- * method: payTypeUsingPOST_TYPE
- * raw_url: payTypeUsingPOST_RAW_URL
+ * 商户自助平台--销售明细，查询。该接口是提供给自助平台的，供跨服务调用。数据中心前端勿调用。
+ * request: platformSalesDetailListUsingGET
+ * url: platformSalesDetailListUsingGETURL
+ * method: platformSalesDetailListUsingGET_TYPE
+ * raw_url: platformSalesDetailListUsingGET_RAW_URL
  * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param merchantCode - 商户编码
+ * @param shopCode - 店铺编码
+ * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
+ * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
  */
-export const payTypeUsingPOST = function(parameters = {}) {
+export const platformSalesDetailListUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/report/query/paytype'
+  let path = '/report/platformsalesdetaillist'
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const platformSalesDetailListUsingGET_RAW_URL = function() {
+  return '/report/platformsalesdetaillist'
+}
+export const platformSalesDetailListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const platformSalesDetailListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/platformsalesdetaillist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['merchantCode'] !== undefined) {
+    queryParameters['merchantCode'] = parameters['merchantCode']
+  }
+  if (parameters['shopCode'] !== undefined) {
+    queryParameters['shopCode'] = parameters['shopCode']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 合同统计数据导出
+ * request: poiContractUsingPOST
+ * url: poiContractUsingPOSTURL
+ * method: poiContractUsingPOST_TYPE
+ * raw_url: poiContractUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const poiContractUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/poi/contract'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
+  }
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1523,16 +2423,185 @@ export const payTypeUsingPOST = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const payTypeUsingPOST_RAW_URL = function() {
-  return '/report/query/paytype'
+export const poiContractUsingPOST_RAW_URL = function() {
+  return '/report/poi/contract'
 }
-export const payTypeUsingPOST_TYPE = function() {
+export const poiContractUsingPOST_TYPE = function() {
   return 'post'
 }
-export const payTypeUsingPOSTURL = function(parameters = {}) {
+export const poiContractUsingPOSTURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/query/paytype'
+  let path = '/report/poi/contract'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 三个月到期合同信息导出
+ * request: expireExportUsingPOST
+ * url: expireExportUsingPOSTURL
+ * method: expireExportUsingPOST_TYPE
+ * raw_url: expireExportUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const expireExportUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/poi/expire'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
+  }
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const expireExportUsingPOST_RAW_URL = function() {
+  return '/report/poi/expire'
+}
+export const expireExportUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const expireExportUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/poi/expire'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 店铺租约信息导出
+ * request: poiUsingPOST
+ * url: poiUsingPOSTURL
+ * method: poiUsingPOST_TYPE
+ * raw_url: poiUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const poiUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/poi/shopLeas'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
+  }
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const poiUsingPOST_RAW_URL = function() {
+  return '/report/poi/shopLeas'
+}
+export const poiUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const poiUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/poi/shopLeas'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 免租维护记录表导出
+ * request: exportRentFreeMaintainRecordUsingGET
+ * url: exportRentFreeMaintainRecordUsingGETURL
+ * method: exportRentFreeMaintainRecordUsingGET_TYPE
+ * raw_url: exportRentFreeMaintainRecordUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 操作开始时间
+ * @param endDate - 操作结束时间
+ * @param contractCode - 合同编号
+ */
+export const exportRentFreeMaintainRecordUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/rfmrecord/export'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const exportRentFreeMaintainRecordUsingGET_RAW_URL = function() {
+  return '/report/rfmrecord/export'
+}
+export const exportRentFreeMaintainRecordUsingGET_TYPE = function() {
+  return 'get'
+}
+export const exportRentFreeMaintainRecordUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/rfmrecord/export'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1608,88 +2677,6 @@ export const listUsingGET_6URL = function(parameters = {}) {
   }
   if (parameters['contractCode'] !== undefined) {
     queryParameters['contractCode'] = parameters['contractCode']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 为商户自助平台提供的---销售明细查询 接口
- * request: salesdetailUsingGET
- * url: salesdetailUsingGETURL
- * method: salesdetailUsingGET_TYPE
- * raw_url: salesdetailUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pageNum - 页码
- * @param pageSize - 每页显示数量
- * @param merchantCode - 商户编码
- * @param shopCode - 店铺编码
- * @param startDate - 起始日期,格式是年-月-日，如2018-03-07
- * @param endDate - 截至日期,格式是年-月-日，如2018-03-29
- */
-export const salesdetailUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/report/salesdetail'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['merchantCode'] !== undefined) {
-    queryParameters['merchantCode'] = parameters['merchantCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const salesdetailUsingGET_RAW_URL = function() {
-  return '/report/salesdetail'
-}
-export const salesdetailUsingGET_TYPE = function() {
-  return 'get'
-}
-export const salesdetailUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/report/salesdetail'
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['merchantCode'] !== undefined) {
-    queryParameters['merchantCode'] = parameters['merchantCode']
-  }
-  if (parameters['shopCode'] !== undefined) {
-    queryParameters['shopCode'] = parameters['shopCode']
-  }
-  if (parameters['startDate'] !== undefined) {
-    queryParameters['startDate'] = parameters['startDate']
-  }
-  if (parameters['endDate'] !== undefined) {
-    queryParameters['endDate'] = parameters['endDate']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1787,7 +2774,7 @@ export const shopUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 店铺业态销售汇总表,查询
+ * 店铺业态销售汇总表，查询
  * request: shopBusinessTypeSalesListUsingGET
  * url: shopBusinessTypeSalesListUsingGETURL
  * method: shopBusinessTypeSalesListUsingGET_TYPE
@@ -1875,7 +2862,7 @@ export const shopBusinessTypeSalesListUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 店铺销售报表,查询
+ * 店铺销售报表，查询
  * request: shopDaySalesListUsingGET
  * url: shopDaySalesListUsingGETURL
  * method: shopDaySalesListUsingGET_TYPE
@@ -1936,6 +2923,182 @@ export const shopDaySalesListUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/report/shopdaysaleslist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 店铺付款方式明细表，查询
+ * request: shopPaymentDetailListUsingGET
+ * url: shopPaymentDetailListUsingGETURL
+ * method: shopPaymentDetailListUsingGET_TYPE
+ * raw_url: shopPaymentDetailListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const shopPaymentDetailListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/shoppaymentdetaillist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const shopPaymentDetailListUsingGET_RAW_URL = function() {
+  return '/report/shoppaymentdetaillist'
+}
+export const shopPaymentDetailListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const shopPaymentDetailListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/shoppaymentdetaillist'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 付款方式汇总，查询
+ * request: shopPaymentListUsingGET
+ * url: shopPaymentListUsingGETURL
+ * method: shopPaymentListUsingGET_TYPE
+ * raw_url: shopPaymentListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param startDate - 时间段：开始时间,格式必须是年-月-日，如2018-03-05
+ * @param endDate - 时间段：结束时间,格式必须是年-月-日，如2018-03-28
+ * @param startCode - 店铺编码区间：开始编码
+ * @param endCode - 店铺编码区间：结束编码
+ */
+export const shopPaymentListUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/report/shoppaymentlist'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['startDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: startDate'))
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['endDate'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: endDate'))
+  }
+  if (parameters['startCode'] !== undefined) {
+    queryParameters['startCode'] = parameters['startCode']
+  }
+  if (parameters['endCode'] !== undefined) {
+    queryParameters['endCode'] = parameters['endCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const shopPaymentListUsingGET_RAW_URL = function() {
+  return '/report/shoppaymentlist'
+}
+export const shopPaymentListUsingGET_TYPE = function() {
+  return 'get'
+}
+export const shopPaymentListUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/report/shoppaymentlist'
   if (parameters['pageNum'] !== undefined) {
     queryParameters['pageNum'] = parameters['pageNum']
   }

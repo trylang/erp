@@ -39,7 +39,7 @@ export default {
         {
           label: "税率",
           type: "text",
-          name: "rate"
+          name: "rateStr"
         },
         {
           label: "有效期",

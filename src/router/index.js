@@ -26,6 +26,7 @@ const Operation = r => require.ensure([], () => r(require('../pages/tenancy/merc
 const Brand = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Brand')), 'merchants');
 const BrandAudit = r => require.ensure([], () => r(require('../pages/tenancy/merchants/BrandAudit')), 'merchants');
 const Merchants = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Merchant')), 'merchants');
+const MerchantDetail = r => require.ensure([], () => r(require('../pages/tenancy/merchants/MerchantDetail')), 'merchants');
 const MerchantAudit = r => require.ensure([], () => r(require('../pages/tenancy/merchants/MerchantAudit')), 'merchants');
 const AddMerchant = r => require.ensure([], () => r(require('../pages/tenancy/merchants/AddMerchant')), 'merchants');
 const Shop = r => require.ensure([], () => r(require('../pages/tenancy/merchants/Shop')), 'merchants');
@@ -218,6 +219,10 @@ const router = new Router({
                 {
                     path: 'merchants',
                     component: Merchants
+                },
+                {
+                    path: 'merchants/detail/:id',
+                    component: MerchantDetail
                 },
                 {
                     path: 'merchantaudit',

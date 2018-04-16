@@ -126,12 +126,12 @@
                         this.$message.warning('区域名称不能为空');
                     }else if(!this.add.regionEnglishName){
                         this.$message.warning('英文缩写不能为空');
-                    }else if(!this.add.pid){
+                    }else if(!this.add.treeId){
                         this.$message.warning('上级区域不能为空');
                     }else{
                         this.$api.systemapi.putRegion({request:{
                             regionId: this.add.id,
-                            pid: this.add.pid,
+                            pid: this.add.treeId,
                             regionName: this.add.regionName,
                             regionEnglishName: this.add.regionEnglishName
                         }}).then(res=>{
@@ -144,24 +144,33 @@
                         }).catch(res=>{
                             this.$message.error(res.data.msg);
                         });
+                        this.dialogVisible = false;
                     }
                 }else{
-                    this.$api.systemapi.saveUsingPOST_4({request:{
-                        pid: this.add.treeId,
-                        regionName: this.add.regionName,
-                        regionEnglishName: this.add.regionEnglishName
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
+                    if(!this.add.regionName){
+                        this.$message.warning('区域名称不能为空');
+                    }else if(!this.add.regionEnglishName){
+                        this.$message.warning('英文缩写不能为空');
+                    }else if(!this.add.treeId){
+                        this.$message.warning('上级区域不能为空');
+                    }else{
+                        this.$api.systemapi.saveUsingPOST_4({request:{
+                            pid: this.add.treeId,
+                            regionName: this.add.regionName,
+                            regionEnglishName: this.add.regionEnglishName
+                        }}).then(res=>{
+                            if(res.data.status==200){
+                                this.$message.success(res.data.msg);
+                                this.pageHandler(1);
+                            }else{
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
                             this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                        });
+                        this.dialogVisible = false;
+                    }
                 }
-                this.dialogVisible = false;
             },
             dialogData(id, data){
                 this.listid = id;

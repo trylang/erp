@@ -27,9 +27,9 @@
                                     <el-select v-model="mainData.rateType" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in rateTypeOptions"
-                                                :key="item.id"
-                                                :label="item.rateTypeName"
-                                                :value="item.id">
+                                                :key="item.value"
+                                                :label="item.text"
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -37,7 +37,7 @@
                             <el-col :span="5">
                                 <div class="dialoginput dialogtext">
                                     <div class="inputname">税率</div>
-                                    <input class="middleinput" type="text" placeholder="0"  v-model="mainData.rate">
+                                    <input class="middleinput" type="text" placeholder="0"  v-model="mainData.rate" :disabled="mainData.rateType == '0'">
                                     <span class="rightcompany">%</span>
                                 </div>
                             </el-col>
@@ -59,7 +59,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">商户</span>
-                                    <el-select v-model="mainData.merchantId" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.merchantId" placeholder="请选择" @change="selectMerchant(mainData.merchantId)" class="dialogselect">
                                         <el-option
                                                 v-for="item in merchantOptions"
                                                 :key="item.id"
@@ -92,12 +92,12 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">物业性质</span>
-                                    <el-select v-model="mainData.propertyType" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.propertyType" placeholder="请选择" disabled class="dialogselect">
                                         <el-option
                                                 v-for="item in propertyOptions"
-                                                :key="item.id"
-                                                :label="item.propertyName"
-                                                :value="item.id">
+                                                :key="item.value"
+                                                :label="item.text"
+                                                :value="item.value">
                                         </el-option>
                                     </el-select>
                                 </div>
@@ -132,12 +132,13 @@
                                             v-model="mainData.validEndDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
+                                            @change="tenancyTerm()"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：0个月</div>
+                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -194,12 +195,13 @@
                                             v-model="mainData.decorationEndDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
+                                            @change="cycleChange()"
                                             placeholder="结束日期">
                                     </el-date-picker>
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：0个月</div>
+                                <div class="dialogtext">周期：{{cycleNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -242,7 +244,7 @@
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="2 意向单元" name="2">
+                <el-tab-pane label="2 意向单元" name="2" :disabled="isStep<2 && this.$route.params.contractId ==0">
                     <blank-head title="租赁单元"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -266,16 +268,16 @@
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
                                         <div class="deletebtn">
-                                            <button class="btn_text" @click="delUnitItem(UnitItem.unitId,UnitItem)">删除</button>
+                                            <button class="btn_text" @click="delUnitItem(UnitItem.id,UnitItem)">删除</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="listcont"><el-button icon="el-icon-plus" @click="addItem">继续添加单元</el-button></div>
+                                <div class="listcont"><el-button icon="el-icon-plus" @click="addItem">继续添加</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="3 租金条款" name="3">
+                <el-tab-pane label="3 租金条款" name="3" :disabled="isStep<3 && this.$route.params.contractId ==0">
                     <blank-head title="合同租金条款"></blank-head>
                     <div class="commonbox">
                             <el-row class="dialogbox">
@@ -326,7 +328,7 @@
                             </el-row>
                         </div>
                 </el-tab-pane>
-                <el-tab-pane label="4 费用条款" name="4">
+                <el-tab-pane label="4 费用条款" name="4" :disabled="isStep<4 && this.$route.params.contractId ==0">
                     <blank-head title="合同费用条款"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -350,7 +352,7 @@
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="5 诚意金" name="5">
+                <el-tab-pane label="5 诚意金" name="5" :disabled="isStep<5 && this.$route.params.contractId ==0">
                     <blank-head title="诚意金"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -365,7 +367,7 @@
                         </el-row>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="6 附件上传" name="6">
+                <el-tab-pane label="6 附件上传" name="6" :disabled="isStep<6 && this.$route.params.contractId ==0">
                     <blank-head title="合同附件"></blank-head>
                     <div class="commonbox">
                         <el-row class="dialogbox">
@@ -415,18 +417,22 @@
             <div class="dialogbox">
                 <div class="floorsearchlist">
                     <ul>
-                        <li>全部</li>
-                        <li>F1</li>
-                        <li>F2</li>
-                        <li>F3</li>
+                        <li :style="buildType == 1?'color:#457fcf':''" @click="getFloorList(1)">商场</li>
+                        <li :style="buildType == 2?'color:#457fcf':''" @click="getFloorList(2)">写字楼</li>
+                    </ul>
+                </div>
+                <div class="floorsearchlist">
+                    <ul>
+                        <li @click="changeFloorUnit(null)">全部</li>
+                        <li v-for="floorlist in floorListData" @click="changeFloorUnit(floorlist.id)">{{floorlist.floorName}}</li>
                     </ul>
                 </div>
                 <el-row>
-                    <el-col :span="4" v-for="(unitlist,index) in unitDataList" :key="index">
+                    <el-col :span="24">
                         <el-checkbox-group
-                                v-model="checkedUnit"
-                                @change="unitSelect()">
-                            <el-checkbox  :label="unitlist" :key="unitlist.unitCode">{{unitlist.unitCode}}</el-checkbox>
+                                v-model="checkedUnit">
+                            <el-checkbox  :label="unitlist" v-for="(unitlist,index) in unitDataList" 
+                            :key="index">{{unitlist.unitCode}}</el-checkbox>
                         </el-checkbox-group>
                     </el-col>
                 </el-row>
@@ -456,6 +462,8 @@
                 dialogVisible:false,
                 isShow: false,
                 searchText:'',
+                buildType: '',
+                floorListData: '',
                 mainData:{
                     brandId: "",
                     contractCode: "",
@@ -473,7 +481,7 @@
                     promotFee: 0,
                     propertyManageFee: 0,
                     propertyType: "",
-                    rate: 0,
+                    rate: '',
                     rateType: "",
                     remark: "",
                     signDate: "",
@@ -483,39 +491,18 @@
                     version: ""
                 },
                 typeOptions:[],
-                rateTypeOptions:[{
-                    rateTypeName:'不含税',
-                    id:0
-                },{
-                    rateTypeName:'价内税',
-                    id:1
-                },{
-                    rateTypeName:'价外税',
-                    id:2
-                }],
+                rateTypeOptions:[],
                 merchantOptions:[],
                 brandOptions:[],
                 operationOptions:[],
-                propertyOptions:[{
-                    propertyName:'商铺',
-                    id:0
-                },{
-                    propertyName:'写字楼',
-                    id:1
-                },{
-                    propertyName:'场地',
-                    id:2
-                },{
-                    propertyName:'广告位',
-                    id:3
-                }],
+                propertyOptions:[],
                 unitDataList:[],
                 checkedUnit:[],
                 checkedUnitList:[],
                 unitData:{
                     contractId: 0,
                     propertyType: 0,
-                    siteId: 0,
+                    siteId: null,
                     unitIds: []
                 },
                 rentList:[],
@@ -542,7 +529,10 @@
                     sincerityMoney:'',
                     id:0
                 },
-                contractId:''
+                contractId:'',
+                tenancyTermNum:'0个月0天',
+                cycleNum:'0个月0天',
+                isStep:'1',
             };
         },
         created(){
@@ -569,6 +559,20 @@
             }
         },
         methods: {
+            selectMerchant(merchantId) {
+                let merchant = this.merchantOptions.find(item => {
+                    return item.id == merchantId;
+                });
+                let property = this.propertyOptions.find(item => {
+                    return item.value == merchant.merchantType;
+                });
+                this.mainData.propertyType = property.value;
+            },
+            //获取单元的弹框列表
+            changeFloorUnit(id){
+                this.floorId = id;
+                this.getUnitDataList();
+            },
             async getMerchantList(){
                 await this.$api.rentapi.listUsingGET_12({
                     status:1
@@ -577,7 +581,9 @@
                 })
             },
             async getBrandList(){
-                await this.$api.rentapi.listUsingGET_3().then(res=>{
+                await this.$api.rentapi.listUsingGET_3({
+                    status:1
+                }).then(res=>{
                     this.brandOptions = res.data.data;
                 })
             },
@@ -592,11 +598,12 @@
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:'1',
                     pageSize:'200000',
-                    code:'',
-                    buildId:'',
-                    floorId:'',
-                    type:1,
-                    status:''
+                    code:this.searchText,
+                    buildId:this.buildType,
+                    floorId:this.floorId,
+                    type: this.mainData.propertyType,
+                    status:1,
+                    states:''
                 }).then(res=>{
                     this.unitDataList = res.data.data.list;
                 })
@@ -606,6 +613,8 @@
                     this.typeOptions = res.data.data.contract_type;
                     this.operationOptions = res.data.data.operation_mode;
                     this.settleLevelOptions = res.data.data.settle_level;
+                    this.rateTypeOptions = res.data.data.rate_type;
+                    this.propertyOptions = res.data.data.property_type;
                 })
             },
             nextNum(){
@@ -650,15 +659,32 @@
             addItem(){
                 this.dialogVisible = true;
                 this.getUnitDataList();
+                this.getFloorList(1);
             },
             cancelUnit(){
                 this.dialogVisible = false;
             },
+            async getFloorList(typeNum){
+                this.floorId = null;
+                this.buildType = typeNum;
+                await this.$api.rentapi.selectByBuildIdUsingGET({
+                    buildId : typeNum
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.floorListData = res.data.data;
+                        this.getUnitDataList();
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+            },
             async handleUnit(){
-                this.checkedUnit.forEach(item=>{
-                    this.checkedUnitList.push(item);
+                let unitIds = this.checkedUnit.map(item => {
+                    return item.id;
                 });
+                this.unitData.unitIds = unitIds;
                 if(this.$route.params.contractId != 0) {
+                    this.unitData.contractId = this.$route.params.contractId;
                     await this.$api.rentapi.updateShopUnitUsingPUT_1({
                         request: this.unitData
                     }).then(res => {
@@ -672,11 +698,6 @@
                 }else{
                     this.dialogVisible = false;
                 }
-            },
-            unitSelect(){
-                this.unitData.unitIds = this.checkedUnit.map(item=>{
-                    return item.id;
-                });
             },
             addRentItem(){
                 if(this.$route.params.contractId != 0) {
@@ -851,11 +872,12 @@
 
             async delUnitItem(id,unitItem){
                 console.log(id)
-                await this.$api.rentapi.delShopUnitUsingPUT({
-                    intentUnitId : id
+                await this.$api.rentapi.delUsingPUT_1({
+                    id : id
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
+                        // this.getUnitInfo();
                     } else {
                         this.$message.error(res.data.msg);
                     }
@@ -896,6 +918,7 @@
             },
             async getUnitInfo(){
                 if(this.$route.params.contractId != 0) {
+                    this.isStep = parseInt(this.activeName) + 1 + '';
                     await this.$api.rentapi.unitDetailUsingGET({
                         id: this.$route.params.contractId
                     }).then(res => {
@@ -948,7 +971,13 @@
             },
             historyGo(){
                 this.$router.go(-1)
-            }
+            },
+            tenancyTerm(){
+                this.tenancyTermNum = this.$dateNumber(this.mainData.validStartDate,this.mainData.validEndDate)
+            },
+            cycleChange(){
+                this.cycleNum = this.$dateNumber(this.mainData.decorationStartDate,this.mainData.decorationEndDate)
+            },
         },
         components: {
             BlankHead

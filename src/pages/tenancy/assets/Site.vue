@@ -8,12 +8,28 @@
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchbox">
                             <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="10" :offset="4">
+                        <div class="searchselect">
+                            <span class="inputname inputnameauto">楼宇</span>
+                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                                <el-option label="全部" value=""></el-option>
+                                <el-option
+                                        v-for="item in buildOptions"
+                                        :key="item.id"
+                                        :label="item.buildName"
+                                        :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
                             <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
@@ -55,8 +71,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
                         </template>
@@ -87,7 +103,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼宇</span>
-                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" class="dialogselect" disabled>
+                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" @change="getFloorList(unitInfoData.buildId)" class="dialogselect">
                         <el-option
                                 v-for="item in buildOptions"
                                 :key="item.id"
@@ -109,12 +125,12 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">建筑面积</span>
-                    <input class="inputtext" type="text" placeholder="请输入建筑面积" v-model="unitInfoData.area">
+                    <input class="inputtext" type="number" min="0" placeholder="请输入建筑面积" v-model="unitInfoData.area">
                     <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">使用面积</span>
-                    <input class="inputtext" type="text" placeholder="请输入使用面积" v-model="unitInfoData.useArea">
+                    <input class="inputtext" type="number" min="0" placeholder="请输入使用面积" v-model="unitInfoData.useArea">
                     <span class="dialogtext">㎡</span>
                 </div>
                 <div class="dialoginput noline" style="flex-direction: column;">
@@ -146,6 +162,7 @@
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
                 listId:'',
+                buildValue: '',
                 columnData:[
                     { prop: 'unitCode', label: '编码'},
                     { prop: 'buildName', label: '楼宇' },
@@ -190,7 +207,7 @@
                 unitInfoData:{
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -206,13 +223,16 @@
                 buildOptions:[{
                     buildName:'商场',
                     id:1
+                }, {
+                    buildName:'写字楼',
+                    id:2
                 }],
                 floorOptions:[],
                 statesId:'',
             }
         },
         mounted(){
-            this.getFloorList();
+            this.getFloorList(null);
         },
         watch:{
             searchText(){
@@ -227,7 +247,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',
@@ -254,12 +274,16 @@
             handleClose(){
                 this.dialogVisible = false;
             },
+            buildSelect(buildId){
+                this.getDataList(1);
+                this.getFloorList(buildId);
+            },
             async getDataList(pageNum,pageSize){
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:pageNum,
                     pageSize:this.$refs.page.pageSize,
                     code:this.searchText,
-                    buildId:'',
+                    buildId:this.buildValue,
                     floorId:this.floorValue,
                     type:2,
                     status:this.statusId,
@@ -269,9 +293,9 @@
                     this.total = Number(res.data.data.total);
                 })
             },
-            async getFloorList(){
+            async getFloorList(buildId){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId
                 }).then(res=>{
                     this.floorOptions = res.data.data;
                 })
@@ -279,9 +303,9 @@
             async submitFormData(){
                 let regExp = /^[0-9]*$/;
                 if(!regExp.test(this.unitInfoData.area) || !regExp.test(this.unitInfoData.useArea)){
-                    this.$message.error('建筑面积使用面积格式不正确');
+                    this.$message.error('建筑面积使用面积格式不正确,不能小于0');
                     return false;
-                }else if(this.unitInfoData.area<=0 || this.unitInfoData.useArea<=0){
+                }else if(this.unitInfoData.area<=0 && this.unitInfoData.useArea<=0){
                     this.$message.error('建筑面积和使用面积不能小于0');
                     return false;
                 }else if(parseInt(this.unitInfoData.area) < parseInt(this.unitInfoData.useArea)){
@@ -321,7 +345,7 @@
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
-                    buildId: 1,
+                    buildId: '',
                     floorId: '',
                     marketId: 1,
                     remark: '',

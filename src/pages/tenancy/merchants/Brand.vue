@@ -26,9 +26,9 @@
                             <el-select v-model="formatsValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
                                 <el-option
                                         v-for="item in formatsOptions"
-                                        :key="item.id"
-                                        :label="item.businessName"
-                                        :value="item.id">
+                                        :key="item.value"
+                                        :label="item.text"
+                                        :value="item.value">
                                 </el-option>
                             </el-select>
                         </div>
@@ -72,20 +72,20 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">一级业态</span>
-                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect" @change="getBusinessTypeSList(addInfoData.businessId)">
                         <el-option
                                 v-for="item in formatsOptions"
-                                :key="item.id"
-                                :label="item.businessName"
-                                :value="item.id">
+                                :key="item.value"
+                                :label="item.text"
+                                :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">二级业态</span>
-                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addInfoData.businessIdSecondLevel" placeholder="请选择" class="dialogselect" @change="getBusinessTypeTList(addInfoData.businessIdSecondLevel)">
                         <el-option
-                                v-for="item in formatsOptions"
+                                v-for="item in formatsOptionsS"
                                 :key="item.id"
                                 :label="item.businessName"
                                 :value="item.id">
@@ -94,12 +94,12 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">三级业态</span>
-                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addInfoData.businessIdThreeLevel" multiple placeholder="请选择" class="dialogselect">
                         <el-option
-                                v-for="item in formatsOptions"
+                                v-for="item in formatsOptionsT"
                                 :key="item.id"
                                 :label="item.businessName"
-                                :value="item.id">
+                                :value="item.businessName">
                         </el-option>
                     </el-select>
                 </div>
@@ -143,6 +143,8 @@
                     brandCode: '',
                     brandName: '',
                     businessId: '',
+                    businessIdSecondLevel: '',
+                    businessIdThreeLevel: [],
                     countryId: '',
                     id: '',
                     remark: ''
@@ -150,9 +152,9 @@
                 columnData:[
                     { prop: 'brandCode', label: '编码'},
                     { prop: 'brandName', label: '名称' },
-                    { prop: 'businessVo.businessName', label: '一级业态' },
-                    { prop: 'businessVo.parentBusVo.businessName', label: '二级业态' },
-                    { prop: 'businessVo.parentBusVo.parentBusVo.businessName', label: '三级业态' },
+                    { prop: 'busNames', label: '一级业态' },
+                    { prop: 'busSecondName', label: '二级业态' },
+                    { prop: 'businessIdThreeLevel', label: '三级业态' },
                     { prop: 'country.countryName', label: '国别' },
                     { prop: 'investSoursStatus', label: '状态' },
                     { prop: 'updateDateStr', label: '更新时间' }
@@ -175,6 +177,8 @@
                     id:2
                 }],
                 formatsOptions:[],
+                formatsOptionsS:[],
+                formatsOptionsT:[],
                 countryOptions:[],
                 listId:''
             }
@@ -202,6 +206,8 @@
                     brandCode: '',
                     brandName: '',
                     businessId: '',
+                    businessIdSecondLevel: '',
+                    businessIdThreeLevel: [],
                     countryId: '',
                     id: '',
                     remark: ''
@@ -224,13 +230,18 @@
                 })
             },
             async getBusinessList(){
-                await this.$api.rentapi.listUsingGET_6({
-                    pageNum:'',
-                    pageSize:'',
-                    businessCode:'',
-                    businessName:''
-                }).then(res=>{
+                await this.$api.rentapi.getOptionsUsingGET({level: 1}).then(res=>{
                     this.formatsOptions = res.data.data;
+                })
+            },
+            getBusinessTypeSList(id){
+                this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res=>{
+                    this.formatsOptionsS = res.data.data;
+                })
+            },
+            getBusinessTypeTList(id){
+                this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res=>{
+                    this.formatsOptionsT = res.data.data;
                 })
             },
             async getCountryList(){
@@ -239,6 +250,7 @@
                 })
             },
             async submitFormData(){
+                this.addInfoData.businessIdThreeLevel = this.addInfoData.businessIdThreeLevel.join(',');
                 if(this.listId == '') {
                     await this.$api.rentapi.addUsingPOST_1({
                         request: this.addInfoData
@@ -280,6 +292,9 @@
                 this.$api.rentapi.detailUsingGET_1({
                     id: id
                 }).then(res => {
+                    if (res.data.data.businessIdThreeLevel) {
+                        res.data.data.businessIdThreeLevel = res.data.data.businessIdThreeLevel.split(',');
+                    }
                     this.addInfoData = res.data.data;
                 })
             },
@@ -301,7 +316,7 @@
                     })
                 })
             },
-            async cancelMerchant(id,status){
+            async cancelBrand(id,status){
                 await this.$api.rentapi.updateBrandStatus({
                     id:id,
                     status:status

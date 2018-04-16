@@ -1,6 +1,6 @@
 <template>
   <con-head title="店铺业态销售汇总表">
-    <el-button type="primary" slot="append">导出</el-button>
+    <el-button type="primary" slot="append" @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="12">
         <div class="searchselect">
@@ -8,9 +8,10 @@
 					<el-date-picker
 						v-model="query.time"
 						type="daterange"
-            value-format="yyyy-MM-dd"
-            @change="getList"
+                        @change="getList"
 						range-separator="~"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
 						start-placeholder="开始日期"
 						end-placeholder="结束日期">
 					</el-date-picker>
@@ -49,7 +50,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 
-import { queryShop } from "@/utils/rest/financeAPI";
+import { saleQueryShop } from "@/utils/rest/financeAPI";
 export default {
   name: "account-group",
   components: {
@@ -111,10 +112,6 @@ export default {
       this.getList({ pageSize });
     },
     async getList(page = {}, callback) {
-      if (!this.query.time) {
-        $message('info', '请选择时间段');
-        return;
-      }
       let params = {
         startDate: this.query.time ? this.query.time[0] : '',
         endDate: this.query.time ? this.query.time[1] : '',
@@ -123,6 +120,10 @@ export default {
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
+      if (!this.query.time) {
+        $message('info', '请先选择时间段');
+        return;
+      }
       console.log(params);
       this.$api.reportapi.shopBusinessTypeSalesListUsingGET(params).then(res => {
         const data = res.data;
@@ -134,11 +135,31 @@ export default {
         }
       });
     },
+    exportHandler(){
+        let params = {
+            startDate: this.query.time ? this.query.time[0] : '',
+            endDate: this.query.time ? this.query.time[1] : '',
+            startCode: this.query.startCode,
+            endCode: this.query.endCode,
+            // pageNum: page.pageNum,
+            // pageSize: page.pageSize
+        };
+        if(this.content.list.length>0 && params.startDate && params.endDate){
+            this.$api.reportapi.exportShopBusinessTypeSalesListUsingGET(params).then(res=>{
+                if(res.data.status == 200){
+                    this.$message.success(res.data.msg);
+                }
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+        }
+    },
     async init() {
       let [shop] = await Promise.all([
-        queryShop()
+        saleQueryShop()
       ]);
       this.selects.shops = shop.data || [];
+      await this.getList();
     }
   },
   computed: {},

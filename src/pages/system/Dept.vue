@@ -54,7 +54,7 @@
         </el-dialog>
     </div>
 </template>
-
+<script type="text/javascript"></script>
 <script>
     import ConHead from '../../components/ConHead'
     import RtPage from '../../components/Pagination'
@@ -109,36 +109,47 @@
                 })
             },
             addbuilding(id){
-                if(id){
-                    this.$api.systemapi.putDepartment({request:{
-                        id: this.add.id,
-                        marketId: this.add.marketId,
-                        departmentName: this.add.departmentName
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    })
-                }else{
-                    this.$api.systemapi.saveUsingPOST({request:{
-                        marketId: this.add.marketId,
-                        departmentName: this.add.departmentName
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    })
-                }
+              var reg=/^[\u4E00-\u9FA5]{2,6}$/;
+              if(!this.add.departmentName){
+                     this.$message.error('部门名称不能为空');
+                 }else if(!reg.test(this.add.departmentName)){
+                     this.$message.error('部门名称可能存在非法字符或长度不符');
+                 }else {
+                 if (id) {
+                   this.$api.systemapi.putDepartment({
+                     request: {
+                       id: this.add.id,
+                       marketId: this.add.marketId,
+                       departmentName: this.add.departmentName
+                     }
+                   }).then(res => {
+                     if (res.data.status == 200) {
+                       this.$message.success(res.data.msg);
+                       this.pageHandler(1);
+                     } else {
+                       this.$message.error(res.data.msg);
+                     }
+                   }).catch(res => {
+                     this.$message.error(res.data.msg);
+                   })
+                 } else {
+                   this.$api.systemapi.saveUsingPOST({
+                     request: {
+                       marketId: this.add.marketId,
+                       departmentName: this.add.departmentName
+                     }
+                   }).then(res => {
+                     if (res.data.status == 200) {
+                       this.$message.success(res.data.msg);
+                       this.pageHandler(1);
+                     } else {
+                       this.$message.error(res.data.msg);
+                     }
+                   }).catch(res => {
+                     this.$message.error(res.data.msg);
+                   })
+                 }
+               }
                 this.dialogVisible = false;
             },
             dialogData(id, data){

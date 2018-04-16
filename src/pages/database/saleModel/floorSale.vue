@@ -1,6 +1,6 @@
 <template>
   <con-head title="业态楼层销售报表">
-    <el-button type="primary" slot="append">导出</el-button>
+    <el-button type="primary" slot="append" @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="12">
         <div class="searchselect">
@@ -147,7 +147,25 @@ export default {
           return data.message;
         }
       });
-    }
+    },
+    exportHandler(){
+        let params = {
+            startDate: this.query.time ? this.query.time[0] : '',
+            endDate: this.query.time ? this.query.time[1] : '',
+            businessTypeOrFloorCode: this.query.businessTypeOrFloorCode || 2,
+            // pageNum: page.pageNum,
+            // pageSize: page.pageSize
+        };
+        if(this.content.list.length>0){
+            this.$api.reportapi.exportBusinessTypeAndFloorSalesListUsingGET(params).then(res=>{
+                if(res.data.status == 200){
+                    this.$message.success(res.data.msg);
+                }
+            }).catch(res=>{
+                this.$message.error(res.data.msg);
+            })
+        }
+    },
   },
   computed: {},
   created() {

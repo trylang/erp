@@ -110,36 +110,47 @@
             },
             addbuilding(id){
                 console.log(11,id)
-                if(id){
-                    this.$api.systemapi.putJob({request:{
-                        id: this.add.id,
-                        positionName: this.add.positionName,
-                        departmentId: this.add.departmentId
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
-                }else{
-                    this.$api.systemapi.saveUsingPOST_3({request:{
-                        positionName: this.add.positionName,
-                        departmentId: this.add.departmentId
-                    }}).then(res=>{
-                        if(res.data.status==200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
-                            this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+              var reg=/^[\u4E00-\u9FA5]{2,6}$/;
+              if(!this.add.positionName){
+                this.$message.error('职位名称不能为空');
+              }else if(!reg.test(this.add.positionName)){
+                this.$message.error('职位名称可能存在非法字符或长度不符');
+              }else {
+                if (id) {
+                  this.$api.systemapi.putJob({
+                    request: {
+                      id: this.add.id,
+                      positionName: this.add.positionName,
+                      departmentId: this.add.departmentId
+                    }
+                  }).then(res => {
+                    if (res.data.status == 200) {
+                      this.$message.success(res.data.msg);
+                      this.pageHandler(1);
+                    } else {
+                      this.$message.error(res.data.msg);
+                    }
+                  }).catch(res => {
+                    this.$message.error(res.data.msg);
+                  });
+                } else {
+                  this.$api.systemapi.saveUsingPOST_3({
+                    request: {
+                      positionName: this.add.positionName,
+                      departmentId: this.add.departmentId
+                    }
+                  }).then(res => {
+                    if (res.data.status == 200) {
+                      this.$message.success(res.data.msg);
+                      this.pageHandler(1);
+                    } else {
+                      this.$message.error(res.data.msg);
+                    }
+                  }).catch(res => {
+                    this.$message.error(res.data.msg);
+                  });
                 }
+              }
                 this.dialogVisible = false;
             },
             dialogData(id, data){

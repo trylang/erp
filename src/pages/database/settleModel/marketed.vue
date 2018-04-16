@@ -11,8 +11,8 @@
                             v-model="startMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 M 月"
-                            value-format="yyyy-M"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
                             @change="pageHandler(1)">
                         </el-date-picker>
                         <span style="line-height: 30px;">~</span>
@@ -21,8 +21,8 @@
                             v-model="endMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 M 月"
-                            value-format="yyyy-M"
+                            format="yyyy 年 MM 月"
+                            value-format="yyyy-MM"
                             @change="pageHandler(1)">
                         </el-date-picker>
                     </div>
@@ -41,21 +41,22 @@
                     </div>
                 </el-col>
             </el-row>
-            <!-- <el-row slot="preappend">
+            <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchselect">
                         <span class="inputname inputnameauto">费用项目：</span>
-                        <el-select v-model="costItemIds" multiple placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-select v-model="costItemId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-option label="全部" value=""></el-option>
                             <el-option
                                 v-for="item in costItems"
                                 :key="item.id"
-                                :label="item.merchantName+'('+item.merchantCode+')'"
+                                :label="item.name"
                                 :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
                 </el-col>
-            </el-row> -->
+            </el-row>
         </con-head>
         <con-head>
             <div class="mainbox">
@@ -77,7 +78,7 @@
                 dialogVisible:false,
                 startMonth: '',
                 endMonth: '',
-                costItemIds: '',
+                costItemId: '',
                 datalist:[],
                 costItems: [],
                 status: '',
@@ -124,17 +125,17 @@
             }
         },
         mounted(){
-            // this.$api.rentapi.listUsingGET_14({status: 3}).then(res=>{//物业性质
-            //     this.selects.status = res.data.data;
-            //     this.selects.status = res.data.data.map(item=>{
-            //         return {
-            //             name: item.name,
-            //             value: item.value,
-            //             isStatus: false
-            //         }
-            //     });
-            //     this.selects.status[0].isStatus = true;
-            // })
+            this.$api.reportapi.listUsingGET_4({flag: 3}).then(res=>{//物业性质
+                this.selects.status = res.data.data;
+                this.selects.status = res.data.data.map(item=>{
+                    return {
+                        name: item.name,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.selects.status[0].isStatus = true;
+            })
             this.getMerchantList();
         },
         methods:{
@@ -142,19 +143,21 @@
                 let params = {
                     pageNum: pageNum,
                     pageSize: this.$refs.page.pageSize,
-                    costItemIds: this.costItemIds,
-                    propertyType: this.status,
-                    startTime: this.startMonth,
-                    endTime: this.endMonth
+                    id: this.costItemId,
+                    propertyNature: this.status,
+                    startDate: this.startMonth+'-01',
+                    endDate: this.endMonth+'-01'
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    if(res.data.status === 200){
-                        this.datalist = res.data.data.list;
-                        this.total = Number(res.data.data.total);
-                    }
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
+                if(this.startMonth && this.endMonth){
+                    this.$api.reportapi.queryAlreadyUsingPOST({request: params}).then(res=>{
+                        if(res.data.status === 200){
+                            this.datalist = res.data.data.list;
+                            this.total = Number(res.data.data.total);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             statusHandler(status){
                 this.selects.status.forEach(function(obj){
@@ -163,14 +166,31 @@
                 status.isStatus = !status.isStatus;
                 this.status = status.value;
                 this.pageHandler(1);
+                this.getMerchantList(status.value);
             },
-            getMerchantList(){
-                this.$api.rentapi.listUsingGET_12().then(res=>{//费用项目
+            getMerchantList(status){
+                this.$api.reportapi.getCostItemUsingGET({flag: status}).then(res=>{//根据物业性质查询 费用项目
                     this.costItems = res.data.data;
                 })
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    id: this.costItemId,
+                    propertyNature: this.status,
+                    startDate: this.startMonth+'-01',
+                    endDate: this.endMonth+'-01'
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.exportPayTypeInfoForAlreadyUsingPOST({request: params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

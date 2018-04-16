@@ -101,33 +101,7 @@
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
                 selects:{
-                    status:[
-                        {
-                            isStatus:true,
-                            name: '全部',
-                            value: 0
-                        }, 
-                        {
-                            isStatus:false,
-                            name: '商铺',
-                            value: 1
-                        }, 
-                        {
-                            isStatus:false,
-                            name: '场地',
-                            value: 2
-                        }, 
-                        {
-                            isStatus:false,
-                            name: '广告位',
-                            value: 3
-                        }, 
-                        {
-                            isStatus:false,
-                            name: '写字楼',
-                            value: 4
-                        }
-                    ]
+                    status:[]
                 },
                 columnData:[
                     { prop: 'contractCode', label: '合同号'},
@@ -139,38 +113,34 @@
                     { prop: 'brandName', label: '品牌' },
                     { prop: 'propertyType', label: '物业性质' },
                     { prop: 'cycleDate', label: '周期月份' },
+                    { prop: 'totalowed', label: '应收合计'}
                 ],
                 afterData: [
-                    {prop: 'posRent', label: 'POS租金'},
-                    {prop: 'fixationRent', label: '固定租金'},
-                    {prop: 'generalizeCost', label: '推广费'},
-                    {prop: 'estateManagementCost', label: '物业管理费'},
-                    {prop: 'telephoneLineCost', label: '电话线路维护费'},
-                    {prop: 'airConditionerAddtimeCost', label: '加时空调费'},
-                    {prop: 'networkPortMaintenanceCost', label: '网络端口维护费'},
-                    {prop: 'posRentDiffCost', label: 'POS租金补差'},
-                    {prop: 'generalizeDiffCost', label: '推广费用补差'},
-                    {prop: 'totalCost', label: '应收合计'},
-                ],
-                lastData: [
-                    {prop: 'regionCode', label: '应收合计'},
+                    // {prop: 'posRent', label: 'POS租金'},
+                    // {prop: 'fixationRent', label: '固定租金'},
+                    // {prop: 'generalizeCost', label: '推广费'},
+                    // {prop: 'estateManagementCost', label: '物业管理费'},
+                    // {prop: 'telephoneLineCost', label: '电话线路维护费'},
+                    // {prop: 'airConditionerAddtimeCost', label: '加时空调费'},
+                    // {prop: 'networkPortMaintenanceCost', label: '网络端口维护费'},
+                    // {prop: 'posRentDiffCost', label: 'POS租金补差'},
+                    // {prop: 'generalizeDiffCost', label: '推广费用补差'},
+                    // {prop: 'totalowed', label: '应收合计'},
                 ]
             }
         },
         mounted(){
-            // this.$api.rentapi.listUsingGET_14({status: 1}).then(res=>{//物业性质
-            //     this.selects.status = res.data.data;
-            //     this.selects.status = res.data.data.map(item=>{
-            //         return {
-            //             name: item.name,
-            //             value: item.value,
-            //             isStatus: false
-            //         }
-            //     });
-            //     this.selects.status[0].isStatus = true;
-            // })
-            this.columnData = this.columnData.concat(this.afterData);
-            // this.columnData = this.columnData.concat(this.lastData);
+            this.$api.reportapi.listUsingGET_4({flag: 1}).then(res=>{//物业性质
+                this.selects.status = res.data.data;
+                this.selects.status = res.data.data.map(item=>{
+                    return {
+                        name: item.name,
+                        value: item.value,
+                        isStatus: false
+                    }
+                });
+                this.selects.status[0].isStatus = true;
+            })
             this.getMerchantList();
             this.getContractList();
         },
@@ -185,14 +155,34 @@
                     cycleStartMonth: this.startMonth,
                     cycleEndMonth: this.endMonth,
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    if(res.data.status === 200){
-                        this.datalist = res.data.data.list;
-                        this.total = Number(res.data.data.total);
-                    }
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
-                })
+                if(this.startMonth && this.endMonth){
+                    this.$api.reportapi.listUsingGET_2(params).then(res=>{
+                        if(res.data.status === 200){
+                            this.total = Number(res.data.data.total);
+                            this.afterData = [];
+                            this.columnData = this.columnData.slice(0, 10);
+                            if (res.data.data.list.length > 0) {
+                                res.data.data.list[0].someList.forEach(item => {
+                                    this.afterData.push({
+                                        prop: item.costItemName,
+                                        label: item.costItemName,
+                                        value: item.publicAmount
+                                    });
+                                });
+                                res.data.data.list.forEach(item => {
+                                    this.afterData.forEach(item1 => {
+                                        item[item1.prop] = item1.value
+                                    });
+                                });
+                            }
+                            this.datalist = res.data.data.list;
+                            this.columnData = this.columnData.concat(this.afterData);
+                            console.log(1,this.afterData)
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             },
             statusHandler(status){
                 this.selects.status.forEach(function(obj){
@@ -203,17 +193,34 @@
                 this.pageHandler(1);
             },
             getMerchantList(){
-                this.$api.rentapi.listUsingGET_12().then(res=>{//商户结算（已收）里永明写的商户接口
+                this.$api.reportapi.merchantlistUsingGET().then(res=>{//商户结算（已收）里的商户接口
                     this.merchantOptions = res.data.data;
                 })
             },
             getContractList(){
-                this.$api.rentapi.getListForPageUsingGET().then(res=>{//合同
+                this.$api.reportapi.selectUsingGET().then(res=>{//合同
                     this.contractOptions = res.data.data;
                 })
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    merchantId: this.merchantId,
+                    contractCode: this.contractCode,
+                    propertyType: this.status,
+                    cycleStartMonth: this.startMonth,
+                    cycleEndMonth: this.endMonth
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.exportBusinessSettlementReceivableUsingGET({params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{

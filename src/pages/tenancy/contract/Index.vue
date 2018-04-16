@@ -112,7 +112,7 @@
                     { prop: 'brandName', label: '经营品牌' },
                     { prop: 'propertyType', label: '物业性质' },
                     { prop: 'signDate', label: '签约日期' },
-                    { prop: 'validStartDate', label: '合同有效期' },
+                    { prop: 'validDate', label: '合同有效期' },
                     { prop: 'statusText', label: '状态' }
                 ]
             }
@@ -142,17 +142,24 @@
                     brandId:this.brandValue,
                     status:this.statusId
                 }).then(res=>{
+                    res.data.data.list.forEach(item => {
+                        item.validDate = item.validStartDate + '~' + item.validEndDate;
+                    }); 
                     this.dataList = res.data.data.list;
                     this.total = Number(res.data.data.total);
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12().then(res=>{
+                await this.$api.rentapi.listUsingGET_12({
+                    status:1
+                }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
             },
             async getBrandList(){
-                await this.$api.rentapi.listUsingGET_3().then(res=>{
+                await this.$api.rentapi.listUsingGET_3({
+                    status:1
+                }).then(res=>{
                     this.brandOptions = res.data.data;
                 })
             },

@@ -115,7 +115,22 @@
                 this.pageHandler(1);
             },
             exportHandler(){
-
+                let params = {
+                    pageNum: this.pageNum,
+                    pageSize: this.$refs.page.pageSize,
+                    propertyNature: this.status,
+                    startDate: this.searchData[0],
+                    endDate: this.searchData[1]
+                }
+                if(this.datalist.length>0){
+                    this.$api.reportapi.poiContractUsingPOST({request: params}).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.$message.error(res.data.msg);
+                    })
+                }
             }
         },
         components:{
