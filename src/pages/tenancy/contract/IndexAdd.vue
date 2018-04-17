@@ -890,7 +890,7 @@
 
             async delUnitItem(unitItem){
                 await this.$api.rentapi.delShopUnitUsingPUT({
-                    intentUnitId : unitItem.unitId
+                    intentUnitId : unitItem.id
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);

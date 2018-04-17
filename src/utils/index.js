@@ -92,29 +92,23 @@ export function isArray(o) {
 }
 
 export function filterTree(tree, name) {
-  console.log('tree', tree);
+  if (!tree) return; 
+  if (!name) return tree;
+
   let treeAry = [];
-  let treeData = isArray(tree) ? tree : [];
   const func = (tree, name) => {
-    treeData.forEach(first => {
-      if (first.children && first.children.length > 0) {
-        first.children.forEach(second => {
-          if (second.label.indexOf(name) >= 0) {
-            treeAry.push(second);
-          } else {
-            // func(second.children, name);
-            if (second.children && second.children.length > 0) {
-              second.children.forEach(third => {
-                if (third.label.indexOf(name) >= 0) {
-                  treeAry.push(third)
-                } 
-              })
-            }
-          }
-        });
-      }
-    });
+    if (!tree) return;
+    if (!tree.children && isArray(tree)) {
+      tree.forEach(item => {
+        if (item.label.indexOf(name) >= 0) {
+          treeAry.push(item);
+        } else {
+          func(item.children, name);
+        }     
+      }); 
+    }    
   };
+  
   func(tree, name);
   return treeAry;
 }
