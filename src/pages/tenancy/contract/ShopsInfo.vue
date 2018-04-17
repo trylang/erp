@@ -361,7 +361,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <span class="inputname">{{rentData[0].costItemName}}</span>
+                                    <span class="dialogtext">{{rentData[0].costItemName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
@@ -662,7 +662,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <span class="inputname">{{rentData[0].costItemName}}</span>
+                                    <span class="dialogtext">{{rentData[0].costItemName}}</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">

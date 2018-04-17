@@ -1,6 +1,6 @@
 <template>
   <con-head title="结算单生成">
-    <el-button type="primary" slot="append" @click="createBill">生成结算单</el-button>
+    <el-button type="primary" slot="append" :disabled="!query.settleGroupId || !query.settleDate" @click="createBill">生成结算单</el-button>
     <el-row slot="preappend">
       <!-- <el-col :span="9">
         <div class="searchselect">
@@ -132,6 +132,7 @@ export default {
       await this.$api.financeapi.createUsingPOST({ request }).then(returnObj => {
         if (returnObj.data.status === 200) {
           $message("success", returnObj.data.msg);
+          this.getGenetateAccount();
         } else {
           $message('error', returnObj.data.msg);
         }

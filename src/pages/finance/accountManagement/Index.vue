@@ -8,7 +8,7 @@
           <h3 :class="{active: item.id === variables.isActive}" @click="activeFunc(item)">{{item.label}}</h3>
         </el-col>
         <el-col class="btn_item" :offset="9" :span="6">
-          <!-- <el-button type="primary" v-if="variables.isActive === 'first'" @click="cancelBill">取消确认</el-button> -->
+          <el-button type="primary" v-if="variables.isActive === 'first'" @click="cancelBill">取消确认</el-button>
           <el-button v-if="variables.isActive === 'second'" type="primary" @click="confirmBill">确认</el-button>
           <el-button v-if="variables.isActive === 'third'" type="primary" @click="publishBill">发布</el-button>
           <el-button type="primary" @click="printContent">打印</el-button>          
@@ -276,19 +276,29 @@ export default {
       else if (item.id === 'third') this.getAccountPulish();
     },
     printContent() {
-      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'printBill'});
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'printBill'}, () => {
+        this.getAccountManagement();
+      });
     },
     cancelBill() {
-      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'cancelBill'});
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'cancelBill'}, () => {
+        this.getAccountManagement();
+      });
     },
     confirmBill() {
-      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'confirmBill'});
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'confirmBill'}, () => {
+        this.getAccountManagement();
+      });
     },
     publishBill() {
-      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'publishBill'});
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'publishBill'}, () => {
+        this.getAccountManagement();
+      });
     },
     deleteBill() {
-      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'deleteBill'});
+      this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'deleteBill'}, () => {
+        this.getAccountManagement();
+      });
     }, 
     cancelDialog: function() {
       this.dialog.dialogVisible = false;

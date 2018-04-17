@@ -150,7 +150,9 @@ export default {
           placeholder: '请选择生效时间'
         }],
         dialogVisible: false,
-        param: {},
+        param: {
+          id: ''
+        },
         options: [{
           label: "确 定",
           name: "submit",

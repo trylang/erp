@@ -97,14 +97,16 @@
                 <el-col :span="24" style="margin: 0 10px;">
                     <div class="uploadtitle">营业执照<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                     <div class="uploadlist">
-                        <div class="avatar-uploader">
-                            <label class="el-upload el-upload--text">
-                                <i class="el-icon-plus avatar-uploader-icon"></i>
-                                <div class="el-upload__text">点击添加图片</div>
-                                <input type="file" name="file" id="busLinsNumFile" 
-                                class="el-upload__input" @change="addFileUpload('busLinsNumFile')">
-                            </label>
-                        </div>
+                        <form name="form名称" action="/rent/merchant/add"  method="post" id="registSubmit" target="rfFrame" enctype ="multipart/form-data">
+                            <div class="avatar-uploader">
+                                <label class="el-upload el-upload--text">
+                                    <i class="el-icon-plus avatar-uploader-icon"></i>
+                                    <div class="el-upload__text">点击添加图片</div>
+                                    <input type="file" name="file" id="busLinsNumFile" 
+                                    class="el-upload__input" @change="addFileUpload('busLinsNumFile')">
+                                </label>
+                            </div>
+                        </form>
                     </div>
                     <img v-for="(item, index) in busLinsNumFileImgList" :key="index" id="busLinsNumFile_img" :src="item" alt="" width="50px" height="50px">
                 </el-col>

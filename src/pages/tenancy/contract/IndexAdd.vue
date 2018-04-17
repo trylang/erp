@@ -376,31 +376,23 @@
                                     <div class="listcont contractcont">
                                         <div class="listcolum">
                                             <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
-                                            <div class="uploadlist">
-                                                <el-upload
-                                                        class="avatar-uploader"
-                                                        action="https://jsonplaceholder.typicode.com/posts/"
-                                                        :show-file-list="false">
-                                                    <i class="el-icon-plus avatar-uploader-icon"></i>
-                                                    <div class="el-upload__text">点击添加图片</div>
-                                                </el-upload>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="listcont contractcont">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle">2018-12-21</div>
-                                            <div class="uploadlist">
-                                                <div class="uploadfile">
-                                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
-                                                    <span class="spantopL"></span>
-                                                    <span class="spantopLname">1</span>
-                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
-                                                    <span class="spanbottom">重新上传</span>
+                                             <form action="/api/rent/contract/uploads" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
+                                                <div class="uploadlist">
+                                                    <div class="avatar-uploader">
+                                                        <label class="el-upload el-upload--text">
+                                                            <i class="el-icon-plus avatar-uploader-icon"></i>
+                                                            <div class="el-upload__text">点击添加图片</div>
+                                                            <input type="file" name="file" multiple="multiple" class="el-upload__input" @change.prevent="addFileUpload($event)">
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <input type="text" name="contractId" class="el-upload__input" :value="contractId" style="display:none;">
+                                                <input type="text" name="type" class="el-upload__input" value="0" style="display:none;">
+                                            </form>
+                                            <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe>
                                         </div>
                                     </div>
+                                   
                                 </div>
                             </el-col>
                         </el-row>
@@ -573,6 +565,14 @@
                 this.floorId = id;
                 this.getUnitDataList();
             },
+            async addFileUpload(event){
+                console.log(event)
+                document.getElementById('registSubmit').submit();
+                this.getFileInfo();
+            },
+            async getFileInfo() {
+                // 获取附件信息，现没有这个接口
+            },
             async getMerchantList(){
                 await this.$api.rentapi.listUsingGET_12({
                     status:1
@@ -624,7 +624,6 @@
                     localStorage.setItem('activeName', this.activeName);
                     localStorage.setItem('step', 0);
                     this.stepNumber = 0;
-                    console.log(this.activeName)
                     if (this.activeName == '6') {
                         this.isShow = true;
                     } else {
@@ -635,8 +634,7 @@
                     localStorage.setItem('activeName', this.activeName);
                     localStorage.setItem('step', 0);
                     this.stepNumber = 0;
-                    console.log(this.activeName)
-                    if (this.activeName == '7') {
+                    if (this.activeName == '6') {
                         this.isShow = true;
                     } else {
                         this.isShow = false;
@@ -714,7 +712,18 @@
                         }
                     })
                 }else{
-                    this.dialogVisible = false;
+                    this.unitData.contractId = this.contractId;
+                    await this.$api.rentapi.addShopUnitUsingPOST_1({
+                        request: this.unitData
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.$message.success(res.data.msg);
+                            this.dialogVisible = false;
+                            this.getUnitInfo();
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })                   
                 }
             },
             addRentItem(){
@@ -760,7 +769,7 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.contractId = res.data.data;
+                            this.contractId = res.data.data.data.contractId;
                             this.nextNum();
                         } else {
                             this.$message.error(res.data.msg);
@@ -774,17 +783,8 @@
                     this.unitData.unitIds = this.checkedUnit;
                     this.nextNum();
                 }else {
-                    this.unitData.contractId = this.contractId;
-                    await this.$api.rentapi.addShopUnitUsingPOST_1({
-                        request: this.unitData
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.$message.success(res.data.msg);
-                            this.nextNum();
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
+                    this.nextNum();
+                    
                 }
             },
             async addRentData(){
@@ -934,18 +934,19 @@
                 }
             },
             async getUnitInfo(){
-                if(this.$route.params.contractId != 0) {
-                    this.isStep = parseInt(this.activeName) + 1 + '';
-                    await this.$api.rentapi.unitDetailUsingGET({
-                        id: this.$route.params.contractId
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.checkedUnitList = res.data.data;
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
-                }
+                let contractId = this.$route.params.contractId && (this.$route.params.contractId != 0)  ? this.$route.params.contractId : this.contractId; 
+                if (!contractId) return;
+                this.isStep = parseInt(this.activeName) + 1 + '';
+                await this.$api.rentapi.unitDetailUsingGET({
+                    id: contractId
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.checkedUnitList = res.data.data;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+              
             },
             async getRentTermsInfo(){
                 if(this.$route.params.contractId != 0) {

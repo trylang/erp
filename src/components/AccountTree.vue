@@ -99,23 +99,23 @@ export default {
         return res.data.data;
       };
     },
-    async cancelBill() {
+    async cancelBill(cb) {
       const id = this.selectedIds();
       if (!id) return;
       if (id.length <= 0) {
         $message("info", "请先选择结算单!");
         return;
       }
-      await this.$api.financeapi.cancelUsingPUT_3({ id }).then(returnObj => {
+      await this.$api.financeapi.cancelUsingPUT_1({ id }).then(returnObj => {
         if (returnObj.data.status === 200) {
           $message('success', '结算单取消成功！');
-          // this.createTree = formatTree(returnObj.data.data);
+          if(cb) cb();
         }  else {
           $message('error', returnObj.data.msg);
         }
       });
     },
-    async confirmBill() {
+    async confirmBill(cb) {
       const id = this.selectedIds();
       if (!id) return;
       if (id.length <= 0) {
@@ -125,12 +125,13 @@ export default {
       await this.$api.financeapi.confirmUsingPUT_1({ id }).then(returnObj => {
         if (returnObj.data.status === 200) {
           $message("success", "结算单确认成功!");
+          if(cb) cb();
         }  else {
           $message('error', returnObj.data.msg);
         }
       });
     },
-    async publishBill() {
+    async publishBill(cb) {
       const id = this.selectedIds();
       if (!id) return;
       if (id.length <= 0) {
@@ -140,12 +141,13 @@ export default {
       await this.$api.financeapi.publishUsingPUT({ id }).then(returnObj => {        
         if (returnObj.data.status === 200) {
           $message("success", "结算单发布成功");
+          if(cb) cb();
         } else {
           $message('error', returnObj.data.msg);
         }
       });
     },
-    async deleteBill() {
+    async deleteBill(cb) {
       const id = this.selectedIds();
       if (!id) return;
       if (id.length <= 0) {
@@ -155,6 +157,7 @@ export default {
       await this.$api.financeapi.delUsingDELETE_2({ id }).then(returnObj => {
         if (returnObj.data.status === 200) {
           $message("success", "结算单删除成功!");
+          if(cb) cb();
         } else {
           $message('error', returnObj.data.msg);
         }
@@ -162,8 +165,8 @@ export default {
     }
   },
   mounted() {
-    this.$root.eventEmit.$on("ACCOUNTTREE", type => {
-      this[type.type]();
+    this.$root.eventEmit.$on("ACCOUNTTREE", (type, cb) => {
+      this[type.type](cb);
     });
   }
 };

@@ -365,7 +365,7 @@
                                         <p>{{UnitItem.floorName}}</p>
                                     </div>
                                     <div class="deletebtn">
-                                        <button data-v-4d27413a="" class="btn_text" @click="deleteUnitList(UnitItem)" :disabled="delayChange == 2 || delayChange == 1">删除</button>
+                                        <button data-v-4d27413a="" class="btn_text" @click="deleteUnitList(UnitItem,UnitItem.id)" :disabled="delayChange == 2 || delayChange == 1">删除</button>
                                     </div>
                                 </div>
                             </div>
@@ -387,11 +387,11 @@
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
                                         <div class="deletebtn">
-                                            <button data-v-4d27413a="" class="btn_text" @click="deleteUnitList(UnitItem)">删除</button>
+                                            <button data-v-4d27413a="" class="btn_text" @click="deleteUnitList(UnitItem,UnitItem.id)" :disabled="delayChange == 2 || delayChange == 1">删除</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="listcont"><el-button icon="el-icon-plus" :disabled="delayChange == 2" @click="addItem">继续添加</el-button></div>
+                                <div class="listcont"><el-button icon="el-icon-plus" @click="addItem" :disabled="delayChange == 2 || delayChange == 1">继续添加</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
@@ -522,7 +522,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect">
+                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect" @change="changeCountType">
                                         <el-option
                                                 v-for="item in countOptions"
                                                 :key="item.value"
@@ -624,8 +624,8 @@
                                                     </div>
                                                 </div>
                                                 <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                    <template>
-                                                        <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                    <template v-if="">
+                                                        <el-checkbox v-model="stageList.outsideArea" class="stagelineheight" :true-label="unitData.swingArea">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
                                                     </template>
                                                 </div>
                                             </div>
@@ -1229,10 +1229,16 @@
                     </ul>
                 </div>
                 <el-row>
-                    <el-col :span="24">
+                    <el-col :span="24" v-if="this.buildType == 1">
                         <el-checkbox-group
                                 v-model="checkedUnit">
-                            <el-checkbox v-for="(unitlist,index) in unitDataList" :label="unitlist.id" :key="index" @change="unitChange(unitlist.id)">{{unitlist.unitCode}}</el-checkbox>
+                            <el-checkbox v-for="(unitlist,index) in unitDataListShop" :label="unitlist.id" :key="index" @change="unitChange(unitlist.id)">{{unitlist.unitCode}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-col>
+                    <el-col :span="24" v-if="this.buildType == 2">
+                        <el-checkbox-group
+                                v-model="checkedUnit">
+                            <el-checkbox v-for="(unitlist,index) in unitDataListOffice" :label="unitlist.id" :key="index" @change="unitChange(unitlist.id)">{{unitlist.unitCode}}</el-checkbox>
                         </el-checkbox-group>
                     </el-col>
                 </el-row>
@@ -1322,6 +1328,8 @@
                 cashierModeOptions:[],
                 costTypeData:'',
                 unitDataList:[],
+                unitDataListShop:[],
+                unitDataListOffice:[],
                 checkedUnit:[],
                 searchText:'',
                 shopBrand:'',
@@ -1339,7 +1347,7 @@
                 rentData:[{
                     advanceDay: "",
                     advanceMonth: "",
-                    contractId: null,
+                    contractId: '',
                     contractRentTermsPeriodParamList: [
                         {
                             contractPeriodPercentParamList: [
@@ -1371,7 +1379,7 @@
                     costItemId: '',
                     costType: '',
                     countType: '',
-                    id: null,
+                    id: '',
                     lateFeeRate: '',
                     lateFee:'',
                     lateFeeStartDate: "",
@@ -1439,7 +1447,10 @@
                 buildType:1,
                 floorListData:[],
                 floorId:null,
-                intentionContractData:''
+                intentionContractData:'',
+                unitListAry:[],
+                putId:null,
+                delId:null
             };
         },
         mounted(){
@@ -1614,23 +1625,33 @@
                 console.log(this.mainData)
                 switch (this.activeName) {
                     case '1':
-                        if(this.$route.params.delayChange != 1) {
+                        if(this.$route.params.delayChange == 0) {
                             this.addContract();
-                        }else{
+                        }else if(this.$route.params.delayChange == 1){
                             this.delaySubjectInfo();
+                        }else{
+                            this.nextNum();
                         }
                         break;
                     case '2':
                         this.addShopUnit();
                         break;
                     case '3':
-                        this.nextNum();
+                        if(this.$route.params.delayChange == 1 || this.$route.params.delayChange == 2){
+                            this.changeRentCostInfo();
+                        }else {
+                            this.nextNum();
+                        }
                         break;
                     case '4':
                         if(this.rentDataList.length == 0 && this.costDataList.length == 0){
                             this.$message.error('租金条款或费用条款不能为空');
                         }else {
-                            this.nextNum();
+                            if(this.$route.params.delayChange == 1 || this.$route.params.delayChange == 2){
+                                this.changeRentCostInfo();
+                            }else {
+                                this.nextNum();
+                            }
                         }
                         break;
                     case '5':
@@ -1843,6 +1864,7 @@
                             }
                             if(res.data.data.rentUnitList != null) {
                                 this.unitListPush = res.data.data.rentUnitList
+                                this.unitListAry =  res.data.data.rentUnitList;
                                 this.checkedUnit = res.data.data.rentUnitList.map(item => {
                                     return item.id;
                                 });
@@ -1917,7 +1939,11 @@
                     status:1,
                     states:''
                 }).then(res=>{
-                    this.unitDataList = res.data.data.list;
+                    if(this.buildType == 1) {
+                        this.unitDataListShop = res.data.data.list;
+                    }else{
+                        this.unitDataListOffice = res.data.data.list;
+                    }
                 })
             },
             addItem(){
@@ -1936,6 +1962,9 @@
                 this.dialogVisible = false;
                 this.unitData.unitIds = this.checkedUnit;
                 this.unitListPush = [];
+                this.unitListPush = this.unitListPush.concat(this.unitListAry);
+                this.unitDataList = this.unitDataListShop.concat(this.unitDataListOffice);
+                console.log(this.unitDataList)
                 this.checkedUnit.forEach(item => {
                     this.unitDataList.map(__item => {
                         if (__item.id == item) {
@@ -1954,6 +1983,7 @@
                 }else if(this.unitData.rentWay == '1'){
                     this.unitData.rentArea = this.unitData.useArea;
                 }
+                console.log()
             },
             unitChange(id){
             },
@@ -1981,7 +2011,7 @@
                 })
             },
             //删除单元列表
-            async deleteUnitList(unitItem){
+            async deleteUnitList(unitItem,id){
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -1998,6 +2028,12 @@
                         this.unitData.rentWay = '';
                         this.unitData.unitIds = [];
                     }
+                    let _index = this.checkedUnit.map((item,i)=>{
+                        if(id == item){
+                            return i;
+                        }
+                    });
+                    this.checkedUnit.splice(_index, 1);
                 })
             },
             //切换到添加
@@ -2008,7 +2044,7 @@
                 this.rentData = [{
                     advanceDay: "",
                     advanceMonth: "",
-                    contractId: null,
+                    contractId: '',
                     contractRentTermsPeriodParamList: [
                         {
                             contractPeriodPercentParamList: [
@@ -2039,7 +2075,7 @@
                     costItemId: '',
                     costType: '',
                     countType: '',
-                    id: null,
+                    id: '',
                     lateFeeRate: '',
                     lateFee:'',
                     lateFeeStartDate: "",
@@ -2055,6 +2091,7 @@
                 if (contractId) this.rentData[0].contractId = contractId;
                 this.costTypeData = {value: ''};
                 this.costItemData = {id: ''};
+                this.rentData[0].contractRentTermsPeriodParamList[0].fixedArea = this.unitData.swingArea;
             },
             //获取租金和费用的列表
             async getRentDataList(pageNum,pageSize){
@@ -2093,6 +2130,7 @@
             },
             //点击切换到租金和费用的详情
             async getRentInfo(id,stepNum){
+                this.putId = id;
                 this.stepNumber = stepNum;
                 localStorage.setItem('step',stepNum);
                 await this.$api.rentapi.getContractFormalRentTermsUsingGET({
@@ -2138,6 +2176,7 @@
             },
             //删除租金和费用
             async deleteDataList(id){
+                this.delId = id;
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -2181,6 +2220,13 @@
             //根据费用类型获取费用项目和显示不同的结算方式
             async costTypeSelect(){
                 this.rentData[0].settleType = '';
+                this.costItemData = '';
+                this.settleGroupname = '';
+                this.rentData[0].costItemId = null;
+                this.rentData[0].settleGroupId = null;
+                this.rentData[0].contractRentTermsPeriodParamList.forEach(item=>{
+                    item.fixedType = '';
+                });
                 await this.$api.financeapi.selectByCostTypeUsingGET({
                     costType:this.costTypeData.value,
                     propertyType: this.$route.params.prototypeId
@@ -2262,7 +2308,7 @@
                     fixedType: '',
                     endDate: '',
                     fixedAmount: '',
-                    fixedArea: '',
+                    fixedArea: this.unitData.swingArea,
                     percentType: '',
                     outsideArea: '',
                     period: '',
@@ -2398,9 +2444,9 @@
             async changeRentCostInfo(){   //合同租务财务
                 await this.$api.rentapi.changTermsUsingPOST({
                     logMap : {
-                        delId:[],
+                        delId:[this.delId],
                         paramList:this.rentData,
-                        putId:[]
+                        putId:[this.putId]
                     }
                 }).then(res=>{
                     if (res.data.status == 200) {
@@ -2413,6 +2459,13 @@
             },
             historyGo(){
                 this.$router.go(-1)
+            },
+            changeCountType(){
+                if(this.rentData[0].countType == 0){
+                    this.rentData[0].lateFee=''
+                }else{
+                    this.rentData[0].lateFeeRate=''
+                }
             }
         },
         components: {

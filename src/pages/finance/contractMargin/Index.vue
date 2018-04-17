@@ -194,7 +194,6 @@ export default {
         dialogVisible: false,
         param: {
           dealtAmount: "",
-          remark: "",
           type: ""
         },
         options: [{

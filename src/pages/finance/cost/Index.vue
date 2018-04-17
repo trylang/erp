@@ -160,6 +160,18 @@ export default {
             placeholder: "请输入名称"
           },
           {
+            label: "物业性质",
+            name: "propertyType",
+            valueLabel: "label",
+            value: "id",
+            type: "select",
+            options: [],
+            placeholder: "请选择物业性质",
+            event: (item) => {
+              this.getAccountGroupByType();
+            }
+          },
+          {
             label: "结算组别",
             valueLabel: "settleGroupName",
             name: "settleGroupId",
@@ -179,15 +191,6 @@ export default {
             value: "value",
             options: [],
             placeholder: "请选择合同费用类型"
-          },
-          {
-            label: "物业性质",
-            name: "propertyType",
-            valueLabel: "label",
-            value: "id",
-            type: "select",
-            options: [],
-            placeholder: "请选择物业性质"
           }
         ],
         dialogVisible: false,
@@ -348,15 +351,19 @@ export default {
         }
       });
     },
+    // 根据物业类型过滤结算组别，缺接口
+    async getAccountGroupByType(type) {
+      console.log('根据物业类型过滤结算组别，缺接口')
+    },
     async init() {
       let [accountGroup, costType] = await Promise.all([queryAccountGroup(),queryCostType()]);
       this.selects.accountGroupJson = accountGroup.json;
       this.selects.costType = costType.data.cost_type;
       this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
-      this.dialog.models[2].options = accountGroup.data.list;
-      this.dialog.models[3].options = this.selects.costType;
-      this.dialog.models[4].options = this.selects.shops;
+      this.dialog.models[3].options = accountGroup.data.list;
+      this.dialog.models[4].options = this.selects.costType;
+      this.dialog.models[2].options = this.selects.shops;
     }
   },
   computed: {},
