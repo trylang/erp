@@ -9,7 +9,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同分类</span>
-                                    <el-select v-model="mainData.contractType" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.contractType" disabled placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in typeOptions"
                                                 :key="item.value"
@@ -24,7 +24,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">销售计税类型</span>
-                                    <el-select v-model="mainData.rateType" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.rateType" disabled placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in rateTypeOptions"
                                                 :key="item.value"
@@ -37,7 +37,7 @@
                             <el-col :span="5">
                                 <div class="dialoginput dialogtext">
                                     <div class="inputname">税率</div>
-                                    <input class="middleinput" type="text" placeholder="0"  v-model="mainData.rate" :disabled="mainData.rateType == '0'">
+                                    <input class="middleinput" type="text" placeholder="0" disabled v-model="mainData.rate">
                                     <span class="rightcompany">%</span>
                                 </div>
                             </el-col>
@@ -48,7 +48,7 @@
                                     <div>
                                         <span class="inputname">合同说明</span>
                                     </div>
-                                    <textarea class="textareabox" placeholder="选填" v-model="mainData.description"></textarea>
+                                    <textarea class="textareabox" placeholder="选填" readonly v-model="mainData.description"></textarea>
                                 </div>
                             </el-col>
                         </el-row>
@@ -59,7 +59,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">商户</span>
-                                    <el-select v-model="mainData.merchantId" placeholder="请选择" @change="selectMerchant(mainData.merchantId)" class="dialogselect">
+                                    <el-select v-model="mainData.merchantId" placeholder="请选择" disabled @change="selectMerchant(mainData.merchantId)" class="dialogselect">
                                         <el-option
                                                 v-for="item in merchantOptions"
                                                 :key="item.id"
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">品牌</span>
-                                    <el-select v-model="mainData.brandId" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.brandId" disabled placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in brandOptions"
                                                 :key="item.id"
@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">经营方式</span>
-                                    <el-select v-model="mainData.operationMode" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.operationMode" disabled placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in operationOptions"
                                                 :key="item.value"
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">物业性质</span>
-                                    <el-select v-model="mainData.propertyType" placeholder="请选择" disabled class="dialogselect">
+                                    <el-select v-model="mainData.propertyType" disabled placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in propertyOptions"
                                                 :key="item.value"
@@ -120,6 +120,7 @@
                                             @change="dateValueSelect()">
                                     </el-date-picker>-->
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.validStartDate"
                                             type="date"
@@ -128,6 +129,7 @@
                                     </el-date-picker>
                                     ~
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.validEndDate"
                                             type="date"
@@ -146,6 +148,7 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">交铺日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.pavingDate"
                                             type="date"
@@ -160,6 +163,7 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">开业日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.openingDate"
                                             type="date"
@@ -183,6 +187,7 @@
                                             end-placeholder="选填">
                                     </el-date-picker>-->
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.decorationStartDate"
                                             type="date"
@@ -191,6 +196,7 @@
                                     </el-date-picker>
                                     ~
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.decorationEndDate"
                                             type="date"
@@ -209,6 +215,7 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">签约日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.signDate"
                                             type="date"
@@ -223,6 +230,7 @@
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">失效日期</span>
                                     <el-date-picker
+                                            readonly
                                             class="inputtext"
                                             v-model="mainData.invalidDate"
                                             type="date"
@@ -267,12 +275,8 @@
                                             <span>楼层</span>
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
-                                        <div class="deletebtn">
-                                            <button class="btn_text" @click="delUnitItem(UnitItem)">删除</button>
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="listcont"><el-button icon="el-icon-plus" @click="addItem">继续添加</el-button></div>
                             </el-col>
                         </el-row>
                     </div>
@@ -289,6 +293,7 @@
                                             </div>
                                             <div class="listcolum columbox">
                                                 <el-date-picker
+                                                        readonly
                                                         class="inputtext"
                                                         v-model="rentlists.periodStartDate"
                                                         type="date"
@@ -297,6 +302,7 @@
                                                 </el-date-picker>
                                                 ~
                                                 <el-date-picker
+                                                        readonly
                                                         class="inputtext"
                                                         v-model="rentlists.periodEndDate"
                                                         type="date"
@@ -307,23 +313,19 @@
                                             <div class="listcolum columbox">
                                                 <div class="columboxinput">
                                                     <span class="inputname">保底租金</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入保底租金" v-model="rentlists.endRent">
+                                                    <input class="inputtext" type="text" placeholder="请输入保底租金" readonly v-model="rentlists.endRent">
                                                     <span class="rightcompany">元</span>
                                                 </div>
                                             </div>
                                             <div class="listcolum columbox">
                                                 <div class="columboxinput">
                                                     <span class="inputname">抽成比例</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入抽成比例" v-model="rentlists.drawRate">
+                                                    <input class="inputtext" type="text" placeholder="请输入抽成比例" readonly v-model="rentlists.drawRate">
                                                     <span class="rightcompany">%</span>
                                                 </div>
                                             </div>
-                                            <div class="deletebtn">
-                                                <button class="btn_text" @click="delRentItem(rentlists.id,rentlists)">删除</button>
-                                            </div>
                                         </div>
                                     </div>
-                                    <div class="listcont"><el-button icon="el-icon-plus" @click="addRentItem">继续添加</el-button></div>
                                 </el-col>
                             </el-row>
                         </div>
@@ -335,17 +337,17 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">物业管理费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入物业管理费" v-model="costData.propertyManageFee">
+                                    <input class="inputtext" type="text" placeholder="请输入物业管理费" readonly v-model="costData.propertyManageFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">推广费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入推广费" v-model="costData.promotFee">
+                                    <input class="inputtext" type="text" placeholder="请输入推广费" readonly v-model="costData.promotFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">库房费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入库房费" v-model="costData.houseFee">
+                                    <input class="inputtext" type="text" placeholder="请输入库房费" readonly v-model="costData.houseFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                             </el-col>
@@ -359,8 +361,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">诚意金</span>
-                                    <input class="inputtext" type="text" placeholder="
- 请输入诚意金金额" v-model="sincerityMoneyData.sincerityMoney">
+                                    <input class="inputtext" type="text" placeholder="请输入诚意金金额" readonly v-model="sincerityMoneyData.sincerityMoney">
                                     <span class="rightcompany">元</span>
                                 </div>
                             </el-col>
@@ -378,6 +379,7 @@
                                             <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
                                             <div class="uploadlist">
                                                 <el-upload
+                                                        readonly
                                                         class="avatar-uploader"
                                                         action="https://jsonplaceholder.typicode.com/posts/"
                                                         :show-file-list="false">
@@ -408,46 +410,6 @@
                 </el-tab-pane>
             </el-tabs>
         </template>
-        <el-dialog
-                :visible.sync="dialogVisible"
-                custom-class="contractdialog">
-            <div class="searchbox">
-                <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getUnitDataList()"><i class="iconfont icon-sousuo"></i>
-            </div>
-            <div class="dialogbox">
-                <div class="floorsearchlist">
-                    <ul>
-                        <li :style="buildType == 1?'color:#457fcf':''" @click="getFloorList(1)">商场</li>
-                        <li :style="buildType == 2?'color:#457fcf':''" @click="getFloorList(2)">写字楼</li>
-                    </ul>
-                </div>
-                <div class="floorsearchlist">
-                    <ul>
-                        <li @click="changeFloorUnit(null)">全部</li>
-                        <li v-for="floorlist in floorListData" @click="changeFloorUnit(floorlist.id)">{{floorlist.floorName}}</li>
-                    </ul>
-                </div>
-                <el-row>
-                    <el-col :span="24">
-                        <el-checkbox-group
-                                v-model="checkedUnit">
-                            <el-checkbox  :label="unitlist" v-for="(unitlist,index) in unitDataList" 
-                            :key="index">{{unitlist.unitCode}}</el-checkbox>
-                        </el-checkbox-group>
-                    </el-col>
-                </el-row>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelUnit()">取 消</el-button>
-                <el-button type="primary" @click="handleUnit()">确 定</el-button>
-            </span>
-        </el-dialog>
-        <div class="savebtn" v-show="!isShow">
-            <button @click="submitnNext()">保存并下一步</button>
-        </div>
-        <div class="savebtn" v-show="isShow">
-            <button @click="historyGo()">保存</button>
-        </div>
     </div>
 </template>
 
@@ -578,6 +540,7 @@
                     status:1
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
+                    console.log(211211, this.merchantOptions);
                 })
             },
             async getBrandList(){
@@ -642,6 +605,13 @@
                         this.isShow = false;
                     }
                 }
+                // this.activeName = parseInt(this.activeName) + 1 + '';
+                // localStorage.setItem('activeName', this.activeName);
+                // if (this.activeName == '6') {
+                //     this.isShow = true;
+                // } else {
+                //     this.isShow = false;
+                // }
             },
             handleClick() {
                 localStorage.setItem('activeName', this.activeName);
@@ -889,8 +859,8 @@
             },
 
             async delUnitItem(unitItem){
-                await this.$api.rentapi.delShopUnitUsingPUT({
-                    intentUnitId : unitItem.unitId
+                await this.$api.rentapi.delUsingPUT_1({
+                    id : unitItem.unitId
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);

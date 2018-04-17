@@ -49,7 +49,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">所属区域</span>
-                    <input class="inputtext" type="text" v-if="listid" v-model="add.regionName==null?'无':add.regionName+'（不可更改）'" disabled>
+                    <input class="inputtext" type="text" v-if="listid" v-model="add.regionName==null?'无':add.regionName" disabled style="background-color: #eee;">
                     <el-tree
                         v-if="!listid"
                         :data="treeData"

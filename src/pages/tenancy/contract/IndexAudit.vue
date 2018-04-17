@@ -16,6 +16,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
                             <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in merchantOptions"
                                         :key="item.id"
@@ -31,6 +32,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">品牌</span>
                             <el-select v-model="brandValue" placeholder="请选择" class="dialogselect" @change="brandSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in brandOptions"
                                         :key="item.id"

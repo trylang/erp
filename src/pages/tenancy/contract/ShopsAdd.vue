@@ -1329,8 +1329,7 @@
                 costDataList:[],
                 rentcolumnData:[
                     { prop: 'costItem', label: '费用项目', click:'click', param:'id'},
-                    { prop: 'startDate', label: '起止时间' },
-                    { prop: 'endDate', label: '' },
+                    { prop: 'time', label: '起止时间' },
                     { prop: 'cycleTotal', label: '结算周期' },
                     { prop: 'settleGroup', label: '结算组别' },
                     { prop: 'lateFee', label: '滞纳金' },
@@ -2068,6 +2067,9 @@
                     contractId: this.contractId,
                     type: 0
                 }).then(res => {
+                    res.data.data.list.forEach(item => {
+                        item.time = item.startDate +'~'+ item.endDate;
+                    });
                     this.rentDataList = res.data.data.list;
                     this.total1 = res.data.data.total;
                 })
@@ -2082,6 +2084,9 @@
                     contractId: this.contractId,
                     type: 1
                 }).then(res => {
+                    res.data.data.list.forEach(item => {
+                        item.time = item.startDate +'~'+ item.endDate;
+                    });
                     this.costDataList = res.data.data.list;
                     this.total2 = res.data.data.total;
                 })

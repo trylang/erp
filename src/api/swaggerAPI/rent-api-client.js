@@ -6962,68 +6962,89 @@ export const updateSincerityMoneyUsingPOSTURL = function(parameters = {}) {
  * @param pageSize - 每页显示数量
  * @param propertyType - 物业性质
  * @param status - 状态
+ * @param contractCode - 合同号
+ * @param merchantId - 商户id
+ * @param brandId - 品牌id
  */
 export const confirmByStatusUsingGET = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/rent/intent/contract/status/confirm/list'
-    let body
-    let queryParameters = {}
-    let form = {}
-    if (parameters['states'] !== undefined) {
-        queryParameters['states'] = parameters['states']
-    }
-    if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
-    }
-    if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
-    }
-    if (parameters['propertyType'] !== undefined) {
-        queryParameters['propertyType'] = parameters['propertyType']
-    }
-    if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('get', domain + path, body, queryParameters, form, config)
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/rent/intent/contract/status/confirm/list'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['states'] !== undefined) {
+    queryParameters['states'] = parameters['states']
+  }
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['status'] = parameters['status']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
 }
 export const confirmByStatusUsingGET_RAW_URL = function() {
-    return '/rent/intent/contract/status/confirm/list'
+  return '/rent/intent/contract/status/confirm/list'
 }
 export const confirmByStatusUsingGET_TYPE = function() {
-    return 'get'
+  return 'get'
 }
 export const confirmByStatusUsingGETURL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/rent/intent/contract/status/confirm/list'
-    if (parameters['states'] !== undefined) {
-        queryParameters['states'] = parameters['states']
-    }
-    if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
-    }
-    if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
-    }
-    if (parameters['propertyType'] !== undefined) {
-        queryParameters['propertyType'] = parameters['propertyType']
-    }
-    if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/rent/intent/contract/status/confirm/list'
+  if (parameters['states'] !== undefined) {
+    queryParameters['states'] = parameters['states']
+  }
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['propertyType'] !== undefined) {
+    queryParameters['propertyType'] = parameters['propertyType']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['status'] = parameters['status']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
  * 根据状态查询意向合同列表

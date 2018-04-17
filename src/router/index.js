@@ -42,6 +42,7 @@ const Shops = r => require.ensure([], () => r(require('../pages/tenancy/contract
 const ShopsAudit = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAudit')), 'contract');
 const AddShops = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsAdd')), 'contract');
 const ShopsInfo = r => require.ensure([], () => r(require('../pages/tenancy/contract/ShopsInfo')), 'contract');
+const IndexInfo = r => require.ensure([], () => r(require('../pages/tenancy/contract/IndexInfo')), 'contract');
 const Field = r => require.ensure([], () => r(require('../pages/tenancy/contract/Field')), 'contract');
 const AddField = r => require.ensure([], () => r(require('../pages/tenancy/contract/FieldAdd')), 'contract');
 const AdPosition = r => require.ensure([], () => r(require('../pages/tenancy/contract/AdPosition')), 'contract');
@@ -278,6 +279,10 @@ const router = new Router({
                 {
                     path:'shopsinfo/:prototypeId/:contractId',
                     component: ShopsInfo
+                },
+                {
+                    path:'indexinfo/:prototypeId/:contractId',
+                    component: IndexInfo
                 },
                 {
                     path: 'field/:prototypeId',

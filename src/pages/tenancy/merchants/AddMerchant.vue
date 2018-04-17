@@ -106,9 +106,7 @@
                             </label>
                         </div>
                     </div>
-                    <el-dialog :visible.sync="merchantInfoData.busLinsNumFile && merchantInfoData.busLinsNumFile.length>0">
-                        <img width="100%" id="busLinsNumFile_img" alt="">
-                    </el-dialog>
+                    <img v-for="(item, index) in busLinsNumFileImgList" :key="index" id="busLinsNumFile_img" :src="item" alt="" width="50px" height="50px">
                 </el-col>
             </el-row>
         </div>
@@ -214,11 +212,13 @@
 </template>
 
 <script>
-    import BlankHead from '../../../components/BlankHead'
+    import BlankHead from '../../../components/BlankHead';
+    import { changImg } from '@/utils/';
     export default {
         name: "add-merchant",
         data(){
             return{
+                busLinsNumFileImgList: [],
                 merchantInfoData:{
                     contactLstParams:[],
                     id:'',
@@ -278,24 +278,18 @@
                 });
             },
             addFileUpload(type) {
-                const file=document.getElementById(type).files[0]; //获取文件流
-                if (!this.merchantInfoData[type]) {
-                    this.merchantInfoData[type] = [];
-                }
-                this.merchantInfoData[type].push(file);
-                this.changImg(type, file);
-                console.log(this.merchantInfoData.busLinsNumFile);
-            },
-            changImg(type, file){  
-                if (!(/^image\/.*$/i.test(file.type))) {  
-                    return; //不是图片 就跳出这一次循环  
-                }
-                //实例化FileReader API  
-                var freader = new FileReader();  
-                freader.readAsDataURL(file);  
-                freader.onload = function(e) {
-                    $(`#${type}_img`).attr("src",e.target.result);  
-                };
+                changImg(document.getElementById(type), (file, img) => {
+                    if (!this.merchantInfoData[type]) {
+                        this.merchantInfoData[type] = [];
+                    }
+                    this.merchantInfoData[type].push(file);
+                    
+                    if (!this[`${type}ImgList`]) {
+                        this[`${type}ImgList`] = [];
+                    }
+                    this[`${type}ImgList`].push(img);
+                });
+                
             },
             async submitFormData(){
                 console.log(this.merchantInfoData);

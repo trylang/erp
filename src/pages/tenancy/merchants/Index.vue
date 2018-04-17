@@ -71,6 +71,7 @@
             },
             handleClose(){
                 this.dialogVisible = false;
+                this.treeData = '';
                 this.addInfoData = {
                     businessCode: '',
                     businessName: '',
@@ -85,7 +86,6 @@
             },
             handleNodeClick(data){
                 this.treeData = data;
-                console.log(data)
             },
             async getInfoData(){
                 this.addInfoData.id = this.treeData.id;
@@ -104,8 +104,8 @@
                     await this.$api.rentapi.addUsingPOST_2({
                         request: this.addInfoData
                     }).then(res => {
-                        this.treeData = '';
                         if (res.data.status == 200) {
+                            this.treeData = '';
                             this.addInfoData = {
                                 businessCode: '',
                                 businessName: '',

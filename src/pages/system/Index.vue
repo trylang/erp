@@ -41,7 +41,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">上级区域</span>
-                    <input class="inputtext" type="text" v-if="listid" v-model="add.pname==null?'无':add.pname+'（不可更改）'" disabled>
+                    <input class="inputtext" type="text" v-if="listid" v-model="add.pname==null?'无':add.pname" disabled style="background-color: #eee;">
                     <el-tree
                         v-if="!listid"
                         :data="treeData"

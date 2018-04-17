@@ -137,3 +137,15 @@ export function throttle(fn,context,delay,text,mustApplyTime){
   }
 }
 
+export function changImg(dom, cb){  
+  const file = dom.files[0];
+  if (!(/^image\/.*$/i.test(file.type))) {  
+    return; 
+  }
+  var freader = new FileReader();  
+  freader.readAsDataURL(file);  
+  freader.onload = function(e) {
+    if(cb) cb(file, e.target.result);    
+  };
+}
+
