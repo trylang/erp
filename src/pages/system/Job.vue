@@ -110,11 +110,11 @@
             },
             addbuilding(id){
                 console.log(11,id)
-              var reg=/^[\u4E00-\u9FA5]{2,6}$/;
+              var reg=/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/;
               if(!this.add.positionName){
                 this.$message.error('职位名称不能为空');
               }else if(!reg.test(this.add.positionName)){
-                this.$message.error('职位名称可能存在非法字符或长度不符');
+                this.$message.error('职位名称只能输入汉字字母数字，输入至少1位最多20位');
               }else {
                 if (id) {
                   this.$api.systemapi.putJob({
@@ -127,6 +127,7 @@
                     if (res.data.status == 200) {
                       this.$message.success(res.data.msg);
                       this.pageHandler(1);
+                      this.dialogVisible = false;
                     } else {
                       this.$message.error(res.data.msg);
                     }
@@ -143,6 +144,7 @@
                     if (res.data.status == 200) {
                       this.$message.success(res.data.msg);
                       this.pageHandler(1);
+                      this.dialogVisible = false;
                     } else {
                       this.$message.error(res.data.msg);
                     }
@@ -151,7 +153,6 @@
                   });
                 }
               }
-                this.dialogVisible = false;
             },
             dialogData(id, data){
                 this.listid = id;

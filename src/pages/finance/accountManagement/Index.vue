@@ -65,7 +65,7 @@
             </div>
           </el-col>
         </el-row>
-        <el-row>
+        <!-- <el-row>
           <el-col :span="9">
             <div class="searchselect">
               <span class="inputname">结算日</span>
@@ -78,7 +78,7 @@
               </el-date-picker>                
             </div>
           </el-col>
-        </el-row>
+        </el-row> -->
         <el-row :gutter="20">
           <account-tree :createTree="createTree" :header="header" :content="content"></account-tree>  
         </el-row>
@@ -163,6 +163,15 @@ export default {
           label: "金额（元）",
           type: "text",
           name: "amount",
+          style: {
+            "background": "#fff",
+            "border-bottom": "1px solid #e4e4e4"
+          }
+        },
+        {
+          label: "调整金额（元）",
+          type: "text",
+          name: "adjustAmount",
           style: {
             "background": "#fff",
             "border-bottom": "1px solid #e4e4e4"
@@ -287,12 +296,12 @@ export default {
     },
     confirmBill() {
       this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'confirmBill'}, () => {
-        this.getAccountManagement();
+        this.getAccountConfirm();
       });
     },
     publishBill() {
       this.$root.eventEmit.$emit('ACCOUNTTREE', {type: 'publishBill'}, () => {
-        this.getAccountManagement();
+        this.getAccountPulish();
       });
     },
     deleteBill() {

@@ -62,6 +62,7 @@
                     userId:this.$route.params.userid
                 }).then(res=>{
                     this.addUser = res.data.data;
+                    console.log(123,this.addUser)
                 })
             }
         },

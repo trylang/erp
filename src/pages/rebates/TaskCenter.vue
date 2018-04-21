@@ -46,7 +46,7 @@
                             <td>
                                 <div class="cell">
                                     <a :href="$downLoadUrl+'/refund/task/download?id='+item.id"  v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</a>
-                                    <!-- <button class="btn_text" v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</bu -->tton>
+                                    <!-- <button class="btn_text" v-if="item.status==1 || item.status ==2" @click="downloadHandler(item.id)">下载</button> -->
                                 </div>
                             </td>
                         </tr>
@@ -109,7 +109,7 @@
                     type: this.typeId,
                     status: this.statusId
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.refundapi.getListForPageUsingGET_6(params).then(res=>{
                     if(res.data.status === 200){
                         this.dataList = res.data.data.list;
                         this.total = Number(res.data.data.total);

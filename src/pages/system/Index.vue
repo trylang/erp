@@ -126,12 +126,11 @@
                         this.$message.warning('区域名称不能为空');
                     }else if(!this.add.regionEnglishName){
                         this.$message.warning('英文缩写不能为空');
-                    }else if(!this.add.treeId){
-                        this.$message.warning('上级区域不能为空');
                     }else{
+                        console.log(123,this.add)
                         this.$api.systemapi.putRegion({request:{
                             regionId: this.add.id,
-                            pid: this.add.treeId,
+                            pid: this.add.pid,
                             regionName: this.add.regionName,
                             regionEnglishName: this.add.regionEnglishName
                         }}).then(res=>{

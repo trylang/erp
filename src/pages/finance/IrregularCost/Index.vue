@@ -11,6 +11,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" @change="getIrregularCost()" placeholder="商户名称" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -37,6 +38,7 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractId" @change="getIrregularCost()" placeholder="合同" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -115,8 +117,8 @@ export default {
         },
         {
           label: "录入日期",
-          name: "updateDate",
-          type: "time",
+          name: "expenseDate",
+          type: "text",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
@@ -221,9 +223,11 @@ export default {
       return ids;
     },
     batchConfirm() {
+      if(this.filterIds().length == 0) return $message('info', '请选择费用单号');
       this.confirmIrregularCost(this.filterIds());
     },
     batchDelete() {
+      if(this.filterIds().length == 0) return $message('info', '请选择费用单号');
       this.deleteIrregularCost(this.filterIds());
     },
     async getIrregularCost(page={}, callback) {
@@ -307,6 +311,13 @@ export default {
     }
   },
   computed: {},
+  watch:{
+    'query.costNo': function(){
+      this.$delay(()=>{
+          this.getIrregularCost();
+      },300)
+    }
+  },
   created() {
     this.init();
   }

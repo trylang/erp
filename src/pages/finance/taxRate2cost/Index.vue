@@ -21,8 +21,13 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-
-import { queryCost, queryTaxRate, queryDicsByCode, queryCostType } from '@/utils/rest/financeAPI';
+import { formatDate } from "@/utils/filter";
+import {
+  queryCost,
+  queryTaxRate,
+  queryDicsByCode,
+  queryCostType
+} from "@/utils/rest/financeAPI";
 export default {
   name: "account-group",
   components: {
@@ -43,31 +48,36 @@ export default {
           label: "名称",
           type: "text",
           name: "costItemName"
-        },{
+        },
+        {
           label: "结算组别",
           type: "text",
           name: "settleGroupName"
-        },{
+        },
+        {
           label: "费用类型",
           type: "text",
           name: "costTypeName"
-        },{
+        },
+        {
           label: "物业类型",
           type: "text",
           name: "propertyTypeName"
-        },{
+        },
+        {
           label: "税码",
           type: "text",
           name: "rateCode"
-        },{
+        },
+        {
           label: "税率",
           type: "text",
-          name: "rate"
+          name: "rateStr"
         },
         {
           label: "有效期",
-          name: "validStartDate",
-          type: "time",
+          name: "validDateRange",
+          type: "text",
           filter: "yyyy/MM/dd"
         },
         {
@@ -86,9 +96,10 @@ export default {
                 // color: "#902323"
               },
               class: "edit",
-              click: (item) => {               
+              click: item => {
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
+                this.getCostItemByCostType(item.costType)
               }
             },
             {
@@ -108,91 +119,98 @@ export default {
       ],
       content: [],
       dialog: {
-        models: [{
-          label: '税码',
-          valueLabel: 'rateFullLabel',
-          name: 'rateId',
-          type: 'select',
-          value: 'id',
-          options: [],
-          placeholder: '请输入税码'
-        }, {
-          label: '费用类型',
-          valueLabel: 'text',
-          name: 'costType',
-          type: 'select',
-          value: 'value',
-          options: [],
-          placeholder: '请选择费用类型',
-          async event(costType) {
-            const param = {
-              costType,
-              pageSize: 200000
+        models: [
+          {
+            label: "税码",
+            valueLabel: "rateFullLabel",
+            name: "rateId",
+            type: "select",
+            value: "id",
+            options: [],
+            placeholder: "请输入税码"
+          },
+          {
+            label: "费用类型",
+            valueLabel: "text",
+            name: "costType",
+            type: "select",
+            value: "value",
+            options: [],
+            placeholder: "请选择费用类型",
+            async event(costType) {
+              const param = {
+                costType,
+                pageSize: 200000
+              };
+              await _this.$api.financeapi.listUsingGET_7(param).then(res => {
+                if (res.data.status === 200) {
+                  _this.dialog.models[2].options = res.data.data.list;
+                }
+              });
             }
-            await _this.$api.financeapi.listUsingGET_7(param).then(res => {
-              if (res.data.status === 200) {
-                _this.dialog.models[2].options = res.data.data.list;
-              }              
-            });
+          },
+          {
+            label: "费用项目",
+            valueLabel: "costItemName",
+            name: "costItemId",
+            type: "select",
+            value: "id",
+            options: [],
+            placeholder: "请选择费用项目"
+          },
+          {
+            label: "生效日期",
+            name: "validDate",
+            type: "date",
+            placeholder: "请选择生效时间"
           }
-        }, {
-          label: '费用项目',
-          valueLabel: 'costItemName',
-          name: 'costItemId',
-          type: 'select',
-          value: 'id',
-          options: [],
-          placeholder: '请选择费用项目'
-        }, {
-          label: '生效日期',
-          name: 'validDate',
-          type: 'date',
-          placeholder: '请选择生效时间'
-        }],
+        ],
         dialogVisible: false,
         param: {
-          id: ''
+          id: ""
         },
-        options: [{
-          label: "确 定",
-          name: "submit",
-          type: "primary",
-          disabledFun: (param) => {
-            return Object.values(param).some(item => {
-              return item === (undefined || "");
-            });
+        options: [
+          {
+            label: "确 定",
+            name: "submit",
+            type: "primary",
+            disabledFun: param => {
+              return Object.values(param).some(item => {
+                return item === (undefined || "");
+              });
+            },
+            click: () => {
+              console.log(this.dialog.param);
+              this.confirmDialog();
+            }
           },
-          click: () => {
-            console.log(this.dialog.param);
-            this.confirmDialog();
+          {
+            label: "取 消",
+            name: "edit",
+            type: "",
+            click: () => {
+              this.cancelDialog();
+            }
           }
-        }, {
-          label: "取 消",
-          name: "edit",
-          type: "",
-          click: () => {
-            this.cancelDialog();
-          }
-        }]
+        ]
       },
       query: {
-        costItemId:'', 
-        costType:'', 
-        rateId:'', 
-        validDate:''
+        costItemId: "",
+        costType: "",
+        rateId: "",
+        validDate: ""
       },
       selects: {
         cost: []
       }
     };
   },
-  mounted() {},
   methods: {
     getCurrentPage(pageNum) {
-      this.getTaxRate2cost({pageNum});
+      this.getTaxRate2cost({ pageNum });
     },
     getpageSize(pageSize) {
-      this.getTaxRate2cost({pageSize});
+      this.getTaxRate2cost({ pageSize });
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
@@ -220,7 +238,20 @@ export default {
           $message("info", "已取消删除!");
         });
     },
-    async getTaxRate2cost(page={}, callback) {
+    async getCostItemByCostType(costType) {
+      if (costType >= 0) {
+        const param = {
+          costType,
+          pageSize: 200000
+        };
+        await this.$api.financeapi.listUsingGET_7(param).then(res => {
+          if (res.data.status === 200) {
+            this.dialog.models[2].options = res.data.data.list;
+          }
+        });
+      }
+    },
+    async getTaxRate2cost(page = {}, callback) {
       const params = {
         costItemCode: this.query.costItemCode,
         pageNum: page.pageNum,
@@ -229,12 +260,16 @@ export default {
       this.$api.financeapi.listUsingGET_6(params).then(res => {
         const data = res.data;
         if (data.status === 200) {
-          const Ajson = this.selects.accountGroupJson;
-          // data.data.list.forEach(item => {
-          //   item.settleGroupLabel = Ajson[item.settleGroupId]
-          //     ? Ajson[item.settleGroupId].settleGroupName
-          //     : "";
-          // });
+          data.data.list.forEach(item => {
+            let validTime =
+              formatDate(item.validStartDate, "yyyy/MM/dd") +
+              "~" +
+              (item.validEndDate
+                ? formatDate(item.validEndDate, "yyyy/MM/dd")
+                : "");
+            item.validDateRange = validTime;
+            item.rateStr = item.rate + '%';
+          });
           this.content = data.data;
           if (callback) callback();
         } else {
@@ -243,16 +278,18 @@ export default {
       });
     },
     async addTaxRate2cost(param) {
-      await this.$api.financeapi.addUsingPOST({ request: param }).then(returnObj => {
-        if (returnObj.data.status === 200) {
-          this.getTaxRate2cost({}, () => {
-            $message("success", "添加成功!");
-            this.dialog.dialogVisible = false;
-          });
-        } else {
-          $message("error", "添加失败!");
-        }
-      });
+      await this.$api.financeapi
+        .addUsingPOST({ request: param })
+        .then(returnObj => {
+          if (returnObj.data.status === 200) {
+            this.getTaxRate2cost({}, () => {
+              $message("success", "添加成功!");
+              this.dialog.dialogVisible = false;
+            });
+          } else {
+            $message("error", "添加失败!");
+          }
+        });
     },
     async editTaxRate2cost(param) {
       let params = {
@@ -287,22 +324,32 @@ export default {
       });
     },
     async init() {
-      let [cost, taxRate, costType] = await Promise.all([queryCost(), queryTaxRate(), queryCostType()]);
+      let [cost, taxRate, costType] = await Promise.all([
+        queryCost(),
+        queryTaxRate(),
+        queryCostType()
+      ]);
       this.selects.cost = cost.data;
       this.selects.taxRateJson = taxRate.json;
       await this.getTaxRate2cost();
-      taxRate.data.list.forEach(item => {
-        item.rateFullLabel = item.rateCode +"（" + item.rateStr + "）";
+      taxRate.data.forEach(item => {
+        item.rateFullLabel = item.rateCode + "（" + item.rate + "%" + "）";
       });
-      this.dialog.models[0].options = taxRate.data.list;
+      this.dialog.models[0].options = taxRate.data;
       this.dialog.models[1].options = costType.data.cost_type;
+    }
+  },
+  watch:{
+    'query.costItemCode': function(){
+      this.$delay(()=>{
+          this.getTaxRate2cost();
+      },300)
     }
   },
   created() {
     this.init();
   }
 };
-
 </script>
 
 <style scoped>

@@ -11,6 +11,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" @change="getReceptList" placeholder="商户名称" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -34,6 +35,7 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractId" @change="getReceptList" placeholder="" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -303,6 +305,7 @@ export default {
       return ids;
     },
     batchConfirm() {
+      if(this.filterIds().length == 0) return $message('info', '请选择费用单号');
       this.confirmRecept(this.filterIds());
     },
     async getReceptList(page={}, callback) {
@@ -345,7 +348,7 @@ export default {
             $message("success", "确认成功!");
           });  
         } else {
-          $message("error", "确认失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -359,7 +362,7 @@ export default {
             $message("success", "删除成功!");
           });  
         } else {
-          $message("error", "删除失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -373,7 +376,7 @@ export default {
             $message("success", "取消成功!");
           });
         } else {
-          $message("error", "取消失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -382,6 +385,13 @@ export default {
       this.selects.merchants = merchants.data;
       this.selects.contracts = contracts.data.list;
       await this.getReceptList();
+    }
+  },
+  watch:{
+    'query.receiptId': function(){
+      this.$delay(()=>{
+          this.getIrregularCost();
+      },300)
     }
   },
   created() {

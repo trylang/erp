@@ -11,6 +11,14 @@
         <span v-if="con.type==='status'">
           {{con.option[details[con.name]]}}
         </span>
+        <span v-if="con.type==='img'">
+          <img :src="details[con.name]" alt="">
+        </span>
+        <span v-if="con.type==='moreImgs'">
+          <a v-for="(item, index) in details[con.name]" :key="index" :href="item[con.url]" target="blank">
+            <img class="con_img" :src="item[con.url]" alt="">
+          </a>
+        </span>
         <span v-if="con.type==='time'">{{details[con.name]|formatDate(con.filter)}}</span>
         <div class="detail_table" v-if="con.type==='table'">
           <erp-table :noPage="true" :header="con.table" :content="details"></erp-table>
@@ -40,6 +48,11 @@ export default {
     .detail_table {
       margin-left: -1rem;
       margin-top: -1rem;
+    }
+    .con_img {
+      width: 120px;
+      max-height: 120px;
+      margin-right: 1rem;
     }
   }
 </style>

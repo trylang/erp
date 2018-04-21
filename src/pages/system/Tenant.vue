@@ -43,8 +43,8 @@
                 total: 0,
                 columnData:[
                     { prop: 'noticeName', label: '标题', link: '/system/tenantmsg', param: 'id'},
-                    { prop: 'merchantId', label: '接收商户' },
-                    { prop: 'userId', label: '操作人' },
+                    { prop: 'merchantName', label: '接收商户' },
+                    { prop: 'userName', label: '操作人' },
                     { prop: 'createDate', label: '操作时间' }
                 ]
             }
@@ -82,7 +82,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.systemapi.deletePhyUsingDELETE_2({id: id}).then(res =>{
+                    this.$api.systemapi.deletePhyUsingDELETE_2({ids: id}).then(res =>{
                         this.$message.success(res.data.msg);
                         this.pageHandler(1);
                     }).catch(res => {

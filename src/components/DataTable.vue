@@ -17,7 +17,7 @@
                 :type="type"
                 v-else-if="click">
             <template slot-scope="scope">
-                <div @click="tableclick(scope.row)" class="clickstyle">{{scope.row[prop]}}</div>
+                <div @click="tableclick(scope.row[param])" class="clickstyle">{{scope.row[prop]}}</div>
             </template>
         </el-table-column>
         <el-table-column

@@ -36,14 +36,14 @@ export default {
           },
           {
             label: "商户类型：",
-            name: "merchantType",
+            name: "enumMerchantType",
             left_span: 3,
             right_span: 18,
             type: "text"
           },
           {
             label: "商户性质：",
-            name: "merchantNature",
+            name: "enumMerchantNature",
             left_span: 3,
             right_span: 18,
             type: "text"
@@ -111,7 +111,8 @@ export default {
             name: "businessPermitImg",
             left_span: 3,
             right_span: 18,
-            type: "text"
+            type: "moreImgs",
+            url: 'url'
           },
           {
             label: "商标注册证件号：",
@@ -125,7 +126,8 @@ export default {
             name: "trademarkRegistrationImg",
             left_span: 3,
             right_span: 18,
-            type: "text"
+            type: "moreImgs",
+            url: 'url'
           },{
             label: "法人身份证号：",
             name: "legalPersonId",
@@ -137,7 +139,8 @@ export default {
             name: "legalPersonIdImg",
             left_span: 3,
             right_span: 18,
-            type: "text"
+            type: "moreImgs",
+            url: 'url'
           },{
             label: "其他证件号：",
             name: "otherCertificate",
@@ -149,7 +152,8 @@ export default {
             name: "otherCertificateImg",
             left_span: 3,
             right_span: 18,
-            type: "text"
+            type: "moreImgs",
+            url: 'url'
           }
         ]
       },

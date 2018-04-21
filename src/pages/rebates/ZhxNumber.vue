@@ -89,7 +89,6 @@
                         v-model="add.validStartDate"
                         type="date"
                         placeholder="选择日期"
-                        format="yyyy 年 MM 月 dd 日"
                         value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
@@ -257,6 +256,7 @@
             },
             dialogData(id, data){
                 this.listid = id;
+                this.getSelectCardType();
                 if(id) {   //无结束日期可编辑，还有--开始日期必须大于系统日期
                     this.$api.refundapi.isValidUsingGET_1({id: data.id}).then(res=>{//可编辑时判断开始日期
                         if(res.data.status === 200){
@@ -322,15 +322,30 @@
                 })
             },
             getCardType(){
-                this.$api.refundapi.getZHXCardTypeUsingGET().then(res=>{ //卡类型
+                this.$api.refundapi.getZHXCardTypeUsingGET({type: 1}).then(res=>{ //卡类型
                     if(res.data.status === 200){
-                        this.selects.status = res.data.data;//这个需要一个全部选项，待调用
+                        this.selects.status = res.data.data;//这个需要一个全部选项
+                        this.selects.status = res.data.data.map(item=>{
+                            return {
+                                text: item.text,
+                                value: item.value,
+                                isStatus: false
+                            }
+                        });
+                        this.selects.status[0].isStatus = true;
+                    }
+                })
+            },
+            getSelectCardType(){
+                this.$api.refundapi.getZHXCardTypeUsingGET({type: 0}).then(res=>{ //卡类型
+                    if(res.data.status === 200){
                         this.selects.cardType = res.data.data;
                     }
                 })
             },
             addHandler(){
                 this.dialogVisible = true;
+                this.getSelectCardType();
                 this.add = {};
             },
         },

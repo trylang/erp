@@ -11,7 +11,7 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">渠道：</span>
-                            <el-select v-model="channelId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-select v-model="channelId" placeholder="请选择" class="dialogselect" @change="cardTypeList(channelId)">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in channelOptions"
@@ -26,7 +26,7 @@
                         <div class="searchselect">
                             <span class="inputname inputnameauto">类型：</span>
                             <el-select v-model="cardType" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
-                                <el-option label="全部" value=""></el-option>
+                                <!-- <el-option label="全部" value=""></el-option> -->
                                 <el-option
                                         v-for="item in cardTypeOptions"
                                         :key="item.valeue"
@@ -93,7 +93,6 @@
                         v-model="add.validStartDate"
                         type="date"
                         placeholder="选择日期"
-                        format="yyyy 年 MM 月 dd 日"
                         value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>
@@ -144,7 +143,7 @@
         },
         mounted(){
             this.getChannelList();
-            this.cardTypeList();
+            // this.cardTypeList();
         },
         methods:{
             pageHandler(pageNum, pageSize){
@@ -257,14 +256,19 @@
                     this.channelOptions = res.data.data;
                 })
             },
-            cardTypeList(){
-                this.$api.refundapi.getCardTypeUsingGET().then(res=>{//列表搜索类型
-                    this.cardTypeOptions = res.data.data;
+            cardTypeList(channelId){
+                this.$api.refundapi.getCardTypeUsingGET({type: channelId}).then(res=>{//列表类型
+                    if(res.data.status === 200){
+                        this.cardTypeOptions = res.data.data;
+                        this.pageHandler(1);
+                    }
                 })
             },
             checkCardtypeHandler(channelId){
-                this.$api.refundapi.getCardTypeUsingGET().then(res=>{//添加和编辑根据渠道查类型 待调用
-                    this.cardTypeDialog = res.data.data;
+                this.$api.refundapi.getCardTypeUsingGET({type: channelId}).then(res=>{//添加和编辑根据渠道查类型
+                    if(res.data.status === 200){
+                        this.cardTypeDialog = res.data.data;
+                    }
                 })
             },
             addHandler(){

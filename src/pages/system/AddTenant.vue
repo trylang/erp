@@ -19,7 +19,7 @@
                                     v-for="item in options"
                                     :key="item.id"
                                     :label="item.merchantName"
-                                    :value="item.merchantCode">
+                                    :value="item.id">
                                     <span style="float: left">{{ item.merchantCode }}</span>
                                     <span style="float:right;color:#8492a6;font-size:13px;margin-right:15px">{{ item.merchantName }}</span>
                                 </el-option>
@@ -67,13 +67,15 @@
                 }else if(this.add.merchantIds.length==0){
                     this.$message.warning('商户不能为空');
                 }else{
-                    this.$api.systemapi.saveUsingPOST_2({
+                    this.$api.systemapi.saveUsingPOST_2({request:{
                         noticeName: this.add.noticeName,
                         merchantIds: this.add.merchantIds,
                         noticeContent: this.add.noticeContent
-                    }).then(res=>{
-                        this.$message.success(res.data.msg);
-                        this.$router.push('/system/tenant')
+                    }}).then(res=>{
+                        if(res.data.status === 200){
+                            this.$message.success(res.data.msg);
+                            this.$router.push('/system/tenant')
+                        }
                     }).catch(res=>{
                         this.$message.error(res.data.msg);
                     });

@@ -12,8 +12,9 @@
         <div class="searchselect">
             <span class="inputname">结算组别</span>
             <el-select v-model="query.settleGroupId" @change="getCost()" placeholder="结算组别" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
-                v-for="item in dialog.models[2].options"
+                v-for="item in selects.accountGroup"
                 :key="item.id"
                 :label="item.settleGroupName"
                 :value="item.id">
@@ -27,6 +28,7 @@
         <div class="searchselect">
             <span class="inputname">费用类型</span>
             <el-select v-model="query.costType" @change="getCost()" placeholder="费用类型" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.costType"
                 :key="item.id"
@@ -40,6 +42,7 @@
         <div class="searchselect">
             <span class="inputname">物业性质</span>
             <el-select v-model="query.propertyType" @change="getCost()" placeholder="商铺" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.shops"
                 :key="item.id"
@@ -127,6 +130,8 @@ export default {
                 this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
+                this.dialog.models[0].type = 'onlyword';
+                this.getAccountGroupByType(item.propertyType);
               }
             },
             {
@@ -168,7 +173,8 @@ export default {
             options: [],
             placeholder: "请选择物业性质",
             event: (item) => {
-              this.getAccountGroupByType();
+              this.getAccountGroupByType(item);
+              this.dialog.param.settleGroupId = '';
             }
           },
           {
@@ -178,9 +184,7 @@ export default {
             value: "id",
             type: "select",
             options: [],
-            event: (item) => {
-              console.log(item);
-            },
+            event: (item) => {},
             placeholder: "请选择组别"
           },
           {
@@ -226,6 +230,7 @@ export default {
         ]
       },
       selects: {
+        accountGroup: [],
         accountGroupJson: {},
         propertyTypeJson: {},
         shops: [
@@ -351,9 +356,13 @@ export default {
         }
       });
     },
-    // 根据物业类型过滤结算组别，缺接口
+    // 根据物业类型过滤结算组别
     async getAccountGroupByType(type) {
-      console.log('根据物业类型过滤结算组别，缺接口')
+      await this.$api.financeapi.selectGroupsUsingGET({propertyTypeId: type}).then(res => {
+        if (res.data.status === 200) {
+          this.dialog.models[3].options = res.data.data;
+        }
+      })
     },
     async init() {
       let [accountGroup, costType] = await Promise.all([queryAccountGroup(),queryCostType()]);
@@ -361,12 +370,19 @@ export default {
       this.selects.costType = costType.data.cost_type;
       this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
-      this.dialog.models[3].options = accountGroup.data.list;
+      this.selects.accountGroup = accountGroup.data.list;
       this.dialog.models[4].options = this.selects.costType;
       this.dialog.models[2].options = this.selects.shops;
     }
   },
   computed: {},
+  watch:{
+    'query.costItemCodeOrName': function(){
+      this.$delay(()=>{
+          this.getCost();
+      },300)
+    }
+  },
   created() {
     this.init();
   }

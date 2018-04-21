@@ -4,7 +4,7 @@
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
-            <input type="text" placeholder="请输入名称" v-model="query.rateCode" @keyup.enter="getTaxRates()"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
+            <input type="text" placeholder="请输入税码" v-model="query.rateCode" @keyup.enter="getTaxRates()"><i class="iconfont icon-sousuo" @click="queryList(query)"></i>
         </div>
       </el-col>
     </el-row>
@@ -21,6 +21,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import { formatDate } from "@/utils/filter";
+import { onlyNumWord } from "@/utils";
 export default {
   name: "account-group",
   components: {
@@ -105,6 +106,7 @@ export default {
           label: '税率',
           name: 'rate',
           type: 'text',
+          slot: '%',
           placeholder: '请输入税率'
         }, {
           label: '有效期',
@@ -162,6 +164,10 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      if (!onlyNumWord(this.dialog.param.rateCode)) {
+        $message('info','只能输入数字和字母');
+        return;
+      }
       if (this.dialog.param.id) {
         // 修改
         this.editTaxRates(this.dialog.param);
@@ -192,6 +198,7 @@ export default {
             let validTime = formatDate(item.validDateStart, 'yyyy/MM/dd') +'~'+ (item.validDateEnd ? formatDate(item.validDateEnd, 'yyyy/MM/dd') : '' );
             item.validDateRange = validTime;
             item.validDate = item.validDateStart;
+            item.rateStr = item.rate + '%';
           });
           this.content = data.data;
         } else {
@@ -207,7 +214,6 @@ export default {
       await this.$api.financeapi.addUsingPOST_2(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
-            // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
           });          
@@ -250,6 +256,13 @@ export default {
           $message("error", "删除失败!");
         }       
       });
+    }
+  },
+  watch:{
+    'query.rateCode': function(){
+      this.$delay(()=>{
+          this.getTaxRates();
+      },300)
     }
   },
   created() {

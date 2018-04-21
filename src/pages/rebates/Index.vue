@@ -64,7 +64,6 @@
                             class="inputtext datetext"
                             v-model="add.validStartDate"
                             type="date"
-                            format="yyyy 年 MM 月 dd 日"
                             value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </div>

@@ -634,6 +634,17 @@ export const listUsingGET_8 = function(parameters = {}) {
 }
 
 /**
+ * 查询全部的角色。结果没有分页
+ * request: listAllUsingGET
+ * url: listAllUsingGETURL
+ * method: listAllUsingGET_TYPE
+ * raw_url: listAllUsingGET_RAW_URL
+ */
+export const listAllUsingGET = function(parameters = {}) {
+    return systemapi.listAllUsingGET(parameters);
+}
+
+/**
  * 角色的权限菜单列表
  * request: selectMenusUsingGET
  * url: selectMenusUsingGETURL
@@ -743,19 +754,6 @@ export const logoutUsingGET = function(parameters = {}) {
 }
 
 /**
- * 重置密码
- * request: resetPasswordUsingPUT
- * url: resetPasswordUsingPUTURL
- * method: resetPasswordUsingPUT_TYPE
- * raw_url: resetPasswordUsingPUT_RAW_URL
- * @param userId - userId
- * @param password - password
- */
-export const resetPasswordUsingPUT = function(parameters = {}) {
-    return systemapi.resetPasswordUsingPUT(parameters);
-}
-
-/**
  * 解禁用户
  * request: setUnForbiddenUsingGET
  * url: setUnForbiddenUsingGETURL
@@ -778,4 +776,34 @@ export const setUnForbiddenUsingGET = function(parameters = {}) {
  */
 export const updateUsingPUT_2 = function(parameters = {}) {
     return systemapi.updateUsingPUT_2(parameters);
+}
+
+/**
+ * 管理员重置用户的密码
+ * request: adminResetPasswordUsingPUT
+ * url: adminResetPasswordUsingPUTURL
+ * method: adminResetPasswordUsingPUT_TYPE
+ * raw_url: adminResetPasswordUsingPUT_RAW_URL
+ * @param userId - 用户ID
+ * @param newPassword - 新密码
+ * @param repeatNewPassword - 重复输入的新密码
+ * @param validationCode - 验证码
+ */
+export const adminResetPasswordUsingPUT = function(parameters = {}) {
+    return systemapi.adminResetPasswordUsingPUT(parameters);
+}
+
+/**
+ * 用户本人重置自己的密码
+ * request: resetPasswordUsingPUT
+ * url: resetPasswordUsingPUTURL
+ * method: resetPasswordUsingPUT_TYPE
+ * raw_url: resetPasswordUsingPUT_RAW_URL
+ * @param oldPassword - 旧密码
+ * @param newPassword - 新密码
+ * @param newPasswordRepeat - 重复输入的新密码
+ * @param validationCode - 验证码
+ */
+export const resetPasswordUsingPUT = function(parameters = {}) {
+    return systemapi.resetPasswordUsingPUT(parameters);
 }

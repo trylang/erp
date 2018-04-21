@@ -7,6 +7,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" placeholder="商户" class="dialogselect" @change="checkUserHandler(query.merchantId)" :disabled="!!this.$route.query.merchantId">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -19,7 +20,7 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" :disabled="!!this.$route.query.contractId" placeholder="合同" class="dialogselect" @change="checkHetongHandler(query.contractId)">
+            <el-select v-model="query.contractId" :disabled="!!this.$route.query.contractId" placeholder="合同" class="dialogselect" @change="checkHetongHandler(query.contractId, 'select')">
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -43,13 +44,15 @@
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"  @pageSize="getpageSize"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize">
+      
+    </erp-table>
     <el-row>
       <el-col :span="2" :offset="22">
         <el-button type="primary" @click="addCostAdjust">提交</el-button>
       </el-col>
     </el-row>
-    <erp-dialog :title="dialog.param.itemId? '修改费用调整': '添加费用调整'" :dialog="dialog"></erp-dialog>
+    <erp-dialog :title="dialog.param.itemId || dialog.param.id? '修改费用调整': '添加费用调整'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -62,7 +65,7 @@ import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
 import { queryCost, queryContract } from "@/utils/rest/financeAPI";
-import { _changeJson, _replace, _remove, _uuid } from "@/utils";
+import { _changeJson, _replace, _remove, _uuid, numberNotE, numMax10, numPartmax2 } from "@/utils";
 import { formatDate } from "@/utils/filter";
 
 export default {
@@ -111,6 +114,7 @@ export default {
               class: "edit",
               click: item => {
                 this.dialog.param = {};
+                item.costItemId = parseInt(item.costItemId);
                 Object.assign(this.dialog.param, item);
                 if (this.$route.query.settleGroupId && item.id) {                                
                   this.checkjsHandler(this.$route.query.settleGroupId, ()=>{
@@ -150,7 +154,7 @@ export default {
           {
             label: "收款金额",
             name: "amount",
-            type: "text",
+            type: "number",
             placeholder: "请输入收款金额"
           },
           {
@@ -168,7 +172,8 @@ export default {
         ],
         dialogVisible: false,
         param: {
-          itemId: 1,
+          id: "",
+          itemId: "",
           costItemId: "",
           amount: "",
           expenseDate: ""
@@ -228,18 +233,25 @@ export default {
         .getListForPageUsingGET({ merchantId: id })
         .then(res => {
           this.selects.contracts = res.data.data.list;
+          this.query.contractId = '';
+          this.query.settleGroupId = '';
+          this.dialog.param.costItemId = '';
         })
         .catch(res => {
           this.$message.error(res.data.msg);
         });
     },
-    checkHetongHandler(id) {
+    checkHetongHandler(id, type) {
       //根据合同id查询 结算组别列表
       this.$api.rentapi
         .getIrregularCostInfoUsingGET({ contractId: id, settleGroupId: -1 })
         .then(res => {
           if (res.data.data.settleGroups) {
             this.selects.accountGroup = res.data.data.settleGroups;
+            if (type == 'select') {
+              this.query.settleGroupId = '';
+              this.dialog.param.costItemId = '';
+            }           
           }
         })
         .catch(res => {
@@ -272,6 +284,15 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      if (!numMax10(this.dialog.param.amount)) {
+        $message('info','请输入大于等于0，小于10位数的正数');
+        return;
+      }
+      if (!numPartmax2(this.dialog.param.amount)) {
+        $message('info','请输入小于三位小位数的正数');
+        return;
+      }
+      this.dialog.param.amount = parseFloat(this.dialog.param.amount);
       this.dialog.param.costItemName = this.selects.queryCost[
         this.dialog.param.costItemId
       ].costItemName;
@@ -478,10 +499,10 @@ export default {
       this.selects.queryCost = cost.json;
       if (!this.$route.query.id) return;
       await this.getCostAdjust();
-      this.query.merchantId = this.$route.query.merchantId;
+      this.query.merchantId = parseInt(this.$route.query.merchantId);
       await this.queryContracts();
-      this.query.contractId = this.$route.query.contractId;
-      this.query.settleGroupId = this.$route.query.settleGroupId;
+      this.query.contractId = parseInt(this.$route.query.contractId);
+      this.query.settleGroupId = parseInt(this.$route.query.settleGroupId);
       await this.checkHetongHandler(this.query.contractId);
       await this.checkjsHandler(this.query.settleGroupId);
     }

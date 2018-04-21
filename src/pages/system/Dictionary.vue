@@ -37,8 +37,8 @@
                                     <div class="listcolum listskin">
                                         <span>顺序：</span>
                                         {{index+1}}
-                                        <span v-if="index!==0" @click="updateSort(itemlist.id,itemlist.sort,index,1)"><img src="../../assets/up.png" alt=""></span>
-                                        <span v-if="index !== itemList.length-1" @click="updateSort(itemlist.id,itemlist.sort,index,2)"><img src="../../assets/down.png" alt=""></span>
+                                        <span v-if="index!==0" @click="updateSort(itemlist.id,itemlist.sort,index,1)" v-show="itemlist.sortNum == false"><img src="../../assets/up.png" alt=""></span>
+                                        <span v-if="index !== itemList.length-1" @click="updateSort(itemlist.id,itemlist.sort,index,2)" v-show="itemlist.sortNum == false"><img src="../../assets/down.png" alt=""></span>
                                     </div>
                                     <div class="dictstatus">
                                         <span>状态：</span>
@@ -125,7 +125,7 @@
                     sort:null
                 },
                 tid:'',
-                sseq:''
+                sseq:'',
             }
         },
         mounted(){
@@ -156,9 +156,11 @@
                 }).then(res=>{
                     this.itemList = res.data.data.forEach(item=>{
                         item.isEditShow = false
+                        item.sortNum = false
                     });
                     this.itemList = res.data.data;
                 });
+                console.log(this.itemList)
             },
             async selectChange(index,id,value){
                 await this.$api.systemapi.availItemUsingPUT({
@@ -181,6 +183,7 @@
             editDataInfo(index,itemlist){
                 this.dictindex = index;
                 itemlist.isEditShow = true;
+                itemlist.sortNum = true;
             },
             async saveDataInfo(){
                 this.dictindex = -1;
@@ -205,6 +208,7 @@
                 });
             },
             async updateDataInfo(itemlist){
+                itemlist.sortNum = false;
                 this.dictindex = -1;
                 await this.$api.systemapi.itemUpdateUsingPUT({
                     id:itemlist.id,
@@ -227,6 +231,7 @@
             cancelDataInfo(id,itemlist){
                 this.dictindex = -1;
                 itemlist.isEditShow = false;
+                itemlist.sortNum = false;
                 if(!id) {
                     this.addDict = {
                         dictTypeId: null,

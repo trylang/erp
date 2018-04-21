@@ -110,15 +110,6 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同有效期</span>
-                                    <!--<el-date-picker
-                                            class="inputtext"
-                                            v-model="dateValue"
-                                            type="daterange"
-                                            range-separator="~"
-                                            start-placeholder="选填"
-                                            end-placeholder="选填"
-                                            @change="dateValueSelect()">
-                                    </el-date-picker>-->
                                     <el-date-picker
                                             readonly
                                             class="inputtext"
@@ -140,7 +131,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
+                                <div class="dialogtext">合同租期：{{mainData.validCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -177,15 +168,6 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">装修周期</span>
-                                    <!--<el-date-picker
-                                            style="height: 32px;"
-                                            class="inputtext"
-                                            v-model="mainData.datevalue"
-                                            type="daterange"
-                                            range-separator="~"
-                                            start-placeholder="选填"
-                                            end-placeholder="选填">
-                                    </el-date-picker>-->
                                     <el-date-picker
                                             readonly
                                             class="inputtext"
@@ -207,7 +189,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：{{cycleNum}}</div>
+                                <div class="dialogtext">周期：{{mainData.decorationCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -374,34 +356,27 @@
                         <el-row class="dialogbox">
                             <el-col :span="24">
                                 <div class="listbox" style="margin: 0;">
-                                    <div class="listcont contractcont">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
+                                    <div class="listcont contractcont" v-if="this.$route.params.contractId != 0 || this.fileListData.length != 0">
+                                        <div class="listcolum" v-for="fileList in fileListData">
+                                            <div class="uploadtitle">{{fileList.dateDay}}</div>
                                             <div class="uploadlist">
-                                                <el-upload
-                                                        readonly
-                                                        class="avatar-uploader"
-                                                        action="https://jsonplaceholder.typicode.com/posts/"
-                                                        :show-file-list="false">
-                                                    <i class="el-icon-plus avatar-uploader-icon"></i>
-                                                    <div class="el-upload__text">点击添加图片</div>
-                                                </el-upload>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="listcont contractcont">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle">2018-12-21</div>
-                                            <div class="uploadlist">
-                                                <div class="uploadfile">
-                                                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1520426027148&di=e9172a2c88f976b30f1c751f4473edc8&imgtype=0&src=http%3A%2F%2Fwww.people.com.cn%2Fmediafile%2Fpic%2F20150805%2F87%2F7582706754612447311.jpg" alt="">
+                                                <div class="uploadfile" v-for="(imageList,index) in fileList.attachmentVos">
+                                                    <img :src="imageList.filePath+imageList.fileSaveName" alt="">
                                                     <span class="spantopL"></span>
-                                                    <span class="spantopLname">1</span>
+                                                    <span class="spantopLname">{{index+1}}</span>
+                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
+                                                    <span class="spanbottom">重新上传</span>
+                                                </div>
+                                                <div class="uploadfile" v-for="(imageUrl,_index) in imageUrlList">
+                                                    <img :src="imageUrl.filePath" alt="">
+                                                    <span class="spantopL"></span>
+                                                    <span class="spantopLname">{{fileList.attachmentVos.length+1+_index}}</span>
                                                     <span class="spantopR"><i class="el-icon-close"></i></span>
                                                     <span class="spanbottom">重新上传</span>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </el-col>
@@ -495,6 +470,7 @@
                 tenancyTermNum:'0个月0天',
                 cycleNum:'0个月0天',
                 isStep:'1',
+                fileListData:[]
             };
         },
         created(){
@@ -511,6 +487,7 @@
             this.getRentTermsInfo();
             this.getCostInfo();
             this.getBondInfo();
+            this.getFileData();
             this.getBaseDataOptions();
         },
         watch:{
@@ -857,7 +834,20 @@
                     }
                 })
             },
-
+            async getFileData(){
+                if(this.$route.params.contractId != 0) {
+                    this.contractId = this.$route.params.contractId;
+                    await this.$api.rentapi.getIntentFile({
+                        id: this.$route.params.contractId
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.fileListData = res.data.data;
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    });
+                }
+            },
             async delUnitItem(unitItem){
                 await this.$api.rentapi.delUsingPUT_1({
                     id : unitItem.unitId

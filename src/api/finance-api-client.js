@@ -2301,15 +2301,36 @@ export const getEarnestMerchant = function(parameters = {}) {
     return financeapi.merchantinfoUsingGET(parameters);
 }
 /**
- * 获取合同信息
- * request: shopinfoUsingGET
- * url: shopinfoUsingGETURL
- * method: shopinfoUsingGET_TYPE
- * raw_url: shopinfoUsingGET_RAW_URL
+ * 收取页面合同信息下拉框
+ * request: contractinfoUsingGET
+ * url: contractinfoUsingGETURL
+ * method: contractinfoUsingGET_TYPE
+ * raw_url: contractinfoUsingGET_RAW_URL
+ * @param stage - 阶段
  * @param merchantId - 商户id
  */
-export const getContractSelect = function(parameters = {}) {
-    return financeapi.shopinfoUsingGET(parameters);
+export const contractinfoUsingGET = function(parameters = {}) {
+    return financeapi.contractinfoUsingGET(parameters);
+}
+/**
+ * 列表商户信息下拉框
+ * request: merinfoUsingGET
+ * url: merinfoUsingGETURL
+ * method: merinfoUsingGET_TYPE
+ * raw_url: merinfoUsingGET_RAW_URL
+ */
+export const merinfoUsingGET = function(parameters = {}) {
+    return  financeapi.merinfoUsingGET(parameters);
+}
+/**
+ * 列表合同信息下拉框
+ * request: coninfoUsingGET
+ * url: coninfoUsingGETURL
+ * method: coninfoUsingGET_TYPE
+ * raw_url: coninfoUsingGET_RAW_URL
+ */
+export const coninfoUsingGET = function(parameters = {}) {
+    return  financeapi.coninfoUsingGET(parameters);
 }
 /**
  * 保证金处理列表
@@ -5981,51 +6002,9 @@ export const updateUsingPUT_7URL = function(parameters = {}) {
  * @param status - 启用/禁用
  */
 export const updateUsingDELETE_3 = function(parameters = {}) {
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    const config = parameters.$config
-    let path = '/finance/settle/group/{id}'
-    let body
-    let queryParameters = {}
-    let form = {}
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
-    }
-    if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
-    }
-    if (parameters['status'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: status'))
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
-    }
-    return request('delete', domain + path, body, queryParameters, form, config)
+    return financeapi.updateUsingDELETE_3(parameters);
 }
-export const updateUsingDELETE_3_RAW_URL = function() {
-    return '/finance/settle/group/{id}'
-}
-export const updateUsingDELETE_3_TYPE = function() {
-    return 'delete'
-}
-export const updateUsingDELETE_3URL = function(parameters = {}) {
-    let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/settle/group/{id}'
-    path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+
 /**
  * 预付款收确认添加到商户预付款中
  * request: confirmsUsingPOST_3
@@ -6048,4 +6027,27 @@ export const confirmsTakeadvancePay = function(parameters = {}) {
  */
 export const importExcelUsingPOST = function(parameters = {}) {
     return financeapi.importExcelUsingPOST(parameters);
+}
+
+/**
+ * 根据物业性质查询结算组别
+ * request: selectGroupsUsingGET
+ * url: selectGroupsUsingGETURL
+ * method: selectGroupsUsingGET_TYPE
+ * raw_url: selectGroupsUsingGET_RAW_URL
+ * @param propertyTypeId - 主键
+ */
+export const selectGroupsUsingGET = function(parameters = {}) {
+    return financeapi.selectGroupsUsingGET(parameters);   
+}
+
+/**
+ * 查询所有结算组别
+ * request: listAllUsingGET1
+ * url: listAllUsingGET1URL
+ * method: listAllUsingGET1_TYPE
+ * raw_url: listAllUsingGET1_RAW_URL
+ */
+export const listAllUsingGET1 = function (parameters = {}) {
+    return financeapi.listAllUsingGET1(parameters)
 }

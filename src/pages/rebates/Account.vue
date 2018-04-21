@@ -53,7 +53,7 @@
                 total: 0,
                 columnData:[
                     { prop: 'fileName', label: '任务名称'},
-                    { prop: 'type', label: '类型' },
+                    { prop: 'typeStr', label: '类型' },
                     { prop: 'uploadPerson', label: '上传人' },
                     { prop: 'createDateStr', label: '上传时间' }
                 ]
@@ -77,7 +77,7 @@
                     fileName: this.searchName,
                     type: this.channelId
                 }
-                this.$api.systemapi.listUsingGET_6(params).then(res=>{
+                this.$api.refundapi.getListForPageUsingGET_2(params).then(res=>{
                     if(res.data.status === 200){
                         this.datalist = res.data.data.list;
                         this.total = Number(res.data.data.total);
@@ -87,10 +87,8 @@
                 })
             },
             getChannelList(){
-                this.$api.rentapi.baseDataOptionsUsingGET().then(res=>{//渠道 待调用 用新的
-                    this.channelOptions = res.data.data.payment_way;
-                }).catch(res=>{
-                    this.$message.error(res.data.msg);
+                this.$api.refundapi.getChannelUsingGET().then(res=>{//渠道
+                    this.channelOptions = res.data.data;
                 })
             },
         },

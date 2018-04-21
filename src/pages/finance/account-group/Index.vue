@@ -109,13 +109,13 @@ export default {
           type: 'text',
           placeholder: '请输入名称'
         }, {
-          label: '物业名称',
+          label: '物业性质',
           name: 'propertyTypeId',
           valueLabel: "label",
           value: 'id',
           type: 'select',
           options: [{id: 0, label: '商铺'}, {id: 1, label: '写字楼'}, {id: 2, label: '场地'}, {id: 3, label: '广告位'}],
-          placeholder: '请输入物业名称'
+          placeholder: '请输入物业性质'
         }, {
           label: '备注',
           name: 'remark',
@@ -184,18 +184,17 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        const param = {
+        const request = {
           id: item.id,
           status: item.status === true ? false : true
         };
-        this.$api.financeapi.updateUsingDELETE_3(param).then(res => {
+        this.$api.financeapi.updateUsingDELETE_3({request}).then(res => {
           const data = res.data;
           if(data.status === 200) {
             item.status = (item.status === true ? false : true);
             $message("success", item.status ? "启用成功!" : "禁用成功!");
           } else {
-            $message("error",  item.status ? "启用失败!" : "禁用失败!");
-            return data.message;
+            $message("error",  res.data.msg);
           }
         })
       })
@@ -227,7 +226,7 @@ export default {
             this.dialog.dialogVisible = false;
           });         
         } else {
-          $message("error", "添加失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -243,9 +242,16 @@ export default {
             this.dialog.dialogVisible = false;
           });
         } else {
-          $message("error", "修改失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
+    }
+  },
+  watch:{
+    'query.settleGroupName': function(){
+      this.$delay(()=>{
+          this.getAccountGroups();
+      },300)
     }
   },
   computed: { },

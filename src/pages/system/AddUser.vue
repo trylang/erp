@@ -1,33 +1,33 @@
 <template>
     <div class="savebox">
         <div class="savecont">
-            <con-head title="创建用户"></con-head>
+            <con-head :title="this.$route.params.userid!=0?'编辑用户':'创建用户'"></con-head>
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">用户名</span>
                     <input class="inputtext" type="text" maxlength="20" placeholder="请输入用户名" v-model="addUser.username">
-                    <span class="textcount">{{addUser.username.length}}/20</span>
+                    <span class="textcount">{{usernameLength}}/20</span>
                 </div>
-                <div class="dialoginput">
+                <!-- <div class="dialoginput">
                     <span class="inputname">密码</span>
                     <input class="inputtext" type="password" maxlength="20" placeholder="请输入6-20位字母加数字组合" v-model="addUser.password">
-                    <span class="textcount">{{addUser.password.length}}/20</span>
-                </div>
+                    <span class="textcount">{{passwordLength}}/20</span>
+                </div> -->
                 <div class="dialoginput">
                     <span class="inputname" style="line-height: 40px;">角色</span>
-                    <el-select v-model="addUser.roleSet" multiple value-key="id" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addUser.roleSet" placeholder="请选择" class="dialogselect">
                         <el-option
                                 v-for="(item,index) in roleList"
                                 :key="index"
                                 :label="item.roleName"
-                                :value="item">
+                                :value="item.id">
                         </el-option>
                     </el-select>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">所属部门</span>
-                    <el-select v-model="addUser.departmentId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addUser.departmentId" placeholder="请选择" class="dialogselect" @change="getPositionsList(addUser.departmentId)">
                         <el-option
                                 v-for="(item,index) in departmentsList"
                                 :key="index"
@@ -55,7 +55,7 @@
                 <div class="dialoginput">
                     <span class="inputname">员工姓名</span>
                     <input class="inputtext" type="text" maxlength="10" placeholder="请输入员工姓名" v-model="addUser.realname">
-                    <span class="textcount">{{addUser.realname.length}}/10</span>
+                    <span class="textcount">{{realnameLength}}/10</span>
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">手机号</span>
@@ -77,7 +77,7 @@
                         <span class="inputname">备注</span>
                     </div>
                     <textarea class="textareabox" maxlength="50" placeholder="选填" v-model="addUser.remark"></textarea>
-                    <span class="textcount">{{addUser.remark.length}}/50</span>
+                    <span class="textcount">{{remarkLength}}/50</span>
                 </div>
                 <el-button type="primary" style="float:right" class="submitbtn" @click="submitÜserData()">提交</el-button>
                 </el-col>
@@ -97,7 +97,7 @@
                     id:'',
                     username:'',
                     password:'',
-                    roleSet:[],
+                    roleSet:'',
                     departmentId:'',
                     positionId:'',
                     realname:'',
@@ -109,11 +109,15 @@
                 departmentsList:[],
                 positionsList:[],
                 roleList:[],
+                usernameLength: 0,
+                passwordLength: 0,
+                realnameLength: 0,
+                remarkLength: 0
             }
         },
         mounted(){
             this.getDepartmentsList();
-            this.getPositionsList();
+            // this.getPositionsList();
             this.getRoleList();
             this.getUserInfo();
         },
@@ -127,26 +131,22 @@
                     this.departmentsList = res.data.data.list;
                 })
             },
-            async getPositionsList(){
-                await this.$api.systemapi.listUsingGET_5({
-                    pageNum:1,
-                    pageSize:10,
-                    name:''
-                }).then(res=>{
-                    this.positionsList = res.data.data.list;
+            async getPositionsList(positionId){
+                await this.$api.systemapi.queryPositionUsingGET({id: positionId}).then(res=>{
+                    if(res.data.status === 200){
+                        this.positionsList = res.data.data;
+                    }
                 })
             },
             async getRoleList(){
-                await this.$api.systemapi.listUsingGET_8({
-                    pageNum:1,
-                    pageSize:10,
-                    name:''
-                }).then(res=>{
+                await this.$api.systemapi.listAllUsingGET().then(res=>{
                     this.roleList = res.data.data;
+                    console.log(12,this.roleList);
                 })
             },
             async submitÜserData(){
                 if(this.$route.params.userid == 0){
+                    this.addUser.roleSet = [this.addUser.roleSet];
                     await this.$api.systemapi.addUsingPOST_2({
                         newUser:this.addUser
                     }).then(res=>{
@@ -157,6 +157,7 @@
                         }
                     })
                 }else{
+                    this.addUser.roleSet = [this.addUser.roleSet];
                     this.addUser.id=this.$route.params.userid;
                     await this.$api.systemapi.updateUsingPUT_2({
                         user:this.addUser
@@ -174,8 +175,17 @@
                     await this.$api.systemapi.getByIdUsingGET({
                         userId:this.$route.params.userid
                     }).then(res=>{
-                        this.addUser = res.data.data;
-                        this.addUser.sex = res.data.data.sex+'';
+                        if(res.data.status === 200){
+                            this.addUser = res.data.data;
+                            this.addUser.sex = res.data.data.sex+'';
+                            this.addUser.roleSet = res.data.data.roleSet[0].id;
+                            this.usernameLength = this.addUser.username.length;
+                            // if(this.addUser.password){
+                            //     this.passwordLength = this.addUser.password.length;
+                            // }
+                            this.realnameLength = this.addUser.realname.length;
+                            this.remarkLength = this.addUser.remark.length;
+                        }
                     })
                 }
             }

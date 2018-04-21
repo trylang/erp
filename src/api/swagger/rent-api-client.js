@@ -1067,7 +1067,7 @@ export const invalidUsingPOSTURL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const auditListUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1149,7 +1149,7 @@ export const auditListUsingGETURL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const auditListpgUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1358,7 +1358,7 @@ export const listUsingGET_2URL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const listUsingGET_3 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1440,7 +1440,7 @@ export const listUsingGET_3URL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const listpgUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2100,6 +2100,52 @@ export const listUsingGET_6URL = function(parameters = {}) {
   if (parameters['businessName'] !== undefined) {
     queryParameters['businessName'] = parameters['businessName']
   }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 根据父业态查询子业态业态列表
+ * request: getListByPidUsingGET
+ * url: getListByPidUsingGETURL
+ * method: getListByPidUsingGET_TYPE
+ * raw_url: getListByPidUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pid - 父业态ID
+ */
+export const getListByPidUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/rent/busi/list/{pid}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{pid}', `${parameters['pid']}`)
+  if (parameters['pid'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: pid'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getListByPidUsingGET_RAW_URL = function() {
+  return '/rent/busi/list/{pid}'
+}
+export const getListByPidUsingGET_TYPE = function() {
+  return 'get'
+}
+export const getListByPidUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/rent/busi/list/{pid}'
+  path = path.replace('{pid}', `${parameters['pid']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -3509,7 +3555,7 @@ export const getIrregularCostInfoUsingGET = function(parameters = {}) {
     return Promise.reject(new Error('Missing required  parameter: contractId'))
   }
   if (parameters['settLeGroupId'] !== undefined) {
-    queryParameters['sett leGroupId'] = parameters['settLeGroupId']
+    queryParameters['settleGroupId'] = parameters['settLeGroupId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4396,13 +4442,60 @@ export const stopUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 根据合同ID,获取合同的单元信息。
+ * 正式合同终止编辑
+ * request: stopEditUsingPOST
+ * url: stopEditUsingPOSTURL
+ * method: stopEditUsingPOST_TYPE
+ * raw_url: stopEditUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const stopEditUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/rent/contract/stop/edit'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['param'] !== undefined) {
+    body = parameters['param']
+  }
+  if (parameters['param'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: param'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const stopEditUsingPOST_RAW_URL = function() {
+  return '/rent/contract/stop/edit'
+}
+export const stopEditUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const stopEditUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/rent/contract/stop/edit'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 根据合同号,获取合同的单元信息。
  * request: getContractUnitInformationUsingGET
  * url: getContractUnitInformationUsingGETURL
  * method: getContractUnitInformationUsingGET_TYPE
  * raw_url: getContractUnitInformationUsingGET_RAW_URL
  * @param token - header中token字段
- * @param contractCode - 合同的ID
+ * @param contractCode - 合同号
  */
 export const getContractUnitInformationUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -6916,6 +7009,9 @@ export const updateSincerityMoneyUsingPOSTURL = function(parameters = {}) {
  * @param pageSize - 每页显示数量
  * @param propertyType - 物业性质
  * @param status - 状态
+ * @param contractCode - 合同号
+ * @param merchantId - 商户id
+ * @param brandId - 品牌id
  */
 export const confirmByStatusUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -6938,6 +7034,15 @@ export const confirmByStatusUsingGET = function(parameters = {}) {
   }
   if (parameters['status'] !== undefined) {
     queryParameters['status'] = parameters['status']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -6971,6 +7076,15 @@ export const confirmByStatusUsingGETURL = function(parameters = {}) {
   if (parameters['status'] !== undefined) {
     queryParameters['status'] = parameters['status']
   }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -6991,6 +7105,9 @@ export const confirmByStatusUsingGETURL = function(parameters = {}) {
  * @param pageSize - 每页显示数量
  * @param propertyType - 物业性质
  * @param status - 状态
+ * @param contractCode - 合同号
+ * @param merchantId - 商户id
+ * @param brandId - 品牌id
  */
 export const getListForPageByStatusUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7013,6 +7130,15 @@ export const getListForPageByStatusUsingGET = function(parameters = {}) {
   }
   if (parameters['status'] !== undefined) {
     queryParameters['status'] = parameters['status']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7045,6 +7171,15 @@ export const getListForPageByStatusUsingGETURL = function(parameters = {}) {
   }
   if (parameters['status'] !== undefined) {
     queryParameters['status'] = parameters['status']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['brandId'] !== undefined) {
+    queryParameters['brandId'] = parameters['brandId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {

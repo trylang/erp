@@ -36,7 +36,7 @@
           </td>
 				</tr>
         <tr v-if="content.list && content.list.length<1" class="table_empty-block">
-          <td colspan="7" class="table_empty-text">暂无数据</td>
+          <td :colspan="header.length" class="table_empty-text">暂无数据</td>
         </tr>
         <slot name="lastTr"></slot>
 			</tbody>

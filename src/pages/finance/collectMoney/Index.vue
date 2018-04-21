@@ -46,48 +46,7 @@
                         <p><span>本次收款</span><strong>{{item.currentMoney}}</strong></p>
                         <p><span>未收金额</span><strong>{{item.owed}}</strong></p>
                       </div>
-                      <!-- <ul class="cash_detail">
-                        <li class="detail_item">
-                          <div class="detail_left">
-                            <span>工商银行123343</span>
-                            <span>收款金额 ￥20,000</span>
-                            <span>备注：哈哈哈哈</span>
-                          </div>
-                          <div class="detail_right">
-                            <a href="javascript:void(0)">修改</a>
-                            <a href="javascript:void(0)">删除</a>
-                          </div>
-                        </li>
-                        <li class="detail_item">
-                          <div class="detail_left">
-                            <span>工商银行123</span>
-                            <span>收款金额 ￥20,000</span>
-                            <span>备注：哈哈哈哈</span>
-                          </div>
-                          <div class="detail_right">
-                            <a href="#">修改</a>
-                            <a href="#">删除</a>
-                          </div>
-                        </li>
-                      </ul> -->
-
-                      <!-- <el-row class="rent_input">
-                        <el-col :span="10" class="searchselect marg_top_0">
-                          <el-select v-model="params.bank" placeholder="请选择银行" class="dialogselect">
-                            <el-option
-                              v-for="item in selects.banks"
-                              :key="item.id"
-                              :value="item.label">
-                            </el-option>
-                          </el-select>
-                        </el-col>
-                        <el-col :span="10" :offset="2" class="searchbox marg_top_0" style="width:auto;">
-                          <input type="text" placeholder="请输入名称" v-model="params.name"><i class="iconfont">元</i>
-                        </el-col>
-                        <el-col :span="24" class="rent_area">
-                          <el-input type="textarea" placeholder="请输入备注" v-model="params.desc"></el-input>
-                        </el-col>
-                      </el-row> -->
+                      
                       
                     </small-collection>
                   </el-col>
@@ -106,16 +65,7 @@
                       </div>
                     </small-collection>
                   </el-col>
-                  <!-- <el-col :span="12">
-                    <small-collection :title="defaultProps.title">
-                      <el-button slot="btn" class="global-btn small-btn white-btn" icon="el-icon-plus" @click="part_dialogVisible = true">收款</el-button>
-                      <div slot="cash" class="cash_item">
-                        <p><span>应收金额</span><strong>￥50,000.00</strong></p>
-                        <p><span>已收金额</span><strong>￥40,000.00</strong></p>
-                        <p><span>未收金额</span><strong>￥10,000.00</strong></p>
-                      </div>
-                    </small-collection>
-                  </el-col> -->
+                  
                   <el-col :span="2" :offset="21">
                     <el-button type="primary" @click="mulSubmit">提交</el-button>
                   </el-col>
@@ -341,7 +291,7 @@ export default {
           });
           this.dialogVisible = false;
         } else {
-          $message("error", "收款失败");
+          $message("error", returnObj.data.msg);
         }
       });
     },

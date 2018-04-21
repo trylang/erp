@@ -99,9 +99,9 @@
                                                 :label="item.text"
                                                 :value="item">
                                         </el-option>
-                                        <el-option value="">
-                                            <router-link to="/inner/addshop/0" style="color:#457fcf; text-decoration: none">添加</router-link>
-                                        </el-option>
+                                        <!-- <el-option value="">
+                                            <router-link to="/inner/addshop/0" style="color:#457fcf; text-decoration: none;display: block;">添加</router-link>
+                                        </el-option> -->
                                     </el-select>
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
@@ -154,7 +154,7 @@
                                 </div>
                                 <div class="dialoginput" v-if="this.$route.params.prototypeId == 0">
                                     <span class="inputname">免租期</span>
-                                    <input class="inputtext" type="text" placeholder="请输入免租期" :disabled="delayChange == 2 || delayChange == 1" v-model="mainData.rentFreeNumber">
+                                    <input class="inputtext" type="text" placeholder="请输入免租期" :disabled="delayChange == 2 || delayChange == 1" v-model="mainData.rentFreeNumber" v-limitNum>
                                     <span class="dialogtext">天</span>
                                 </div>
                             </el-col>
@@ -171,6 +171,7 @@
                                             v-model="mainData.validStartDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
+                                            @change="tenancyTerm()"
                                             :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="开始日期">
                                     </el-date-picker>
@@ -187,7 +188,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
+                                <div class="dialogtext">合同租期：{{mainData.validCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -244,6 +245,7 @@
                                             v-model="mainData.decorationStartDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
+                                            @change="tenancyTerm()"
                                             :disabled="delayChange == 2 || delayChange == 1"
                                             placeholder="开始日期">
                                     </el-date-picker>
@@ -260,7 +262,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：{{cycleNum}}</div>
+                                <div class="dialogtext">周期：{{mainData.decorationCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -326,7 +328,7 @@
                                                     <el-radio v-model="unitData.rentWay" :disabled="delayChange == 2 || delayChange == 1" label="0" @change="radioChange()">计租</el-radio>
                                                 </template>
                                             </span>
-                                            <p>{{unitData.area}}</p>
+                                            <p>{{parseFloat(unitData.area)}}</p>
                                         </div>
                                         <div class="listcolum contractlist">
                                             <span>
@@ -335,11 +337,11 @@
                                                     <el-radio v-model="unitData.rentWay" :disabled="delayChange == 2 || delayChange == 1" label="1" @change="radioChange()">计租</el-radio>
                                                 </template>
                                             </span>
-                                            <p>{{unitData.useArea}}</p>
+                                            <p>{{parseFloat(unitData.useArea)}}</p>
                                         </div>
                                         <div class="listcolum contractlist">
                                             <span>计租面积</span>
-                                            <p>{{unitData.rentArea}}</p>
+                                            <p>{{parseFloat(unitData.rentArea)}}</p>
                                         </div>
                                         <div class="deletebtn"></div>
                                     </div>
@@ -434,7 +436,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="costTypeData" clearable value-key="value" placeholder="请选择" class="dialogselect" @change="costTypeSelect()">
+                                    <el-select v-model="costTypeData" clearable value-key="value" placeholder="请选择" class="dialogselect" @change="costTypeSelect()" :disabled="rentData[0].generated">
                                         <el-option
                                                 v-for="item in costTypeOptions"
                                                 :key="item.value"
@@ -515,7 +517,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">滞纳金起算日</span>
-                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate">
+                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate" v-limitNum>
                                     <span class="rightcompany">日</span>
                                 </div>
                             </el-col>
@@ -571,6 +573,8 @@
                                                             v-model="stageList.startDate"
                                                             type="date"
                                                             value-format="yyyy-MM-dd"
+                                                            @change="phaseCycle(stageList)"
+                                                            :disabled="index != listIndex"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
@@ -583,13 +587,14 @@
                                                             v-model="stageList.endDate"
                                                             type="date"
                                                             value-format="yyyy-MM-dd"
-                                                            @change="phaseCycle(stageList.startDate,stageList.endDate)"
+                                                            @change="phaseCycle(stageList)"
+                                                            :disabled="index != listIndex"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：{{stageList.phaseCycleNum}}</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.periodCycle}}</div>
                                             </div>
                                         </div>
                                         <div v-if="costTypeData.value != 2">
@@ -597,7 +602,7 @@
                                                 <div>
                                                     <div class="rentcontent">
                                                         <span class="inputname">固定类型</span>
-                                                        <el-select v-model="stageList.fixedType" clearable placeholder="请选择" class="dialogselect" @focus="typeFocus(0)">
+                                                        <el-select v-model="stageList.fixedType" clearable placeholder="请选择" class="dialogselect" @focus="typeFocus(0)" :disabled="index != listIndex">
                                                             <el-option
                                                                     v-for="item in stageOption"
                                                                     :key="item.value"
@@ -610,7 +615,7 @@
                                                 <div v-show="stageList.fixedType == 0">
                                                     <div class="rentcontent">
                                                         <span class="inputname">固定金额</span>
-                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount" :disabled="index != listIndex">
                                                         <span class="rightcompany">元</span>
                                                     </div>
                                                 </div>
@@ -619,13 +624,13 @@
                                                 <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
                                                     <div class="rentcontent">
                                                         <span class="inputname">面积</span>
-                                                        <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea">
+                                                        <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea" :disabled="index != listIndex">
                                                         <span class="rightcompany">㎡</span>
                                                     </div>
                                                 </div>
                                                 <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                    <template v-if="">
-                                                        <el-checkbox v-model="stageList.outsideArea" class="stagelineheight" :true-label="unitData.swingArea">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                    <template>
+                                                        <el-checkbox v-model="stageList.outsideArea" class="stagelineheight" :true-label="unitData.swingArea" v-show="mainData.propertyType == 0" :disabled="unitData.swingArea == 0">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
                                                     </template>
                                                 </div>
                                             </div>
@@ -633,7 +638,7 @@
                                                 <div>
                                                     <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2 || stageList.fixedType == 3">
                                                         <span class="inputname">单价</span>
-                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price" :disabled="index != listIndex">
                                                         <span class="rightcompany">元</span>
                                                     </div>
                                                 </div>
@@ -646,7 +651,7 @@
                                                 <div>
                                                     <div class="rentcontent">
                                                         <span class="inputname">抽成类型</span>
-                                                        <el-select v-model="stageList.percentType" clearable placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList)">
+                                                        <el-select v-model="stageList.percentType" clearable placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList)" :disabled="index != listIndex">
                                                             <el-option
                                                                     v-for="item in cstageOption"
                                                                     :key="item.value"
@@ -659,7 +664,7 @@
                                                 <div>
                                                     <div class="rentcontent" v-show="stageList.percentType == 6">
                                                         <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent" :disabled="index != listIndex">
                                                         <span class="rightcompany">%</span>
                                                     </div>
                                                 </div>
@@ -668,39 +673,38 @@
                                             </div>
                                             <div class="stagesale" v-if="stageList.percentType == 7 || stageList.percentType == 8">
                                                 <div class="stagesaletitle">销售额分段（单位/元）</div>
-                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                    <div class="addlistnumber">{{index+1}}</div>
-                                                    <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
-                                                    <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
+                                                    <div class="flexwidth" v-if="_index == 0">{{percentlist.startAmount}}</div>
+                                                    <div class="flexwidth" v-if="_index != 0" style="flex:1">
                                                         <div class="rentcontent">
-                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount" @blur="startEndAmount(_index,percentlist,stageList.contractPeriodPercentParamList)" :disabled="index != listIndex">
                                                         </div>
                                                     </div>
                                                     <div class="salelistwidth">至</div>
-                                                    <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
                                                     <div class="flexwidth" style="flex:1">
                                                         <div class="rentcontent">
-                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount" :disabled="index != listIndex">
                                                         </div>
                                                     </div>
                                                     <div class="saleselect">
                                                         <div class="rentcontent">
                                                             <span class="inputname">抽成比例</span>
-                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
                                                             <span class="rightcompany">%</span>
                                                         </div>
                                                     </div>
-                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text" @click="deletePercentList(index,percentlist,stageList)">删除</button></div>
-                                                    <div class="salelistdel"></div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text" @click="deletePercentList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
                                                 </div>
                                             </div>
                                             <div class="stagesale" v-if="stageList.percentType == 9">
                                                 <div class="stagesaletitle">货品组别</div>
-                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
                                                     <div class="rentcontent" style="margin-left: 20px;">
-                                                        <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect">
+                                                        <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect" :disabled="index != listIndex" @change="goodsTypeChange(_index,percentlist,stageList)">
                                                             <el-option
                                                                     v-for="item in goodsTypeOption"
                                                                     :key="item.id"
@@ -712,21 +716,21 @@
                                                     <div class="saleselect">
                                                         <div class="rentcontent">
                                                             <span class="inputname">抽成比例</span>
-                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
                                                             <span class="rightcompany">%</span>
                                                         </div>
                                                     </div>
-                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deleteGoodsList(index,percentlist,stageList)">删除</button></div>
-                                                    <div class="salelistdel"></div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text"  @click="deleteGoodsList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
                                                 </div>
                                             </div>
                                             <div class="stagesale" v-if="stageList.percentType == 10">
                                                 <div class="stagesaletitle">支付方式</div>
-                                                <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                    <div class="addlistnumber">{{index+1}}</div>
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
                                                     <div class="rentcontent" style="margin-left: 20px;">
-                                                        <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect">
+                                                        <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect" :disabled="index != listIndex" @change="payListChange(_index,percentlist,stageList)">
                                                             <el-option
                                                                     v-for="item in paymentWayOption"
                                                                     :key="item.value"
@@ -738,20 +742,21 @@
                                                     <div class="saleselect">
                                                         <div class="rentcontent">
                                                             <span class="inputname">抽成比例</span>
-                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
                                                             <span class="rightcompany">%</span>
                                                         </div>
                                                     </div>
-                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                    <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deletePayList(index,percentlist,stageList)">删除</button></div>
-                                                    <div class="salelistdel"></div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text"  @click="deletePayList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stageaction">
-                                        <span><button>修改</button></span>
-                                        <span><button @click="deleteStageBox(stageList)">删除</button></span>
+                                        <span v-show="buttonNum == 1"><button @click="editListData(index)">修改</button></span>
+                                        <span v-show="buttonNum == 2"><button @click="saveListData(index)">保存</button></span>
+                                        <span><button @click="deleteStageBox(stageList,index)">删除</button></span>
                                     </div>
                                 </div>
                                 <div class="rentbutton stagebutton"><el-button icon="el-icon-plus" @click="addStageList()">继续添加</el-button></div>
@@ -785,7 +790,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="costTypeData" value-key="value" clearable placeholder="请选择" class="dialogselect" @change="costTypeSelect()">
+                                    <el-select v-model="costTypeData" clearable value-key="value" placeholder="请选择" class="dialogselect" @change="costTypeSelect()" :disabled="rentData[0].generated">
                                         <el-option
                                                 v-for="item in costTypeOptions"
                                                 :key="item.value"
@@ -798,7 +803,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <el-select v-model="costItemData" value-key="id" clearable placeholder="请选择" class="dialogselect" @change="costItemSelect()">
+                                    <el-select v-model="costItemData" clearable value-key="id" placeholder="请选择" class="dialogselect" @change="costItemSelect()">
                                         <el-option
                                                 v-for="item in costItemDataList"
                                                 :key="item.id"
@@ -866,14 +871,14 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">滞纳金起算日</span>
-                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate">
+                                    <input class="inputtext" type="text" placeholder="请输入起算日" v-model="rentData[0].lateFeeStartDate" v-limitNum>
                                     <span class="rightcompany">日</span>
                                 </div>
                             </el-col>
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect">
+                                    <el-select v-model="rentData[0].countType" clearable placeholder="选填" class="dialogselect" @change="changeCountType">
                                         <el-option
                                                 v-for="item in countOptions"
                                                 :key="item.value"
@@ -891,7 +896,7 @@
                                 </div>
                                 <div class="rentcontent" v-if="rentData[0].countType == 1">
                                     <span class="inputname inputnameCenter">滞纳金金额</span>
-                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="rentData[0].lateFee">
+                                    <input class="inputtext" type="text" placeholder="请输入金额" v-model="rentData[0].lateFee">
                                 </div>
                             </el-col>
                         </el-row>
@@ -922,6 +927,8 @@
                                                             v-model="stageList.startDate"
                                                             type="date"
                                                             value-format="yyyy-MM-dd"
+                                                            @change="phaseCycle(stageList)"
+                                                            :disabled="index != listIndex"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
@@ -934,172 +941,176 @@
                                                             v-model="stageList.endDate"
                                                             type="date"
                                                             value-format="yyyy-MM-dd"
+                                                            @change="phaseCycle(stageList)"
+                                                            :disabled="index != listIndex"
                                                             placeholder="请选择">
                                                     </el-date-picker>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：12个月1天</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.periodCycle}}</div>
                                             </div>
                                         </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定类型</span> 
-                                                    <el-select v-model="stageList.fixedType" clearable placeholder="请选择" class="dialogselect" @focus="typeFocus(0)">
-                                                        <el-option
-                                                                v-for="item in stageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 2"></div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 3">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">固定金额</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <div class="rentcontent">
-                                                    <span class="inputname">面积</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea">
-                                                    <span class="rightcompany">㎡</span>
-                                                </div>
-                                            </div>
-                                            <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
-                                                <template>
-                                                    <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
-                                                </template>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2">
-                                                    <span class="inputname">单价</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price">
-                                                    <span class="rightcompany">元</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
-                                            <div>
-                                                <div class="rentcontent">
-                                                    <span class="inputname">抽成类型</span>
-                                                    <el-select v-model="stageList.percentType" clearable placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList.percentType)">
-                                                        <el-option
-                                                                v-for="item in cstageOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="rentcontent" v-show="stageList.percentType == 6">
-                                                    <span class="inputname">抽成比例</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent">
-                                                    <span class="rightcompany">%</span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 7 || stageList.percentType == 8">
-                                            <div class="stagesaletitle">销售额分段（单位/元）</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="flexwidth" v-if="index == 0">{{percentlist.startAmount}}</div>
-                                                <div class="flexwidth" v-if="index != 0" style="flex:1">
+                                        <div v-if="costTypeData.value != 2">
+                                            <div class="stagelist" v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount">
+                                                        <span class="inputname">固定类型</span>
+                                                        <el-select v-model="stageList.fixedType" clearable placeholder="请选择" class="dialogselect" @focus="typeFocus(0)" :disabled="index != listIndex">
+                                                            <el-option
+                                                                    v-for="item in stageOption"
+                                                                    :key="item.value"
+                                                                    :label="item.text"
+                                                                    :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
                                                     </div>
                                                 </div>
-                                                <div class="salelistwidth">至</div>
-                                                <!--<div class="flexwidth" v-if="index == stageList.contractPeriodPercentParamList.length-1">以上</div>-->
-                                                <div class="flexwidth" style="flex:1">
+                                                <div v-show="stageList.fixedType == 0">
                                                     <div class="rentcontent">
-                                                        <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount">
+                                                        <span class="inputname">固定金额</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.fixedAmount" :disabled="index != listIndex">
+                                                        <span class="rightcompany">元</span>
                                                     </div>
                                                 </div>
-                                                <div class="saleselect">
+                                                <div v-show="stageList.fixedType == 0 || stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 2 || stageList.fixedType == 3"></div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
                                                     <div class="rentcontent">
+                                                        <span class="inputname">面积</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入面积" v-model="stageList.fixedArea" :disabled="index != listIndex">
+                                                        <span class="rightcompany">㎡</span>
+                                                    </div>
+                                                </div>
+                                                <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
+                                                    <template>
+                                                        <el-checkbox v-model="stageList.outsideArea" class="stagelineheight" :true-label="unitData.swingArea" v-show="mainData.propertyType == 0" :disabled="unitData.swingArea == 0">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist"  v-show="rentData[0].settleType == 0 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5 || stageList.fixedType == 2 || stageList.fixedType == 3">
+                                                        <span class="inputname">单价</span>
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.price" :disabled="index != listIndex">
+                                                        <span class="rightcompany">元</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                                <div>
+                                                </div>
+                                            </div>
+                                            <div class="stagelist" v-show="rentData[0].settleType == 1 || rentData[0].settleType == 2 || rentData[0].settleType == 3">
+                                                <div>
+                                                    <div class="rentcontent">
+                                                        <span class="inputname">抽成类型</span>
+                                                        <el-select v-model="stageList.percentType" clearable placeholder="请选择" class="dialogselect" @focus="ctypeFocus(1)" @change="ctypeChange(stageList)" :disabled="index != listIndex">
+                                                            <el-option
+                                                                    v-for="item in cstageOption"
+                                                                    :key="item.value"
+                                                                    :label="item.text"
+                                                                    :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="rentcontent" v-show="stageList.percentType == 6">
                                                         <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
+                                                        <input class="inputtext" type="text" placeholder="请输入比例" v-model="stageList.percent" :disabled="index != listIndex">
                                                         <span class="rightcompany">%</span>
                                                     </div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text" @click="deletePercentList(index,percentlist,stageList)">删除</button></div>
-                                                <div class="salelistdel"></div>
+                                                <div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 9">
-                                            <div class="stagesaletitle">货品组别</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in goodsTypeOption"
-                                                                :key="item.id"
-                                                                :label="item.goodsTypeName"
-                                                                :value="item.id">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                            <div class="stagesale" v-if="stageList.percentType == 7 || stageList.percentType == 8">
+                                                <div class="stagesaletitle">销售额分段（单位/元）</div>
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
+                                                    <div class="flexwidth" v-if="_index == 0">{{percentlist.startAmount}}</div>
+                                                    <div class="flexwidth" v-if="_index != 0" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.startAmount" @blur="startEndAmount(_index,percentlist,stageList.contractPeriodPercentParamList)" :disabled="index != listIndex">
+                                                        </div>
                                                     </div>
+                                                    <div class="salelistwidth">至</div>
+                                                    <div class="flexwidth" style="flex:1">
+                                                        <div class="rentcontent">
+                                                            <input class="inputtext lineheight" type="text" placeholder="金额" v-model="percentlist.endAmount" :disabled="index != listIndex">
+                                                        </div>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPercentList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text" @click="deletePercentList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deleteGoodsList(index,percentlist,stageList)">删除</button></div>
-                                                <div class="salelistdel"></div>
                                             </div>
-                                        </div>
-                                        <div class="stagesale" v-show="stageList.percentType == 10">
-                                            <div class="stagesaletitle">支付方式</div>
-                                            <div class="stagesalelist" v-for="(percentlist,index) in stageList.contractPeriodPercentParamList">
-                                                <div class="addlistnumber">{{index+1}}</div>
-                                                <div class="rentcontent" style="margin-left: 20px;">
-                                                    <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect">
-                                                        <el-option
-                                                                v-for="item in paymentWayOption"
-                                                                :key="item.value"
-                                                                :label="item.text"
-                                                                :value="item.value">
-                                                        </el-option>
-                                                    </el-select>
-                                                </div>
-                                                <div class="saleselect">
-                                                    <div class="rentcontent">
-                                                        <span class="inputname">抽成比例</span>
-                                                        <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent">
-                                                        <span class="rightcompany">%</span>
+                                            <div class="stagesale" v-if="stageList.percentType == 9">
+                                                <div class="stagesaletitle">货品组别</div>
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.goodsTypeId" clearable placeholder="请选择" class="dialogselect" :disabled="index != listIndex" @change="goodsTypeChange(_index,percentlist,stageList)">
+                                                            <el-option
+                                                                    v-for="item in goodsTypeOption"
+                                                                    :key="item.id"
+                                                                    :label="item.goodsTypeName"
+                                                                    :value="item.id">
+                                                            </el-option>
+                                                        </el-select>
                                                     </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addGoodsList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text"  @click="deleteGoodsList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
                                                 </div>
-                                                <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(index,percentlist,stageList)">追加阶段</el-button></div>
-                                                <div class="salelistdel" v-if="index != 0"><button class="btn_text"  @click="deletePayList(index,percentlist,stageList)">删除</button></div>
-                                                <div class="salelistdel"></div>
+                                            </div>
+                                            <div class="stagesale" v-if="stageList.percentType == 10">
+                                                <div class="stagesaletitle">支付方式</div>
+                                                <div class="stagesalelist" v-for="(percentlist,_index) in stageList.contractPeriodPercentParamList">
+                                                    <div class="addlistnumber">{{_index+1}}</div>
+                                                    <div class="rentcontent" style="margin-left: 20px;">
+                                                        <el-select v-model="percentlist.paymentWay" clearable placeholder="请选择" class="dialogselect" :disabled="index != listIndex" @change="payListChange(_index,percentlist,stageList)">
+                                                            <el-option
+                                                                    v-for="item in paymentWayOption"
+                                                                    :key="item.value"
+                                                                    :label="item.text"
+                                                                    :value="item.value">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div class="saleselect">
+                                                        <div class="rentcontent">
+                                                            <span class="inputname">抽成比例</span>
+                                                            <input class="inputtext" type="text" placeholder="比例" v-model="percentlist.percent" :disabled="index != listIndex">
+                                                            <span class="rightcompany">%</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="salelistadd"><el-button icon="el-icon-plus" @click="addPayList(_index,percentlist,stageList)" :disabled="index != listIndex">追加阶段</el-button></div>
+                                                    <div class="salelistdel" v-if="_index != 0"><button class="btn_text"  @click="deletePayList(_index,percentlist,stageList)" :disabled="index != listIndex">删除</button></div>
+                                                    <div class="salelistdel" v-if="_index == 0"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="stageaction">
-                                        <span><button>修改</button></span>
-                                        <span><button @click="deleteStageBox(stageList)">删除</button></span>
+                                        <span v-show="buttonNum == 1"><button @click="editListData(index)">修改</button></span>
+                                        <span v-show="buttonNum == 2"><button @click="saveListData(index)">保存</button></span>
+                                        <span><button @click="deleteStageBox(stageList,index)">删除</button></span>
                                     </div>
                                 </div>
                                 <div class="rentbutton stagebutton"><el-button icon="el-icon-plus" @click="addStageList()">继续添加</el-button></div>
@@ -1122,7 +1133,7 @@
                             <el-row class="dialogbox">
                                 <el-col :span="10">
                                     <div class="titleStyle">履约保证金</div>
-                                    <div class="bondconta">应收金额：<span class="money">¥{{lvyue.receivableAmountVO}}</span></div>
+                                    <div class="bondconta">应收金额：<span class="money">¥{{lvyue.receivableAmountVO < 0?0:lvyue.receivableAmountVO}}</span></div>
                                     <div class="bondcontb">已收金额：<span class="money">¥{{lvyue.receivedAmountVO}}</span></div>
                                     <div class="bondcontc">未收金额：<span class="money">¥{{lvyue.restAmountVO}}</span></div>
                                 </el-col>
@@ -1145,7 +1156,7 @@
                                     <div class="listcont contractcont">
                                         <div class="listcolum">
                                             <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
-                                            <form action="/api/rent/contract/uploads" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
+                                            <form :action="this.$downLoadUrl+'/rent/contract/uploads'" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
                                                 <div class="uploadlist">
                                                     <div class="avatar-uploader">
                                                         <label class="el-upload el-upload--text">
@@ -1161,7 +1172,7 @@
                                             <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe>
                                         </div>
                                     </div>
-                                    <div class="listcont contractcont">
+                                    <div class="listcont contractcont" v-if="this.$route.params.contractId != 0 || this.fileListData.length != 0">
                                         <div class="listcolum" v-for="fileList in fileListData">
                                             <div class="uploadtitle">{{fileList.dateDay}}</div>
                                             <div class="uploadlist">
@@ -1169,6 +1180,28 @@
                                                     <img :src="imageList.filePath+imageList.fileSaveName" alt="">
                                                     <span class="spantopL"></span>
                                                     <span class="spantopLname">{{index+1}}</span>
+                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
+                                                    <span class="spanbottom">重新上传</span>
+                                                </div>
+                                                <div class="uploadfile" v-for="(imageUrl,_index) in imageUrlList">
+                                                    <img :src="imageUrl.filePath" alt="">
+                                                    <span class="spantopL"></span>
+                                                    <span class="spantopLname">{{fileList.attachmentVos.length+1+_index}}</span>
+                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
+                                                    <span class="spanbottom">重新上传</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="listcont contractcont" v-if="this.$route.params.contractId == 0 || this.fileListData.length == 0">
+                                        <div class="listcolum">
+                                            <div class="uploadtitle"></div>
+                                            <div class="uploadlist">
+                                                <div class="uploadfile" v-for="(imageUrl,_index) in imageUrlList">
+                                                    <img :src="imageUrl.filePath" alt="">
+                                                    <span class="spantopL"></span>
+                                                    <span class="spantopLname">{{_index+1}}</span>
                                                     <span class="spantopR"><i class="el-icon-close"></i></span>
                                                     <span class="spanbottom">重新上传</span>
                                                 </div>
@@ -1225,7 +1258,7 @@
                 <div class="floorsearchlist">
                     <ul>
                         <li @click="changeFloorUnit(null)">全部</li>
-                        <li v-for="floorlist in floorListData" @click="changeFloorUnit(floorlist.id)">{{floorlist.floorName}}</li>
+                        <li v-for="floorlist in floorListData" @click="changeFloorUnit(floorlist.id)">{{floorlist.floorCode}}</li>
                     </ul>
                 </div>
                 <el-row>
@@ -1249,10 +1282,10 @@
             </span>
         </el-dialog>
         <div class="savebtn" v-show="stepNumber == 31">
-            <button @click="addRentData(0)">提交</button>
+            <button @click="addRentData(0)" :disabled="flag">提交</button>
         </div>
         <div class="savebtn" v-show="stepNumber == 41">
-            <button @click="addRentData(1)">提交</button>
+            <button @click="addRentData(1)" :disabled="flag">提交</button>
         </div>
         <div class="savebtn" v-show="!isShow && stepNumber != 31 && stepNumber != 41">
             <button @click="submitnNext()">保存并下一步</button>
@@ -1295,13 +1328,15 @@
                     rate: '',
                     rateType: '',
                     remark: '',
-                    rentFreeNumber: '',
+                    rentFreeNumber: 0,
                     rentStartDate: '',
                     settleLevel: '',
                     shopId: '',
                     signDate: '',
                     validEndDate: '',
                     validStartDate: '',
+                    validCycle:'',
+                    decorationCycle:'',
                     version: 1
                 },
                 unitData:{
@@ -1345,8 +1380,8 @@
                 ],
                 stepNumber:0,
                 rentData:[{
-                    advanceDay: "",
-                    advanceMonth: "",
+                    advanceDay: 0,
+                    advanceMonth: 0,
                     contractId: '',
                     contractRentTermsPeriodParamList: [
                         {
@@ -1373,7 +1408,7 @@
                             fixedRentMoney:'',
                             price: '',
                             startDate: "",
-                            phaseCycleNum:'0个月0天'
+                            periodCycle:'0个月0天'
                         }
                     ],
                     costItemId: '',
@@ -1449,8 +1484,16 @@
                 floorId:null,
                 intentionContractData:'',
                 unitListAry:[],
-                putId:null,
-                delId:null
+                putId:'',
+                imageUrlList:[],
+                changeRentCostData:{
+                    delId:[],
+                    paramList:[],
+                    putId:[]
+                },
+                listIndex:'',
+                buttonNum:1,
+                flag:false
             };
         },
         mounted(){
@@ -1479,13 +1522,24 @@
                 },300)
             },
             bondValue(){
-                if(!this.chengyi.receivableAmountVO) this.chengyi.receivableAmountVO = 0;
-                if(!this.chengyi.receivedAmountVO) this.chengyi.receivedAmountVO = 0;
-                if(!this.chengyi.restAmountVO) this.chengyi.restAmountVO = 0;
-                
-                if(!this.lvyue.receivableAmountVO) this.chengyi.restAmountVO = 0;
-                if(!this.lvyue.receivedAmountVO) this.lvyue.receivedAmountVO = 0;
-                if(!this.lvyue.restAmountVO) this.lvyue.restAmountVO = 0;
+                if(!this.chengyi.receivableAmountVO){
+                    this.chengyi.receivableAmountVO = 0;
+                }
+                if(!this.chengyi.receivedAmountVO){
+                    this.chengyi.receivedAmountVO = 0;
+                }
+                if(!this.chengyi.restAmountVO){
+                    this.chengyi.restAmountVO = 0;
+                }
+                if(!this.lvyue.receivableAmountVO){
+                    this.lvyue.receivableAmountVO = 0;
+                }
+                if(!this.lvyue.receivedAmountVO){
+                    this.lvyue.receivedAmountVO = 0;
+                }
+                if(!this.lvyue.restAmountVO){
+                    this.lvyue.restAmountVO = 0;
+                }
                 if (!this.bondValue) {
                     this.lvyue.receivableAmountVO = 0 - parseFloat(this.chengyi.receivableAmountVO);
                 } else {
@@ -1581,6 +1635,7 @@
                 })
             },
             selectIntentContract(){
+                this.mainData.intentionContractId = this.intentionContractData.id;
                 this.mainData.merchantId = this.intentionContractData.merchantId;
                 this.mainData.shopId = null;
                 this.mainData.brandId = null;
@@ -1606,6 +1661,10 @@
                         this.isShow = true;
                     } else {
                         this.isShow = false;
+                    }
+                    if(this.activeName == '3' || this.activeName == '4'){
+                        this.changeRentCostData.paramList=[];
+                        this.changeRentCostData.putId=[];
                     }
                 }else{
                     this.activeName = parseInt(this.activeName) + 1 + '';
@@ -1634,10 +1693,14 @@
                         }
                         break;
                     case '2':
-                        this.addShopUnit();
+                        if(this.$route.params.delayChange != 0){
+                            this.nextNum();
+                        }else {
+                            this.addShopUnit();
+                        }
                         break;
                     case '3':
-                        if(this.$route.params.delayChange == 1 || this.$route.params.delayChange == 2){
+                        if(this.$route.params.delayChange != 0){
                             this.changeRentCostInfo();
                         }else {
                             this.nextNum();
@@ -1647,7 +1710,7 @@
                         if(this.rentDataList.length == 0 && this.costDataList.length == 0){
                             this.$message.error('租金条款或费用条款不能为空');
                         }else {
-                            if(this.$route.params.delayChange == 1 || this.$route.params.delayChange == 2){
+                            if(this.$route.params.delayChange != 0){
                                 this.changeRentCostInfo();
                             }else {
                                 this.nextNum();
@@ -1655,7 +1718,11 @@
                         }
                         break;
                     case '5':
-                        this.addBondData();
+                        if(this.$route.params.delayChange != 0){
+                            this.nextNum();
+                        }else {
+                            this.addBondData();
+                        }
                         break;
                     case '6':
                         this.nextNum();
@@ -1685,6 +1752,8 @@
                         this.nextNum();
                         if(this.$route.params.contractId != 0) {
                             this.getContractInfoData();
+                        }else{
+                            this.getContractBondInfo(res.data.data.contractCode);
                         }
                     } else {
                         this.$message.error(res.data.msg);
@@ -1722,14 +1791,71 @@
             },
             async addRentData(typeNum){
                 this.rentData[0].type = typeNum;
+                this.flag = true;
                 if(this.$route.params.delayChange != 0){
-                    this.changeRentCostInfo();
+                    if (typeNum == 0) {
+                        let rentId = this.rentDataList.find(item => item.id == this.putId);
+                        let changeRentId = this.changeRentCostData.paramList.find(item => item.id == this.putId);
+                        if(!rentId) {
+                            this.rentDataList.push(this.rentData);
+                        }
+                        if(!changeRentId) {
+                            this.changeRentCostData.paramList.push(this.rentData[0]);
+                            this.changeRentCostData.putId.push(this.putId);
+                        }else {
+                            this.changeRentCostData.paramList = this.changeRentCostData.paramList.map((item)=>{
+                                if(item.id == this.putId){
+                                    return this.rentData[0]
+                                }
+                                return item;
+                            });
+                            this.changeRentCostData.putId = this.changeRentCostData.putId.map((item)=>{
+                                if(item.id == this.putId){
+                                    return this.putId
+                                }
+                                return item;
+                            });
+                        }
+                        this.stepNumber = 0;
+                        localStorage.setItem('activeName', 3);
+                        localStorage.setItem('step', 0);
+                    } else {
+                        let constId = this.costDataList.find(item => item.id == this.putId);
+                        let changeConstId = this.changeRentCostData.paramList.find(item => item.id == this.putId);
+                        if(!constId) {
+                            this.costDataList.push(this.rentData);
+                        }
+                        if(!changeConstId) {
+                            this.changeRentCostData.paramList.push(this.rentData[0]);
+                            this.changeRentCostData.putId.push(this.putId);
+                        }else {
+                            this.changeRentCostData.paramList = this.changeRentCostData.paramList.map((item)=>{
+                                if(item.id == this.putId){
+                                    return this.rentData[0]
+                                }
+                                return item;
+                            });
+                            this.changeRentCostData.putId = this.changeRentCostData.putId.map((item)=>{
+                                if(item.id == this.putId){
+                                    return this.putId
+                                }
+                                return item;
+                            });
+                        }
+                        this.stepNumber = 0;
+                        localStorage.setItem('activeName', 4);
+                        localStorage.setItem('step', 0);
+                    }
+
+                    //this.changeRentCostInfo();
                 }else {
                     if(this.rentData[0].id == null) {
                         await this.$api.rentapi.addRentOrCostUsingPOST({
                             paramList: this.rentData
                         }).then(res => {
+                            this.flag = false;
                             if (res.data.status == 200) {
+                                this.flag = false;
                                 this.$message.success(res.data.msg);
                                 if (typeNum == 0) {
                                     this.getRentDataList(1);
@@ -1750,6 +1876,7 @@
                         await this.$api.rentapi.updateRentOrCostUsingPUT({
                             paramList: this.rentData
                         }).then(res => {
+                            this.flag = false;
                             if (res.data.status == 200) {
                                 this.$message.success(res.data.msg);
                                 if (typeNum == 0) {
@@ -1804,9 +1931,17 @@
                 })
             },
             async addFileUpload(event){
-                console.log(event)
+                let _this = this;
                 document.getElementById('registSubmit').submit();
-                this.getFileInfo();
+                for(let i=0;i<event.target.files.length;i++){
+                    let reader = new FileReader();
+                    reader.readAsDataURL(event.target.files[i]);
+                    reader.onload = function(_e){
+                        _this.imageUrlList.push({
+                            filePath: _e.target.result
+                        });
+                    }
+                }
             },
             //获取详细信息
             async getContractInfoData(){
@@ -1873,7 +2008,8 @@
                             this.$message.error(res.data.msg);
                         }
                     })
-                    await this.$api.rentapi.getContractBondInfoUsingGET({
+                    this.getContractBondInfo(this.contractCode);
+                    /*await this.$api.rentapi.getContractBondInfoUsingGET({
                         contractCode : this.contractCode
                     }).then(res => {
                         if (res.data.status == 200) {
@@ -1881,11 +2017,12 @@
                                 this.bondValue = res.data.data.contractBond;
                                 this.chengyi = res.data.data.chengyi;
                                 this.lvyue = res.data.data.lvyue;
+                                console.log(res.data.data)
                             }
                         } else {
                             this.$message.error(res.data.msg);
                         }
-                    })
+                    })*/
                     //获取附件
                     await this.$api.rentapi.fileUsingGET({
                         id: this.$route.params.contractId
@@ -1908,16 +2045,16 @@
                     })
                 }
             },
-            //获取上传附件列表
-            async getFileInfo(){
-                if(this.$route.params.contractId != 0) {
-                    this.contractId = this.$route.params.contractId;
-                }
-                await this.$api.rentapi.fileUsingGET({
-                    id: this.contractId
+            async getContractBondInfo(contractCode){
+                await this.$api.rentapi.getContractBondInfoUsingGET({
+                    contractCode : contractCode
                 }).then(res => {
                     if (res.data.status == 200) {
-                        this.fileListData = res.data;
+                        if(res.data.data != null) {
+                            this.bondValue = res.data.data.contractBond;
+                            this.chengyi = res.data.data.chengyi;
+                            this.lvyue = res.data.data.lvyue;
+                        }
                     } else {
                         this.$message.error(res.data.msg);
                     }
@@ -1936,8 +2073,8 @@
                     buildId:this.buildType,
                     floorId:this.floorId,
                     type:this.$route.params.prototypeId,
-                    status:1,
-                    states:''
+                    status:'',
+                    states:[1,6]
                 }).then(res=>{
                     if(this.buildType == 1) {
                         this.unitDataListShop = res.data.data.list;
@@ -2028,12 +2165,21 @@
                         this.unitData.rentWay = '';
                         this.unitData.unitIds = [];
                     }
-                    let _index = this.checkedUnit.map((item,i)=>{
-                        if(id == item){
-                            return i;
-                        }
-                    });
-                    this.checkedUnit.splice(_index, 1);
+                    let _index = this.checkedUnit.indexOf(unitItem.id)
+                    if (_index !== -1) {
+                        this.checkedUnit.splice(_index, 1)
+                    };
+                    this.unitData.area = this.unitListPush.reduce(function(prev, cur){
+                        return prev + cur.area;
+                    },0);
+                    this.unitData.useArea = this.unitListPush.reduce(function(prev, cur){
+                        return prev + cur.useArea;
+                    },0);
+                    if(this.unitData.rentWay == '0'){
+                        this.unitData.rentArea = this.unitData.area;
+                    }else if(this.unitData.rentWay == '1'){
+                        this.unitData.rentArea = this.unitData.useArea;
+                    }
                 })
             },
             //切换到添加
@@ -2042,8 +2188,8 @@
                 localStorage.setItem('step',stepNum);
                 let contractId = this.rentData[0].contractId;
                 this.rentData = [{
-                    advanceDay: "",
-                    advanceMonth: "",
+                    advanceDay: 0,
+                    advanceMonth: 0,
                     contractId: '',
                     contractRentTermsPeriodParamList: [
                         {
@@ -2069,7 +2215,7 @@
                             rentMoney:'',
                             price: '',
                             startDate: "",
-                            phaseCycleNum:'0个月0天'
+                            periodCycle:'0个月0天'
                         }
                     ],
                     costItemId: '',
@@ -2088,10 +2234,11 @@
                     termsVersion: 1,
                     type: 0
                 }];
+                this.settleGroupname = '';
                 if (contractId) this.rentData[0].contractId = contractId;
                 this.costTypeData = {value: ''};
                 this.costItemData = {id: ''};
-                this.rentData[0].contractRentTermsPeriodParamList[0].fixedArea = this.unitData.swingArea;
+                this.rentData[0].contractRentTermsPeriodParamList[0].fixedArea = this.unitData.rentArea;
             },
             //获取租金和费用的列表
             async getRentDataList(pageNum,pageSize){
@@ -2176,7 +2323,7 @@
             },
             //删除租金和费用
             async deleteDataList(id){
-                this.delId = id;
+                this.changeRentCostData.delId.push(id);
                 this.$confirm('是否删除该条数据?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -2214,6 +2361,12 @@
                         this.isShow = true;
                     } else {
                         this.isShow = false;
+                    }
+                }
+                if(this.$route.params.delayChange != 0) {
+                    if (this.activeName == '3' || this.activeName == '4') {
+                        this.changeRentCostData.paramList = [];
+                        this.changeRentCostData.putId = [];
                     }
                 }
             },
@@ -2308,32 +2461,63 @@
                     fixedType: '',
                     endDate: '',
                     fixedAmount: '',
-                    fixedArea: this.unitData.swingArea,
+                    fixedArea: this.unitData.rentArea,
                     percentType: '',
                     outsideArea: '',
                     period: '',
                     periodVersion: '',
                     price: '',
-                    startDate: ""
-                })
+                    startDate: "",
+                    periodCycle:'0个月0天'
+                });
+                this.listIndex = this.rentData[0].contractRentTermsPeriodParamList.length-1;
             },
-            deleteStageBox(stageItem,id){
-                if(id){
-
-                }else{
+            deleteStageBox(stageItem,_index){
+                this.listIndex = _index-1;
+                if(_index == this.rentData[0].contractRentTermsPeriodParamList.length-1){
                     let index = this.rentData[0].contractRentTermsPeriodParamList.indexOf(stageItem)
                     if (index !== -1) {
                         this.rentData[0].contractRentTermsPeriodParamList.splice(index, 1)
                     }
+                }else{
+                    this.$message.error('此阶段不能删除，请先删除最后一个阶段');
                 }
             },
             //添加销售额分段
             addPercentList(_index,_percentlist,_stageList){
                 for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
                     let item = _stageList.contractPeriodPercentParamList[i];
-                    if(item.startAmount == '' || item.endAmount == '' || item.percent == '' ) {
-                      this.$message.error('阶段不能为空');
-                      return;  
+                    if(item.startAmount === '' || item.endAmount === '' || item.percent === '' ) {
+                      this.$message.error('金额和比例不能为空');
+                      return;
+                    }
+                }
+                if(_percentlist.endAmount <= _percentlist.startAmount){
+                    this.$message.error('结束金额不能小于开始金额');
+                    return;
+                }
+                console.log(_index)
+                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
+                    endAmount: '',
+                    goodsTypeId: '',
+                    paymentWay: '',
+                    percent: '',
+                    percentVersion: '',
+                    startAmount: ''
+                });
+            },
+            addGoodsList(_index,_percentlist,_stageList){
+                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
+                    let item = _stageList.contractPeriodPercentParamList[i];
+                    if(item.goodsTypeId === '' || item.percent === '' ) {
+                        this.$message.error('货品组别和比例不能为空');
+                        return;
+                    }
+                    if(i != 0) {
+                        if (_percentlist.goodsTypeId == _stageList.contractPeriodPercentParamList[i - 1].goodsTypeId) {
+                            this.$message.error('货品组别不能重复');
+                            return;
+                        }
                     }
                 }
                 _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
@@ -2344,47 +2528,57 @@
                     percentVersion: '',
                     startAmount: ''
                 });
+            },
+            addPayList(_index,_percentlist,_stageList){
+                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
+                    let item = _stageList.contractPeriodPercentParamList[i];
+                    console.log(item.paymentWay,item.percent)
+                    if(item.paymentWay === '' || item.percent === '' ) {
+                        this.$message.error('阶段不能为空');
+                        return;
+                    }
+                    if(i != 0) {
+                        if (_percentlist.paymentWay == _stageList.contractPeriodPercentParamList[i - 1].paymentWay) {
+                            this.$message.error('支付方式不能重复');
+                            return;
+                        }
+                    }
+                }
+                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
+                    endAmount: '',
+                    goodsTypeId: '',
+                    paymentWay: '',
+                    percent: '',
+                    percentVersion: '',
+                    startAmount: ''
+                });
+            },
+            goodsTypeChange(_index,_percentlist,_stageList){
+                _stageList.contractPeriodPercentParamList.map((item,index)=> {
+                    if (_index != index){
+                        if (item.goodsTypeId == _percentlist.goodsTypeId) {
+                            this.$message.error('货品组别不能重复');
+                            _percentlist.goodsTypeId = '';
+                        }
+                    }
+                })
+            },
+            payListChange(_index,_percentlist,_stageList){
+                _stageList.contractPeriodPercentParamList.map((item,index)=> {
+                    if (_index != index){
+                        if (item.paymentWay == _percentlist.paymentWay) {
+                            this.$message.error('支付方式不能重复');
+                            _percentlist.paymentWay = '';
+                        }
+                    }
+                })
             },
             //删除销售额分段
             deletePercentList(_index,_percentlist,_stageList) {
                 _stageList.contractPeriodPercentParamList.splice(_index, 1);
             },
-            addGoodsList(_index,_percentlist,_stageList){
-                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
-                    let item = _stageList.contractPeriodPercentParamList[i];
-                    if(item.goodsTypeId == '' || item.percent == '' ) {
-                      this.$message.error('阶段不能为空');
-                      return;  
-                    }
-                }
-                _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
-                    endAmount: '',
-                    goodsTypeId: '',
-                    paymentWay: '',
-                    percent: '',
-                    percentVersion: '',
-                    startAmount: ''
-                });
-            },
             deleteGoodsList(_index,_percentlist,_stageList) {
                 _stageList.contractPeriodPercentParamList.splice(_index, 1);
-            },
-            addPayList(_index,_percentlist,_stageList){
-                for(let i = 0; i < _stageList.contractPeriodPercentParamList.length; i++) {
-                    let item = _stageList.contractPeriodPercentParamList[i];
-                    if(item.paymentWay == '' || item.percent == '' ) {
-                      this.$message.error('阶段不能为空');
-                      return;  
-                    }
-                }   
-                 _stageList.contractPeriodPercentParamList.splice(_index + 1, 0, {
-                    endAmount: '',
-                    goodsTypeId: '',
-                    paymentWay: '',
-                    percent: '',
-                    percentVersion: '',
-                    startAmount: ''
-                });
             },
             deletePayList(_index,_percentlist,_stageList) {
                 _stageList.contractPeriodPercentParamList.splice(_index, 1);
@@ -2419,14 +2613,14 @@
                 ];
             },
             tenancyTerm(){
-                this.tenancyTermNum = this.$dateNumber(this.mainData.validStartDate,this.mainData.validEndDate)
+                this.mainData.validCycle = this.$dateNumber(this.mainData.validStartDate,this.mainData.validEndDate)
             },
             cycleChange(){
-                this.cycleNum = this.$dateNumber(this.mainData.decorationStartDate,this.mainData.decorationEndDate)
+                this.mainData.decorationCycle = this.$dateNumber(this.mainData.decorationStartDate,this.mainData.decorationEndDate)
             },
-            phaseCycle(startDate,endDate){
-                console.log(startDate,endDate)
-                this.phaseCycleNum = this.$dateNumber(startDate,endDate)
+            phaseCycle(stageList){
+                stageList.periodCycle = this.$dateNumber(stageList.startDate,stageList.endDate)
+                this.rentData[0].contractRentTermsPeriodParamList
             },
             //合同变更和延期
             async delaySubjectInfo(){   //合同主体
@@ -2443,11 +2637,7 @@
             },
             async changeRentCostInfo(){   //合同租务财务
                 await this.$api.rentapi.changTermsUsingPOST({
-                    logMap : {
-                        delId:[this.delId],
-                        paramList:this.rentData,
-                        putId:[this.putId]
-                    }
+                    logMap : this.changeRentCostData
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
@@ -2466,6 +2656,24 @@
                 }else{
                     this.rentData[0].lateFeeRate=''
                 }
+            },
+            startEndAmount(_index,amountList,amountstageList){
+                console.log(typeof amountList.startAmount)
+                console.log(typeof amountstageList[_index-1].endAmount)
+                if(parseInt(amountList.startAmount) <= parseInt(amountstageList[_index-1].endAmount)){
+                    this.$message.error('下一阶段开始金额不能小于等于上一阶段的截止金额');
+                    amountList.startAmount = parseInt(amountstageList[_index-1].endAmount) + 1
+                }
+            },
+            editListData(_index){
+                if(_index != this.listIndex) {
+                    this.listIndex = _index;
+                    this.buttonNum = 2;
+                }
+            },
+            saveListData(){
+                this.listIndex =this.rentData[0].contractRentTermsPeriodParamList.length-1;
+                this.buttonNum = 1;
             }
         },
         components: {

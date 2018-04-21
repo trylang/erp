@@ -7,7 +7,7 @@
                     <el-col :span="10">
                         <div class="dialoginput">
                             <span class="inputname">任务名称</span>
-                            <input class="inputtext" type="text" placeholder="请输入任务名称" v-model="taskName">
+                            <input class="inputtext" type="text" placeholder="请输入任务名称" v-model="fileName">
                         </div>
                         <div class="dialoginput">
                             <span class="inputname">文件类型</span>
@@ -26,7 +26,7 @@
                             <!-- <span>图标</span> -->
                             <el-upload
                                 class="upload-demo"
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :action="$downLoadUrl+'/refund/billfile/import'"
                                 :file-list="fileList"
                                 :on-change="uploadFile">
                                 <el-button size="small" type="primary" style="margin-left:20px;">点击上传</el-button>
@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="savebtn">
-            <button>保存</button>
+            <button @click="uploadHandler">保存</button>
         </div>
     </div>
 </template>
@@ -51,40 +51,32 @@
                 activeName2: '0',
                 isShow: false,
                 channelOptions: [],
-                taskName: '',
+                fileName: '',
                 type: '',
                 fileList: [],
-                list:[{
-                    name:'B1-40B',
-                    number:'117.98㎡',
-                },{
-                    name:'B1-40B',
-                    number:'117.98㎡',
-                },{
-                    name:'B1-40B',
-                    number:'117.98㎡',
-                }]
+                fileId: ''
             };
         },
         created(){
-            setTimeout(()=>{
-                this.activeName2 = localStorage.getItem('activeName2')
-            },0);
+            // setTimeout(()=>{
+            //     this.activeName2 = localStorage.getItem('activeName2')
+            // },0);
         },
         mounted(){
-            this.$api.rentapi.baseDataOptionsUsingGET().then(res=>{//渠道
-                this.channelOptions = res.data.data.payment_way;
-            }).catch(res=>{
-                this.$message.error(res.data.msg);
+            this.$api.refundapi.getChannelUsingGET().then(res=>{//渠道
+                this.channelOptions = res.data.data;
             })
         },
         methods: {
             uploadHandler(){
                 let params = {
+                    id: this.fileId,
                     fileName: this.fileName,
-                    type: this.type,
+                    type: this.type
                 }
-                this.$api.rentapi.baseDataOptionsUsingGET(params).then(res=>{//提交
+                console.log(123)
+                console.log(params)
+                this.$api.refundapi.saveBillFileUsingPOST(params).then(res=>{//提交
                     if(res.data.status === 200){
                         this.$message.success(res.data.msg);
                     }
@@ -92,27 +84,29 @@
                     this.$message.error(res.data.msg);
                 })
             },
-            next(number) {
-                this.activeName2 = parseInt(this.activeName2) + 1 + '';
-                localStorage.setItem('activeName2', this.activeName2);
-                if (this.activeName2 == '6') {
-                    this.isShow = true;
-                } else {
-                    this.isShow = false;
-                }
-            },
-            handleClick() {
-                localStorage.setItem('activeName2', this.activeName2);
-                if (this.activeName2 == '6') {
-                    this.isShow = true;
-                } else {
-                    this.isShow = false;
-                }
-            },
             uploadFile(file, fileList){
-                console.log(1,file,fileList);
+                if(file.response){
+                    this.fileId = file.response.data;
+                }
                 this.fileList = fileList.slice(-3);
             }
+            // next(number) {
+            //     this.activeName2 = parseInt(this.activeName2) + 1 + '';
+            //     localStorage.setItem('activeName2', this.activeName2);
+            //     if (this.activeName2 == '6') {
+            //         this.isShow = true;
+            //     } else {
+            //         this.isShow = false;
+            //     }
+            // },
+            // handleClick() {
+            //     localStorage.setItem('activeName2', this.activeName2);
+            //     if (this.activeName2 == '6') {
+            //         this.isShow = true;
+            //     } else {
+            //         this.isShow = false;
+            //     }
+            // },
         },
         components: {
             BlankHead

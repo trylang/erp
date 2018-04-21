@@ -45,9 +45,9 @@
                             <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
                                 <el-option
                                         v-for="item in shopOptions"
-                                        :key="item.value"
-                                        :label="item.text"
-                                        :value="item.value">
+                                        :key="item.id"
+                                        :label="item.shopName+'('+item.shopCode+')'"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -133,41 +133,53 @@
                             { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                     case '2':
-                    case '3':
                         return [
                             { type: 'selection', width:'50'},
-                            { prop: 'contractCode', label: '合同号'},
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/2',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }  
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
+                        ];
+                        break;
+                    case '3':
+                        return [
+                            { type: 'selection', width:'50'},
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/3',param:'id'},
+                            { prop: 'version', label: '版本号' },
+                            { prop: 'merchantName', label: '商户名称' },
+                            { prop: 'brandName', label: '经营品牌' },
+                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                     default: 
                         return [
                             { type: 'selection', width:'50'},
-                            { prop: 'contractCode', label: '合同号'},
+                            { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/0',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'shopName', label: '店铺名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' } 
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ]
                 }
             }
         },
         mounted(){
             this.getMerchantList();
+            this.getShopList();
         },
         watch:{
             searchText(){
@@ -195,8 +207,8 @@
                 })
             },
             async getShopList(merchantId){
-                await this.$api.rentapi.getMerchantShopOption({
-                    merchantId:merchantId
+                await this.$api.rentapi.getByStatusUsingPOST({
+                    status:[3,4,5]
                 }).then(res=>{
                     this.shopOptions = res.data.data;
                 })

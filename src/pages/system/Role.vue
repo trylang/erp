@@ -74,8 +74,10 @@
                     pageSize:this.$refs.page.pageSize,
                     name:this.searchText
                 }).then(res=>{
-                    this.dataList = res.data.data;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }
                 })
             },
             async deleteRole(rId){
@@ -84,8 +86,9 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
+                    console.log(rId)
                     this.$api.systemapi.deleteUsingDELETE_5({
-                        roleId:rId
+                        roleId: rId
                     }).then(res=>{
                         if(res.data.status == 200){
                             this.getRoleList();

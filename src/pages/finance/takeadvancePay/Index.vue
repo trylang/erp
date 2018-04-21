@@ -10,7 +10,8 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="请选择商户名称" @change="getAdvanceList()" class="dialogselect">
+            <el-select v-model="query.merchantId" placeholder="请选择商户名称" @change="checkShopNameList(query.merchantId)" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -35,11 +36,12 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractId" placeholder="请选择合同" @change="getAdvanceList()" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
                 :label="item.contractCode"
-                :value="item.id">
+                :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
@@ -306,29 +308,32 @@ export default {
   },
   mounted() {
     this.getAdvanceList();
-    this.$api.rentapi.listUsingGET_12({status: 1}).then(res => {//商户列表 status:4 已确定状态
+    // this.$api.rentapi.listUsingGET_12({status: 1}).then(res => {//商户列表 status:1 已确定状态
+    //     this.selects.merchants = res.data.data;
+    // })
+    this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {//已经确定过合同的商户列表
         this.selects.merchants = res.data.data;
-    }).catch(res => {
-        this.$message.error(res.data.msg);
-    });
-    this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res => {//合同列表 status:30 已确定状态
-        this.selects.contracts = res.data.data.list;
-    }).catch(res => {
-        this.$message.error(res.data.msg);
-    });
+        this.dialog.models[0].options = res.data.data;
+    })
+    this.checkShopNameList(-1); //合同下拉
     this.$api.systemapi.typeListUsingGET({ nameOrCode: "0006" }).then(res => {//类型code
       let paymentCode = res.data.data[0].code;
       this.$api.systemapi.itemListUsingGET({ code: paymentCode }).then(res => {//根据code查询付款方式
         this.dialog.models[2].options = res.data.data;
       });
     });
-    this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {
-        this.dialog.models[0].options = res.data.data;//已经确定过合同的商户列表
-    }).catch(res => {
-        this.$message.error(res.data.msg);
-    });
+    
   },
   methods: {
+    checkShopNameList(merchantId){  //根据商户id查合同
+        let merchantIds = merchantId==-1?'' : merchantId;
+        this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: merchantIds}).then(res => {
+            this.selects.contracts = res.data.data;
+            this.getAdvanceList();
+        }).catch(res => {
+            this.$message.error(res.data.msg);
+        });
+    },
     getAdvanceList(page = {}, callback) {
       let params = {
         receiptNumber: this.searchName,

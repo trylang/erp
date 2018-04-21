@@ -33,11 +33,11 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">购物中心编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.marketCode">
+                    <input class="inputtext" type="text" placeholder="请输入购物中心编码" v-model="add.marketCode">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">购物中心名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.marketName">
+                    <input class="inputtext" type="text" placeholder="请输入购物中心名称" v-model="add.marketName">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">英文名称(选填)</span>
@@ -61,11 +61,11 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">电话</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.phone">
+                    <input class="inputtext" type="text" placeholder="请输入电话" v-model="add.phone">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">传真</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="add.fax">
+                    <input class="inputtext" type="text" placeholder="请输入传真" v-model="add.fax">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -143,6 +143,7 @@
             },
             addbuilding(id){
                 if(id){
+                    console.log(111,this.add)
                     if(this.add.marketArea <= 0){
                         this.$message.warning('商场面积不能小于0');
                     }else{

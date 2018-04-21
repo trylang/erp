@@ -59,7 +59,7 @@ export default {
           },
           {
             label: "收款时间",
-            name: "receivedDate",
+            name: "commitDate",
             left_span: 2,
             right_span: 18,
             type: "text"

@@ -52,8 +52,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getInfoData(scope.row.id)" v-if="scope.row.status == 0">编辑</button>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <button class="btn_text" @click="getInfoData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</button>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelBrand(scope.row.id,2)">取消</button>
                         </template>
                     </el-table-column>
@@ -250,6 +250,21 @@
                 })
             },
             async submitFormData(){
+                if(this.addInfoData.brandName == ''){
+                    return this.$message.error('品牌名称不能为空');
+                }
+                if(this.addInfoData.businessId == ''){
+                    return this.$message.error('一级业态不能为空');
+                }
+                if(this.addInfoData.businessIdSecondLevel == ''){
+                    return this.$message.error('二级业态不能为空');
+                }
+                if(this.addInfoData.businessIdThreeLevel.length == 0){
+                    return this.$message.error('三级业态不能为空');
+                }
+                if(this.addInfoData.countryId == ''){
+                    return this.$message.error('国别不能为空');
+                }
                 this.addInfoData.businessIdThreeLevel = this.addInfoData.businessIdThreeLevel.join(',');
                 if(this.listId == '') {
                     await this.$api.rentapi.addUsingPOST_1({
@@ -277,6 +292,7 @@
                         }
                     })
                 }
+                this.addInfoData.businessIdThreeLevel = this.addInfoData.businessIdThreeLevel.split(',');
             },
             async getInfoData(id){
                 this.dialogVisible = true;
@@ -293,6 +309,8 @@
                     id: id
                 }).then(res => {
                     if (res.data.data.businessIdThreeLevel) {
+                        this.getBusinessTypeSList(res.data.data.businessId);
+                        this.getBusinessTypeTList(res.data.data.businessIdSecondLevel);
                         res.data.data.businessIdThreeLevel = res.data.data.businessIdThreeLevel.split(',');
                     }
                     this.addInfoData = res.data.data;

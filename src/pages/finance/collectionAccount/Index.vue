@@ -1,7 +1,7 @@
 <template>
   <con-head title="收款账户">
     <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
-      dialog.param={bankAccount:'', openingBank:'', settleGroupId:'', shoppingCenterId: '123'}">添加</el-button>
+      dialog.param={bankAccount:'', openingBank:'', settleGroupId:''}">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="10">
         <div class="searchbox">
@@ -117,15 +117,17 @@ export default {
           valueLabel: 'settleGroupName',
           options: [],
           placeholder: '请选择结算组别'
-        }, {
-          label: '购物中心',
-          name: 'shop',
-          type: 'select',
-          value: 'id',
-          valueLabel: 'label',
-          options: [{id: 1, label: '西单大悦城'}],
-          placeholder: '请选择购物中心'
-        }],
+        }
+        // ,{
+        //   label: '购物中心',
+        //   name: 'shop',
+        //   type: 'select',
+        //   value: 'id',
+        //   valueLabel: 'label',
+        //   options: [{id: 1, label: '西单大悦城'}],
+        //   placeholder: '请选择购物中心'
+        // }
+        ],
         dialogVisible: false,
         param: {
           id: 0,
@@ -237,7 +239,7 @@ export default {
             this.dialog.dialogVisible = false;           
           });
         } else {
-          $message("error", "添加失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -254,7 +256,7 @@ export default {
             this.dialog.dialogVisible = false;            
           });          
         } else {
-          $message("error", "修改失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -265,13 +267,19 @@ export default {
       await this.getCollectAccount({});
     }
   },
+  watch:{
+    'query.openingBank': function(){
+      this.$delay(()=>{
+          this.getCollectAccount();
+      },300)
+    }
+  },
   computed: {},
   created() {    
     this.init();
   }
 };
 
-// TODO: 后台删除没有真删除；
 </script>
 
 <style scoped>

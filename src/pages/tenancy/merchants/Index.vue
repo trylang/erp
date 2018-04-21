@@ -151,6 +151,7 @@
                         }).then(res => {
                             if (res.data.status == 200) {
                                 this.$message.success(res.data.msg);
+                                this.treeData = '';
                                 this.getDataList();
                             } else {
                                 this.$message.error(res.data.msg);

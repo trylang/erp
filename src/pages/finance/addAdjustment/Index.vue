@@ -24,6 +24,22 @@
       </el-col>
       <el-col :span="12">
         <div class="erp_container" style="padding:0;">
+          <el-row class="newSale">
+            <el-col :span="5">
+              <span>最新销售额</span>
+              <h4 style="color: #457fcf">¥10000</h4>
+            </el-col>   
+            <el-col :span="2">
+              <div class="vertical"></div>
+            </el-col>         
+            <el-col :span="5">
+              <span>本次差额</span>
+              <h4 style="color: #666">¥55000</h4>
+            </el-col>
+            <el-col :span="7" :offset="5">
+              <button class="global-btn" style="width: 7.5rem;">获取最新销售额</button>
+            </el-col>
+          </el-row>
           <erp-table :header="header" :content="content" :noPage="true"></erp-table>
         </div>
       </el-col>   
@@ -313,7 +329,7 @@ export default {
             $message("success", "提交成功!");
             this.$router.push({path: '/finance/accountAdjust'});
           } else {
-            $message("error", "修改失败!");
+            $message("error", returnObj.data.msg);
           }
         });
       };
@@ -332,7 +348,7 @@ export default {
             this.dialog.dialogVisible = false;
           });
         } else {
-          $message("error", "修改失败!");
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -347,7 +363,7 @@ export default {
             $message("success", "删除成功");
           });
         } else {
-          $message("error", "删除失败");
+          $message("error", returnObj.data.msg);
           return data.message;
         }
       });
@@ -404,6 +420,19 @@ export default {
   margin-top: 3rem;
   padding: 1.4rem 1rem;
   border: 1px solid #e6e6e6;
+  .newSale {
+    padding: 1.3rem 1.3rem 0;
+    margin-bottom: -.5rem;
+    .vertical {
+      width: 1px;
+      height: 2.2rem;
+      background: #e6e2e2;
+    }
+    span {
+      font-size: 12px;
+      color: #999;
+    }
+  }
   .cash_detail {
     .detail_item {
       display: flex;

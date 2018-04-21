@@ -47,8 +47,8 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addshop/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <router-link :to="'/inner/addshop/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" @click="cancelListData(scope.row.id)" v-if="scope.row.status == 1">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6">失效</button>
                         </template>

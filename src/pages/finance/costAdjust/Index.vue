@@ -11,6 +11,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" @change="getCostAdjust(),getMerchantId()" placeholder="商户名称" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -114,8 +115,8 @@ export default {
         },
         {
           label: "录入日期",
-          name: "updateDate",
-          type: "time",
+          name: "expenseDate",
+          type: "text",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
         {
@@ -231,6 +232,7 @@ export default {
       return ids;
     },
     batchConfirm() {
+      if(this.filterIds().length == 0) return $message('info', '请选择费用单号');
       this.confirmCostAdjust(this.filterIds());
     },
     async getCostAdjust(page={}, callback) {
@@ -272,7 +274,7 @@ export default {
             $message("success", "确认成功!");
           });  
         } else {
-          $message("error", "确认失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -308,8 +310,7 @@ export default {
             $message("success", "取消成功!");
           });
         } else {
-          console.log('cuowu')
-          $message("error", "取消失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -324,6 +325,13 @@ export default {
     }
   },
   computed: {},
+  watch:{
+    'query.costNo': function(){
+      this.$delay(()=>{
+          this.getCostAdjust();
+      },300)
+    }
+  },
   created() {
     this.init();
   }

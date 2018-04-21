@@ -34,9 +34,9 @@
                             <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
                                 <el-option
                                         v-for="item in shopOptions"
-                                        :key="item.value"
-                                        :label="item.text"
-                                        :value="item.value">
+                                        :key="item.id"
+                                        :label="item.shopName+'('+item.shopCode+')'"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -78,10 +78,12 @@
                             width="154"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20 || scope.row.status == 50 || scope.row.status == 60">编辑</router-link>
-                            <button class="btn_text" v-if="scope.row.status == 61" @click="stopInfoBtn(scope.row.id)">编辑</button>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20">编辑</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 60">编辑</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+2" class="btn_text" v-if="scope.row.status == 50">编辑</router-link>
+                            <button class="btn_text" v-if="scope.row.status == 61" @click="stopInfoBtn(scope.row.id,2)">编辑</button>
                             <button class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20" @click="deleteContract(scope.row.id)">删除</button>
-                            <button class="btn_text" v-if="scope.row.status == 30 || scope.row.status == 40" @click="stopContract(scope.row.id)">终止</button>
+                            <button class="btn_text" v-if="scope.row.status == 30 || scope.row.status == 40" @click="stopContract(scope.row.id,1)">终止</button>
                             <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 40">延期</router-link>
                             <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+2" class="btn_text" v-if="scope.row.status == 40">变更</router-link>
                             <button class="btn_text" v-if="scope.row.status == 30" @click="cancelContract(scope.row.id)">取消</button>
@@ -192,11 +194,13 @@
                     stopReason:'',
                 },
                 stopTypeOption:[],
-                prototypeId:this.$route.params.prototypeId
+                prototypeId:this.$route.params.prototypeId,
+                stopNum:''
             }
         },
         mounted(){
             this.getMerchantList();
+            this.getShopList();
             this.activeNameSwitch();
             this.getBaseDataOptions();
         },
@@ -274,9 +278,9 @@
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'shopName', label: '店铺名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                     case '1':
@@ -284,9 +288,9 @@
                             { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                     case '2':
@@ -295,9 +299,9 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                     case '3':
@@ -306,9 +310,9 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'signDate', label: '签约日期' },
                             { prop: 'validDate', label: '合同有效期' },
-                            { prop: 'statusText', label: '状态' }
+                            { prop: 'statusText', label: '状态' },
+                            { prop: 'updateDate', label: '更新时间' }
                         ];
                         break;
                 }
@@ -363,8 +367,8 @@
                 })
             },
             async getShopList(merchantId){
-                await this.$api.rentapi.getMerchantShopOption({
-                    merchantId:merchantId
+                await this.$api.rentapi.getByStatusUsingPOST({
+                    status:[3,4,5]
                 }).then(res=>{
                     this.shopOptions = res.data.data;
                 })
@@ -376,7 +380,7 @@
                     this.merchantOptions = res.data.data;
                 })
             },
-            async stopInfoBtn(id){
+            async stopInfoBtn(id,num){
                 this.dialogVisible = true;
                 this.stopContractData={
                     id:'',
@@ -384,6 +388,7 @@
                     stopType:'',
                     stopReason:'',
                 };
+                this.stopNum = num;
                 await this.$api.rentapi.getStopInfo({
                     id: id
                 }).then(res => {
@@ -400,17 +405,31 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$api.rentapi.stopContractPOST({
-                        param: this.stopContractData
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.dialogVisible=false;
-                            this.getDataList(1);
-                            this.$message.success(res.data.msg);
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
+                    if(this.stopNum ==1) {
+                        this.$api.rentapi.stopContractPOST({
+                            param: this.stopContractData
+                        }).then(res => {
+                            if (res.data.status == 200) {
+                                this.dialogVisible = false;
+                                this.getDataList(1);
+                                this.$message.success(res.data.msg);
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        })
+                    }else{
+                        this.$api.rentapi.stopEditContractPOST({
+                            param: this.stopContractData
+                        }).then(res => {
+                            if (res.data.status == 200) {
+                                this.dialogVisible = false;
+                                this.getDataList(1);
+                                this.$message.success(res.data.msg);
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        })
+                    }
                 });
             },
             async cancelContract(id){
@@ -432,7 +451,7 @@
                 });
             },
             merchantSelect(){
-                this.getShopList(this.merchantValue);
+                //this.getShopList(this.merchantValue);
                 this.getDataList(1);
             },
             shopSelect(){
@@ -441,7 +460,7 @@
             statusSelect(){
                 this.getDataList(1);
             },
-            stopContract(id){
+            stopContract(id,num){
                 this.dialogVisible = true;
                 this.stopContractData={                    
                     stopDate:'',
@@ -449,6 +468,7 @@
                     stopReason:'',
                 };
                 this.stopContractData.id = id;
+                this.stopNum = num;
             }
         },
         components:{

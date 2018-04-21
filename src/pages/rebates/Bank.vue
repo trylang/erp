@@ -52,19 +52,19 @@
             <span class="inputname">店铺范围：</span>
             <el-select v-model="query2.shopCodeFrom" clearable filterable @change="getListDetail" placeholder="请输入店铺号" class="dialogselect">
               <el-option
-                v-for="item in selects.merchants"
-                :key="item.id"
-                :label="item.merchantName"
-                :value="item.id">
+                v-for="item in selects.shops"
+                :key="item.shopCode"
+                :label="item.shopCode"
+                :value="item.shopCode">
               </el-option>
             </el-select>
             <span>~</span>
             <el-select v-model="query2.shopCodeTo" clearable filterable @change="getListDetail" placeholder="请输入店铺号" class="dialogselect">
               <el-option
-                v-for="item in selects.merchants"
-                :key="item.id"
-                :label="item.merchantName"
-                :value="item.id">
+                v-for="item in selects.shops"
+                :key="item.shopCode"
+                :label="item.shopCode"
+                :value="item.shopCode">
               </el-option>
             </el-select>
           </div>
@@ -158,7 +158,7 @@ import { $message } from "../../utils/notice";
 import erpTable from "../../components/Table";
 import itemTab from "../../components/ItemTab";
 import { formatTree } from "@/utils";
-import { queryShop } from "@/utils/rest/financeAPI";
+import { saleTQueryShop } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -410,7 +410,7 @@ export default {
 
     async init() {
       let [shop] = await Promise.all([
-        queryShop()
+        saleTQueryShop()
       ]);
       this.selects.shops = shop.data || [];
     }

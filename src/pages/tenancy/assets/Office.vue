@@ -202,7 +202,7 @@
                     useArea: ''
                 },
                 marketOptions:[{
-                    marketName:'朝阳大悦城',
+                    marketName:'西单大悦城',
                     id:1
                 }],
                 buildOptions:[{
@@ -279,9 +279,9 @@
                 })
             },
             async submitFormData(){
-                let regExp = /^[0-9]*$/;
+                let regExp = /^[0-9].*$/;
                 if(!regExp.test(this.unitInfoData.area) || !regExp.test(this.unitInfoData.useArea)){
-                    this.$message.error('建筑面积使用面积格式不正确');
+                    this.$message.error('建筑面积使用面积格式不正确,不能小于0');
                     return false;
                 }else if(this.unitInfoData.area<=0 || this.unitInfoData.useArea<=0){
                     this.$message.error('建筑面积和使用面积不能小于0');

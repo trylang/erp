@@ -90,7 +90,7 @@ export const cdeleteUsingPUT = function(parameters = {}) {
  * @param request - request
  */
 export const cupdateUsingPUT = function(parameters = {}) {
-    return rentapi.cupdateUsingPUT(parameters);
+    return rentapi.cupdateUsingPOST(parameters);
 }
 
 /**
@@ -2032,7 +2032,7 @@ export const listpgUsingGET_5 = function(parameters = {}) {
  * @param status - 状态id
  */
 export const getByStatusUsingPOST = function(parameters = {}) {
-    return rentapi.getByStatusUsingPOST(parameters);
+    return rentapi.optionUsingPOST_7(parameters);
 }
 
 /**
@@ -2307,6 +2307,18 @@ export const getStopInfo = function(parameters = {}) {
     return rentapi.stopUsingGET(parameters);
 }
 /**
+ * 正式合同终止编辑
+ * request: stopEditUsingPOST
+ * url: stopEditUsingPOSTURL
+ * method: stopEditUsingPOST_TYPE
+ * raw_url: stopEditUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const stopEditContractPOST = function(parameters = {}) {
+    return rentapi.stopEditUsingPOST(parameters);
+}
+/**
  * 根据父业态查询子业态业态列表
  * request: getListByPidUsingGET
  * url: getListByPidUsingGETURL
@@ -2345,4 +2357,69 @@ export const getOptionsUsingGET = function(parameters = {}) {
  */
 export const confirmByStatusUsingGET = function(parameters = {}) {
     return rentapi.confirmByStatusUsingGET(parameters);
+}
+/**
+ * 查询商户的店铺下拉列表
+ * request: threeMerchantShopUsingGET
+ * url: threeMerchantShopUsingGETURL
+ * method: threeMerchantShopUsingGET_TYPE
+ * raw_url: threeMerchantShopUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const getThreeMerchantShop = function(parameters = {}) {
+    return rentapi.threeMerchantShopUsingGET(parameters);
+}
+
+/**
+ * 删除图片
+ * request: deleteImgUsingDELETE_1
+ * url: deleteImgUsingDELETE_1URL
+ * method: deleteImgUsingDELETE_1_TYPE
+ * raw_url: deleteImgUsingDELETE_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteImgUsingDELETE_1 = function(parameters = {}) {
+    return rentapi.deleteImgUsingDELETE_1(parameters);
+}
+/**
+ * 意向合同文件上传
+ * request: uploadsIUsingPOST
+ * url: uploadsIUsingPOSTURL
+ * method: uploadsIUsingPOST_TYPE
+ * raw_url: uploadsIUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param file - 附件
+ * @param contractId - 合同主键ID
+ * @param type - 附件类型 0合同附件1其他
+ */
+export const postFileUploads = function(parameters = {}) {
+    return rentapi.uploadsIUsingPOST(parameters);
+}
+/**
+ * 意向合同文件上传
+ * request: uploadsIUsingPOST
+ * url: uploadsIUsingPOSTURL
+ * method: uploadsIUsingPOST_TYPE
+ * raw_url: uploadsIUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param file - 附件
+ * @param contractId - 合同主键ID
+ * @param type - 附件类型 0合同附件1其他
+ */
+export const getIntentFile = function(parameters = {}) {
+    return rentapi.fileUsingGET_1(parameters);
+}
+/**
+ * 查询商户的合同下拉列表
+ * request: getMerchantContractUsingGET
+ * url: getMerchantContractUsingGETURL
+ * method: getMerchantContractUsingGET_TYPE
+ * raw_url: getMerchantContractUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const getMerchantContractUsingGET = function(parameters = {}) {
+    return rentapi.getMerchantContractUsingGET(parameters);
 }

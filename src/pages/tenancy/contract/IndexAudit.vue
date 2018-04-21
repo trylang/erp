@@ -96,13 +96,13 @@
                 }],
                 columnData:[
                     { type: 'selection', width:'50'},
-                    { prop: 'contractCode', label: '合同号'},
+                    { prop: 'contractCode', label: '合同号',link:'/inner/indexinfo/0',param:'id'},
                     { prop: 'merchantName', label: '商户名称' },
                     { prop: 'brandName', label: '经营品牌' },
                     { prop: 'propertyType', label: '物业性质' },
-                    { prop: 'signDate', label: '签约日期' },
                     { prop: 'validStartDate', label: '合同有效期' },
-                    { prop: 'statusText', label: '状态' }
+                    { prop: 'statusText', label: '状态' },
+                    { prop: 'updateDate', label: '更新时间' }
                 ],
                 multipleSelection:[]
             }

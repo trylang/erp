@@ -143,3 +143,26 @@ export function changImg(dom, cb){
   };
 }
 
+export function onlyNumWord(value) {
+  let val = value.replace(/^\s+|\s+$/g, '');
+  const reg = /^[0-9a-zA-Z]+$/;
+  return reg.test(val);
+}
+
+export function numberNotE(value) {
+  const val = value + '';
+  if(!val || val.indexOf('e') >= 0) return false;
+  else return true;
+}
+
+export function numMax10(value) {
+  const val = parseFloat(value);
+  if(val < 0 || val > 999999999) return false;
+  else return true;
+}
+
+export function numPartmax2(value) {
+  const val = value + '';
+  if (val.indexOf('.') >= 0 && val.split('.')[1].length > 2) return false;
+  else return true;
+}

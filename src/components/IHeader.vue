@@ -60,10 +60,10 @@
                 },{
                     path:'/visual',
                     title:'可视化管理'
-                },{
+                },/*{
                     path:'/webinner',
                     title:'商户价值'
-                },{
+                },*/{
                     path:'/database',
                     title:'数据中心'
                 },{

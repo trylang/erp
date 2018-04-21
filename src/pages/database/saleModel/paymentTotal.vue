@@ -60,61 +60,61 @@ export default {
   data() {
     return {
       afterTitles: [
-        {
-          label: "内卡",
-          type: "text",
-          name: "remark"
-				},
-				{
-          label: "支付宝",
-          type: "text",
-          name: "settleGroupCode"
-        },
-        {
-          label: "微信",
-          type: "text",
-          name: "settleGroupName"
-        },
-        {
-          label: "现金",
-          type: "text",
-          name: "remark"
-        },
-        {
-          label: "外卖",
-          type: "text",
-          name: "remark"
-        },
-        {
-          label: "资和信卡",
-          type: "text",
-          name: "remark"
-				},
-				{
-          label: "U悦买单",
-          type: "text",
-          name: "settleGroupCode"
-        },
-        {
-          label: "积分支付",
-          type: "text",
-          name: "settleGroupName"
-        },
-        {
-          label: "其他",
-          type: "text",
-          name: "remark"
-        },
-        {
-          label: "团购卡",
-          type: "text",
-          name: "remark"
-        },
-        {
-          label: "翼支付",
-          type: "text",
-          name: "remark"
-        }
+    //     {
+    //       label: "内卡",
+    //       type: "text",
+    //       name: "remark"
+				// },
+				// {
+    //       label: "支付宝",
+    //       type: "text",
+    //       name: "settleGroupCode"
+    //     },
+    //     {
+    //       label: "微信",
+    //       type: "text",
+    //       name: "settleGroupName"
+    //     },
+    //     {
+    //       label: "现金",
+    //       type: "text",
+    //       name: "remark"
+    //     },
+    //     {
+    //       label: "外卖",
+    //       type: "text",
+    //       name: "remark"
+    //     },
+    //     {
+    //       label: "资和信卡",
+    //       type: "text",
+    //       name: "remark"
+				// },
+				// {
+    //       label: "U悦买单",
+    //       type: "text",
+    //       name: "settleGroupCode"
+    //     },
+    //     {
+    //       label: "积分支付",
+    //       type: "text",
+    //       name: "settleGroupName"
+    //     },
+    //     {
+    //       label: "其他",
+    //       type: "text",
+    //       name: "remark"
+    //     },
+    //     {
+    //       label: "团购卡",
+    //       type: "text",
+    //       name: "remark"
+    //     },
+    //     {
+    //       label: "翼支付",
+    //       type: "text",
+    //       name: "remark"
+    //     }
       ],
       header: [{
           label: "店铺号",
@@ -134,7 +134,7 @@ export default {
         {
           label: "销售总计",
           type: "text",
-          name: "salesSumOfADay"
+          name: "totalAmount"
         },],
       content: [],
       selects: {
@@ -159,12 +159,28 @@ export default {
         pageNum: page.pageNum,
         pageSize: page.pageSize
       };
-      console.log(params);
       if(params.startDate && params.endDate){
         this.$api.reportapi.shopPaymentListUsingGET(params).then(res => {
           const data = res.data;
           if (data.status === 200) {
-            this.content = data.data;
+            this.afterTitles = [];
+            this.header = this.header.slice(0, 4);
+            if (res.data.data.list.length > 0) {
+                res.data.data.list[0].wayAndAmountList.forEach(item => {
+                    this.afterTitles.push({
+                        label: item.name,
+                        type: 'text',
+                        name: item.amount
+                    });
+                });
+                res.data.data.list.forEach(item => {
+                    this.afterTitles.forEach(item1 => {
+                        item[item1.name] = item1.name
+                    });
+                });
+            }
+            this.content = res.data.data;
+            this.header = this.header.concat(this.afterTitles);
             if (callback) callback();
           } else {
             return data.message;

@@ -1,7 +1,7 @@
 <template>
     <div class="savebox">
         <div class="savecont">
-            <con-head title="创建角色"></con-head>
+            <con-head :title="this.$route.params.roleid!=0?'编辑角色':'创建角色'"></con-head>
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
@@ -78,8 +78,10 @@
                     await this.$api.systemapi.selectAllMenusForUpdateUsingGET({
                         roleId: this.$route.params.roleid
                     }).then(res => {
-                        this.addRole = res.data.data.thisRole;
-                        this.$refs.tree.setCheckedKeys(res.data.data.theRoleHasTheseMenus);
+                        if(res.data.status === 200){
+                            this.addRole = res.data.data.thisRole;
+                            this.$refs.tree.setCheckedKeys(res.data.data.theRoleHasTheseMenus);
+                        }
                     })
                 }
             },

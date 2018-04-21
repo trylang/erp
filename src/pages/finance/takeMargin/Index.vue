@@ -12,6 +12,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getTakeMarginList">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -40,10 +41,11 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractCode" placeholder="请选择合同" @change="getTakeMarginList()" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.contractCode"
+                :label="item.codeInfo"
                 :value="item.contractCode">
               </el-option>
             </el-select>
@@ -116,7 +118,7 @@ export default {
             {
               label: "收款时间",
               name: "receivedDate",
-              type: "time",
+              type: "text",
               filter: "yyyy-MM-dd hh:mm:ss.S"
             },{
               label: "状态",
@@ -264,17 +266,15 @@ export default {
     },
     mounted() {
         this.getTakeMarginList();
-        this.$api.rentapi.listUsingGET_12({
-            status:1
-        }).then(res=>{ //商户列表 status:4 已确定状态没加
+        this.$api.financeapi.merinfoUsingGET().then(res=>{ //商户列表
             this.selects.merchants = res.data.data;
-            this.dialog.models[0].options = res.data.data;
+            // this.dialog.models[0].options = res.data.data;
         }).catch(res=>{
             this.$message.error(res.data.msg);
         });
-        this.$api.rentapi.getListForPageUsingGET({}).then(res=>{//合同列表 status:30 已确定状态没加
-            this.selects.contracts = res.data.data.list;
-            this.dialog.models[1].options = res.data.data.list;
+        this.$api.financeapi.coninfoUsingGET().then(res=>{//合同列表
+            this.selects.contracts = res.data.data;
+            // this.dialog.models[1].options = res.data.data.list;
         }).catch(res=>{
             this.$message.error(res.data.msg);
         });

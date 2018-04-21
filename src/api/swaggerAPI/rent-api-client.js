@@ -361,14 +361,14 @@ export const cdeleteUsingPUTURL = function(parameters = {}) {
 }
 /**
  * 编辑附件
- * request: cupdateUsingPUT
- * url: cupdateUsingPUTURL
- * method: cupdateUsingPUT_TYPE
- * raw_url: cupdateUsingPUT_RAW_URL
+ * request: cupdateUsingPOST
+ * url: cupdateUsingPOSTURL
+ * method: cupdateUsingPOST_TYPE
+ * raw_url: cupdateUsingPOST_RAW_URL
  * @param token - header中token字段
  * @param request - request
  */
-export const cupdateUsingPUT = function(parameters = {}) {
+export const cupdateUsingPOST = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/rent/atment/cedit'
@@ -386,15 +386,15 @@ export const cupdateUsingPUT = function(parameters = {}) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
         });
     }
-    return request('put', domain + path, body, queryParameters, form, config)
+    return request('post', domain + path, body, queryParameters, form, config)
 }
-export const cupdateUsingPUT_RAW_URL = function() {
+export const cupdateUsingPOST_RAW_URL = function() {
     return '/rent/atment/cedit'
 }
-export const cupdateUsingPUT_TYPE = function() {
-    return 'put'
+export const cupdateUsingPOST_TYPE = function() {
+    return 'post'
 }
-export const cupdateUsingPUTURL = function(parameters = {}) {
+export const cupdateUsingPOSTURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/atment/cedit'
@@ -540,9 +540,6 @@ export const listUsingGET_1 = function(parameters = {}) {
     if (parameters['attachmentType'] !== undefined) {
         queryParameters['attachmentType'] = parameters['attachmentType']
     }
-    if (parameters['attachmentType'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: attachmentType'))
-    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -619,9 +616,6 @@ export const listDateOrderUsingGET = function(parameters = {}) {
     }
     if (parameters['attachmentType'] !== undefined) {
         queryParameters['attachmentType'] = parameters['attachmentType']
-    }
-    if (parameters['attachmentType'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: attachmentType'))
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1067,7 +1061,7 @@ export const invalidUsingPOSTURL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const auditListUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1149,7 +1143,7 @@ export const auditListUsingGETURL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const auditListpgUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1358,7 +1352,7 @@ export const listUsingGET_2URL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const listUsingGET_3 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1440,7 +1434,7 @@ export const listUsingGET_3URL = function(parameters = {}) {
  * @param brandCode - 编码
  * @param brandName - 名称
  * @param status - 状态：0新增1已确认2.取消
- * @param businessId - 业态编号
+ * @param businessId - 一级业态ID
  */
 export const listpgUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2041,52 +2035,6 @@ export const addUsingPOST_2URL = function(parameters = {}) {
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 根据父业态查询子业态业态列表
- * request: getListByPidUsingGET
- * url: getListByPidUsingGETURL
- * method: getListByPidUsingGET_TYPE
- * raw_url: getListByPidUsingGET_RAW_URL
- * @param token - header中token字段
- * @param pid - 父业态ID
- */
-export const getListByPidUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/rent/busi/list/{pid}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{pid}', `${parameters['pid']}`)
-  if (parameters['pid'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: pid'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const getListByPidUsingGET_RAW_URL = function() {
-  return '/rent/busi/list/{pid}'
-}
-export const getListByPidUsingGET_TYPE = function() {
-  return 'get'
-}
-export const getListByPidUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/rent/busi/list/{pid}'
-  path = path.replace('{pid}', `${parameters['pid']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * 查询所有业态信息
  * request: listUsingGET_6
  * url: listUsingGET_6URL
@@ -2146,6 +2094,52 @@ export const listUsingGET_6URL = function(parameters = {}) {
     if (parameters['businessName'] !== undefined) {
         queryParameters['businessName'] = parameters['businessName']
     }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 根据父业态查询子业态业态列表
+ * request: getListByPidUsingGET
+ * url: getListByPidUsingGETURL
+ * method: getListByPidUsingGET_TYPE
+ * raw_url: getListByPidUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pid - 父业态ID
+ */
+export const getListByPidUsingGET = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/busi/list/{pid}'
+    let body
+    let queryParameters = {}
+    let form = {}
+    path = path.replace('{pid}', `${parameters['pid']}`)
+    if (parameters['pid'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: pid'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getListByPidUsingGET_RAW_URL = function() {
+    return '/rent/busi/list/{pid}'
+}
+export const getListByPidUsingGET_TYPE = function() {
+    return 'get'
+}
+export const getListByPidUsingGETURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/busi/list/{pid}'
+    path = path.replace('{pid}', `${parameters['pid']}`)
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -3260,6 +3254,106 @@ export const delUsingPUTURL = function(parameters = {}) {
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 删除合同关联的店铺单元记录
+ * request: delShopUnitUsingPUT
+ * url: delShopUnitUsingPUTURL
+ * method: delShopUnitUsingPUT_TYPE
+ * raw_url: delShopUnitUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const delShopUnitUsingPUT = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/contract/del/shopUnit'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['id'] !== undefined) {
+        queryParameters['id'] = parameters['id']
+    }
+    if (parameters['id'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: id'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('put', domain + path, body, queryParameters, form, config)
+}
+export const delShopUnitUsingPUT_RAW_URL = function() {
+    return '/rent/contract/del/shopUnit'
+}
+export const delShopUnitUsingPUT_TYPE = function() {
+    return 'put'
+}
+export const delShopUnitUsingPUTURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/contract/del/shopUnit'
+    if (parameters['id'] !== undefined) {
+        queryParameters['id'] = parameters['id']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 删除附件
+ * request: deleteImgUsingDELETE
+ * url: deleteImgUsingDELETEURL
+ * method: deleteImgUsingDELETE_TYPE
+ * raw_url: deleteImgUsingDELETE_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteImgUsingDELETE = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/contract/file'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['id'] !== undefined) {
+        queryParameters['id'] = parameters['id']
+    }
+    if (parameters['id'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: id'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const deleteImgUsingDELETE_RAW_URL = function() {
+    return '/rent/contract/file'
+}
+export const deleteImgUsingDELETE_TYPE = function() {
+    return 'delete'
+}
+export const deleteImgUsingDELETEURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/contract/file'
+    if (parameters['id'] !== undefined) {
+        queryParameters['id'] = parameters['id']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 获取附件信息
  * request: fileUsingGET
  * url: fileUsingGETURL
@@ -3539,7 +3633,7 @@ export const getByIdUsingGET_1URL = function(parameters = {}) {
  * raw_url: getIrregularCostInfoUsingGET_RAW_URL
  * @param token - header中token字段
  * @param contractId - 合同的ID
- * @param settLeGroupId - 结算组别的ID
+ * @param settleGroupId - settleGroupId
  */
 export const getIrregularCostInfoUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -3549,45 +3643,45 @@ export const getIrregularCostInfoUsingGET = function(parameters = {}) {
     let queryParameters = {}
     let form = {}
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
     }
     if (parameters['contractId'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: contractId'))
+      return Promise.reject(new Error('Missing required  parameter: contractId'))
     }
-    if (parameters['settLeGroupId'] !== undefined) {
-        queryParameters['sett leGroupId'] = parameters['settLeGroupId']
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
     }
     return request('get', domain + path, body, queryParameters, form, config)
-}
-export const getIrregularCostInfoUsingGET_RAW_URL = function() {
+  }
+  export const getIrregularCostInfoUsingGET_RAW_URL = function() {
     return '/rent/contract/irregularcostinfo'
-}
-export const getIrregularCostInfoUsingGET_TYPE = function() {
+  }
+  export const getIrregularCostInfoUsingGET_TYPE = function() {
     return 'get'
-}
-export const getIrregularCostInfoUsingGETURL = function(parameters = {}) {
+  }
+  export const getIrregularCostInfoUsingGETURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/contract/irregularcostinfo'
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
     }
-    if (parameters['settLeGroupId'] !== undefined) {
-        queryParameters['sett leGroupId'] = parameters['settLeGroupId']
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+  }
 /**
  * 根据条件查询合同列表
  * request: getListForPageUsingGET
@@ -4411,44 +4505,91 @@ export const stopUsingPOST = function(parameters = {}) {
     let queryParameters = {}
     let form = {}
     if (parameters['param'] !== undefined) {
-      body = parameters['param']
+        body = parameters['param']
     }
     if (parameters['param'] === undefined) {
-      return Promise.reject(new Error('Missing required  parameter: param'))
+        return Promise.reject(new Error('Missing required  parameter: param'))
     }
     if (parameters.$queryParameters) {
-      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-      });
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
     }
     return request('post', domain + path, body, queryParameters, form, config)
-  }
-  export const stopUsingPOST_RAW_URL = function() {
+}
+export const stopUsingPOST_RAW_URL = function() {
     return '/rent/contract/stop'
-  }
-  export const stopUsingPOST_TYPE = function() {
+}
+export const stopUsingPOST_TYPE = function() {
     return 'post'
-  }
-  export const stopUsingPOSTURL = function(parameters = {}) {
+}
+export const stopUsingPOSTURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/contract/stop'
     if (parameters.$queryParameters) {
-      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-      })
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-  }
+}
 /**
- * 根据合同ID,获取合同的单元信息。
+ * 正式合同终止编辑
+ * request: stopEditUsingPOST
+ * url: stopEditUsingPOSTURL
+ * method: stopEditUsingPOST_TYPE
+ * raw_url: stopEditUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const stopEditUsingPOST = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/contract/stop/edit'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['param'] !== undefined) {
+        body = parameters['param']
+    }
+    if (parameters['param'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: param'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('post', domain + path, body, queryParameters, form, config)
+}
+export const stopEditUsingPOST_RAW_URL = function() {
+    return '/rent/contract/stop/edit'
+}
+export const stopEditUsingPOST_TYPE = function() {
+    return 'post'
+}
+export const stopEditUsingPOSTURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/contract/stop/edit'
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 根据合同号,获取合同的单元信息。
  * request: getContractUnitInformationUsingGET
  * url: getContractUnitInformationUsingGETURL
  * method: getContractUnitInformationUsingGET_TYPE
  * raw_url: getContractUnitInformationUsingGET_RAW_URL
  * @param token - header中token字段
- * @param contractCode - 合同的ID
+ * @param contractCode - 合同号
  */
 export const getContractUnitInformationUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -6380,6 +6521,52 @@ export const editUsingPUTURL = function(parameters = {}) {
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 获取附件信息
+ * request: fileUsingGET_1
+ * url: fileUsingGET_1URL
+ * method: fileUsingGET_1_TYPE
+ * raw_url: fileUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const fileUsingGET_1 = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/intent/contract/file/{id}'
+    let body
+    let queryParameters = {}
+    let form = {}
+    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters['id'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: id'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const fileUsingGET_1_RAW_URL = function() {
+    return '/rent/intent/contract/file/{id}'
+}
+export const fileUsingGET_1_TYPE = function() {
+    return 'get'
+}
+export const fileUsingGET_1URL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/intent/contract/file/{id}'
+    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 根据条件查询意向合同列表
  * request: getListForPageUsingGET_1
  * url: getListForPageUsingGET_1URL
@@ -6761,14 +6948,14 @@ export const addShopUnitUsingPOST_1URL = function(parameters = {}) {
 }
 /**
  * 删除意向单元信息
- * request: delShopUnitUsingPUT
- * url: delShopUnitUsingPUTURL
- * method: delShopUnitUsingPUT_TYPE
- * raw_url: delShopUnitUsingPUT_RAW_URL
+ * request: delShopUnitUsingPUT_1
+ * url: delShopUnitUsingPUT_1URL
+ * method: delShopUnitUsingPUT_1_TYPE
+ * raw_url: delShopUnitUsingPUT_1_RAW_URL
  * @param token - header中token字段
  * @param intentUnitId - intentUnitId
  */
-export const delShopUnitUsingPUT = function(parameters = {}) {
+export const delShopUnitUsingPUT_1 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/rent/intent/contract/shopunit/del'
@@ -6788,13 +6975,13 @@ export const delShopUnitUsingPUT = function(parameters = {}) {
     }
     return request('put', domain + path, body, queryParameters, form, config)
 }
-export const delShopUnitUsingPUT_RAW_URL = function() {
+export const delShopUnitUsingPUT_1_RAW_URL = function() {
     return '/rent/intent/contract/shopunit/del'
 }
-export const delShopUnitUsingPUT_TYPE = function() {
+export const delShopUnitUsingPUT_1_TYPE = function() {
     return 'put'
 }
-export const delShopUnitUsingPUTURL = function(parameters = {}) {
+export const delShopUnitUsingPUT_1URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/intent/contract/shopunit/del'
@@ -6967,84 +7154,84 @@ export const updateSincerityMoneyUsingPOSTURL = function(parameters = {}) {
  * @param brandId - 品牌id
  */
 export const confirmByStatusUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/rent/intent/contract/status/confirm/list'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['states'] !== undefined) {
-    queryParameters['states'] = parameters['states']
-  }
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['propertyType'] !== undefined) {
-    queryParameters['propertyType'] = parameters['propertyType']
-  }
-  if (parameters['status'] !== undefined) {
-    queryParameters['status'] = parameters['status']
-  }
-  if (parameters['contractCode'] !== undefined) {
-    queryParameters['contractCode'] = parameters['contractCode']
-  }
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters['brandId'] !== undefined) {
-    queryParameters['brandId'] = parameters['brandId']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/intent/contract/status/confirm/list'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['states'] !== undefined) {
+        queryParameters['states'] = parameters['states']
+    }
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['brandId'] !== undefined) {
+        queryParameters['brandId'] = parameters['brandId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
 }
 export const confirmByStatusUsingGET_RAW_URL = function() {
-  return '/rent/intent/contract/status/confirm/list'
+    return '/rent/intent/contract/status/confirm/list'
 }
 export const confirmByStatusUsingGET_TYPE = function() {
-  return 'get'
+    return 'get'
 }
 export const confirmByStatusUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/rent/intent/contract/status/confirm/list'
-  if (parameters['states'] !== undefined) {
-    queryParameters['states'] = parameters['states']
-  }
-  if (parameters['pageNum'] !== undefined) {
-    queryParameters['pageNum'] = parameters['pageNum']
-  }
-  if (parameters['pageSize'] !== undefined) {
-    queryParameters['pageSize'] = parameters['pageSize']
-  }
-  if (parameters['propertyType'] !== undefined) {
-    queryParameters['propertyType'] = parameters['propertyType']
-  }
-  if (parameters['status'] !== undefined) {
-    queryParameters['status'] = parameters['status']
-  }
-  if (parameters['contractCode'] !== undefined) {
-    queryParameters['contractCode'] = parameters['contractCode']
-  }
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters['brandId'] !== undefined) {
-    queryParameters['brandId'] = parameters['brandId']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/intent/contract/status/confirm/list'
+    if (parameters['states'] !== undefined) {
+        queryParameters['states'] = parameters['states']
+    }
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['brandId'] !== undefined) {
+        queryParameters['brandId'] = parameters['brandId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
  * 根据状态查询意向合同列表
@@ -7058,6 +7245,9 @@ export const confirmByStatusUsingGETURL = function(parameters = {}) {
  * @param pageSize - 每页显示数量
  * @param propertyType - 物业性质
  * @param status - 状态
+ * @param contractCode - 合同号
+ * @param merchantId - 商户id
+ * @param brandId - 品牌id
  */
 export const getListForPageByStatusUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7080,6 +7270,15 @@ export const getListForPageByStatusUsingGET = function(parameters = {}) {
     }
     if (parameters['status'] !== undefined) {
         queryParameters['status'] = parameters['status']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['brandId'] !== undefined) {
+        queryParameters['brandId'] = parameters['brandId']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7112,6 +7311,15 @@ export const getListForPageByStatusUsingGETURL = function(parameters = {}) {
     }
     if (parameters['status'] !== undefined) {
         queryParameters['status'] = parameters['status']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['brandId'] !== undefined) {
+        queryParameters['brandId'] = parameters['brandId']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7159,6 +7367,73 @@ export const unitDetailUsingGETURL = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/intent/contract/units/detail/{id}'
     path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 意向合同文件上传
+ * request: uploadsIUsingPOST
+ * url: uploadsIUsingPOSTURL
+ * method: uploadsIUsingPOST_TYPE
+ * raw_url: uploadsIUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param file - 附件
+ * @param contractId - 合同主键ID
+ * @param type - 附件类型 0合同附件1其他
+ */
+export const uploadsIUsingPOST = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/intent/contract/uploads'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['file'] !== undefined) {
+        form['file'] = parameters['file']
+    }
+    if (parameters['file'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: file'))
+    }
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: contractId'))
+    }
+    if (parameters['type'] !== undefined) {
+        queryParameters['type'] = parameters['type']
+    }
+    if (parameters['type'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: type'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('post', domain + path, body, queryParameters, form, config)
+}
+export const uploadsIUsingPOST_RAW_URL = function() {
+    return '/rent/intent/contract/uploads'
+}
+export const uploadsIUsingPOST_TYPE = function() {
+    return 'post'
+}
+export const uploadsIUsingPOSTURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/intent/contract/uploads'
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['type'] !== undefined) {
+        queryParameters['type'] = parameters['type']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -7527,6 +7802,52 @@ export const auditListpgUsingGET_1URL = function(parameters = {}) {
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 删除图片
+ * request: deleteImgUsingDELETE_1
+ * url: deleteImgUsingDELETE_1URL
+ * method: deleteImgUsingDELETE_1_TYPE
+ * raw_url: deleteImgUsingDELETE_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteImgUsingDELETE_1 = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/merchant/img/{id}'
+    let body
+    let queryParameters = {}
+    let form = {}
+    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters['id'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: id'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const deleteImgUsingDELETE_1_RAW_URL = function() {
+    return '/rent/merchant/img/{id}'
+}
+export const deleteImgUsingDELETE_1_TYPE = function() {
+    return 'delete'
+}
+export const deleteImgUsingDELETE_1URL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/merchant/img/{id}'
+    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 查询商户列表
  * request: listUsingGET_11
  * url: listUsingGET_11URL
@@ -7827,6 +8148,63 @@ export const merchantUsingGETURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/merchant/type'
+    if (parameters['type'] !== undefined) {
+        queryParameters['type'] = parameters['type']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 文件上传
+ * request: uploadsUsingPOST_3
+ * url: uploadsUsingPOST_3URL
+ * method: uploadsUsingPOST_3_TYPE
+ * raw_url: uploadsUsingPOST_3_RAW_URL
+ * @param token - header中token字段
+ * @param file - 图片
+ * @param type - 类型 0营业执照 1经营许可证 2商标注册 3法人身份证 4其他证件
+ */
+export const uploadsUsingPOST_3 = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/merchant/uploads'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['file'] !== undefined) {
+        form['file'] = parameters['file']
+    }
+    if (parameters['file'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: file'))
+    }
+    if (parameters['type'] !== undefined) {
+        queryParameters['type'] = parameters['type']
+    }
+    if (parameters['type'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: type'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('post', domain + path, body, queryParameters, form, config)
+}
+export const uploadsUsingPOST_3_RAW_URL = function() {
+    return '/rent/merchant/uploads'
+}
+export const uploadsUsingPOST_3_TYPE = function() {
+    return 'post'
+}
+export const uploadsUsingPOST_3URL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/merchant/uploads'
     if (parameters['type'] !== undefined) {
         queryParameters['type'] = parameters['type']
     }
@@ -8695,6 +9073,52 @@ export const listpgUsingGET_5URL = function(parameters = {}) {
 }
 /**
  * 查询商户的店铺下拉列表
+ * request: threeMerchantShopUsingGET
+ * url: threeMerchantShopUsingGETURL
+ * method: threeMerchantShopUsingGET_TYPE
+ * raw_url: threeMerchantShopUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const threeMerchantShopUsingGET = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/rent/shop/merchant/three/{merchantId}'
+    let body
+    let queryParameters = {}
+    let form = {}
+    path = path.replace('{merchantId}', `${parameters['merchantId']}`)
+    if (parameters['merchantId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: merchantId'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const threeMerchantShopUsingGET_RAW_URL = function() {
+    return '/rent/shop/merchant/three/{merchantId}'
+}
+export const threeMerchantShopUsingGET_TYPE = function() {
+    return 'get'
+}
+export const threeMerchantShopUsingGETURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/rent/shop/merchant/three/{merchantId}'
+    path = path.replace('{merchantId}', `${parameters['merchantId']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 查询商户的店铺下拉列表
  * request: merchantShopUsingGET
  * url: merchantShopUsingGETURL
  * method: merchantShopUsingGET_TYPE
@@ -8741,14 +9165,14 @@ export const merchantShopUsingGETURL = function(parameters = {}) {
 }
 /**
  * 查询店铺下拉列表
- * request: getByStatusUsingPOST
- * url: getByStatusUsingPOSTURL
- * method: getByStatusUsingPOST_TYPE
- * raw_url: getByStatusUsingPOST_RAW_URL
+ * request: optionUsingPOST_7
+ * url: optionUsingPOST_7URL
+ * method: optionUsingPOST_7_TYPE
+ * raw_url: optionUsingPOST_7_RAW_URL
  * @param token - header中token字段
  * @param status - 状态id
  */
-export const getByStatusUsingPOST = function(parameters = {}) {
+export const optionUsingPOST_7 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/rent/shop/option'
@@ -8768,13 +9192,13 @@ export const getByStatusUsingPOST = function(parameters = {}) {
     }
     return request('post', domain + path, body, queryParameters, form, config)
 }
-export const getByStatusUsingPOST_RAW_URL = function() {
+export const optionUsingPOST_7_RAW_URL = function() {
     return '/rent/shop/option'
 }
-export const getByStatusUsingPOST_TYPE = function() {
+export const optionUsingPOST_7_TYPE = function() {
     return 'post'
 }
-export const getByStatusUsingPOSTURL = function(parameters = {}) {
+export const optionUsingPOST_7URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/rent/shop/option'

@@ -305,7 +305,7 @@
                             children: [
                                 {
                                     path: '/rebates/taskcenter',
-                                    title: '数据处理任务'
+                                    title: '任务中心'
                                 }
                             ]
                         }],

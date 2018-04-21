@@ -8,12 +8,12 @@
             <router-link class="el-button" icon="el-icon-plus" slot="append" to="/inner/addcontract/0">录入</router-link>
             <div slot="preappend">
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchbox">
                             <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="11" :offset="3">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
                             <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
@@ -29,7 +29,7 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="9">
+                    <el-col :span="10">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">品牌</span>
                             <el-select v-model="brandValue" placeholder="请选择" class="dialogselect" @change="brandSelect()">
@@ -43,7 +43,7 @@
                             </el-select>
                         </div>
                     </el-col>
-                    <el-col :span="9" :offset="6">
+                    <el-col :span="11" :offset="3">
                         <div class="texttitle">
                             <span class="inputname">状态：</span>
                             <div class="line-nav">
@@ -107,15 +107,19 @@
                     name:"取消",
                     isStatus:false,
                     id:20
+                },{
+                    name:"已转为正式合同",
+                    isStatus:false,
+                    id:11
                 }],
                 columnData:[
                     { prop: 'contractCode', label: '合同号',link:'/inner/indexinfo/0',param:'id'},
                     { prop: 'merchantName', label: '商户名称' },
                     { prop: 'brandName', label: '经营品牌' },
                     { prop: 'propertyType', label: '物业性质' },
-                    { prop: 'signDate', label: '签约日期' },
                     { prop: 'validDate', label: '合同有效期' },
-                    { prop: 'statusText', label: '状态' }
+                    { prop: 'statusText', label: '状态' },
+                    { prop: 'updateDate', label: '更新时间' }
                 ]
             }
         },

@@ -16,7 +16,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">意向合同</span>
-                                    <div clearable :disabled="delayChange == 2 || delayChange == 1" placeholder="选填" class="dialogtext rightcompany">{{mainData.intentionContractMerchantName}}</div>
+                                    <div clearable :disabled="delayChange == 2 || delayChange == 1" placeholder="选填" class="dialogtext rightcompany">{{mainData.intentionContractCode ? mainData.intentionContractCode : '' +'('+mainData.intentionContractMerchantName ? mainData.intentionContractMerchantName : '' +')'}}</div>
                                 </div>
                             </el-col>
                         </el-row>
@@ -119,7 +119,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
+                                <div class="dialogtext">合同租期：{{mainData.validCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -197,7 +197,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：{{cycleNum}}</div>
+                                <div class="dialogtext">周期：{{mainData.decorationCycle}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -491,7 +491,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：{{stageList.phaseCycleNum}}</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.periodCycle}}</div>
                                             </div>
                                         </div>
                                         <div v-if="costTypeData.value != 2">
@@ -520,7 +520,7 @@
                                                 </div>
                                                 <div v-show="stageList.fixedType == 1 || stageList.fixedType == 4 || stageList.fixedType == 5">
                                                     <template>
-                                                        <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea+''"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
+                                                        <el-checkbox v-model="stageList.outsideArea" :true-label="unitData.swingArea"  class="stagelineheight">增加外摆面积（{{unitData.swingArea}}㎡）</el-checkbox>
                                                     </template>
                                                 </div>
                                             </div>
@@ -792,7 +792,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="stagelineheight">阶段周期：{{stageList.phaseCycleNum}}</div>
+                                                <div class="stagelineheight">阶段周期：{{stageList.periodCycle}}</div>
                                             </div>
                                         </div>
                                         <div v-if="costTypeData.value != 2">
@@ -976,25 +976,6 @@
                         <el-row class="dialogbox">
                             <el-col :span="24">
                                 <div class="listbox" style="margin: 0;">
-                                    <div class="listcont contractcont">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
-                                            <form action="/api/rent/contract/uploads" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
-                                                <div class="uploadlist">
-                                                    <div class="avatar-uploader">
-                                                        <label class="el-upload el-upload--text">
-                                                            <i class="el-icon-plus avatar-uploader-icon"></i>
-                                                            <div class="el-upload__text">点击添加图片</div>
-                                                            <input type="file" name="file" multiple="multiple" class="el-upload__input" :disabled="delayChange == 2 || delayChange == 1" @change.prevent="addFileUpload($event)" readonly>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <input type="text" name="contractId" class="el-upload__input" :value="contractId" style="display:none;">
-                                                <input type="text" name="type" class="el-upload__input" value="0" style="display:none;">
-                                            </form>
-                                            <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe>
-                                        </div>
-                                    </div>
                                     <div class="listcont contractcont">
                                         <div class="listcolum" v-for="fileList in fileListData">
                                             <div class="uploadtitle">{{fileList.dateDay}}</div>

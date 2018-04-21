@@ -31,6 +31,8 @@
         <tr class="last_tr" slot="lastTr">
           <td colspan="2"><div class="cell"><span>合计欠款</span></div></td>
           <td><div class="cell"><span>{{detail.totalOwed}}</span></div></td>
+          <td><div class="cell"><span></span></div></td>
+          <td><div class="cell"><span></span></div></td>
         </tr>
       </erp-table>
     </main>
@@ -184,6 +186,7 @@
         background: url(../assets/red.png) center right no-repeat;
         h3 {
           margin-top: -1rem;
+          color: nth($black, 1);
         }
       }
     }

@@ -67,6 +67,12 @@
         methods:{
             handleOpen() {
                 this.dialogVisible = true;
+                this.addInfoData = {
+                    goodsTypeCode: '',
+                    goodsTypeName: '',
+                    id:'',
+                    pid: null
+                }
             },
             handleClose(){
                 this.dialogVisible = false;
@@ -138,6 +144,7 @@
                         }).then(res => {
                             if (res.data.status == 200) {
                                 this.$message.success(res.data.msg);
+                                this.treeData = '';
                                 this.getDataList();
                             } else {
                                 this.$message.error(res.data.msg);

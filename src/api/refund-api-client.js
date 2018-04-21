@@ -787,3 +787,63 @@ export const deleteUsingDELETE_1 = function(parameters = {}) {
   return refundapi.deleteUsingDELETE_1(parameters);
 }
 
+/**
+ * 对账文件列表
+ * request: getListForPageUsingGET_2
+ * url: getListForPageUsingGET_2URL
+ * method: getListForPageUsingGET_2_TYPE
+ * raw_url: getListForPageUsingGET_2_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param fileName - 文件名称
+ * @param type - 文件类型
+ */
+export const getListForPageUsingGET_2 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_2(parameters);
+}
+
+/**
+ * 上传对账文件
+ * request: fileImportUsingPOST
+ * url: fileImportUsingPOSTURL
+ * method: fileImportUsingPOST_TYPE
+ * raw_url: fileImportUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param file - 附件
+ */
+export const fileImportUsingPOST = function(parameters = {}) {
+  return refundapi.fileImportUsingPOST(parameters);
+}
+
+/**
+ * 任务中心查询列表
+ * request: getListForPageUsingGET_6
+ * url: getListForPageUsingGET_6URL
+ * method: getListForPageUsingGET_6_TYPE
+ * raw_url: getListForPageUsingGET_6_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param type - 任务类型 0返款计算1数据导出
+ * @param status - 任务状态 0成功1进行中2失败
+ */
+export const getListForPageUsingGET_6 = function(parameters = {}) {
+  return refundapi.getListForPageUsingGET_6(parameters);
+}
+
+/**
+ * 保存对账文件
+ * request: saveBillFileUsingPOST
+ * url: saveBillFileUsingPOSTURL
+ * method: saveBillFileUsingPOST_TYPE
+ * raw_url: saveBillFileUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param id - 住键ID
+ * @param fileName - 文件名称
+ * @param type - 文件类型 公共数据的渠道信息
+ */
+export const saveBillFileUsingPOST = function(parameters = {}) {
+  return refundapi.saveBillFileUsingPOST(parameters);
+}
+

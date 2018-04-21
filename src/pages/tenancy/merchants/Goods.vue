@@ -46,7 +46,7 @@
                     <el-table-column
                             label="货品组别"
                             slot="operation">
-                        <template slot-scope="scope">{{ scope.row.goodsTypeVo.goodsTypeName}}</template>
+                        <template slot-scope="scope">{{ scope.row.goodsTypeVo==null?'':scope.row.goodsTypeVo.goodsTypeName}}</template>
                     </el-table-column>
                     <el-table-column
                             label="店铺"
@@ -102,7 +102,7 @@
                         <el-option
                                 v-for="item in shopOptions"
                                 :key="item.id"
-                                :label="item.shopName"
+                                :label="item.shopCode+'('+item.shopName+')'"
                                 :value="item.id">
                         </el-option>
                     </el-select>

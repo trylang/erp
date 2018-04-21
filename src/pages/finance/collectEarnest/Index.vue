@@ -23,8 +23,8 @@
                 <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="checkMoneyHandler" :disabled="!!this.$route.query.contractCode">
                   <el-option
                     v-for="item in selects.contracts"
-                    :key="item.id"
-                    :label="item.contractCode"
+                    :key="item.contractCode"
+                    :label="item.codeInfo"
                     :value="item.contractCode">
                   </el-option>
                 </el-select>
@@ -34,7 +34,7 @@
         </con-head>
         
         <blank-head title="店铺租赁诚意金">
-          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.notAmount}]"></cash-card>
+          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.uncollectedAmount}]"></cash-card>
         </blank-head>
         
         <erp-table :header="header" :content="content"  @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
@@ -69,8 +69,10 @@ export default {
       header: [
         {
           label: "收款方式",
-          type: "text",
-          name: "paymentName"
+          type: "toggleText",
+          name: "paymentCode",
+          valueLabel: 'name',
+          option: []
         },
         {
           label: "收款金额",
@@ -105,6 +107,7 @@ export default {
               },
               class: "edit",
               click: (item) => {
+                // this.dialog.param = {};edit
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -183,7 +186,7 @@ export default {
         merchants: [], //诚意金下的所有商户
         contracts: [], //该商户下的意向合同
       },
-      content: {list:[],receivableAmount: '',receivedAmount: '',notAmount: ''},
+      content: {list:[],receivableAmount: '',receivedAmount: '',uncollectedAmount: ''},
       query: {
         merchantId: '',
         contractCode: '',
@@ -218,15 +221,12 @@ export default {
         });
     },
     methods: {
-        checkContractHandler(merchantId){
-            let params = {
-                merchantId: merchantId || null, //可根据该商户查询意向合同，也可直接展示所有意向合同
-            }
-            this.$api.financeapi.shopinfoUsingGET({
+        checkContractHandler(merchantId){//根据商户id查询意向合同
+            this.$api.financeapi.contractinfoUsingGET({
                 stage: this.query.stage,
                 merchantId : merchantId
             }).then(res => {//根据code查询付款方式
-                this.dialog.models[0].options = res.data.data;
+                 this.selects.contracts = res.data.data;
             });
         },
         checkMoneyHandler(){
@@ -236,12 +236,13 @@ export default {
                 shopId: null,
                 contractCode: this.query.contractCode
             }
-            this.$api.rentapi.getContractMoney( params ).then(res=>{//点击意向合同后查出三个金额
+            this.$api.financeapi.getContractMoney( params ).then(res=>{//点击意向合同后查出三个金额
                 let data = res.data.data;
                 this.content.receivableAmount = data.receivableAmount;//应收金额
                 this.content.receivedAmount = data.receivedAmount;  //已收金额
-                this.content.notAmount = data.notAmount;        //未收金额
+                this.content.uncollectedAmount = data.uncollectedAmount;        //未收金额
                 this.query.shopId = data.shopId;
+                this.query.bondId = data.id;
             }).catch(res=>{
                 this.$message.error(res);
             });
@@ -267,7 +268,7 @@ export default {
             }
         },
         editItem(param) {
-          if (param.id) {
+          if (!param.id) {
             _replace('itemId', this.content.list, param);
           } else {
             _replace('id', this.content.list, param);
@@ -279,7 +280,6 @@ export default {
           this.dialog.dialogVisible = false;
         },
         deleteDialog: function(item) {
-            console.log(121,item)
             this.$confirm("此操作将永久删除该费用录入, 是否继续?", "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
@@ -300,12 +300,10 @@ export default {
             pageSize: page.pageSize,
           }).then(res => {
             const data = res.data;
-            console.log(777,data)
             if (data.status === 200) {
               this.content = data.data;
               this.query.bondId = this.content.id;    //查出保证金id
               this.query.shopId = this.content.shopId;    //查出店铺id
-              console.log('列表数据：',this.content)
               if (callback) callback();
             } else {
               return data.message;
@@ -330,11 +328,10 @@ export default {
             list: this.content.list
           }
           const apiFunc = (api, param) => {
-            console.log('提交的数据：',param)
             this.$api.financeapi[api]({request: param}).then(returnObj => {
               if (returnObj.data.status === 200) {
                 $message("success", "提交成功!");
-                this.$router.push({path: '/finance/rentFree'});
+                this.$router.push({path: '/finance/takeMargin'});
               } else {
                 $message("error", "修改失败!");
               }

@@ -11,6 +11,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" @change="getCostAdjust" placeholder="商户名称" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -34,6 +35,7 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractId" @change="getCostAdjust" placeholder="合同" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -226,7 +228,6 @@ export default {
         type: "warning"
       })
         .then(() => {
-          console.log(item);
           this.deleteCostAdjust(item.id);
         })
         .catch(() => {
@@ -244,6 +245,7 @@ export default {
       return ids;
     },
     batchConfirm() {
+      if(this.filterIds().length == 0) return $message('info', '请选择费用单号');
       this.confirmCostAdjust(this.filterIds());
     },
     async getCostAdjust(page={}, callback) {
@@ -283,7 +285,7 @@ export default {
             $message("success", "确认成功!");
           });  
         } else {
-          $message("error", "确认失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -291,14 +293,13 @@ export default {
       let params = {
         id: param
       };
-      console.log()
       await this.$api.financeapi.delUsingDELETE_4(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getCostAdjust({}, () => {
             $message("success", "删除成功!");
           });  
         } else {
-          $message("error", "删除失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -312,8 +313,7 @@ export default {
             $message("success", "取消成功!");
           });
         } else {
-          console.log('cuowu')
-          $message("error", "取消失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -325,6 +325,13 @@ export default {
     }
   },
   computed: {},
+  watch:{
+    'query.settleNo': function(){
+      this.$delay(()=>{
+          this.getCostAdjust();
+      },300)
+    }
+  },
   created() {
     this.init();
   }

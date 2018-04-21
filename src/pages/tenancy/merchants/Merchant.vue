@@ -52,10 +52,10 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <router-link :to="'/inner/addmerchant/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0">编辑</router-link>
-                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0">删除</button>
+                            <router-link :to="'/inner/addmerchant/'+scope.row.id" class="btn_text" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</router-link>
+                            <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelMerchant(scope.row.id,2)">取消</button>
-                            <button class="btn_text" v-if="scope.row.status == 1" @click="handleOpen(scope.row.id)">重置密码</button>
+                            <!--<button class="btn_text" v-if="scope.row.status == 1" @click="handleOpen(scope.row.id)">重置密码</button>-->
                         </template>
                     </el-table-column>
                 </data-table>

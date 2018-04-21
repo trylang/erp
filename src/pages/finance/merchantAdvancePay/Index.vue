@@ -4,7 +4,8 @@
       <el-col :span="9">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" @change="getmerchantList()" class="dialogselect">
+            <el-select v-model="query.merchantId" placeholder="商户名称" @change="checkShopNameList(query.merchantId)" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -18,6 +19,7 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractCode" placeholder="请选择"  @change="getmerchantList()" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -128,7 +130,6 @@ export default {
         dialogVisible: false,
         param: {
           dealtAmount: "",
-          remark: ""
         },
         options: [{
           label: "确 定",
@@ -160,11 +161,13 @@ export default {
   },
     mounted() {
         this.getmerchantList();
-        this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表 status:1 已确定状态
+        // this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表 status:1 已确定状态
+        //     this.selects.merchants = res.data.data;
+        // })
+        this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {//已经确定过合同的商户列表
             this.selects.merchants = res.data.data;
-        }).catch(res=>{
-            this.$message.error(res.data.msg);
-        });
+        })
+        this.checkShopNameList(-1); //合同下拉
         this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表 status:30 已确定状态
             this.selects.contracts = res.data.data.list;
         }).catch(res=>{
@@ -172,6 +175,15 @@ export default {
         });
     },
     methods: {
+        checkShopNameList(merchantId){  //根据商户id查合同
+            let merchantIds = merchantId==-1?'' : merchantId;
+            this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: merchantIds}).then(res => {
+                this.selects.contracts = res.data.data;
+                this.getmerchantList();
+            }).catch(res => {
+                this.$message.error(res.data.msg);
+            });
+        },
         getmerchantList(page={}, callback){
             let params ={
                 contractCode: this.query.contractCode,

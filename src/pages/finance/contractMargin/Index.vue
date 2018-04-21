@@ -10,6 +10,7 @@
         <div class="searchselect">
             <span class="inputname">商户</span>
             <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getContractList">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -38,6 +39,7 @@
             <div class="searchselect">
                 <span class="inputname">店铺</span>
                 <el-select v-model="query.shopId" placeholder="请选择店铺" @change="getContractList()" class="dialogselect">
+                  <el-option label="全部" value=""></el-option>
                   <el-option
                     v-for="item in selects.shopIds"
                     :key="item.id"

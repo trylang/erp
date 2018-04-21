@@ -23,7 +23,7 @@
                 <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="checkMoneyHandler" :disabled="!!this.$route.query.contractCode">
                   <el-option
                     v-for="item in selects.contracts"
-                    :key="item.id"
+                    :key="item.contractCode"
                     :label="item.codeInfo"
                     :value="item.contractCode">
                   </el-option>
@@ -34,7 +34,7 @@
         </con-head>
         
         <blank-head title="店铺履约保证金">
-          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.notAmount}]"></cash-card>
+          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.uncollectedAmount}]"></cash-card>
         </blank-head>
         
         <erp-table :header="header" :content="content"  @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
@@ -107,6 +107,7 @@ export default {
               },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -185,7 +186,7 @@ export default {
         merchants: [], //保证金下的所有商户
         contracts: [], //该商户下的意向合同
       },
-      content: {list:[],receivableAmount: '',receivedAmount: '',notAmount: ''},
+      content: {list:[],receivableAmount: '',receivedAmount: '',uncollectedAmount: ''},
       query: {
         merchantId: '',
         contractCode: '',
@@ -220,12 +221,11 @@ export default {
         });
     },
     methods: {
-        checkContractHandler(merchantId){
-            let params = {
+        checkContractHandler(merchantId){//根据商户id查询正式合同
+            this.$api.financeapi.contractinfoUsingGET({
                 stage: this.query.stage,
-                merchantId: merchantId || null, //可根据该商户查询正式合同，也可直接展示所有正式合同
-            }
-            this.$api.financeapi.getContractSelect(params).then(res => {//根据code查询付款方式
+                merchantId : merchantId
+            }).then(res => {//根据code查询付款方式
                 this.selects.contracts = res.data.data;
             });
         },
@@ -240,7 +240,7 @@ export default {
                 let data = res.data.data;
                 this.content.receivableAmount = data.receivableAmount;//应收金额
                 this.content.receivedAmount = data.receivedAmount;  //已收金额
-                this.content.notAmount = data.notAmount;        //未收金额
+                this.content.uncollectedAmount = data.uncollectedAmount;//未收金额
                 this.query.shopId = data.shopId;
                 this.query.bondId = data.id;
             }).catch(res=>{
@@ -268,7 +268,7 @@ export default {
             }
         },
         editItem(param) {
-          if (param.id) {
+          if (!param.id) {
             _replace('itemId', this.content.list, param);
           } else {
             _replace('id', this.content.list, param);
@@ -300,12 +300,10 @@ export default {
             pageSize: page.pageSize,
           }).then(res => {
             const data = res.data;
-            console.log(777,data)
             if (data.status === 200) {
               this.content = data.data;
               this.query.bondId = this.content.id;    //查出保证金id
               this.query.shopId = this.content.shopId;    //查出店铺id
-              console.log('列表数据：',this.content)
               if (callback) callback();
             } else {
               return data.message;
@@ -330,7 +328,6 @@ export default {
             list: this.content.list
           }
           const apiFunc = (api, param) => {
-            console.log('提交的数据：',param)
             this.$api.financeapi[api]({request: param}).then(returnObj => {
               if (returnObj.data.status === 200) {
                 $message("success", "提交成功!");

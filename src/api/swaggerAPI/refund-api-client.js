@@ -156,11 +156,17 @@ export const getDetailListForPageUsingGETURL = function(parameters = {}) {
  * method: detailToExcelUsingGET_TYPE
  * raw_url: detailToExcelUsingGET_RAW_URL
  * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
  * @param shopCodeFrom - 店铺号起
  * @param shopCodeTo - 店铺号至
  * @param tradeDateFrom - 交易日期起
  * @param tradeDateTo - 交易日期至
- * @param tradeType - 微信：交易状态(为`SUCCESS代表销售，为 `REFUND代表退货）；支付宝：业务类型(交易代表销售，退款代表退货）
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
  */
 export const detailToExcelUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -169,6 +175,18 @@ export const detailToExcelUsingGET = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
+  if (parameters['channel'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: channel'))
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -181,8 +199,17 @@ export const detailToExcelUsingGET = function(parameters = {}) {
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
   }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
+  }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -201,6 +228,15 @@ export const detailToExcelUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/alipay/bill/detail/list/toExcel'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -213,8 +249,17 @@ export const detailToExcelUsingGETURL = function(parameters = {}) {
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
   }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
+  }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -768,11 +813,15 @@ export const getDetailListForPageUsingGET_1URL = function(parameters = {}) {
  * method: detailToExcelUsingGET_1_TYPE
  * raw_url: detailToExcelUsingGET_1_RAW_URL
  * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
  * @param shopCodeFrom - 店铺号起
  * @param shopCodeTo - 店铺号至
  * @param tradeDateFrom - 交易日期起
  * @param tradeDateTo - 交易日期至
- * @param tradeType - 银行：根据交易类型进行判断（2860：销售，2867：退货）；资和信：S：销售，R：退货
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
  * @param terminalNumFrom - 终端号起
  * @param terminalNumTo - 终端号至
  */
@@ -783,6 +832,18 @@ export const detailToExcelUsingGET_1 = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
+  if (parameters['channel'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: channel'))
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -794,6 +855,9 @@ export const detailToExcelUsingGET_1 = function(parameters = {}) {
   }
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+  }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
   }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
@@ -821,6 +885,15 @@ export const detailToExcelUsingGET_1URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/bank/bill/detail/list/toExcel'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -832,6 +905,9 @@ export const detailToExcelUsingGET_1URL = function(parameters = {}) {
   }
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+  }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
   }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
@@ -1821,6 +1897,7 @@ export const getListForPageUsingGET_2URL = function(parameters = {}) {
  * method: getCardTypeUsingGET_TYPE
  * raw_url: getCardTypeUsingGET_RAW_URL
  * @param token - header中token字段
+ * @param type - 资和信：1，银行:0
  */
 export const getCardTypeUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1829,6 +1906,12 @@ export const getCardTypeUsingGET = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
+  if (parameters['type'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: type'))
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1846,6 +1929,9 @@ export const getCardTypeUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/common/card/type'
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2021,6 +2107,7 @@ export const getTradeTypeUsingGETURL = function(parameters = {}) {
  * method: getZHXCardTypeUsingGET_TYPE
  * raw_url: getZHXCardTypeUsingGET_RAW_URL
  * @param token - header中token字段
+ * @param type - 列表传递：1，添加:0
  */
 export const getZHXCardTypeUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2029,6 +2116,12 @@ export const getZHXCardTypeUsingGET = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
+  if (parameters['type'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: type'))
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2046,6 +2139,9 @@ export const getZHXCardTypeUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/common/zhx/card/type'
+  if (parameters['type'] !== undefined) {
+    queryParameters['type'] = parameters['type']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2183,12 +2279,15 @@ export const getDetailListForPageUsingGET_2URL = function(parameters = {}) {
  * @param token - header中token字段
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
- * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
  * @param shopCodeFrom - 店铺号起
  * @param shopCodeTo - 店铺号至
  * @param tradeDateFrom - 交易日期起
  * @param tradeDateTo - 交易日期至
- * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
  */
 export const detailToExcelUsingGET_2 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2223,6 +2322,15 @@ export const detailToExcelUsingGET_2 = function(parameters = {}) {
   }
   if (parameters['cardType'] !== undefined) {
     queryParameters['cardType'] = parameters['cardType']
+  }
+  if (parameters['tradeType'] !== undefined) {
+    queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2264,6 +2372,15 @@ export const detailToExcelUsingGET_2URL = function(parameters = {}) {
   }
   if (parameters['cardType'] !== undefined) {
     queryParameters['cardType'] = parameters['cardType']
+  }
+  if (parameters['tradeType'] !== undefined) {
+    queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3715,11 +3832,17 @@ export const getDetailListForPageUsingGET_3URL = function(parameters = {}) {
  * method: detailToExcelUsingGET_3_TYPE
  * raw_url: detailToExcelUsingGET_3_RAW_URL
  * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
  * @param shopCodeFrom - 店铺号起
  * @param shopCodeTo - 店铺号至
  * @param tradeDateFrom - 交易日期起
  * @param tradeDateTo - 交易日期至
- * @param tradeType - 微信：交易状态(为`SUCCESS代表销售，为 `REFUND代表退货）；支付宝：业务类型(交易代表销售，退款代表退货）
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
  */
 export const detailToExcelUsingGET_3 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -3728,6 +3851,18 @@ export const detailToExcelUsingGET_3 = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
+  if (parameters['channel'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: channel'))
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -3740,8 +3875,17 @@ export const detailToExcelUsingGET_3 = function(parameters = {}) {
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
   }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
+  }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3760,6 +3904,15 @@ export const detailToExcelUsingGET_3URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/wechat/bill/detail/list/toExcel'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -3772,8 +3925,17 @@ export const detailToExcelUsingGET_3URL = function(parameters = {}) {
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
   }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
+  }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
+  }
+  if (parameters['terminalNumFrom'] !== undefined) {
+    queryParameters['terminalNumFrom'] = parameters['terminalNumFrom']
+  }
+  if (parameters['terminalNumTo'] !== undefined) {
+    queryParameters['terminalNumTo'] = parameters['terminalNumTo']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4327,11 +4489,15 @@ export const getDetailListForPageUsingGET_4URL = function(parameters = {}) {
  * method: detailToExcelUsingGET_4_TYPE
  * raw_url: detailToExcelUsingGET_4_RAW_URL
  * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
  * @param shopCodeFrom - 店铺号起
  * @param shopCodeTo - 店铺号至
  * @param tradeDateFrom - 交易日期起
  * @param tradeDateTo - 交易日期至
- * @param tradeType - 银行：根据交易类型进行判断（2860：销售，2867：退货）；资和信：S：销售，R：退货
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
  * @param terminalNumFrom - 终端号起
  * @param terminalNumTo - 终端号至
  */
@@ -4342,6 +4508,18 @@ export const detailToExcelUsingGET_4 = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
+  if (parameters['channel'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: channel'))
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -4353,6 +4531,9 @@ export const detailToExcelUsingGET_4 = function(parameters = {}) {
   }
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+  }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
   }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']
@@ -4380,6 +4561,15 @@ export const detailToExcelUsingGET_4URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/refund/zhx/bill/detail/list/toExcel'
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['channel'] !== undefined) {
+    queryParameters['channel'] = parameters['channel']
+  }
   if (parameters['shopCodeFrom'] !== undefined) {
     queryParameters['shopCodeFrom'] = parameters['shopCodeFrom']
   }
@@ -4391,6 +4581,9 @@ export const detailToExcelUsingGET_4URL = function(parameters = {}) {
   }
   if (parameters['tradeDateTo'] !== undefined) {
     queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+  }
+  if (parameters['cardType'] !== undefined) {
+    queryParameters['cardType'] = parameters['cardType']
   }
   if (parameters['tradeType'] !== undefined) {
     queryParameters['tradeType'] = parameters['tradeType']

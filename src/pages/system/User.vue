@@ -22,6 +22,7 @@
                             <th><div class="cell">部门</div></th>
                             <th><div class="cell">职位</div></th>
                             <th><div class="cell">角色</div></th>
+                            <th><div class="cell">状态</div></th>
                             <th width="190"><div class="cell">操作</div></th>
                             <th class="gutter" style="width: 0px;"></th>
                         </tr>
@@ -34,11 +35,12 @@
                             <td><div class="cell" v-text="userlist.mobile"></div></td>
                             <td><div class="cell" v-text="userlist.department == null?'':userlist.department.departmentName"></div></td>
                             <td><div class="cell" v-text="userlist.position == null?'':userlist.position.positionName"></div></td>
-                            <td><div class="cell" v-for="rolename in userlist.roleSet">{{rolename.roleName}}</div></td>
+                            <td><div class="cell" v-for="item in userlist.roleSet">{{item.roleName}}</div></td>
+                            <td><div class="cell" v-text="userlist.forbiddenText"></div></td>
                             <td>
                                 <div class="cell">
                                     <router-link :to="'/system/adduser/'+userlist.id" class="btn_text">编辑</router-link>
-                                    <button class="btn_text" @click="dialogData(userlist.id)">重置密码</button>
+                                    <button class="btn_text" @click="dialogData(userlist,userlist.id)">重置密码</button>
                                     <button class="btn_text" :style="userlist.forbidden == false?'color:#ff5400':''" @click="userStutas(userlist.forbidden,userlist.id)">{{userlist.forbidden == false?'禁用':'启用'}}</button>
                                 </div>
                             </td>
@@ -57,8 +59,12 @@
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname">重置密码</span>
-                    <input class="inputtext" type="password" placeholder="请输入新密码" v-model="passwordCont">
+                    <span class="inputname">新密码</span>
+                    <input class="inputtext" type="password" placeholder="请输入新密码" v-model="newPassword">
+                </div>
+                <div class="dialoginput">
+                    <span class="inputname" style="min-width: 92px;">确认新密码</span>
+                    <input class="inputtext" type="password" placeholder="请输入新密码" v-model="confirmNewPassword">
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -80,9 +86,10 @@
                 dataList:[],
                 searchText:'',
                 userid:'',
-                passwordCont:'',
+                newPassword:'',
+                confirmNewPassword:'',
                 pageNum: Number(this.$route.params.pageId)||1,
-                total: 0
+                total: 0,
             }
         },
         created(){
@@ -104,28 +111,42 @@
                     pageSize:this.$refs.page.pageSize,
                     name:this.searchText
                 }).then(res=>{
-                    this.dataList = res.data.data;
+                    this.dataList = res.data.data.list;
+                    this.dataList.forEach(item=>{
+                        item.forbiddenText = item.forbidden==true?'禁用':'启用'
+                    })
                     this.total = Number(res.data.data.total);
                 })
             },
             handleClose(){
                 this.dialogVisible = false;
             },
-            dialogData(id){
-                this.userid = id;
+            dialogData(userlist,id){
+                if(id){
+                    this.userid = id;
+                }
                 this.dialogVisible = true;
             },
             async resetPassword(){
-                await this.$api.systemapi.resetPasswordUsingPUT_7({
-                    userId:this.userid,
-                    password:this.passwordCont
-                }).then(res=>{
-                    if(res.data.status == 200){
-                        this.$message.success(res.data.msg);
-                    }else{
-                        this.$message.error(res.data.msg);
-                    }
-                });
+                if(this.newPassword && this.confirmNewPassword){
+                    await this.$api.systemapi.adminResetPasswordUsingPUT({
+                        newPassword: this.newPassword,
+                        repeatNewPassword: this.confirmNewPassword,
+                        validationCode: '123456',
+                        userId: this.userid
+                    }).then(res=>{
+                        if(res.data.status == 200){
+                            this.$message.success(res.data.msg);
+                            this.dialogVisible = false;
+                            this.getUserList(1);
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                    });
+                }else{
+                    this.$message.error('密码不能为空！');
+                }
+                
             },
             async userStutas(userstate,userid){
                 if(userstate == false) {

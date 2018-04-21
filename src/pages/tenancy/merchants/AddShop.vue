@@ -191,7 +191,7 @@
                         id: this.$route.params.shopId
                     }).then(res => {
                         this.shopInfoData = res.data.data;
-                        res.data.data.shopBrandId.map(item => {
+                        res.data.data.shopBrandId.forEach(item => {
                             let brand = this.shopBrandOptions.find(item1 => {
                                 return item == item1.id;
                             });

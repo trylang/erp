@@ -10,7 +10,8 @@
       <el-col :span="9" :offset="6">
         <div class="searchselect">
             <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getDealList()">
+            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="checkShopNameList(query.merchantId)">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
                 :key="item.id"
@@ -39,6 +40,7 @@
         <div class="searchselect">
             <span class="inputname">合同</span>
             <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="getDealList()">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
@@ -160,8 +162,8 @@ export default {
                   class: "delete",
                   click: (item) => {
                     Object.assign(this.dialog.param, item);
-                    this.dialog.dialogVisible = true;
-                    this.cancelsDialog(item, data);
+                    // this.dialog.dialogVisible = true;
+                    this.cancelsDialog(item);
                   }
                 },
                 {
@@ -286,25 +288,35 @@ export default {
     },
     mounted() {
         this.getDealList();
-        this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表
+        // this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表
+        //     this.selects.merchants = res.data.data;
+        //     // this.dialog.models[0].options = res.data.data;
+        // })
+        this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {//已经确定过合同的商户列表
             this.selects.merchants = res.data.data;
-            // this.dialog.models[0].options = res.data.data;
-        }).catch(res=>{
-            this.$message.error(res.data.msg);
-        });
-        this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表
-            this.selects.contracts = res.data.data.list;
-            // this.dialog.models[1].options = res.data.data.list;
-        }).catch(res=>{
-            this.$message.error(res.data.msg);
-        });
-        this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {
-            this.dialog.models[0].options = res.data.data;//已经确定过合同的商户列表
-        }).catch(res => {
-            this.$message.error(res.data.msg);
-        });
+            this.dialog.models[0].options = res.data.data;
+        })
+        this.checkShopNameList(-1); //合同下拉
+        // this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表
+        //     this.selects.contracts = res.data.data.list;
+        //     // this.dialog.models[1].options = res.data.data.list;
+        // })
+        // this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {
+        //     this.dialog.models[0].options = res.data.data;//已经确定过合同的商户列表
+        // }).catch(res => {
+        //     this.$message.error(res.data.msg);
+        // });
     },
     methods: {
+        checkShopNameList(merchantId){  //根据商户id查合同
+            let merchantIds = merchantId==-1?'' : merchantId;
+            this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: merchantIds}).then(res => {
+                this.selects.contracts = res.data.data;
+                this.getDealList();
+            }).catch(res => {
+                this.$message.error(res.data.msg);
+            });
+        },
         getDealList(page={}, callback){
             let params ={
                 dealNumber: this.searchName,
@@ -446,6 +458,7 @@ export default {
             type: "warning"
           }).then(()=>{
             this.$api.financeapi.cancelsUsingPUT_2({ id: item.id }).then(res => {
+                console.log(222,res)
                 if (res.data.status == 200) {
                   this.$message.success(res.data.msg);
                   this.getDealList();
@@ -453,6 +466,7 @@ export default {
                   this.$message.error(res.data.msg);
                 }
             }).catch(res => {
+                console.log(123,res)
                 this.$message.error(res.data.msg);
             });
           }).catch(() => {

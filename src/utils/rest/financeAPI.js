@@ -72,13 +72,10 @@ export async function queryCost() {
 
 // 获取税率列表
 export async function queryTaxRate() {
-  const param = {
-    pageSize: maxPageSize
-  };
-  const res = await API_FINANCE.listUsingGET_9(param);
+  const res = await API_FINANCE.listAllUsingGET1();
   const data = res.data;
   if (data.status === 200) {
-    const json = _changeJson(data.data.list, 'id');
+    const json = _changeJson(data.data, 'id');
     return {
       data: data.data,
       json: json
@@ -130,6 +127,23 @@ export async function saleQueryShop() {
   //   pageSize: maxPageSize
   // };
   const res = await API_RENT.getByStatusUsingPOST({status: [1, 3, 4, 5]});//0新增1空置2取消空置3预定4使用中5.失效
+  const data = res.data;
+  if (data.status === 200) {
+    const json = _changeJson(data.data, 'id');
+    return {
+      data: data.data,
+      json: json
+    };
+  } else {
+    return data.message;
+  }
+}
+// 获取店铺列表 （销售统计里对账报表用的）（接口在租务里）
+export async function saleTQueryShop() {
+  // const param = {
+  //   pageSize: maxPageSize
+  // };
+  const res = await API_RENT.getByStatusUsingPOST({status: [3, 4, 5]});//0新增1空置2取消空置3预定4使用中5.失效
   const data = res.data;
   if (data.status === 200) {
     const json = _changeJson(data.data, 'id');
