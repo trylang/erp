@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="购物中心">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -33,7 +33,7 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">购物中心编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入购物中心编码" v-model="add.marketCode">
+                    <input class="inputtext" type="text" placeholder="请输入购物中心编码" v-model="add.marketCode" :readonly="listid">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth" style="width:140px;">购物中心名称</span>
@@ -55,6 +55,8 @@
                         :data="treeData"
                         node-key="id"
                         ref="tree"
+                        :highlight-current="true"
+                        class="inputtext shopinputtext"
                         @node-click="checkHandler"
                         :props="defaultProps">
                     </el-tree>
@@ -80,15 +82,22 @@
     import ConHead from '../../components/ConHead'
     import RtPage from '../../components/Pagination'
     import DataTable from '../../components/DataTable'
+    import {
+      numberNotE,
+      numMax10,
+      numPartmax2
+    } from "@/utils";
     export default {
         name: "shopping",
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 datalist:[],
                 listid: '',
                 searchName: '',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 treeData: [],
                 add:{
@@ -123,55 +132,79 @@
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name: this.searchName
                 }
                 this.$api.systemapi.listUsingGET_1(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
             addbuilding(id){
                 if(id){
-                    console.log(111,this.add)
-                    if(this.add.marketArea <= 0){
-                        this.$message.warning('商场面积不能小于0');
-                    }else{
-                        this.$api.systemapi.updateUsingPOST_1({request:{
-                            id: this.add.id,
-                            regionId: this.add.regionId,
-                            marketName: this.add.marketName,
-                            marketEnglishName: this.add.marketEnglishName,
-                            marketArea: this.add.marketArea,
-                            marketCode: this.add.marketCode,
-                            phone: this.add.phone,
-                            fax: this.add.fax
-                        }}).then(res=>{
-                            if(res.data.status==200){
-                                this.$message.success(res.data.msg);
-                                this.dialogVisible = false;
-                                this.pageHandler(1);
-                            }else{
-                                this.$message.error(res.data.msg);
-                            }
-                        }).catch(res=>{
-                            this.$message.error(res.data.msg);
-                        });
+                    if(this.add.marketArea){
+                        if (!numberNotE(this.add.marketArea)) {
+                          this.$message.info("请输入数字！");
+                          return;
+                        }
+                        if (!numMax10(this.add.marketArea)) {
+                          this.$message.info("请输入大于等于0，小于10位数的正数！");
+                          return;
+                        }
+                        if (!numPartmax2(this.add.marketArea)) {
+                          this.$message.info("只能保留两位小数！");
+                          return;
+                        }
                     }
+                    this.loading = true;
+                    this.$api.systemapi.updateUsingPOST_1({request:{
+                        id: this.add.id,
+                        regionId: this.add.regionId,
+                        marketName: this.add.marketName,
+                        marketEnglishName: this.add.marketEnglishName,
+                        marketArea: this.add.marketArea,
+                        marketCode: this.add.marketCode,
+                        phone: this.add.phone,
+                        fax: this.add.fax
+                    }}).then(res=>{
+                        if(res.data.status==200){
+                            this.loading = false;
+                            this.dialogVisible = false;
+                            this.$message.success(res.data.msg);
+                            this.pageHandler(1,this.pageSize);
+                        }else{
+                            this.loading = false;
+                            this.$message.error(res.data.msg);
+                        }
+                    }).catch(res=>{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    });
                 }else{
                     if(this.add.marketArea <= 0){
                         this.$message.warning('商场面积不能小于0');
                     }else{
+                        this.loading = true;
                         this.$api.systemapi.saveUsingPOST_1({request:{
                             regionId: this.add.regionId,
                             marketName: this.add.marketName,
@@ -182,13 +215,16 @@
                             fax: this.add.fax
                         }}).then(res=>{
                             if(res.data.status==200){
-                                this.$message.success(res.data.msg);
+                                this.loading = false;
                                 this.dialogVisible = false;
-                                this.pageHandler(1);
+                                this.$message.success(res.data.msg);
+                                this.pageHandler(1,this.pageSize);
                             }else{
+                                this.loading = false;
                                 this.$message.error(res.data.msg);
                             }
                         }).catch(res=>{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         });
                     }
@@ -227,7 +263,7 @@
                     this.$api.systemapi.deleteUsingDELETE_1({id: id}).then(res =>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }

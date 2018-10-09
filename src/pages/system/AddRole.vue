@@ -1,11 +1,11 @@
 <template>
-    <div class="savebox">
+    <div class="savebox" v-loading.fullscreen="loading">
         <div class="savecont">
             <con-head :title="this.$route.params.roleid!=0?'编辑角色':'创建角色'"></con-head>
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                 <div class="dialoginput">
-                    <span class="inputname inputnameauto">用户名</span>
+                    <span class="inputname inputnameauto">角色名</span>
                     <input class="inputtext" type="text" maxlength="10" placeholder="请输入用户名" v-model="addRole.roleName">
                     <span class="textcount">{{addRole.roleName.length}}/10</span>
                 </div>
@@ -40,6 +40,7 @@
         name: "add-role",
         data() {
             return {
+                loading: false,
                 addRole:{
                     id:'',
                     marketId:1,
@@ -56,46 +57,86 @@
         },
         mounted(){
             this.getMenuList();
-            this.getRoleInfo();
         },
         methods:{
             async getMenuList(){
                 await this.$api.systemapi.listUsingGET_7().then(res=>{
                     this.menuList = res.data.data;
+                    this.getRoleInfo();
                 })
             },
-            async handleCheckChange(){
-                this.addRole.menus = this.$refs.tree.getCheckedNodes().map(item=>{
+            async handleCheckChange(data, checked, indeterminate){
+                let aryCheckNodes = this.$refs.tree.getCheckedNodes().map(item=>{
                     if(item.id != undefined){
                         return {
                             id:item.id
                         }
                     }
                 });
+                let aryHalfCheckNodes = this.$refs.tree.getHalfCheckedNodes().map(item=>{
+                    if(item.id != undefined){
+                        return {
+                            id:item.id
+                        }
+                    }
+                });
+                this.addRole.menus = [...aryCheckNodes,...aryHalfCheckNodes];
             },
             async getRoleInfo(){
+                let ary1,ary2=[],temp=[],newTreeMenus=[],newTreeMenusData=[];
                 if(this.$route.params.roleid != 0) {
                     await this.$api.systemapi.selectAllMenusForUpdateUsingGET({
                         roleId: this.$route.params.roleid
                     }).then(res => {
                         if(res.data.status === 200){
                             this.addRole = res.data.data.thisRole;
-                            this.$refs.tree.setCheckedKeys(res.data.data.theRoleHasTheseMenus);
+                            ary1 = this.menuList.map(item=>{
+                                return item.id
+                            });
+                            for (let i = 0; i < ary1.length; i++) {
+                                temp[ary1[i]] = true;
+                            };
+                            for (let i = 0; i < res.data.data.theRoleHasTheseMenus.length; i++) {
+                                if (!temp[res.data.data.theRoleHasTheseMenus[i]]) {
+                                    newTreeMenus.push(res.data.data.theRoleHasTheseMenus[i]);
+                                } ;
+
+                            };
+                            this.menuList.forEach(item=>{
+                                ary2 = item.childrenMenus.map(_item=>{
+                                    return _item.id
+                                });
+                                for (let i = 0; i < ary2.length; i++) {
+                                    temp[ary2[i]] = true;
+                                };
+                            });
+                            for (let i = 0; i < newTreeMenus.length; i++) {
+                                if (!temp[newTreeMenus[i]]) {
+                                    newTreeMenusData.push(newTreeMenus[i]);
+                                };
+
+                            };
+                            this.$refs.tree.setCheckedKeys(Array.from(new Set(newTreeMenusData)));
                         }
                     })
                 }
             },
             async submitRoleData(){
+                this.loading = true;
                 if(this.$route.params.roleid == 0) {
                     await this.$api.systemapi.addUsingPOST_1({
                         role:this.addRole
                     }).then(res => {
                         if(res.data.status == 200){
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/system/role');
                         }else{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.addRole.id = this.$route.params.roleid;
@@ -103,11 +144,15 @@
                         role:this.addRole
                     }).then(res => {
                         if(res.data.status == 200){
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/system/role');
                         }else{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             }

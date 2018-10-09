@@ -7,7 +7,7 @@
         <el-col class="tab_item" v-for="(item, index) in tabs" :key="index" :span="4">
           <h3 :class="{active: item.id === variables.isActive}" @click="activeFunc(item)">{{item.label}}</h3>
         </el-col>
-        <el-col class="btn_item" :offset="9" :span="6"
+        <el-col class="btn_item" :offset="14" :span="6"
           v-if="variables.isActive === item.id"  v-for="(item) in tabs" :key="item.label">
           <slot :name="`buttton_${item.id}`"></slot>       
         </el-col>

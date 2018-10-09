@@ -847,3 +847,230 @@ export const saveBillFileUsingPOST = function(parameters = {}) {
   return refundapi.saveBillFileUsingPOST(parameters);
 }
 
+/**
+ * 银行账单查询列表导出
+ * request: toExcelUsingGET_1
+ * url: toExcelUsingGET_1URL
+ * method: toExcelUsingGET_1_TYPE
+ * raw_url: toExcelUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ */
+export const toExcelUsingGET_1 = function(parameters = {}) {
+  return refundapi.toExcelUsingGET_1(parameters);
+}
+
+/**
+ * 银行账单详情列表导出
+ * request: detailToExcelUsingGET_1
+ * url: detailToExcelUsingGET_1URL
+ * method: detailToExcelUsingGET_1_TYPE
+ * raw_url: detailToExcelUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
+ */
+export const detailToExcelUsingGET_1 = function(parameters = {}) {
+  return refundapi.detailToExcelUsingGET_1(parameters);
+}
+
+/**
+ * 微信账单查询列表导出
+ * request: toExcelUsingGET_3
+ * url: toExcelUsingGET_3URL
+ * method: toExcelUsingGET_3_TYPE
+ * raw_url: toExcelUsingGET_3_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ */
+export const toExcelUsingGET_3 = function(parameters = {}) {
+  return refundapi.toExcelUsingGET_3(parameters);
+}
+
+/**
+ * 微信账单详情列表导出
+ * request: detailToExcelUsingGET_3
+ * url: detailToExcelUsingGET_3URL
+ * method: detailToExcelUsingGET_3_TYPE
+ * raw_url: detailToExcelUsingGET_3_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
+ */
+export const detailToExcelUsingGET_3 = function(parameters = {}) {
+  return refundapi.detailToExcelUsingGET_3(parameters);
+}
+
+/**
+ * 支付宝账单查询列表导出
+ * request: toExcelUsingGET
+ * url: toExcelUsingGETURL
+ * method: toExcelUsingGET_TYPE
+ * raw_url: toExcelUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ */
+export const toExcelUsingGET = function(parameters = {}) {
+  return refundapi.toExcelUsingGET(parameters);
+}
+
+/**
+ * 支付宝账单详情列表导出
+ * request: detailToExcelUsingGET
+ * url: detailToExcelUsingGETURL
+ * method: detailToExcelUsingGET_TYPE
+ * raw_url: detailToExcelUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
+ */
+export const detailToExcelUsingGET = function(parameters = {}) {
+  return refundapi.detailToExcelUsingGET(parameters);
+}
+
+/**
+ * 翼支付账单查询列表导出
+ * request: toExcelUsingGET_2
+ * url: toExcelUsingGET_2URL
+ * method: toExcelUsingGET_2_TYPE
+ * raw_url: toExcelUsingGET_2_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ */
+export const toExcelUsingGET_2 = function(parameters = {}) {
+  return refundapi.toExcelUsingGET_2(parameters);
+}
+
+/**
+ * 翼支付账单详情列表导出
+ * request: detailToExcelUsingGET_2
+ * url: detailToExcelUsingGET_2URL
+ * method: detailToExcelUsingGET_2_TYPE
+ * raw_url: detailToExcelUsingGET_2_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
+ */
+export const detailToExcelUsingGET_2 = function(parameters = {}) {
+  return refundapi.detailToExcelUsingGET_2(parameters);
+}
+
+/**
+ * 资和信账单查询列表导出
+ * request: toExcelUsingGET_4
+ * url: toExcelUsingGET_4URL
+ * method: toExcelUsingGET_4_TYPE
+ * raw_url: toExcelUsingGET_4_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道：0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单用：0大悦城资和信卡 1资和信商通卡 
+ */
+export const toExcelUsingGET_4 = function(parameters = {}) {
+  return refundapi.toExcelUsingGET_4(parameters);
+}
+
+/**
+ * 资和信账单详情列表导出
+ * request: detailToExcelUsingGET_4
+ * url: detailToExcelUsingGET_4URL
+ * method: detailToExcelUsingGET_4_TYPE
+ * raw_url: detailToExcelUsingGET_4_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param channel - 渠道:0微信1支付宝2银行3翼支付4资和信
+ * @param shopCodeFrom - 店铺号起
+ * @param shopCodeTo - 店铺号至
+ * @param tradeDateFrom - 交易日期起
+ * @param tradeDateTo - 交易日期至
+ * @param cardType - 卡类型：资和信账单：0大悦城资和信卡 1资和信商通卡 ；银行账单：2内卡3外卡
+ * @param tradeType - 0代表销售，1代表退货
+ * @param terminalNumFrom - 终端号起
+ * @param terminalNumTo - 终端号至
+ */
+export const detailToExcelUsingGET_4 = function(parameters = {}) {
+  return refundapi.detailToExcelUsingGET_4(parameters);
+}
+
+/**
+ * 重新计算
+ * request: recalculateUsingPOST
+ * url: recalculateUsingPOSTURL
+ * method: recalculateUsingPOST_TYPE
+ * raw_url: recalculateUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param ids - 主键id
+ */
+export const recalculateUsingPOST = function(parameters = {}) {
+  return refundapi.recalculateUsingPOST(parameters);
+}

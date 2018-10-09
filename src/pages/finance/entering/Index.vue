@@ -1,12 +1,12 @@
 <template>
-  <con-head title="不规则费用录入">
-    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, checkjsHandler(query.contractId, query.settleGroupId)
-      dialog.param={costItemId: '', amount: '', expenseDate: ''}" :disabled="!!(!query.contractId||!query.settleGroupId)">添加</el-button>
+  <con-head title="不规则费用录入" v-loading="loading">
+    <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, edit=false,
+      dialog.param={costItemId: '', amount: '', expenseDate: ''}" :disabled="!!(query.contractObj == {}||!query.settleGroupId)">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户" class="dialogselect"
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户" filterable clearable class="dialogselect"
              :disabled="!!this.$route.query.merchantId"
              @change="checkUserHandler(query.merchantId)">
              <el-option label="全部" value=""></el-option>
@@ -21,23 +21,23 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId"  
-            placeholder="合同" class="dialogselect" :disabled="!!this.$route.query.contractId" @change="checkHetongHandler(query.contractId)">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractObj"  
+            placeholder="合同" class="dialogselect" value-key="contractCode" filterable clearable :disabled="!!this.$route.query.contractCode" @change="checkHetongHandler(query.contractObj.contractCode)">
               <el-option
                 v-for="item in selects.contracts"
-                :key="item.id"
-                :label="item.contractCode"
-                :value="item.id">
+                :key="item.contractCode"
+                :label="item.contractAndShop"
+                :value="item">
               </el-option>
             </el-select>
         </div>
       </el-col>
       <el-col :span="9">
         <div class="searchselect">
-            <span class="inputname">结算组别</span>
-            <el-select v-model="query.settleGroupId" placeholder="结算组别" class="dialogselect" 
-            :disabled="!!this.$route.query.settleGroupId" @change="checkjsHandler(query.contractId, query.settleGroupId)">
+            <span class="inputname inputnameauto">结算组别</span>
+            <el-select v-model="query.settleGroupId" filterable clearable placeholder="结算组别" class="dialogselect" 
+            :disabled="!!this.$route.query.settleGroupId" @change="checkjsHandler(query.contractObj.id, query.settleGroupId)">
               <el-option
                 v-for="item in selects.accountGroup"
                 :key="item.id"
@@ -82,6 +82,8 @@ export default {
   },
   data() {
     return {
+      loading: false,
+      edit: false,
       header: [
         {
           label: "费用项目",
@@ -90,7 +92,7 @@ export default {
         },
         {
           label: "收款金额",
-          type: "text",
+          type: "fmoney",
           name: "amount"
         },
         {
@@ -117,7 +119,8 @@ export default {
               name: "edit",
               type: "",
               class: "edit",
-              click: item => {               
+              click: item => {         
+                this.edit = true;      
                 this.dialog.dialogVisible = true;
                 this.dialog.param = {};
                 item.costItemId = parseInt(item.costItemId);
@@ -145,7 +148,7 @@ export default {
             label: "费用项目",
             name: "costItemId",
             type: "select",
-            value: "id",
+            value: "costItemId",
             valueLabel: "costItemName",
             options: [],
             placeholder: "请输入费用项目"
@@ -160,6 +163,11 @@ export default {
             label: "费用日期",
             name: "expenseDate",
             type: "date",
+            /*pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              }
+            },*/
             placeholder: "请选择费用日期"
           },
           {
@@ -208,7 +216,8 @@ export default {
         queryCost: {} // 项目组别
       },
       query: {
-        contractId: "",
+        contractObj: {},
+        contractCode: "",
         settleGroupId: "",
         item: [],
         merchantId: "",
@@ -218,44 +227,58 @@ export default {
   },
   methods: {
     async checkUserHandler(id) {
+      if (!this.$route.query.id) {
+        this.content.list = [];
+      }
       //根据商户id查询 合同列表
       await this.$api.rentapi
-        .getListForPageUsingGET({ merchantId: id })
+        .listFormalUsingGET({ merchantId: id})
         .then(res => {
-          this.selects.contracts = res.data.data.list;
-          this.query.contractId = '';
+          this.selects.contracts = res.data.data;
+          this.query.contractObj = {};
           this.query.settleGroupId = '';
           this.dialog.param.costItemId = '';
-        })
-        .catch(res => {
-          this.$message.error(res.data.msg);
-        });
-    },
-    async checkHetongHandler(id) {
-      //根据合同id查询 结算组别列表
-      await this.$api.rentapi
-        .getIrregularCostInfoUsingGET({ contractId: id, settleGroupId: -1 })
-        .then(res => {
-          if (res.data.data.settleGroups) {
-            this.selects.accountGroup = res.data.data.settleGroups;
-            this.query.settleGroupId = '';
-            this.dialog.param.costItemId = '';
+          if(this.$route.query.contractCode){
+              res.data.data.map(item=>{
+                  if(item.contractCode == this.$route.query.contractCode){
+                      this.query.contractObj = item;
+                  }
+              })
           }
         })
         .catch(res => {
           this.$message.error(res.data.msg);
         });
     },
-    async checkjsHandler(contractId, settleGroupId, cb) {
+    async checkHetongHandler(id) {
+      if (!this.$route.query.id) {
+        this.content.list = [];
+      }
+      //根据合同id查询 结算组别列表
       await this.$api.rentapi
-        .getIrregularCostInfoUsingGET({
+        .getSettleGroupUsingGET({ contractCode: id})
+        .then(res => {
+          if (res.data.status === 200) {
+            this.selects.accountGroup = res.data.data;
+            this.query.settleGroupId = '';
+            this.dialog.param.costItemId = '';
+          }
+        });
+    },
+    async checkjsHandler(contractId, settleGroupId, cb) {
+      if (!this.$route.query.id) {
+        this.content.list = [];
+      }
+      await this.$api.rentapi
+        .getCostItemsUsingGET({
           contractId,
-          settleGroupId
+          settleGroupId,
+          costType: 2
         })
         .then(res => {
           if (res.data.status === 200) {
             this.dialog.models[0].options =
-              res.data.data.settleGroups[0].costItems;
+              res.data.data;
             if (cb) cb();
           }         
         });
@@ -271,19 +294,24 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {
-      if (!numMax10(this.dialog.param.amount)) {
-        $message('info','请输入大于等于0，小于10位数的正数');
+      if (!this.dialog.param.expenseDate) {
+        $message('info','请输入费用日期');
         return;
       }
-      if (!numPartmax2(this.dialog.param.amount)) {
-        $message('info','请输入小于三位小位数的正数');
+      if (!numMax10(Math.abs(this.dialog.param.amount))) {
+        $message('info','请输入小于10位数的数字');
         return;
       }
+      if (!numPartmax2(Math.abs(this.dialog.param.amount))) {
+        $message('info','请输入小于三位小位数的数字');
+        return;
+      }
+      const itemsObj = _changeJson(this.dialog.models[0].options, 'costItemId');     
       this.dialog.param.amount = parseFloat(this.dialog.param.amount);
-      this.dialog.param.costItemName = this.selects.queryCost[
+      this.dialog.param.costItemName = itemsObj[
         this.dialog.param.costItemId
       ].costItemName;
-      if (this.dialog.param.id || this.dialog.param.itemId) {
+      if ((this.dialog.param.id || this.dialog.param.itemId) && this.edit) {
         // 修改
         this.editItem(this.dialog.param);
       } else {
@@ -300,16 +328,13 @@ export default {
       })
         .then(() => {
           this.deleteItem(item);
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
     addItem(param) {
       const expenseDate = formatDate(param.expenseDate, "yyyy-MM-dd");
       this.getCycleId(
         {
-          contractId: this.query.contractId,
+          contractCode: this.query.contractObj.contractCode,
           costItemId: param.costItemId,
           expenseDate
         },
@@ -328,7 +353,7 @@ export default {
       const expenseDate = formatDate(param.expenseDate, "yyyy-MM-dd");
       this.getCycleId(
         {
-          contractId: this.query.contractId,
+          contractCode: this.query.contractObj.contractCode,
           costItemId: param.costItemId,
           expenseDate
         },
@@ -339,9 +364,9 @@ export default {
             data.endDate
           })`;
           if (param.id) {
-            _replace("itemId", this.content.list, param);
-          } else {
             _replace("id", this.content.list, param);
+          } else {
+            _replace("itemId", this.content.list, param);
           }
           this.dialog.dialogVisible = false;
         }
@@ -385,6 +410,11 @@ export default {
       });
     },
     async addEntering() {
+      if (!this.query.contractObj.contractCode) {
+        $message("info", '请先选择合同');
+        return;
+      }
+      this.loading = true;
       this.content.list.forEach(item => {
         item.replaceExpenseDate = item.expenseDate;
         item.expenseDate = item.expenseDate.replace(
@@ -393,16 +423,20 @@ export default {
         );
       });
       const param = {
-        contractId: this.query.contractId,
+        contractId: this.query.contractObj.id,
+        contractCode: this.query.contractObj.contractCode,
         settleGroupId: this.query.settleGroupId,
         item: this.content.list
       };
+      
       const apiFunc = (api, param) => {
         this.$api.financeapi[api](param).then(returnObj => {
           if (returnObj.data.status === 200) {
             $message("success", "提交成功!");
             this.$router.push({ path: "/finance/irregularCost" });
+            this.loading = false;
           } else {
+              this.loading = false;
             this.content.list.forEach(item => {
               item.expenseDate = item.replaceExpenseDate;
             });
@@ -454,7 +488,7 @@ export default {
     },
     async getCyclePeriod(params, callback) {
       const param = {
-        contractId: this.query.contractId,
+        contractCode: this.query.contractCode,
         costItemId: params.costItemId,
         expenseDate: params.expenseDate
       };
@@ -464,11 +498,8 @@ export default {
     },
     async getMerchants() {
       await this.$api.rentapi
-      .listUsingGET_12({
-        status: 1
-      })
+      .listForFormalUsingGET()
       .then(res => {
-        //商户列表 status:1 已确定状态没加
         this.selects.merchants = res.data.data;
       })
       .catch(res => {
@@ -479,6 +510,7 @@ export default {
       let [cost] = await Promise.all([queryCost()]);
       this.selects.queryCost = cost.json;
       const merchantId = parseInt(this.$route.query.merchantId);
+      const contractCode = this.$route.query.contractCode;
       const contractId = parseInt(this.$route.query.contractId);
       const settleGroupId = parseInt(this.$route.query.settleGroupId);
 
@@ -486,11 +518,12 @@ export default {
       await this.getMerchants();
       if (!this.$route.query.id) return;
       await this.checkUserHandler(merchantId);
-      await this.checkHetongHandler(contractId);
+      await this.checkHetongHandler(contractCode);
       await this.checkjsHandler(contractId, settleGroupId);
             
       this.query.merchantId = merchantId;
-      this.query.contractId = contractId;
+      this.query.contractObj.contractCode = contractCode;
+      this.query.contractObj.id = contractId;
       this.query.settleGroupId = settleGroupId;
     }
   },

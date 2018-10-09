@@ -1,9 +1,8 @@
 <template>
   <con-head title="账单处理任务">
     <cash-card notCash="true" :cash="[{name:'处理结算单总数', id:this.content.totalCount}, {name: '成功处理结算单数', id:this.content.successCount}, {name: '失败结算单数', id:this.content.failCount}]"></cash-card>    
-    <erp-table :header="header" :content="content"></erp-table>
+    <erp-table :header="header" :content="content.details" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
-
 </template>
 
 <script>
@@ -39,8 +38,8 @@ export default {
           type: "text",
         },
         {
-          label: "结算月",
-          name: "cycle",
+          label: "结算日期",
+          name: "settleDate",
           type: "text"
         },
         {
@@ -48,9 +47,18 @@ export default {
           name: "failReason",
           type: "text"
         },
+        {
+          label: "生成时间",
+          name: "createTime",
+          type: "text"
+        },
       ],
       content: {
-        list: []
+        details: {}
+      },
+      page: {
+        pageSize: '',
+        pageNum: ''
       },
       dialog: {
         models: [{
@@ -81,7 +89,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -100,12 +107,26 @@ export default {
     };
   },
   methods: {
+    getCurrentPage(pageNum) {
+      this.page.pageNum = pageNum;
+      this.getBillList();
+    },
+    getpageSize(pageSize) {
+      this.page.pageSize = pageSize;
+      this.getBillList();
+    },
     async getBillList() {
       if(!this.$route.params.id) return;
-      await this.$api.financeapi.resultUsingGET({id: this.$route.params.id}).then(res => {
+      var param = {
+        id:this.$route.params.id,
+        pageNum:this.page.pageNum,
+        pageSize:this.page.pageSize,
+      };
+      console.log(param);
+      await this.$api.financeapi.resultUsingGET(param).then(res => {
         if (res.data.status === 200) {
           this.content = res.data.data;
-          this.content.list = res.data.data.item;
+          this.content.details = res.data.data.pageInfo;
         } else {
           $message('error', res.data.msg);
         }

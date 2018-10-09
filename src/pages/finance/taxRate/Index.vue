@@ -9,7 +9,7 @@
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改税码': '添加税码'" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" :title="dialog.param.id? '修改税码': '添加税码'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -21,7 +21,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import { formatDate } from "@/utils/filter";
-import { onlyNumWord } from "@/utils";
+import { numberNotE, numMax10, numPartmax2 } from "@/utils";
 export default {
   name: "account-group",
   components: {
@@ -76,6 +76,7 @@ export default {
               },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -105,7 +106,7 @@ export default {
         }, {
           label: '税率',
           name: 'rate',
-          type: 'text',
+          type: 'number',
           slot: '%',
           placeholder: '请输入税率'
         }, {
@@ -120,6 +121,7 @@ export default {
           placeholder: '请输入说明'
         }],
         dialogVisible: false,
+        loading: false,
         param: {
           id: "",
           rateCode: "",
@@ -154,20 +156,27 @@ export default {
   },
   methods: {
     getCurrentPage(pageNum) {
-      this.getTaxRates({pageNum});
+      this.query.pageNum = pageNum;
+      this.getTaxRates();
     },
     getpageSize(pageSize) {
-      this.getTaxRates({pageSize});
+      this.query.pageSize = pageSize;
+      this.getTaxRates();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
-      if (!onlyNumWord(this.dialog.param.rateCode)) {
-        $message('info','只能输入数字和字母');
+      if (!numMax10(this.dialog.param.rate)) {
+        $message('info','请输入大于等于0，小于10位数的正数');
         return;
       }
+      if (!numPartmax2(this.dialog.param.rate)) {
+        $message('info','请输入小于三位小位数的正数');
+        return;
+      }
+      this.dialog.loading = true;
       if (this.dialog.param.id) {
         // 修改
         this.editTaxRates(this.dialog.param);
@@ -187,8 +196,8 @@ export default {
     },
     async getTaxRates(page={}, callback) {
       const param = {
-        pageNum: page.pageNum,
-        pageSize: page.pageSize,
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize,
         rateCode: this.query.rateCode
       };
       this.$api.financeapi.listUsingGET_9(param).then(res => {
@@ -216,9 +225,11 @@ export default {
           this.getTaxRates({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });          
         } else {
-          $message("error", "添加失败!");
+            this.dialog.loading = false;
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -231,12 +242,13 @@ export default {
       await this.$api.financeapi.updateUsingPUT_5(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
-            // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "修改成功!");
             that.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
-          $message("error", "修改失败!");
+            this.dialog.loading = false;
+          $message("error", returnObj.data.msg);
         }       
       });
     },
@@ -248,12 +260,11 @@ export default {
       await this.$api.financeapi.deleteUsingDELETE_2(params).then(returnObj => {
         if(returnObj.data.status === 200) {
           this.getTaxRates({}, () => {
-            // TODO: 重新查列表，需要带参数，这里还没弄
             $message("success", "删除成功!");
             that.dialog.dialogVisible = false;
           });          
         } else {
-          $message("error", "删除失败!");
+          $message("error", returnObj.data.msg);
         }       
       });
     }

@@ -1,17 +1,21 @@
 <template>
-  <con-head title="保证金收取管理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/takeMargin" v-if="takeMargin">保证金收取管理</router-link>
+        <router-link to="/finance/takeMarginAudit" v-if="takeMarginAudit">保证金收取审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="linkTo('takeMargin/collectEarnest')">诚意金收取</el-button>
     <el-button type="primary" slot="append" @click="linkTo('takeMargin/collectDeposit')">租赁保证金收取</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-            <input type="text" placeholder="请输入店铺号/店铺名称" v-model="searchName" @keyup.enter="getTakeMarginList()"><i class="iconfont icon-sousuo"></i>
+            <input type="text" placeholder="请输入收款单号" v-model="searchName" @keyup.enter="getTakeMarginList()"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getTakeMarginList">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" filterable clearable class="dialogselect" @change="checkContractList(query.merchantId)">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -39,24 +43,19 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractCode" placeholder="请选择合同" @change="getTakeMarginList()" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" placeholder="请选择合同" filterable clearable @change="getTakeMarginList()" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.codeInfo"
+                :label="item.contractAndShop"
                 :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>
-			</div>
-		</el-row>
     <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
 
     <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
@@ -80,11 +79,11 @@ export default {
   data() {
     return {
         header: [
-            {
-              label: "",
-              name: "checked",
-              type: "checkbox"
-            },
+            // {
+            //   label: "",
+            //   name: "checked",
+            //   type: "checkbox"
+            // },
             {
               label: "收款单号",
               type: "link",
@@ -112,7 +111,7 @@ export default {
               name: "stageText"
             },{
               label: "收款金额",
-              type: "text",
+              type: "fmoney",
               name: "receivedAmount"
             },
             {
@@ -210,7 +209,6 @@ export default {
               type: "primary",
               disabledFun: () => {
                 return Object.values(this.dialog.param).some(item => {
-                  console.log(item);
                   return item === (undefined || "");
                 });
               },
@@ -266,29 +264,37 @@ export default {
     },
     mounted() {
         this.getTakeMarginList();
-        this.$api.financeapi.merinfoUsingGET().then(res=>{ //商户列表
+        this.$api.rentapi.listIntentAndFormalUsingGET().then(res=>{ //商户列表
             this.selects.merchants = res.data.data;
-            // this.dialog.models[0].options = res.data.data;
-        }).catch(res=>{
-            this.$message.error(res.data.msg);
-        });
-        this.$api.financeapi.coninfoUsingGET().then(res=>{//合同列表
-            this.selects.contracts = res.data.data;
-            // this.dialog.models[1].options = res.data.data.list;
-        }).catch(res=>{
-            this.$message.error(res.data.msg);
-        });
+        })
+        this.checkContractList(-1); //合同下拉
+    },
+    computed:{
+        takeMargin(){
+            return this.$root.menus.indexOf('/finance/takeMargin') >= 0;
+        },
+        takeMarginAudit(){
+            return this.$root.menus.indexOf('/finance/takeMarginAudit') >= 0;
+        }
     },
     methods: {
+        checkContractList(merchantId){
+            this.query.contractCode = '';
+            this.getTakeMarginList();
+            let merchantIds = merchantId==-1?'' : merchantId;
+            this.$api.rentapi.listIntentAndFormalContractUsingGET({merchantId: merchantIds}).then(res=>{//合同列表
+                this.selects.contracts = res.data.data;
+            })
+        },
         getTakeMarginList(page={}, callback){
             let params ={
-                shopName: this.searchName,
+                // shopName: this.searchName,
                 shopCode: this.searchName,
                 merchantId: this.query.merchantId,
                 contractCode: this.query.contractCode,
                 status: this.query.status,
-                pageNum: page.pageNum,
-                pageSize: page.pageSize
+                pageNum: this.query.pageNum,
+                pageSize: this.query.pageSize
             }
             this.$api.financeapi.listUsingGET_4(params).then(res=>{
                 if(res.data.status === 200){
@@ -318,10 +324,12 @@ export default {
             })
         },
         getCurrentPage(pageNum) {
-          this.getTakeMarginList({pageNum});
+          this.query.pageNum = pageNum;
+          this.getTakeMarginList();
         },
         getpageSize(pageSize) {
-          this.getTakeMarginList({pageSize});
+          this.query.pageSize = pageSize;
+          this.getTakeMarginList();
         },
         linkTo(path) {
           this.$router.push({ path });
@@ -397,7 +405,7 @@ export default {
           }
         },  
         deleteDialog: function(item) {//删除操作
-          this.$confirm("此操作将永久删除该结算组别, 是否继续?", "提示", {
+          this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning"
@@ -413,13 +421,10 @@ export default {
               .catch(res => {
                 this.$message.error(res.data.msg);
               });
-            })
-            .catch(() => {
-              $message("info", "已取消删除!");
             });
         },
         cancelTakeMargin: function(item) {//取消操作
-          this.$confirm("此操作将取消该条数据, 是否继续?", "提示", {
+          this.$confirm("您确定继续当前操作？", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning"
@@ -436,9 +441,6 @@ export default {
                 this.$message.error(res.data.msg);
               });
             })
-            .catch(() => {
-              $message("info", "已取消!");
-            });
         }
     }
 };

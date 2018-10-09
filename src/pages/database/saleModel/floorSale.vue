@@ -1,22 +1,44 @@
 <template>
-  <con-head title="业态楼层销售报表">
-    <el-button type="primary" slot="append" @click="exportHandler()">导出</el-button>
+  <con-head title="楼层销售报表" v-loading.fullscreen="loading">
+    <el-button type="primary" slot="append" :disabled="showBtn" @click="exportHandler()">导出</el-button>
     <el-row slot="preappend">
       <el-col :span="12">
-        <div class="searchselect">
-          <span class="inputname">销售日期：</span>
-					<el-date-picker
-						v-model="query.time"
-						type="daterange"
-            value-format="yyyy-MM-dd"
-            @change="getList"
-						range-separator="~"
-						start-placeholder="开始日期"
-						end-placeholder="结束日期">
-					</el-date-picker>
+        <div class="searchinput searchdatepicker">
+          <span class="inputname inputnameauto">销售日期：</span>
+            <el-date-picker
+                    v-model="query.startDateData"
+                    type="date"
+                    placeholder="选择日期"
+                    :picker-options="startpickerOptions"
+                    @change="getList()"
+                    value-format="yyyy-MM-dd">
+            </el-date-picker>
+            ~
+            <el-date-picker
+                    v-model="query.endDateData"
+                    type="date"
+                    placeholder="选择日期"
+                    :picker-options="endpickerOptions"
+                    @change="getList()"
+                    value-format="yyyy-MM-dd">
+            </el-date-picker>
         </div>
       </el-col>
-			<el-col :span="11" :offset="1">
+        <el-col :span="11" :offset="1">
+            <div class="searchselect">
+                <span class="inputname inputnameauto">楼层：</span>
+                <el-select v-model="query.floorId" placeholder="请选择" filterable clearable class="dialogselect" @change="floorSelect()">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option
+                            v-for="item in floorOptions"
+                            :key="item.id"
+                            :label="item.floorName"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </div>
+        </el-col>
+	    <!-- <el-col :span="11" :offset="1">
           <div class="texttitle">
             <span class="inputname">楼层/业态：</span>
             <div class="line-nav">
@@ -27,9 +49,18 @@
                 @click="methodsHandler(method)">{{method.label}}</a>
             </div>
           </div>
-        </el-col>
+        </el-col> -->
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize">
+        <tr class="last_tr" slot="lastTr" v-if="totalShow && content.list.length > 0">
+            <td><div class="cell"><span>合计</span></div></td>
+            <td><div class="cell"><span>{{detail.signedArea}}</span></div></td>
+            <td><div class="cell"><span>{{detail.totalArea}}</span></div></td>
+            <td><div class="cell"><span>{{detail.salesAmount | fmoney}}</span></div></td>
+            <td><div class="cell"><span>{{detail.salesTimes}}</span></div></td>
+            <td colspan="3"><div class="cell"><span></span></div></td>
+        </tr>
+    </erp-table>
   </con-head>
 
 </template>
@@ -38,6 +69,7 @@
 import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
+import { reExport } from '@/utils/'
 
 export default {
   name: "account-group",
@@ -49,7 +81,7 @@ export default {
     return {
       header: [
         {
-          label: "楼层/业态",
+          label: "楼层",
           type: "text",
           name: "businessTypeOrFloorName"
         },
@@ -65,7 +97,7 @@ export default {
         },
         {
           label: "销售总额",
-          type: "text",
+          type: "fmoney",
           name: "salesAmount"
         },
         {
@@ -75,7 +107,7 @@ export default {
         },
         {
           label: "客单价（元）",
-          type: "text",
+          type: "fmoney",
           name: "averagePrice"
         },
         {
@@ -93,11 +125,11 @@ export default {
       selects: {
         accounts: [],
         methods: [
-          {
-            isStatus: false,
-            label: "全部",
-            id: 1
-          },
+          // {
+          //   isStatus: false,
+          //   label: "全部",
+          //   id: 1
+          // },
           {
             isStatus: true,
             label: "业态",
@@ -110,18 +142,69 @@ export default {
           }
         ]
       },
-      query: {}
+      query: {
+          startDateData:'',
+          endDateData:''
+      },
+      floorOptions:[],
+      buildId:'',
+      detail:'',
+      totalShow:true,
+      showBtn: true,
+      loading: false,
+        startpickerOptions:{
+            disabledDate: (time) => {
+                if (this.query.endDateData != '' || this.query.endDateData != null) {
+                    let oneYear = 365 * 24 * 3600 * 1000;
+                    let oneYearNum = (new Date(this.query.endDateData)).getTime() - oneYear;
+                    return time.getTime() < oneYearNum;
+                }
+            }
+        },
+        endpickerOptions:{
+            disabledDate: (time) => {
+                if (this.query.startDateData != '' || this.query.startDateData != null) {
+                    let oneYear = 365 * 24 * 3600 * 1000;
+                    let oneYearNum = (new Date(this.query.startDateData)).getTime() + oneYear;
+                    if(oneYearNum > oneYear) {
+                        return time.getTime() > oneYearNum;
+                    }
+                }
+            }
+        }
     };
   },
-  mounted() {},
+  mounted() {
+      this.getBuildList();
+  },
   methods: {
     getCurrentPage(pageNum) {
-      this.getList({ pageNum });
+      this.query.pageNum = pageNum;
+      this.getList();
     },
     getpageSize(pageSize) {
-      this.getList({ pageSize });
+      this.query.pageSize = pageSize;
+      this.getList();
     },
+      async getBuildList(){
+          await this.$api.rentapi.listUsingGET_4().then(res=>{
+              res.data.data.forEach(item => {
+                  if (item.buildName == '商场') {
+                      this.buildId = item.id;
+                  }
+              })
+              this.getFloorList();
+          })
+      },
+      async getFloorList(){
+          await this.$api.rentapi.selectByBuildIdUsingGET({
+              buildId: this.buildId
+          }).then(res=>{
+              this.floorOptions = res.data.data;
+          })
+      },
     methodsHandler(method) {
+      this.content.list = [];
       this.selects.methods.forEach(function(obj) {
         obj.isStatus = false;
       });
@@ -131,30 +214,64 @@ export default {
     },
     async getList(page = {}, callback) {
       let params = {
-        startDate: this.query.time ? this.query.time[0] : '',
-        endDate: this.query.time ? this.query.time[1] : '',
-        businessTypeOrFloorCode: this.query.businessTypeOrFloorCode || 2,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+          startDate: this.query.startDateData ? this.query.startDateData : undefined,
+          endDate: this.query.endDateData ? this.query.endDateData : undefined,
+        // businessTypeOrFloorCode: this.query.businessTypeOrFloorCode || 2,
+        businessTypeOrFloorCode: 3,
+        floorId:this.query.floorId,
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
-      console.log(params)
-      this.$api.reportapi.businessTypeAndFloorSalesListUsingGET(params).then(res => {
-        const data = res.data;
-        if (data.status === 200) {
-          this.content = data.data;
-          if (callback) callback();
-        } else {
-          return data.message;
-        }
-      });
+      if(params.startDate && params.endDate){
+        this.loading = true;
+        this.totalShow = false;
+        this.$api.reportapi.businessTypeAndFloorSalesListUsingGET(params).then(res => {
+          const data = res.data;
+          if (data.status === 200) {
+            this.content = data.data;
+            this.content.list.forEach(item=>{
+                item.totalArea = item.totalArea==null?'--':item.totalArea
+                item.productivenessOfTotalArea = item.productivenessOfTotalArea==null?'--':item.productivenessOfTotalArea
+            })
+            if(this.content.list.length>0){
+                this.showBtn = false;
+            }
+            if (data.data.isLastPage) {
+              this.$api.reportapi.businessTypeAndFloorSalesListSumUsingGET(params).then(returnObj => {
+                  if (returnObj.data.status === 200) {
+                      this.detail = returnObj.data.data;
+                      this.totalShow = true;
+                  }
+              });
+            }else{
+              this.totalShow = false;
+            }
+            if (callback) callback();
+            this.loading = false;
+          } else {
+            this.loading = false;
+            this.$message.error(res.data.msg);
+          }
+        }).catch(res=>{
+            this.loading = false;
+            this.$message.error(res.data.msg);
+        });
+      }else{
+        this.content.list = [];
+      }
+    },
+    floorSelect(){
+       this.getList();
     },
     exportHandler(){
+        reExport(this, 'showBtn', true);
         let params = {
-            startDate: this.query.time ? this.query.time[0] : '',
-            endDate: this.query.time ? this.query.time[1] : '',
-            businessTypeOrFloorCode: this.query.businessTypeOrFloorCode || 2,
-            // pageNum: page.pageNum,
-            // pageSize: page.pageSize
+            startDate: this.query.startDateData ? this.query.startDateData : undefined,
+            endDate: this.query.endDateData ? this.query.endDateData : undefined,
+            businessTypeOrFloorCode: 3,
+            floorId:this.query.floorId,
+            // pageNum: this.query.pageNum,
+            // pageSize: this.query.pageSize
         };
         if(this.content.list.length>0){
             this.$api.reportapi.exportBusinessTypeAndFloorSalesListUsingGET(params).then(res=>{
@@ -170,6 +287,7 @@ export default {
   computed: {},
   created() {
     this.getList();
+    this.content.list = [];
   }
 };
 </script>

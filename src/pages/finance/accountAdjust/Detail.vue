@@ -57,7 +57,8 @@ export default {
             name: "adjustDate",
             left_span: 2,
             right_span: 5,
-            type: "text"
+            type: "time",
+            filter: 'yyyy-MM-dd hh:mm:ss'
           },
           {
             label: "状态",
@@ -85,17 +86,17 @@ export default {
               {
                 label: "结算金额",
                 name: "amountReceivable",
-                type: "text"
+                type: "fmoney"
               },
               {
                 label: "本次调整",
                 name: "adjustAmount",
-                type: "text"
+                type: "fmoney"
               },
               {
                 label: "剩余金额",
                 name: "surplusAmount",
-                type: "text"
+                type: "fmoney"
               },
               {
                 label: "调整类型",
@@ -122,7 +123,6 @@ export default {
           let data = returnObj.data.data;
           data.list = data.adjustCostItemVos;
           this.details = data;
-          console.log(this.details);
         }        
       });
     }

@@ -1,36 +1,34 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="合同结算统计报表">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="exportHandler()">导出</el-button>
+            <el-button type="primary" slot="append" :disabled="showBtn" @click="exportHandler()">导出</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchinput">
                         <span class="inputname inputnameauto" style="width: 100px;">结算月：</span>
                         <el-date-picker
-                            style="padding-left:30px;"
                             v-model="startMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 MM 月"
                             value-format="yyyy-MM"
-                            @change="pageHandler(1)">
+                            :picker-options="startPickerOptions"
+                            @change="pageHandler(1,pageSize)">
                         </el-date-picker>
                         <span style="line-height: 30px;">~</span>
                         <el-date-picker
-                            style="padding-left:30px;"
                             v-model="endMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 MM 月"
                             value-format="yyyy-MM"
-                            @change="pageHandler(1)">
+                            :picker-options="endPickerOptions"
+                            @change="pageHandler(1,pageSize)">
                         </el-date-picker>
                     </div>
                 </el-col>
                 <el-col :span="9" :offset="2">
                     <div class="searchselect">
                         <span class="inputname inputnameauto">合同：</span>
-                        <el-select v-model="contractCode" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-select v-model="contractCode" placeholder="请选择" filterable clearable class="dialogselect" @change="pageHandler(1,pageSize)">
                             <el-option label="全部" value=""></el-option>
                             <el-option
                                     v-for="item in contractOptions"
@@ -62,7 +60,7 @@
             <div class="mainbox">
                 <data-table :tableData="datalist" :colConfigs="columnData"></data-table>
             </div>
-            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
+            <rt-page ref="page" v-show="datalist.length>0" :cur="pageNum" :total="total" :pageSize="20" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
     </div>
 </template>
@@ -71,10 +69,13 @@
     import ConHead from '../../../components/ConHead'
     import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
+    import { reExport } from '@/utils/'
+    import { fmoney } from '@/utils/filter'
     export default {
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 startMonth: '',
                 endMonth: '',
@@ -84,6 +85,7 @@
                 status: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
+                showBtn: true,
                 selects:{
                     status:[]
                 },
@@ -94,11 +96,11 @@
                     { prop: 'merchantCode', label: '商户号' },
                     { prop: 'merchantName', label: '商户名' },
                     { prop: 'brandName', label: '品牌' },
-                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'propertyTypeName', label: '物业性质' },
                     { prop: 'settleDate', label: '结算月' },
                     { prop: 'settleNumber', label: '结算单号' },
-                    { prop: 'sales', label: '销售额' },
-                    { prop: 'totalAmount', label: '应收合计'}
+                    { prop: 'salesAmount', label: '销售额', format: 'fmoney' },
+                    // { prop: 'totalAmount', label: '应收合计'}
                 ],
                 afterData: [
                     // {prop: 'posRent', label: 'POS租金'},
@@ -112,6 +114,31 @@
                     // {prop: 'generalizeDiffCost', label: '推广费用补差'},
                     // {prop: 'totalAmount', label: '应收合计'},
                 ],
+                lastData: [
+                    { prop: 'totalAmount', label: '应收合计', format: 'fmoney'}
+                ],
+                startPickerOptions: {
+                    disabledDate: (time) => {
+                        if (this.endMonth) {
+                            let oneYear = 11 * 30 * 24 * 3600 * 1000;
+                            let oneYearNum = (new Date(this.endMonth)).getTime();
+                            /*return (time.getYear() < new Date(oneYearNum).getYear() && time.getMonth() < new Date(oneYearNum).getMonth() +1)
+                                    || (time.getYear() > new Date(oneYearNum).getYear());*/
+                            return time.getTime() < oneYearNum - oneYear || time.getTime() > oneYearNum
+                        }
+                    }
+                },
+                endPickerOptions: {
+                    disabledDate: (time) => {
+                        if (this.startMonth) {
+                            let oneYear = 12 * 30 * 24 * 3600 * 1000;
+                            let oneYearNum = (new Date(this.startMonth)).getTime();
+                            /*return (time.getYear() > new Date(oneYearNum).getYear() && time.getMonth() > new Date(oneYearNum).getMonth() -1)
+                                    || (time.getYear() < new Date(oneYearNum).getYear());*/
+                            return time.getTime() > oneYearNum + oneYear || time.getTime() < oneYearNum
+                        }
+                    }
+                }
             }
         },
         mounted(){
@@ -132,42 +159,87 @@
             this.getContractList();
         },
         methods:{
+            getSummaries(param) {
+                this.$api.reportapi.listSumUsingGET_3(param).then(res=>{
+                    if (res.data.status === 200) {
+                        let dataTotal = res.data.data;
+                        let data = {
+                            contractCode: '合计',
+                            salesAmount: dataTotal.salesAmount,
+                            totalAmount: dataTotal.totalAmount
+                        };
+                        dataTotal.itemList.forEach(item => {
+                            data[item.costItemName] = item.publicAmount;
+                        });
+                        
+                        if (JSON.stringify(this.datalist[this.datalist.length -1]).indexOf(data.contractCode) < 0) {
+                            this.datalist.push(data);
+                        }
+                    }
+                });
+            },
             pageHandler(pageNum, pageSize){
-                let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
-                    contractCode: this.contractCode,
-                    propertyType: this.status,
-                    startMonth: this.startMonth,
-                    endMonth: this.endMonth,
-                }
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
                 if(this.startMonth && this.endMonth){
+                    this.loading = true;
+                    let params = {
+                        pageNum: this.pageNum,
+                        pageSize: this.pageSize,
+                        contractCode: this.contractCode,
+                        propertyType: this.status,
+                        startMonth: this.startMonth,
+                        endMonth: this.endMonth,
+                    }
                     this.$api.reportapi.listUsingGET_5(params).then(res=>{
                         if(res.data.status === 200){
                             this.total = Number(res.data.data.total);
                             this.afterData = [];
-                            this.columnData = this.columnData.slice(0, 11);
+                            this.columnData = this.columnData.slice(0, 10);
                             if (res.data.data.list.length > 0) {
                                 res.data.data.list[0].someList.forEach(item => {
                                     this.afterData.push({
                                         prop: item.costItemName,
                                         label: item.costItemName,
-                                        value: item.publicAmount
+                                        format: 'fmoney'
                                     });
                                 });
+                                
+                                function format(data) {
+                                    data.someList.forEach(item => {
+                                        data[item.costItemName] = item.publicAmount;
+                                    })
+                                }
+
                                 res.data.data.list.forEach(item => {
-                                    this.afterData.forEach(item1 => {
-                                        item[item1.prop] = item1.value
-                                    });
-                                });
+                                    format(item);
+                                }); 
                             }
                             this.datalist = res.data.data.list;
+                            if(this.datalist.length>0){
+                                this.showBtn = false;
+                            }
                             this.columnData = this.columnData.concat(this.afterData);
-                            console.log(1,this.afterData)
+                            this.columnData = this.columnData.concat(this.lastData);
+                            if (res.data.data.isLastPage) {
+                                this.getSummaries(params);
+                            }
+                            this.loading = false;
+                        }else{
+                            this.loading = false;
+                            this.$message.error(res.data.msg);
                         }
                     }).catch(res=>{
+                        this.loading = false;
                         this.$message.error(res.data.msg);
                     })
+                }
+                else{
+                    if (!this.startMonth && !this.endMonth) {
+                        this.$message.info('请先选择开始时间和结束时间');
+                    }                   
+                    this.datalist = [];
+                    this.total = 0;
                 }
             },
             statusHandler(status){
@@ -176,24 +248,25 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.status = status.value;
-                this.pageHandler(1);
+                this.pageHandler(1,this.pageSize);
             },
             getContractList(){
-                this.$api.reportapi.selectUsingGET().then(res=>{//合同
+                this.$api.reportapi.selectAllUsingGET().then(res=>{//合同
                     this.contractOptions = res.data.data;
                 })
             },
             exportHandler(){
+                reExport(this, 'showBtn', true);
                 let params = {
-                    pageNum: this.pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    // pageNum: this.pageNum,
+                    // pageSize: this.$refs.page.pageSize,
                     contractCode: this.contractCode,
                     propertyType: this.status,
                     startMonth: this.startMonth,
                     endMonth: this.endMonth
                 }
                 if(this.datalist.length>0){
-                    this.$api.reportapi.exportContractSettlementStatisticsUsingGET({params}).then(res=>{
+                    this.$api.reportapi.exportContractSettlementStatisticsUsingGET(params).then(res=>{
                         if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                         }

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="货品组别管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <el-button type="primary" slot="append" @click="getInfoData()">修改</el-button>
@@ -23,7 +23,7 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入货品组别编号" v-model="addInfoData.goodsTypeCode" :disabled="addInfoData.id != ''">
+                    <input class="inputtext" type="text" placeholder="请输入货品组别编码" v-model="addInfoData.goodsTypeCode" :disabled="addInfoData.id != ''">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
@@ -45,6 +45,7 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataTreeList:[],
                 addInfoData:{
@@ -90,7 +91,6 @@
             },
             handleNodeClick(data){
                 this.treeData = data;
-                console.log(data)
             },
             async getInfoData(){
                 this.addInfoData.id = this.treeData.id;
@@ -104,6 +104,7 @@
                 }
             },
             async addTreeData(){
+                this.loading = true;
                 if(this.addInfoData.id == '') {
                     this.addInfoData.pid = this.treeData.id;
                     await this.$api.rentapi.addUsingPOST_6({
@@ -114,9 +115,13 @@
                             this.$message.success(res.data.msg);
                             this.getDataList();
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     await this.$api.rentapi.goodsGroupUpdate({
@@ -126,9 +131,13 @@
                             this.$message.success(res.data.msg);
                             this.getDataList();
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },

@@ -10,7 +10,7 @@
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改收款账户': '添加收款账户'" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" :title="dialog.param.id? '修改收款账户': '添加收款账户'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -74,6 +74,7 @@ export default {
               },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -129,6 +130,7 @@ export default {
         // }
         ],
         dialogVisible: false,
+        loading: false,
         param: {
           id: 0,
           bankAccount: "",
@@ -170,16 +172,19 @@ export default {
   },
   methods: {
     getCurrentPage(pageNum) {
-      this.getCollectAccount({pageNum});
+      this.query.pageNum = pageNum;
+      this.getCollectAccount();
     },
     getpageSize(pageSize) {
-      this.getCollectAccount({pageSize});
+      this.query.pageSize = pageSize;
+      this.getCollectAccount();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.loading = true;
       if (this.dialog.param.id >=0) {
         // 修改
         this.editCollectAccount(this.dialog.param);        
@@ -211,16 +216,13 @@ export default {
               return data.message;
             }
           });  
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
     getCollectAccount(page={}, callback) {
       const param = {
         openingBank: this.query.openingBank,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_10(param).then(v => {
         const Ajson = this.selects.accountGroupJson;
@@ -236,9 +238,11 @@ export default {
         if(returnObj.data.status === 200) {
           this.getCollectAccount({}, () => {
             $message("success", "添加成功!");
-            this.dialog.dialogVisible = false;           
+            this.dialog.dialogVisible = false;  
+            this.dialog.loading = false;         
           });
         } else {
+            this.dialog.loading = false;
           $message("error", returnObj.data.msg);
         }       
       });
@@ -253,9 +257,11 @@ export default {
         if(returnObj.data.status === 200) {
           this.getCollectAccount({}, () => {
             $message("success", "修改成功!");
-            this.dialog.dialogVisible = false;            
+            this.dialog.dialogVisible = false;
+            this.dialog.loading = false;            
           });          
         } else {
+            this.dialog.loading = false;
           $message("error", returnObj.data.msg);
         }       
       });
@@ -263,7 +269,7 @@ export default {
     async init () {      
       let [accountGroup] = await Promise.all([queryAccountGroup()]);
       this.selects.accountGroupJson = accountGroup.json;
-      this.dialog.models[this.dialog.models.length-2].options = accountGroup.data.list.length >= 0 ? accountGroup.data.list : [];
+      this.dialog.models[this.dialog.models.length-1].options = accountGroup.data.length >= 0 ? accountGroup.data : [];
       await this.getCollectAccount({});
     }
   },

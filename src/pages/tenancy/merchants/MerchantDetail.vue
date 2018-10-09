@@ -1,11 +1,13 @@
 <template>
   <div class="savebox">
     <div class="savecont">
-        <erp-details :header="header" :details="details"></erp-details>
+        <erp-details :header="header" :noGoback="true" :details="details"></erp-details>
         <br>
-        <erp-details :header="headerT" :details="detailsT"></erp-details>
+        <erp-details :header="headerA" :noGoback="true" :details="detailsA"></erp-details>
+        <br>     
+        <erp-details :header="headerT" :noGoback="true" :details="detailsT"></erp-details>
     </div>
-    <div class="savebtn"><button @click="submitHandler">提交</button></div>
+    <div class="savebtn"><button @click="returnHandler">返回</button></div>
   </div>
 </template>
 
@@ -56,28 +58,36 @@ export default {
             type: "text"
           },
           {
-            label: "负责人：",
-            name: "responsiblePerson",
-            left_span: 3,
-            right_span: 18,
-            type: "text"
-          },{
-            label: "联系电话：",
-            name: "contactNumber",
-            left_span: 3,
-            right_span: 18,
-            type: "text"
-          },{
-            label: "传真：",
-            name: "fax",
-            left_span: 3,
-            right_span: 18,
-            type: "text"
-          },{
             label: "地址：",
             name: "adress",
             left_span: 3,
             right_span: 18,
+            type: "text"
+          }
+        ]
+      },
+      headerA: {
+        title: "联系人",
+        content: [
+          {
+            label: "联系人：",
+            name: "responsiblePerson",
+            left_span: 3,
+            right_span: 3,
+            type: "text"
+          },
+          {
+            label: "联系电话：",
+            name: "contactNumber",
+            left_span: 3,
+            right_span: 3,
+            type: "text"
+          },
+          {
+            label: "传真：",
+            name: "fax",
+            left_span: 3,
+            right_span: 3,
             type: "text"
           }
         ]
@@ -97,7 +107,8 @@ export default {
             name: "businessLicenseImg",
             left_span: 3,
             right_span: 18,
-            type: "img"
+            type: "moreImgs",
+            url: "url"
           },
           {
             label: "经营许可证号：",
@@ -112,7 +123,7 @@ export default {
             left_span: 3,
             right_span: 18,
             type: "moreImgs",
-            url: 'url'
+            url: "url"
           },
           {
             label: "商标注册证件号：",
@@ -127,37 +138,42 @@ export default {
             left_span: 3,
             right_span: 18,
             type: "moreImgs",
-            url: 'url'
-          },{
+            url: "url"
+          },
+          {
             label: "法人身份证号：",
             name: "legalPersonId",
             left_span: 3,
             right_span: 18,
             type: "text"
-          },{
+          },
+          {
             label: "法人身份证：",
             name: "legalPersonIdImg",
             left_span: 3,
             right_span: 18,
             type: "moreImgs",
-            url: 'url'
-          },{
+            url: "url"
+          },
+          {
             label: "其他证件号：",
             name: "otherCertificate",
             left_span: 3,
             right_span: 18,
             type: "text"
-          },{
+          },
+          {
             label: "其他证件：",
             name: "otherCertificateImg",
             left_span: 3,
             right_span: 18,
             type: "moreImgs",
-            url: 'url'
+            url: "url"
           }
         ]
       },
       details: {},
+      detailsA: [],
       detailsT: {}
     };
   },
@@ -169,16 +185,17 @@ export default {
   },
   methods: {
     fetchData(id) {
-        this.$api.rentapi.detailUsingGET_6({ id }).then(returnObj => {
-            if (returnObj.data.status === 200) {
-                let data = returnObj.data.data;
-                this.details = data;
-                this.detailsT = data;
-            }
+      this.$api.rentapi.detailUsingGET_6({ id }).then(returnObj => {
+        if (returnObj.data.status === 200) {
+          let data = returnObj.data.data;
+          this.details = data;
+          this.detailsA = data.contactLstParams || [];
+          this.detailsT = data;
+        }
       });
     },
-    submitHandler(){
-        this.$router.push('/inner/merchants')
+    returnHandler() {
+      this.$router.push("/inner/merchants");
     }
   }
 };

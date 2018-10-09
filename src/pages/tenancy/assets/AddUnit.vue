@@ -1,5 +1,5 @@
 <template>
-    <div class="savebox">
+    <div class="savebox" v-loading.fullscreen="loading">
         <div class="savecont">
             <con-head title="添加单元"></con-head>
             <el-row class="commonbox">
@@ -10,7 +10,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">购物中心</span>
-                    <el-select v-model="unitInfoData.marketId" placeholder="请选择" class="dialogselect" disabled>
+                    <el-select v-model="unitInfoData.marketId" placeholder="请选择" filterable clearable class="dialogselect" disabled>
                         <el-option
                                 v-for="item in marketOptions"
                                 :key="item.id"
@@ -21,7 +21,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼宇</span>
-                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" class="dialogselect" disabled>
+                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" filterable clearable class="dialogselect" disabled>
                         <el-option
                                 v-for="item in buildOptions"
                                 :key="item.id"
@@ -32,7 +32,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼层</span>
-                    <el-select v-model="unitInfoData.floorId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="unitInfoData.floorId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in floorOptions"
                                 :key="item.id"
@@ -71,12 +71,13 @@
         name: "add-user",
         data(){
             return{
+                loading: false,
                 unitInfoData:{
                     advertisingStandard: '',
                     area: '',
                     buildId: 1,
                     floorId: '',
-                    marketId: 1,
+                    marketId: this.$userInfo.marketId,
                     remark: '',
                     rentAdvertisingTypeId: '',
                     type: 0,
@@ -84,8 +85,8 @@
                     useArea: ''
                 },
                 marketOptions:[{
-                    marketName:'西单大悦城',
-                    id:1
+                    marketName:this.$userInfo.marketName,
+                    id:this.$userInfo.marketId
                 }],
                 buildOptions:[{
                     buildName:'商场',
@@ -103,14 +104,17 @@
         },
         methods:{
             async submitFormData(){
+                this.loading = true;
                 if(this.$route.params.unitId == 0) {
                     await this.$api.rentapi.addUsingPOST_10({
                         param: this.unitInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/inner/unit');
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
                     })
@@ -120,9 +124,11 @@
                         param: this.unitInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/inner/unit');
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
                     })

@@ -1,4 +1,5 @@
 import * as rentapi from './swaggerAPI/rent-api-client'
+import {getDomain, request} from "./swagger/rent-api-client";
 
 /*==========================================================
  *                    ERP-租务管理API.
@@ -2370,7 +2371,18 @@ export const confirmByStatusUsingGET = function(parameters = {}) {
 export const getThreeMerchantShop = function(parameters = {}) {
     return rentapi.threeMerchantShopUsingGET(parameters);
 }
-
+/**
+ * 删除合同图片
+ * request: deleteImgUsingDELETE_1
+ * url: deleteImgUsingDELETE_1URL
+ * method: deleteImgUsingDELETE_1_TYPE
+ * raw_url: deleteImgUsingDELETE_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteContractImg = function(parameters = {}) {
+    return rentapi.deleteImgUsingDELETE(parameters);
+}
 /**
  * 删除图片
  * request: deleteImgUsingDELETE_1
@@ -2422,4 +2434,488 @@ export const getIntentFile = function(parameters = {}) {
  */
 export const getMerchantContractUsingGET = function(parameters = {}) {
     return rentapi.getMerchantContractUsingGET(parameters);
+}
+/**
+ * 根据id删除单元、广告位、写字楼、场地(正式合同录入单元调用)
+ * request: updateStatusToEmpetyUsingDELETE
+ * url: updateStatusToEmpetyUsingDELETEURL
+ * method: updateStatusToEmpetyUsingDELETE_TYPE
+ * raw_url: updateStatusToEmpetyUsingDELETE_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const contractUpdateStatusToEmpety = function(parameters = {}) {
+    return rentapi.updateStatusToEmptyUsingPUT(parameters);
+}
+/**
+ * 根据id删除单元、广告位、写字楼、场地(意向合同录入单元调用)
+ * request: intentUpdateStatusToEmpetyUsingDELETE
+ * url: intentUpdateStatusToEmpetyUsingDELETEURL
+ * method: intentUpdateStatusToEmpetyUsingDELETE_TYPE
+ * raw_url: intentUpdateStatusToEmpetyUsingDELETE_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键
+ */
+export const intentContractUpdateStatusToEmpety = function(parameters = {}) {
+    return rentapi.intentUpdateStatusToEmptyUsingPUT(parameters);
+}
+/**
+ * 单条条款周期计算
+ * request: termSingleSavaUsingPOST
+ * url: termSingleSavaUsingPOSTURL
+ * method: termSingleSavaUsingPOST_TYPE
+ * raw_url: termSingleSavaUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const postTermSingleSava = function(parameters = {}) {
+    return rentapi.termSaveUsingPOST(parameters);
+}
+/**
+ * 变更时条款的删除
+ * request: termDelUsingGET
+ * url: termDelUsingGETURL
+ * method: termDelUsingGET_TYPE
+ * raw_url: termDelUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param id - id
+ */
+export const termDelListData = function(parameters = {}) {
+    return rentapi.termDelUsingGET(parameters);
+}
+/**
+ * 编辑正式合同保证金记录
+ * request: updateBondUsingPUT
+ * url: updateBondUsingPUTURL
+ * method: updateBondUsingPUT_TYPE
+ * raw_url: updateBondUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const updateBondInfo = function(parameters = {}) {
+    return rentapi.updateBondUsingPUT(parameters);
+}
+/**
+ * 获取店铺详情
+ * request: getByIdUsingGET_4
+ * url: getByIdUsingGET_4URL
+ * method: getByIdUsingGET_4_TYPE
+ * raw_url: getByIdUsingGET_4_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const getByIdUsingGET_4 = function(parameters = {}) {
+    return rentapi.getByIdUsingGET_4(parameters);
+}
+
+/**
+ * 根据合同id获取不规则费用下的结算组别
+ * request: getSettleGroupUsingGET
+ * url: getSettleGroupUsingGETURL
+ * method: getSettleGroupUsingGET_TYPE
+ * raw_url: getSettleGroupUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param contractId - contractId
+ */
+export const getSettleGroupUsingGET = function(parameters = {}) {
+    return rentapi.getSettleGroupUsingGET(parameters);
+}
+
+/**
+ * 查询店铺下拉列表
+ * request: orderedOptionUsingPOST
+ * url: orderedOptionUsingPOSTURL
+ * method: orderedOptionUsingPOST_TYPE
+ * raw_url: orderedOptionUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param status - 状态id
+ */
+export const orderedOptionUsingPOST = function(parameters = {}) {
+    return rentapi.orderedOptionUsingPOST(parameters);
+}
+
+
+/**
+ * 查询商户的已确认和已生成合同下拉列表
+ * request: getMerchantContractByidUsingGET
+ * url: getMerchantContractByidUsingGETURL
+ * method: getMerchantContractByidUsingGET_TYPE
+ * raw_url: getMerchantContractByidUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const getMerchantContractByidUsingGET = function(parameters = {}) {
+    return rentapi.getMerchantContractByidUsingGET(parameters);    
+}
+
+  /**
+ * 根据合同id，结算组别id，费用类型，获取费用项目
+ * request: getCostItemsUsingGET
+ * url: getCostItemsUsingGETURL
+ * method: getCostItemsUsingGET_TYPE
+ * raw_url: getCostItemsUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param contractId - contractId
+ * @param settleGroupId - settleGroupId
+ * @param costType - costType
+ */
+export const getCostItemsUsingGET = function(parameters = {}) {
+    return rentapi.getCostItemsUsingGET(parameters);
+  }
+
+
+/**
+ * 合同列表(不分页)
+ * request: getNoPageListUsingGET
+ * url: getNoPageListUsingGETURL
+ * method: getNoPageListUsingGET_TYPE
+ * raw_url: getNoPageListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param propertyType - 物业性质：0商铺、1写字楼、2场地、3广告位
+ * @param contractCode - 合同编号
+ * @param merchantId - 商户名称
+ * @param shopId - 店铺名称
+ * @param status - 状态（10 审核（新增），20 取消， 30 已确认，40 已生成，50 审核（变更），60 审核（延期），61 审核（终止），70退租 ）
+ * @param latestOrNot - 是否最新版本（0否1是 选1）
+ */
+export const getNoPageListUsingGET = function(parameters = {}) {
+    return rentapi.getNoPageListUsingGET(parameters);
+  }
+
+/**
+ * 返回格式为“商户号（商户名）”的字符串,以及商户ID的map集合
+ * request: doweListUsingGET
+ * url: doweListUsingGETURL
+ * method: doweListUsingGET_TYPE
+ * raw_url: doweListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param type - type
+ */
+export const doweListUsingGET = function(parameters = {}) {
+    return rentapi.doweListUsingGET(parameters);
+  }
+  
+
+  /**
+ * 返回格式为“商户号（商户名）”的字符串,以及商户ID的map集合
+ * request: listUsingGET_12
+ * url: listUsingGET_12URL
+ * method: listUsingGET_12_TYPE
+ * raw_url: listUsingGET_12_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - merchantId
+ */
+export const doweListUsingGETShop = function(parameters = {}) {
+    return rentapi.doweListUsingGETShop(parameters);
+  }
+
+  /**
+   * 查询店铺下拉列表
+   * request: optionpgUsingPOST_7
+   * url: optionpgUsingPOST_7URL
+   * method: optionpgUsingPOST_7_TYPE
+   * raw_url: optionpgUsingPOST_7_RAW_URL
+   * @param token - header中token字段
+   * @param param - 状态id
+   */
+  export const optionpgUsingPOST_7 = function(parameters = {}) {
+    return rentapi.optionpgUsingPOST_7(parameters);
+  }
+
+/**
+ * 历史版本查看：租金费用条款分页列表
+ * request: getRentListForOldVersionUsingGET
+ * url: getRentListForOldVersionUsingGETURL
+ * method: getRentListForOldVersionUsingGET_TYPE
+ * raw_url: getRentListForOldVersionUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param contractId - 合同ID
+ * @param type - 租金:0,费用条款:1
+ */
+export const contractOldVersion = function(parameters = {}) {
+    return rentapi.getRentListForOldVersionUsingGET(parameters);
+}
+/**
+ *  销售返款：根据店铺ID，查询合同有效期
+ * request: getContractMainBodyUsingGET
+ * url: getContractMainBodyUsingGETURL
+ * method: getContractMainBodyUsingGET_TYPE
+ * raw_url: getContractMainBodyUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param shopId - 店铺ID
+ */
+export const getContractValidDate = function(parameters = {}) {
+    return rentapi.getContractValidByShopUsingGET(parameters);
+}
+
+/**
+ * 合同列表
+ * request: listFormalUsingGET
+ * url: listFormalUsingGETURL
+ * method: listFormalUsingGET_TYPE
+ * raw_url: listFormalUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - 商户ID
+ */
+export const listFormalUsingGET = function(parameters = {}) {
+    return rentapi.listFormalUsingGET(parameters);
+}
+
+
+  /**
+ * 合同列表
+ * request: listFormalContractUsingGET
+ * url: listFormalContractUsingGETURL
+ * method: listFormalContractUsingGET_TYPE
+ * raw_url: listFormalContractUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - 商户ID
+ */
+export const listFormalContractUsingGET = function(parameters = {}) {
+    return rentapi.listFormalContractUsingGET(parameters);  
+}
+
+
+  /**
+ * 诚意金收取(合同下拉框状态：已确认、已转为正式合同)
+ * request: listIntentContractUsingGET
+ * url: listIntentContractUsingGETURL
+ * method: listIntentContractUsingGET_TYPE
+ * raw_url: listIntentContractUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - 商户ID
+ */
+export const listIntentContractUsingGET = function(parameters = {}) {
+    return rentapi.listIntentContractUsingGET(parameters);
+}
+  
+
+  /**
+ * 保证金收取管理/保证金收取审核、合同保证金、保证金处理/保证金处理审核
+ * request: listIntentAndFormalContractUsingGET
+ * url: listIntentAndFormalContractUsingGETURL
+ * method: listIntentAndFormalContractUsingGET_TYPE
+ * raw_url: listIntentAndFormalContractUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param merchantId - 商户ID
+ */
+export const listIntentAndFormalContractUsingGET = function(parameters = {}) {
+    return rentapi.listIntentAndFormalContractUsingGET(parameters);   
+}
+
+
+  /**
+ * 商户列表
+ * request: listForFormalUsingGET
+ * url: listForFormalUsingGETURL
+ * method: listForFormalUsingGET_TYPE
+ * raw_url: listForFormalUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const listForFormalUsingGET = function(parameters = {}) {
+    return rentapi.listForFormalUsingGET(parameters);
+}
+  
+
+/**
+ * 商户列表
+ * request: listIntentAndFormalUsingGET
+ * url: listIntentAndFormalUsingGETURL
+ * method: listIntentAndFormalUsingGET_TYPE
+ * raw_url: listIntentAndFormalUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const listIntentAndFormalUsingGET = function(parameters = {}) {
+    return rentapi.listIntentAndFormalUsingGET(parameters); 
+}
+  
+  /**
+ * 商户列表
+ * request: listIntentUsingGET
+ * url: listIntentUsingGETURL
+ * method: listIntentUsingGET_TYPE
+ * raw_url: listIntentUsingGET_RAW_URL
+ * @param token - header中token字段
+ */
+export const listIntentUsingGET = function(parameters = {}) {
+    return  rentapi.listIntentUsingGET(parameters); 
+}
+
+/**
+ * 新增品牌申请
+ * request: addApplyUsingPOST_1
+ * url: addApplyUsingPOST_1URL
+ * method: addApplyUsingPOST_1_TYPE
+ * raw_url: addApplyUsingPOST_1_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const addBrandApply = function(parameters = {}) {
+    return  rentapi.addApplyUsingPOST_1(parameters);
+}
+/**
+ * 品牌申请列表查询
+ * request: listApplyUsingGET_2
+ * url: listApplyUsingGET_2URL
+ * method: listApplyUsingGET_2_TYPE
+ * raw_url: listApplyUsingGET_2_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param brandName - 名称
+ * @param status - 状态：0新增1已确认2.驳回
+ * @param businessId - 一级业态ID
+ */
+export const getBrandApplyList = function(parameters = {}) {
+    return  rentapi.listApplyUsingGET_2(parameters);
+}
+/**
+ * 获取品牌申请详情
+ * request: detailApplyUsingGET_1
+ * url: detailApplyUsingGET_1URL
+ * method: detailApplyUsingGET_1_TYPE
+ * raw_url: detailApplyUsingGET_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const getBrandApplyInfo = function(parameters = {}) {
+    return  rentapi.detailApplyUsingGET_1(parameters);
+}
+
+/**
+ * 编辑品牌申请
+ * request: udpateUsingPUT
+ * url: udpateUsingPUTURL
+ * method: udpateUsingPUT_TYPE
+ * raw_url: udpateUsingPUT_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const udpateBrandApplyInfo = function(parameters = {}) {
+    return  rentapi.udpateUsingPUT(parameters);
+}
+/**
+ * 删除品牌申请
+ * request: deleteApplyUsingDELETE_1
+ * url: deleteApplyUsingDELETE_1URL
+ * method: deleteApplyUsingDELETE_1_TYPE
+ * raw_url: deleteApplyUsingDELETE_1_RAW_URL
+ * @param token - header中token字段
+ * @param id - 主键id
+ */
+export const deleteBrandApply = function(parameters = {}) {
+    return  rentapi.deleteApplyUsingDELETE_1(parameters);
+}
+/**
+ * 品牌申请审核列表查询
+ * request: auditApplyListUsingGET
+ * url: auditApplyListUsingGETURL
+ * method: auditApplyListUsingGET_TYPE
+ * raw_url: auditApplyListUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param brandName - 名称
+ * @param status - 状态：0新增1已确认2.驳回
+ * @param businessId - 一级业态ID
+ */
+export const brandApplyAuditList = function(parameters = {}) {
+    return  rentapi.auditApplyListUsingGET(parameters);
+}
+/**
+ * 品牌申请审核确认
+ * request: confirmApplyUsingPOST
+ * url: confirmApplyUsingPOSTURL
+ * method: confirmApplyUsingPOST_TYPE
+ * raw_url: confirmApplyUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param ids - 主键id
+ */
+export const confirmApplyAuditList = function(parameters = {}) {
+    return  rentapi.confirmApplyUsingPOST(parameters);
+}
+/**
+ * 品牌申请审核驳回
+ * request: rebutUsingPOST
+ * url: rebutUsingPOSTURL
+ * method: rebutUsingPOST_TYPE
+ * raw_url: rebutUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - 主键id
+ */
+export const rebutBrandApplyList = function(parameters = {}) {
+    return  rentapi.rebutUsingPOST(parameters);
+}
+/**
+ * 店铺数据导出
+ * request: shopToExcelUsingGET
+ * url: shopToExcelUsingGETURL
+ * method: shopToExcelUsingGET_TYPE
+ * raw_url: shopToExcelUsingGET_RAW_URL
+ * @param token - header中token字段
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param shopCode - 店铺编码
+ * @param shopName - 店铺名称
+ * @param merchantId - 商户编号
+ * @param status - 店铺状态
+ */
+export const exportShopToExcel = function(parameters = {}) {
+    return  rentapi.shopToExcelUsingGET(parameters);
+}
+
+/**
+ * 合同变更列表查询
+ * request: getContentUsingPOST
+ * url: getContentUsingPOSTURL
+ * method: getContentUsingPOST_TYPE
+ * raw_url: getContentUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param request - request
+ */
+export const getContentChangeList = function(parameters = {}) {
+    return  rentapi.getListForPageChangeUsingGET(parameters);
+}
+
+/**
+ * 合同面积变更历史查询
+ * request: getUnitChangeUsingPOST
+ * url: getUnitChangeUsingPOSTURL
+ * method: getUnitChangeUsingPOST_TYPE
+ * raw_url: getUnitChangeUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const getUnitChangeHistory = function(parameters = {}) {
+    return  rentapi.getUnitChangeUsingPOST(parameters);
+}
+
+/**
+ * 合同面积变更
+ * request: unitChangeUsingPOST
+ * url: unitChangeUsingPOSTURL
+ * method: unitChangeUsingPOST_TYPE
+ * raw_url: unitChangeUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const unitAreaChangeList = function(parameters = {}) {
+    return  rentapi.unitChangeUsingPOST(parameters);
+}
+
+/**
+ * 合同商户变更
+ * request: merchantChangeUsingPOST
+ * url: merchantChangeUsingPOSTURL
+ * method: merchantChangeUsingPOST_TYPE
+ * raw_url: merchantChangeUsingPOST_RAW_URL
+ * @param token - header中token字段
+ * @param param - param
+ */
+export const postMerchantChange = function(parameters = {}) {
+    return  rentapi.merchantChangeUsingPOST(parameters);
 }

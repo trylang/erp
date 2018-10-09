@@ -1,5 +1,5 @@
 <template>
-    <div class="savebox">
+    <div class="savebox" v-loading.fullscreen="loading">
         <template>
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                 <el-tab-pane label="1 合同主体" name="1">
@@ -9,7 +9,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同分类</span>
-                                    <el-select v-model="mainData.contractType" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.contractType" placeholder="请选择" filterable clearable class="dialogselect">
                                         <el-option
                                                 v-for="item in typeOptions"
                                                 :key="item.value"
@@ -24,7 +24,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">销售计税类型</span>
-                                    <el-select v-model="mainData.rateType" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.rateType" placeholder="请选择" filterable clearable class="dialogselect" @change="rateNumber()">
                                         <el-option
                                                 v-for="item in rateTypeOptions"
                                                 :key="item.value"
@@ -59,18 +59,18 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">商户</span>
-                                    <el-select v-model="mainData.merchantId" placeholder="请选择" @change="selectMerchant(mainData.merchantId)" class="dialogselect">
+                                    <el-select v-model="mainData.merchantId" placeholder="请选择" filterable clearable @change="selectMerchant(mainData.merchantId)" class="dialogselect">
                                         <el-option
                                                 v-for="item in merchantOptions"
                                                 :key="item.id"
-                                                :label="item.merchantName+'（'+item.merchantCode+'）'"
+                                                :label="item.name"
                                                 :value="item.id">
                                         </el-option>
                                     </el-select>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">品牌</span>
-                                    <el-select v-model="mainData.brandId" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.brandId" placeholder="请选择" filterable clearable class="dialogselect">
                                         <el-option
                                                 v-for="item in brandOptions"
                                                 :key="item.id"
@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">经营方式</span>
-                                    <el-select v-model="mainData.operationMode" placeholder="请选择" class="dialogselect">
+                                    <el-select v-model="mainData.operationMode" placeholder="请选择" filterable clearable class="dialogselect">
                                         <el-option
                                                 v-for="item in operationOptions"
                                                 :key="item.value"
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">物业性质</span>
-                                    <el-select v-model="mainData.propertyType" placeholder="请选择" disabled class="dialogselect">
+                                    <el-select v-model="mainData.propertyType" placeholder="请选择" filterable clearable disabled class="dialogselect">
                                         <el-option
                                                 v-for="item in propertyOptions"
                                                 :key="item.value"
@@ -129,7 +129,7 @@
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">合同租期：{{mainData.validCycle}}</div>
+                                <div class="dialogtext">合同租期：{{tenancyTermNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -141,7 +141,7 @@
                                             v-model="mainData.pavingDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
-                                            placeholder="请输入交铺日期">
+                                            placeholder="选填">
                                     </el-date-picker>
                                 </div>
                             </el-col>
@@ -155,7 +155,7 @@
                                             v-model="mainData.openingDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
-                                            placeholder="请输入开业日期">
+                                            placeholder="选填">
                                     </el-date-picker>
                                 </div>
                             </el-col>
@@ -169,7 +169,7 @@
                                             v-model="mainData.decorationStartDate"
                                             type="date"
                                             value-format="yyyy-MM-dd"
-                                            placeholder="开始日期">
+                                            placeholder="选填">
                                     </el-date-picker>
                                     ~
                                     <el-date-picker
@@ -178,12 +178,12 @@
                                             type="date"
                                             value-format="yyyy-MM-dd"
                                             @change="cycleChange()"
-                                            placeholder="结束日期">
+                                            placeholder="选填">
                                     </el-date-picker>
                                 </div>
                             </el-col>
                             <el-col :span="14">
-                                <div class="dialogtext">周期：{{mainData.decorationCycle}}</div>
+                                <div class="dialogtext">周期：{{cycleNum}}</div>
                             </el-col>
                         </el-row>
                         <el-row class="dialogbox">
@@ -250,7 +250,7 @@
                                             <p>{{UnitItem.floorName}}</p>
                                         </div>
                                         <div class="deletebtn">
-                                            <button class="btn_text" @click="delUnitItem(UnitItem)">删除</button>
+                                            <button class="btn_text" @click="delUnitItem(UnitItem,UnitItem.unitId)">删除</button>
                                         </div>
                                     </div>
                                 </div>
@@ -269,39 +269,43 @@
                                             <div class="">
                                                 <p>第{{index+1}}阶段</p>
                                             </div>
-                                            <div class="listcolum columbox">
-                                                <el-date-picker
-                                                        class="inputtext"
-                                                        v-model="rentlists.periodStartDate"
-                                                        type="date"
-                                                        value-format="yyyy-MM-dd"
-                                                        placeholder="开始日期">
-                                                </el-date-picker>
-                                                ~
-                                                <el-date-picker
-                                                        class="inputtext"
-                                                        v-model="rentlists.periodEndDate"
-                                                        type="date"
-                                                        value-format="yyyy-MM-dd"
-                                                        placeholder="结束日期">
-                                                </el-date-picker>
+                                            <div class="listcolum columbox" style="padding: 0 20px;">
+                                                <div class="dialoginput">
+                                                    <el-date-picker
+                                                            class="inputtext"
+                                                            style="width:50%;margin:0;"
+                                                            v-model="rentlists.periodStartDate"
+                                                            type="date"
+                                                            value-format="yyyy-MM-dd"
+                                                            placeholder="开始日期">
+                                                    </el-date-picker>
+                                                    ~
+                                                    <el-date-picker
+                                                            class="inputtext"
+                                                            style="width:50%;margin:0;"
+                                                            v-model="rentlists.periodEndDate"
+                                                            type="date"
+                                                            value-format="yyyy-MM-dd"
+                                                            placeholder="结束日期">
+                                                    </el-date-picker>
+                                                </div>
                                             </div>
-                                            <div class="listcolum columbox intentbox">
+                                            <div class="listcolum columbox intentbox" style="padding: 0 20px;">
                                                 <div class="columboxinput">
                                                     <span class="inputname">保底租金</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入保底租金" v-model="rentlists.endRent">
+                                                    <input class="inputtext" type="text" placeholder="请输入保底租金" v-model="rentlists.endRent" v-limitNum>
                                                     <span class="rightcompany">元</span>
                                                 </div>
                                             </div>
-                                            <div class="listcolum columbox intentbox">
+                                            <div class="listcolum columbox intentbox" style="padding: 0 20px;">
                                                 <div class="columboxinput">
                                                     <span class="inputname">抽成比例</span>
-                                                    <input class="inputtext" type="text" placeholder="请输入抽成比例" v-model="rentlists.drawRate">
+                                                    <input class="inputtext" type="text" placeholder="请输入抽成比例" v-model="rentlists.drawRate" v-limitNum>
                                                     <span class="rightcompany">%</span>
                                                 </div>
                                             </div>
                                             <div class="deletebtn">
-                                                <button class="btn_text" @click="delRentItem(rentlists.id, rentlists)">删除</button>
+                                                <button class="btn_text" @click="delRentItem(rentlists.id, rentlists)" style="margin: 0 0 0 15px;">删除</button>
                                             </div>
                                         </div>
                                     </div>
@@ -317,17 +321,17 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">物业管理费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入物业管理费" v-model="costData.propertyManageFee">
+                                    <input class="inputtext" type="text" placeholder="请输入物业管理费" v-model="costData.propertyManageFee == null?0:costData.propertyManageFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">推广费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入推广费" v-model="costData.promotFee">
+                                    <input class="inputtext" type="text" placeholder="请输入推广费" v-model="costData.promotFee == null?0:costData.promotFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">库房费</span>
-                                    <input class="inputtext" type="text" placeholder="请输入库房费" v-model="costData.houseFee">
+                                    <input class="inputtext" type="text" placeholder="请输入库房费" v-model="costData.houseFee == null?0:costData.houseFee">
                                     <span class="rightcompany">元</span>
                                 </div>
                             </el-col>
@@ -342,7 +346,7 @@
                                 <div class="dialoginput">
                                     <span class="inputname">诚意金</span>
                                     <input class="inputtext" type="number" placeholder="
- 请输入诚意金金额" v-model="sincerityMoneyData.sincerityMoney">
+ 请输入诚意金金额" v-model="sincerityMoneyData.sincerityMoney==null?0:sincerityMoneyData.sincerityMoney">
                                     <span class="rightcompany">元</span>
                                 </div>
                             </el-col>
@@ -357,55 +361,31 @@
                                 <div class="listbox" style="margin: 0;">
                                     <div class="listcont contractcont">
                                         <div class="listcolum">
-                                            <div class="uploadtitle">文件上传<span>（图片仅支持jpg、jpeg、png格式，大小不超过1M）</span></div>
-                                            <form :action="this.$downLoadUrl+'/rent/intent/contract/uploads'" method="post" enctype="multipart/form-data" id="registSubmit" target="rfFrame">
-                                                <div class="uploadlist">
-                                                    <div class="avatar-uploader">
-                                                        <label class="el-upload el-upload--text">
-                                                            <i class="el-icon-plus avatar-uploader-icon"></i>
-                                                            <div class="el-upload__text">点击添加图片</div>
-                                                            <input type="file" name="file" multiple="multiple" class="el-upload__input" @change.prevent="addFileUpload($event)">
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <input type="text" name="contractId" class="el-upload__input" :value="contractId" style="display:none;">
-                                                <input type="text" name="type" class="el-upload__input" value="0" style="display:none;">
-                                            </form>
-                                            <iframe id="rfFrame" name="rfFrame" src="about:blank" style="display:none;"></iframe>
+                                            <div class="uploadtitle">文件上传<span>（图片建议尺寸：620像素×877像素，仅支持.jpg .jpeg.png格式图片，大小不超过1M 文档仅支持.word.pdf.txt格式，大小不超过100M）</span></div>
+                                            <el-upload
+                                                    class="avatar-uploader"
+                                                    :action="this.$downLoadUrl+'/rent/intent/contract/uploads'"
+                                                    :data="{type: 0,contractId:contractId}"
+                                                    :headers="headers"
+                                                    :show-file-list="false"
+                                                    :before-upload="addFileUploadBefore"
+                                                    :on-error="addFileUploadError"
+                                                    :on-success="addFileUploadSuccess">
+                                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                                <div class="el-upload__text">点击添加附件</div>
+                                            </el-upload>
                                         </div>
                                     </div>
-                                    <div class="listcont contractcont" v-if="this.$route.params.contractId != 0 || this.fileListData.length != 0">
+                                    <div class="listcont contractcont" style="flex-direction: column" v-if="this.$route.params.contractId != 0 || this.fileListData.length != 0">
                                         <div class="listcolum" v-for="fileList in fileListData">
                                             <div class="uploadtitle">{{fileList.dateDay}}</div>
                                             <div class="uploadlist">
                                                 <div class="uploadfile" v-for="(imageList,index) in fileList.attachmentVos">
-                                                    <img :src="imageList.filePath+imageList.fileSaveName" alt="">
+                                                    <img :src="imageList.fileType == '.PNG'||imageList.fileType == '.JPG'||imageList.fileType == '.JPEG'?imageList.filePath+imageList.fileSaveName:imageList.fileType == '.DOCX'?require('../../../assets/iconword.png'):require('../../../assets/iconqita.png')" alt="">
                                                     <span class="spantopL"></span>
                                                     <span class="spantopLname">{{index+1}}</span>
                                                     <span class="spantopR"><i class="el-icon-close"></i></span>
-                                                    <span class="spanbottom">重新上传</span>
-                                                </div>
-                                                <div class="uploadfile" v-for="(imageUrl,_index) in imageUrlList">
-                                                    <img :src="imageUrl.filePath" alt="">
-                                                    <span class="spantopL"></span>
-                                                    <span class="spantopLname">{{fileList.attachmentVos.length+1+_index}}</span>
-                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
-                                                    <span class="spanbottom">重新上传</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="listcont contractcont" v-if="this.$route.params.contractId == 0 || this.fileListData.length == 0">
-                                        <div class="listcolum">
-                                            <div class="uploadtitle"></div>
-                                            <div class="uploadlist">
-                                                <div class="uploadfile" v-for="(imageUrl,_index) in imageUrlList">
-                                                    <img :src="imageUrl.filePath" alt="">
-                                                    <span class="spantopL"></span>
-                                                    <span class="spantopLname">{{_index+1}}</span>
-                                                    <span class="spantopR"><i class="el-icon-close"></i></span>
-                                                    <span class="spanbottom">重新上传</span>
+                                                    <span class="spanbottom" style="display: none">重新上传</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -419,15 +399,16 @@
         </template>
         <el-dialog
                 :visible.sync="dialogVisible"
+                :before-close="cancelUnit"
                 custom-class="contractdialog">
             <div class="searchbox">
                 <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getUnitDataList()"><i class="iconfont icon-sousuo"></i>
             </div>
             <div class="dialogbox">
                 <div class="floorsearchlist">
-                    <ul>
-                        <li :style="buildType == 1?'color:#457fcf':''" @click="getFloorList(1)" v-if="propertyTypeNum == 0 || propertyTypeNum == 2 || propertyTypeNum == 3">商场</li>
-                        <li :style="buildType == 2?'color:#457fcf':''" @click="getFloorList(2)" v-if="propertyTypeNum == 1 || propertyTypeNum == 2 || propertyTypeNum == 3">写字楼</li>
+                    <ul v-if="buildList.length > 0">
+                        <li :style="buildType == buildList[0].id?'color:#457fcf':''" @click="getFloorList(buildList[0].id,1)" v-if="propertyTypeNum == 0 || propertyTypeNum == 2 || propertyTypeNum == 3">{{buildList[0].buildName}}</li>
+                        <li :style="buildType == buildList[1].id?'color:#457fcf':''" @click="getFloorList(buildList[1].id,2)" v-if="propertyTypeNum == 1 || propertyTypeNum == 2 || propertyTypeNum == 3">{{buildList[1].buildName}}</li>
                     </ul>
                 </div>
                 <div class="floorsearchlist">
@@ -437,14 +418,14 @@
                     </ul>
                 </div>
                 <el-row>
-                    <el-col :span="24" v-if="this.buildType == 1">
+                    <el-col :span="24" v-if="this.tabIndex == 1">
                         <el-checkbox-group
                                 v-model="checkedUnit">
                             <el-checkbox  :label="unitlist.id" v-for="(unitlist,index) in unitDataListShop" 
                             :key="index">{{unitlist.unitCode}}</el-checkbox>
                         </el-checkbox-group>
                     </el-col>
-                    <el-col :span="24" v-if="this.buildType == 2">
+                    <el-col :span="24" v-if="this.tabIndex == 2">
                         <el-checkbox-group
                                 v-model="checkedUnit">
                             <el-checkbox v-for="(unitlist,index) in unitDataListOffice"
@@ -476,9 +457,12 @@
             return {
                 activeName: '0',
                 dialogVisible:false,
+                loading: false,
                 isShow: false,
                 searchText:'',
-                buildType: 1,
+                buildTypeShop:'',
+                buildTypeOffice:'',
+                buildType:'',
                 floorListData: '',
                 mainData:{
                     brandId: "",
@@ -520,7 +504,6 @@
                 checkedUnitList:[],
                 unitData:{
                     contractId: 0,
-                    propertyType: 0,
                     contractCode: '',
                     unitIds: []
                 },
@@ -545,17 +528,23 @@
                     propertyManageFee:'',
                     promotFee:'',
                     houseFee:'',
-                    sincerityMoney:'',
+                    sincerityMoney:0,
                     id:0
                 },
                 fileListData:[],
                 imageUrlList:[],
                 unitListAry: [],
                 contractId:'',
+                contractCode:'',
                 tenancyTermNum:'0个月0天',
                 cycleNum:'0个月0天',
                 isStep:'1',
-                propertyTypeNum:''
+                propertyTypeNum:'',
+                headers: {
+                    token: localStorage.getItem('erp_token')
+                },
+                buildList:[],
+                tabIndex:1
             };
         },
         created(){
@@ -572,13 +561,19 @@
             this.getRentTermsInfo();
             this.getCostInfo();
             this.getBondInfo();
-            this.getFileData();
+            if(this.$route.params.contractId != 0) {
+                this.getFileData();
+            }
             this.getBaseDataOptions();
         },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getUnitDataList();
+                    if(this.buildType == this.buildList[0].id){
+                        this.getUnitDataListShop(this.buildTypeShop);
+                    }else{
+                        this.getUnitDataListOffice(this.buildTypeOffice);
+                    }
                 },300)
             }
         },
@@ -588,26 +583,23 @@
                     return item.id == merchantId;
                 });
                 let property = this.propertyOptions.find(item => {
-                    return item.value == merchant.merchantType;
+                    return item.value == merchant.propertyType;
                 });
                 this.mainData.propertyType = property.value;
+                this.propertyTypeNum = property.value;
             },
             //获取单元的弹框列表
             changeFloorUnit(id){
                 this.floorId = id;
-                this.getUnitDataList();
-            },
-            async addFileUpload(event){
-                console.log(event)
-                document.getElementById('registSubmit').submit();
-                this.getFileInfo();
-            },
-            async getFileInfo() {
-                // 获取附件信息，现没有这个接口
+                if(this.buildType == this.buildList[0].id){
+                    this.getUnitDataListShop(this.buildTypeShop);
+                }else{
+                    this.getUnitDataListOffice(this.buildTypeOffice);
+                }
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12({
-                    status:1
+                await this.$api.rentapi.doweListUsingGET({
+                    type:4
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
@@ -626,22 +618,32 @@
                     this.intentionOptions = res.data.data.list;
                 })
             },
-            async getUnitDataList(){
+            async getUnitDataListShop(typeNum){
                 await this.$api.rentapi.listUsingGET_15({
                     pageNum:'1',
                     pageSize:'200000',
                     code:this.searchText,
-                    buildId:this.buildType,
+                    buildId:this.buildTypeShop,
                     floorId:this.floorId,
-                    type: this.mainData.propertyType,
+                    type:this.mainData.propertyType,
                     status:1,
                     states:''
                 }).then(res=>{
-                    if(this.buildType == 1) {
-                        this.unitDataListShop = res.data.data.list;
-                    }else{
-                        this.unitDataListOffice = res.data.data.list;
-                    }
+                    this.unitDataListShop = res.data.data.list;
+                })
+            },
+            async getUnitDataListOffice(typeNum){
+                await this.$api.rentapi.listUsingGET_15({
+                    pageNum:'1',
+                    pageSize:'200000',
+                    code:this.searchText,
+                    buildId:this.buildTypeOffice,
+                    floorId:this.floorId,
+                    type:this.mainData.propertyType,
+                    status:1,
+                    states:''
+                }).then(res=>{
+                    this.unitDataListOffice = res.data.data.list;
                 })
             },
             async getBaseDataOptions(){
@@ -707,16 +709,45 @@
                         break;
                 };
             },
+            async getBuildList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildList = res.data.data;
+                    if (this.mainData.propertyType == 0) {
+                        this.buildTypeShop = res.data.data[0].id;
+                        this.buildType = res.data.data[0].id;
+                        this.getFloorList(this.buildType,1);
+                        this.getUnitDataListShop(this.buildTypeShop);
+                    }else if(this.mainData.propertyType == 1){
+                        this.buildTypeOffice = res.data.data[1].id;
+                        this.buildType = res.data.data[1].id;
+                        this.getFloorList(this.buildType,2);
+                        this.getUnitDataListOffice(this.buildTypeOffice);
+                    }else{
+                        this.buildTypeShop = res.data.data[0].id;
+                        this.buildTypeOffice = res.data.data[1].id;
+                        this.buildType = res.data.data[0].id;
+                        this.getFloorList(this.buildType,1);
+                        this.getUnitDataListShop(this.buildTypeShop);
+                        this.getUnitDataListOffice(this.buildTypeOffice);
+                    }
+                })
+            },
             addItem(){
+                this.propertyTypeNum = this.mainData.propertyType;
                 this.dialogVisible = true;
-                this.getUnitDataList();
-                this.getFloorList(2);
-                this.getFloorList(1);
+                this.getBuildList();
             },
             cancelUnit(){
                 this.dialogVisible = false;
+                this.checkedUnit = this.unitListPush.map(item=>{
+                    if(item.unitId) {
+                        return item.unitId;
+                    }else{
+                        return item.id;
+                    }
+                });
             },
-            async getFloorList(typeNum){
+            async getFloorList(typeNum,tabNum){
                 this.floorId = null;
                 this.buildType = typeNum;
                 await this.$api.rentapi.selectByBuildIdUsingGET({
@@ -724,25 +755,11 @@
                 }).then(res => {
                     if (res.data.status == 200) {
                         this.floorListData = res.data.data;
-                        this.getUnitDataList();
+                        this.tabIndex = tabNum;
                     } else {
                         this.$message.error(res.data.msg);
                     }
                 })
-            },
-            async handleUnit(){
-                this.unitData.unitIds = this.checkedUnit;
-                this.unitListPush = [];
-                this.unitListPush = this.unitListPush.concat(this.unitListAry);
-                this.unitDataList = this.unitDataListShop.concat(this.unitDataListOffice);
-                this.dialogVisible = false;
-                this.checkedUnit.forEach(item => {
-                    this.unitDataList.map(__item => {
-                        if (__item.id == item) {
-                            this.unitListPush.push(__item);
-                        }
-                    });
-                });
             },
             addRentItem(){
                 if(this.$route.params.contractId != 0) {
@@ -769,106 +786,140 @@
                 this.rentList.push(this.rentData);
             },
             async addContract(){
+                this.loading = true;
                 if(this.$route.params.contractId != 0) {
                     this.mainData.id = this.$route.params.contractId;
                     await this.$api.rentapi.editUsingPUT({
                         param : this.mainData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     await this.$api.rentapi.addUsingPOST_7({
                         request : this.mainData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
-                            this.unitData.contractId = res.data.data.contractId;
-                            this.unitData.contractCode = res.data.data.contractCode;
-                            this.unitData.propertyType = res.data.data.propertyType;
-                            this.propertyTypeNum = res.data.data.propertyType;
+                            this.unitData.contractId = res.data.data.data.contractId;
+                            this.unitData.contractCode = res.data.data.data.contractCode;
                             this.contractId = res.data.data.data.contractId;
+                            this.contractCode = res.data.data.data.contractCode;
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
             async addShopUnit(){
+                this.loading = true;
                 if(this.$route.params.contractId != 0) {
                     this.unitData.unitIds = this.checkedUnit;
                     this.unitData.contractId = this.$route.params.contractId;
-                    await this.$api.rentapi.updateShopUnitUsingPUT_1({
-                        request: this.unitData
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.$message.success(res.data.msg);
-                            this.dialogVisible = false;
-                            this.nextNum();
-                            this.getUnitInfo();
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
                 }else{
                     this.unitData.unitIds = this.checkedUnit;
                     this.unitData.contractId = this.contractId;
-                    await this.$api.rentapi.addShopUnitUsingPOST_1({
+                    /*await this.$api.rentapi.addShopUnitUsingPOST_1({
                         request: this.unitData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
                             this.nextNum();
                             this.getUnitInfo();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
-                    })
+                    }).catch(res=>{
+                        this.loading = false;
+                    })*/
                 }
+                await this.$api.rentapi.updateShopUnitUsingPUT_1({
+                    request: this.unitData
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.loading = false;
+                        this.$message.success(res.data.msg);
+                        this.dialogVisible = false;
+                        this.nextNum();
+                        this.getUnitInfo();
+                    } else {
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                })
             },
             async addRentData(){
+                this.loading = true;
                 if(this.$route.params.contractId != 0) {
+                    this.rentList.forEach(item=>{
+                        item.contractId = this.$route.params.contractId
+                    });
                     await this.$api.rentapi.updateRentOrCostUsingPUT_1({
                         request: this.rentList
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else {
                     await this.$api.rentapi.addRentOrCostUsingPOST_2({
                         request: {list:this.rentList}
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
             async addCostData(){
+                this.loading = true;
                 if(this.$route.params.contractId != 0) {
                     this.costData.id = this.$route.params.contractId;
                     await this.$api.rentapi.updateRentOrCostUsingPOST({
                         request: this.costData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.costData.id = this.contractId;
@@ -876,11 +927,15 @@
                         request: this.costData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
@@ -898,17 +953,22 @@
                     this.$message.info('请输入小于三位小位数的正数');
                     return;
                 }
+                this.loading = true;
                 if(this.$route.params.contractId != 0) {
                     this.sincerityMoneyData.id = this.$route.params.contractId;
                     await this.$api.rentapi.updateSincerityMoneyUsingPOST({
                         request: this.sincerityMoneyData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.sincerityMoneyData.id = this.contractId;
@@ -916,38 +976,66 @@
                         request: this.sincerityMoneyData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.nextNum();
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
-            async addFileUpload(event){
-                let _this = this;
-                document.getElementById('registSubmit').submit();
-                for(let i=0;i<event.target.files.length;i++){
-                    let reader = new FileReader();
-                    reader.readAsDataURL(event.target.files[i]);
-                    reader.onload = function(_e){
-                        console.log(_e.target.result)
-                        _this.imageUrlList.push({
-                            filePath: _e.target.result
-                        });
-                    }
+            addFileUploadBefore(){
+                this.loading = true;
+            },
+            addFileUploadError(){
+                this.loading = false;
+            },
+            addFileUploadSuccess(res) {
+                if(res.status == 200) {
+                    this.loading = false;
+                    this.getFileData();
                 }
             },
-
-            async delUnitItem(unitItem){
-                let index = this.checkedUnit.indexOf(unitItem.unitId);
-                if (index !== -1) {
-                    this.checkedUnit.splice(index, 1)
-                }
-                let _index = this.unitListPush.indexOf(unitItem)
-                if (_index !== -1) {
-                    this.unitListPush.splice(_index, 1)
-                };
+            async delUnitItem(unitItem,id){
+                this.$confirm('是否删除该条数据?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    if(id) {
+                        this.$api.rentapi.intentContractUpdateStatusToEmpety({
+                            id: id,
+                            contractCode:this.contractCode
+                        }).then(res => {
+                            if (res.data.status == 200) {
+                                this.$message.success(res.data.msg);
+                                let index = this.checkedUnit.indexOf(id);
+                                if (index !== -1) {
+                                    this.checkedUnit.splice(index, 1)
+                                }
+                                let _index = this.unitListPush.indexOf(unitItem)
+                                if (_index !== -1) {
+                                    this.unitListPush.splice(_index, 1)
+                                };
+                            } else {
+                                this.$message.error(res.data.msg);
+                            }
+                        })
+                    }else {
+                        let index = this.checkedUnit.indexOf(unitItem.id);
+                        if (index !== -1) {
+                            this.checkedUnit.splice(index, 1)
+                        }
+                        let _index = this.unitListPush.indexOf(unitItem)
+                        if (_index !== -1) {
+                            this.unitListPush.splice(_index, 1)
+                        };
+                    }
+                });
             },
             async delRentItem(id,rentItem){
                 if(id) {
@@ -960,6 +1048,10 @@
                             rentTermsId: id
                         }).then(res => {
                             if (res.data.status == 200) {
+                                let index = this.rentList.indexOf(rentItem);
+                                if (index !== -1) {
+                                    this.rentList.splice(index, 1)
+                                }
                                 this.$message.success(res.data.msg);
                             } else {
                                 this.$message.error(res.data.msg);
@@ -981,10 +1073,12 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.mainData = res.data.data;
+                            this.contractCode = res.data.data.contractCode;
                             this.unitData.contractId = res.data.data.contractId;
                             this.unitData.contractCode = res.data.data.contractCode;
-                            this.unitData.propertyType = res.data.data.propertyType;
                             this.propertyTypeNum = res.data.data.propertyType;
+                            this.tenancyTermNum = (res.data.data.validMonth==null?0:res.data.data.validMonth)+'个月'+(res.data.data.validDay==null?0:res.data.data.validDay)+'天';
+                            this.cycleNum = (res.data.data.decorationMonth==null?0:res.data.data.decorationMonth)+'个月'+(res.data.data.decorationDay==null?0:res.data.data.decorationDay)+'天';
                         } else {
                             this.$message.error(res.data.msg);
                         }
@@ -999,7 +1093,8 @@
                     id: contractId
                 }).then(res => {
                     if (res.data.status == 200) {
-                        this.unitListPush = res.data.data;                       
+                        this.unitListPush = res.data.data;
+                        this.unitListAry =  res.data.data;
                         this.checkedUnit = res.data.data.map(item => item.unitId);
                     } else {
                         this.$message.error(res.data.msg);
@@ -1049,16 +1144,31 @@
             async getFileData(){
                 if(this.$route.params.contractId != 0) {
                     this.contractId = this.$route.params.contractId;
-                    await this.$api.rentapi.getIntentFile({
-                        id: this.$route.params.contractId
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.fileListData = res.data.data;
-                        } else {
-                            this.$message.error(res.data.msg);
+                }
+                await this.$api.rentapi.getIntentFile({
+                    id: this.contractId
+                }).then(res => {
+                    if (res.data.status == 200) {
+                        this.fileListData = res.data.data;
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                });
+            },
+            async handleUnit(){
+                this.dialogVisible = false;
+                this.unitData.unitIds = this.checkedUnit;
+                this.unitListPush = [];
+                this.unitListPush = [...this.unitListPush,...this.unitListAry];
+                this.unitDataList = [...this.unitDataListShop,...this.unitDataListOffice];
+                this.unitListPush = [];
+                this.checkedUnit.forEach(item => {
+                    this.unitDataList.map(__item => {
+                        if (__item.id == item) {
+                            this.unitListPush.push(__item);
                         }
                     });
-                }
+                });
             },
             historyGo(){
                 this.$router.go(-1)
@@ -1069,6 +1179,9 @@
             cycleChange(){
                 this.cycleNum = this.$dateNumber(this.mainData.decorationStartDate,this.mainData.decorationEndDate)
             },
+            rateNumber(){
+                this.mainData.rate = 0;
+            }
         },
         components: {
             BlankHead

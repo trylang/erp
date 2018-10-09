@@ -30,11 +30,58 @@ export const request = (method, url, body, queryParameters, form, config) => {
  *                    ERP-系统管理API.
  ==========================================================*/
 /**
+ * 根据token获取userInfo
+ * request: getUserInfoUsingGET
+ * url: getUserInfoUsingGETURL
+ * method: getUserInfoUsingGET_TYPE
+ * raw_url: getUserInfoUsingGET_RAW_URL
+ * @param token - token
+ */
+export const getUserInfoUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/authUser'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['token'] !== undefined) {
+    queryParameters['token'] = parameters['token']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getUserInfoUsingGET_RAW_URL = function() {
+  return '/sys/authUser'
+}
+export const getUserInfoUsingGET_TYPE = function() {
+  return 'get'
+}
+export const getUserInfoUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/authUser'
+  if (parameters['token'] !== undefined) {
+    queryParameters['token'] = parameters['token']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 物理删除部门信息
  * request: deletePhyUsingDELETE
  * url: deletePhyUsingDELETEURL
  * method: deletePhyUsingDELETE_TYPE
  * raw_url: deletePhyUsingDELETE_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deletePhyUsingDELETE = function(parameters = {}) {
@@ -80,6 +127,7 @@ export const deletePhyUsingDELETEURL = function(parameters = {}) {
  * url: deleteUsingDELETEURL
  * method: deleteUsingDELETE_TYPE
  * raw_url: deleteUsingDELETE_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deleteUsingDELETE = function(parameters = {}) {
@@ -125,9 +173,11 @@ export const deleteUsingDELETEURL = function(parameters = {}) {
  * url: listUsingGETURL
  * method: listUsingGET_TYPE
  * raw_url: listUsingGET_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 部门名称或编码
+ * @param marketId - 购物中心id
  */
 export const listUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -144,6 +194,9 @@ export const listUsingGET = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
+  }
+  if (parameters['marketId'] !== undefined) {
+    queryParameters['marketId'] = parameters['marketId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -171,6 +224,9 @@ export const listUsingGETURL = function(parameters = {}) {
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
   }
+  if (parameters['marketId'] !== undefined) {
+    queryParameters['marketId'] = parameters['marketId']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -185,6 +241,7 @@ export const listUsingGETURL = function(parameters = {}) {
  * url: byIdUsingGETURL
  * method: byIdUsingGET_TYPE
  * raw_url: byIdUsingGET_RAW_URL
+ * @param token - token
  * @param id - 部门Id
  */
 export const byIdUsingGET = function(parameters = {}) {
@@ -230,6 +287,7 @@ export const byIdUsingGETURL = function(parameters = {}) {
  * url: saveUsingPOSTURL
  * method: saveUsingPOST_TYPE
  * raw_url: saveUsingPOST_RAW_URL
+ * @param token - token
  * @param request - 部门信息主体
  */
 export const saveUsingPOST = function(parameters = {}) {
@@ -276,6 +334,7 @@ export const saveUsingPOSTURL = function(parameters = {}) {
  * url: updateUsingPOSTURL
  * method: updateUsingPOST_TYPE
  * raw_url: updateUsingPOST_RAW_URL
+ * @param token - token
  * @param request - 部门信息主体
  */
 export const updateUsingPOST = function(parameters = {}) {
@@ -317,11 +376,62 @@ export const updateUsingPOSTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 查询可用多个选项列表
+ * request: availItemListUsingGET_1
+ * url: availItemListUsingGET_1URL
+ * method: availItemListUsingGET_1_TYPE
+ * raw_url: availItemListUsingGET_1_RAW_URL
+ * @param token - token
+ * @param code - 字典类型编码
+ */
+export const availItemListUsingGET_1 = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/dict/avail/item/list'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['code'] !== undefined) {
+    queryParameters['code'] = parameters['code']
+  }
+  if (parameters['code'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: code'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const availItemListUsingGET_1_RAW_URL = function() {
+  return '/sys/dict/avail/item/list'
+}
+export const availItemListUsingGET_1_TYPE = function() {
+  return 'get'
+}
+export const availItemListUsingGET_1URL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/dict/avail/item/list'
+  if (parameters['code'] !== undefined) {
+    queryParameters['code'] = parameters['code']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 查询可用选项列表
  * request: availItemListUsingGET
  * url: availItemListUsingGETURL
  * method: availItemListUsingGET_TYPE
  * raw_url: availItemListUsingGET_RAW_URL
+ * @param token - token
  * @param code - 字典类型编码
  */
 export const availItemListUsingGET = function(parameters = {}) {
@@ -367,6 +477,7 @@ export const availItemListUsingGETURL = function(parameters = {}) {
  * url: availItemUsingPUTURL
  * method: availItemUsingPUT_TYPE
  * raw_url: availItemUsingPUT_RAW_URL
+ * @param token - token
  * @param id - id
  * @param state - 启用/禁用
  */
@@ -426,6 +537,7 @@ export const availItemUsingPUTURL = function(parameters = {}) {
  * url: itemListUsingGETURL
  * method: itemListUsingGET_TYPE
  * raw_url: itemListUsingGET_RAW_URL
+ * @param token - token
  * @param code - 字典类型编码
  */
 export const itemListUsingGET = function(parameters = {}) {
@@ -471,6 +583,7 @@ export const itemListUsingGETURL = function(parameters = {}) {
  * url: itemSaveUsingPOSTURL
  * method: itemSaveUsingPOST_TYPE
  * raw_url: itemSaveUsingPOST_RAW_URL
+ * @param token - token
  * @param request - request
  * @param  - 
  */
@@ -518,6 +631,7 @@ export const itemSaveUsingPOSTURL = function(parameters = {}) {
  * url: itemSortExchangeUsingPUTURL
  * method: itemSortExchangeUsingPUT_TYPE
  * raw_url: itemSortExchangeUsingPUT_RAW_URL
+ * @param token - token
  * @param sid - 第一个主键
  * @param fseq - 第一个排序值
  * @param tid - 第二个主键
@@ -597,6 +711,7 @@ export const itemSortExchangeUsingPUTURL = function(parameters = {}) {
  * url: itemUpdateUsingPUTURL
  * method: itemUpdateUsingPUT_TYPE
  * raw_url: itemUpdateUsingPUT_RAW_URL
+ * @param token - token
  * @param id - 主键
  * @param request - request
  * @param  - 
@@ -650,6 +765,7 @@ export const itemUpdateUsingPUTURL = function(parameters = {}) {
  * url: itemDetailUsingGETURL
  * method: itemDetailUsingGET_TYPE
  * raw_url: itemDetailUsingGET_RAW_URL
+ * @param token - token
  * @param id - 字典项主键
  */
 export const itemDetailUsingGET = function(parameters = {}) {
@@ -695,6 +811,7 @@ export const itemDetailUsingGETURL = function(parameters = {}) {
  * url: optionUsingGETURL
  * method: optionUsingGET_TYPE
  * raw_url: optionUsingGET_RAW_URL
+ * @param token - token
  * @param 编码 - code
  */
 export const optionUsingGET = function(parameters = {}) {
@@ -744,6 +861,7 @@ export const optionUsingGETURL = function(parameters = {}) {
  * url: typeListUsingGETURL
  * method: typeListUsingGET_TYPE
  * raw_url: typeListUsingGET_RAW_URL
+ * @param token - token
  * @param nameOrCode - 编码或名称
  */
 export const typeListUsingGET = function(parameters = {}) {
@@ -790,6 +908,7 @@ export const typeListUsingGETURL = function(parameters = {}) {
  * url: deletePhyUsingDELETE_1URL
  * method: deletePhyUsingDELETE_1_TYPE
  * raw_url: deletePhyUsingDELETE_1_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deletePhyUsingDELETE_1 = function(parameters = {}) {
@@ -835,6 +954,7 @@ export const deletePhyUsingDELETE_1URL = function(parameters = {}) {
  * url: deleteUsingDELETE_1URL
  * method: deleteUsingDELETE_1_TYPE
  * raw_url: deleteUsingDELETE_1_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deleteUsingDELETE_1 = function(parameters = {}) {
@@ -880,6 +1000,7 @@ export const deleteUsingDELETE_1URL = function(parameters = {}) {
  * url: listUsingGET_1URL
  * method: listUsingGET_1_TYPE
  * raw_url: listUsingGET_1_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 购物中心名称
@@ -940,6 +1061,7 @@ export const listUsingGET_1URL = function(parameters = {}) {
  * url: byIdUsingGET_1URL
  * method: byIdUsingGET_1_TYPE
  * raw_url: byIdUsingGET_1_RAW_URL
+ * @param token - token
  * @param id - 购物中心Id
  */
 export const byIdUsingGET_1 = function(parameters = {}) {
@@ -985,6 +1107,7 @@ export const byIdUsingGET_1URL = function(parameters = {}) {
  * url: saveUsingPOST_1URL
  * method: saveUsingPOST_1_TYPE
  * raw_url: saveUsingPOST_1_RAW_URL
+ * @param token - token
  * @param request - 购物中心信息主体
  */
 export const saveUsingPOST_1 = function(parameters = {}) {
@@ -1026,11 +1149,58 @@ export const saveUsingPOST_1URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 集团用户登陆选择购物中心
+ * request: selectUsingGET
+ * url: selectUsingGETURL
+ * method: selectUsingGET_TYPE
+ * raw_url: selectUsingGET_RAW_URL
+ * @param token - token
+ * @param id - 主键
+ */
+export const selectUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/markets/select/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const selectUsingGET_RAW_URL = function() {
+  return '/sys/markets/select/{id}'
+}
+export const selectUsingGET_TYPE = function() {
+  return 'get'
+}
+export const selectUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/markets/select/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 修改购物中心信息
  * request: updateUsingPOST_1
  * url: updateUsingPOST_1URL
  * method: updateUsingPOST_1_TYPE
  * raw_url: updateUsingPOST_1_RAW_URL
+ * @param token - token
  * @param request - 购物中心信息主体
  */
 export const updateUsingPOST_1 = function(parameters = {}) {
@@ -1077,7 +1247,8 @@ export const updateUsingPOST_1URL = function(parameters = {}) {
  * url: addUsingPOSTURL
  * method: addUsingPOST_TYPE
  * raw_url: addUsingPOST_RAW_URL
- * @param request - request
+ * @param token - token
+ * @param sysMenu - sysMenu
  * @param  - 
  */
 export const addUsingPOST = function(parameters = {}) {
@@ -1087,11 +1258,11 @@ export const addUsingPOST = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['request'] !== undefined) {
-    body = parameters['request']
+  if (parameters['sysMenu'] !== undefined) {
+    body = parameters['sysMenu']
   }
-  if (parameters['request'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: request'))
+  if (parameters['sysMenu'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: sysMenu'))
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1124,6 +1295,7 @@ export const addUsingPOSTURL = function(parameters = {}) {
  * url: deleteUsingDELETE_4URL
  * method: deleteUsingDELETE_4_TYPE
  * raw_url: deleteUsingDELETE_4_RAW_URL
+ * @param token - token
  * @param id - id
  * @param  - 
  */
@@ -1171,6 +1343,7 @@ export const deleteUsingDELETE_4URL = function(parameters = {}) {
  * url: listUsingGET_7URL
  * method: listUsingGET_7_TYPE
  * raw_url: listUsingGET_7_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 按钮名
@@ -1232,6 +1405,7 @@ export const listUsingGET_7URL = function(parameters = {}) {
  * url: updateUsingPUTURL
  * method: updateUsingPUT_TYPE
  * raw_url: updateUsingPUT_RAW_URL
+ * @param token - token
  * @param request - request
  * @param  - 
  */
@@ -1274,17 +1448,18 @@ export const updateUsingPUTURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 删除通知
- * request: deletePhyUsingDELETE_2
- * url: deletePhyUsingDELETE_2URL
- * method: deletePhyUsingDELETE_2_TYPE
- * raw_url: deletePhyUsingDELETE_2_RAW_URL
- * @param id - 主键
+ * ID
+ * request: byMerchantIdUsingGET
+ * url: byMerchantIdUsingGETURL
+ * method: byMerchantIdUsingGET_TYPE
+ * raw_url: byMerchantIdUsingGET_RAW_URL
+ * @param token - token
+ * @param id - 商户Id
  */
-export const deletePhyUsingDELETE_2 = function(parameters = {}) {
+export const byMerchantIdUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/sys/notice/delete/physical/{id}'
+  let path = '/sys/notice/byMerchantId/{id}'
   let body
   let queryParameters = {}
   let form = {}
@@ -1297,10 +1472,58 @@ export const deletePhyUsingDELETE_2 = function(parameters = {}) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
     });
   }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const byMerchantIdUsingGET_RAW_URL = function() {
+  return '/sys/notice/byMerchantId/{id}'
+}
+export const byMerchantIdUsingGET_TYPE = function() {
+  return 'get'
+}
+export const byMerchantIdUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/notice/byMerchantId/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 删除通知
+ * request: deletePhyUsingDELETE_2
+ * url: deletePhyUsingDELETE_2URL
+ * method: deletePhyUsingDELETE_2_TYPE
+ * raw_url: deletePhyUsingDELETE_2_RAW_URL
+ * @param token - token
+ * @param ids - 通知ID
+ */
+export const deletePhyUsingDELETE_2 = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/notice/delete/physical'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['ids'] !== undefined) {
+    queryParameters['ids'] = parameters['ids']
+  }
+  if (parameters['ids'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: ids'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
 export const deletePhyUsingDELETE_2_RAW_URL = function() {
-  return '/sys/notice/delete/physical/{id}'
+  return '/sys/notice/delete/physical'
 }
 export const deletePhyUsingDELETE_2_TYPE = function() {
   return 'delete'
@@ -1308,8 +1531,10 @@ export const deletePhyUsingDELETE_2_TYPE = function() {
 export const deletePhyUsingDELETE_2URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/sys/notice/delete/physical/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
+  let path = '/sys/notice/delete/physical'
+  if (parameters['ids'] !== undefined) {
+    queryParameters['ids'] = parameters['ids']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1324,10 +1549,12 @@ export const deletePhyUsingDELETE_2URL = function(parameters = {}) {
  * url: listUsingGET_2URL
  * method: listUsingGET_2_TYPE
  * raw_url: listUsingGET_2_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param noticeName - 消息标题
  * @param merchantId - 商户id
+ * @param merchantName - 商户名称
  * @param noticeContent - 消息内容
  * @param createDate - 操作时间
  */
@@ -1349,6 +1576,9 @@ export const listUsingGET_2 = function(parameters = {}) {
   }
   if (parameters['merchantId'] !== undefined) {
     queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['merchantName'] !== undefined) {
+    queryParameters['merchantName'] = parameters['merchantName']
   }
   if (parameters['noticeContent'] !== undefined) {
     queryParameters['noticeContent'] = parameters['noticeContent']
@@ -1385,6 +1615,9 @@ export const listUsingGET_2URL = function(parameters = {}) {
   if (parameters['merchantId'] !== undefined) {
     queryParameters['merchantId'] = parameters['merchantId']
   }
+  if (parameters['merchantName'] !== undefined) {
+    queryParameters['merchantName'] = parameters['merchantName']
+  }
   if (parameters['noticeContent'] !== undefined) {
     queryParameters['noticeContent'] = parameters['noticeContent']
   }
@@ -1405,6 +1638,7 @@ export const listUsingGET_2URL = function(parameters = {}) {
  * url: byIdUsingGET_2URL
  * method: byIdUsingGET_2_TYPE
  * raw_url: byIdUsingGET_2_RAW_URL
+ * @param token - token
  * @param id - 通知Id
  */
 export const byIdUsingGET_2 = function(parameters = {}) {
@@ -1450,10 +1684,8 @@ export const byIdUsingGET_2URL = function(parameters = {}) {
  * url: saveUsingPOST_2URL
  * method: saveUsingPOST_2_TYPE
  * raw_url: saveUsingPOST_2_RAW_URL
- * @param merchantIds - 关联商户id
- * @param noticeName - 标题
- * @param noticeContent - 通知内容
- * @param createDate - 
+ * @param token - token
+ * @param request - 通知信息
  */
 export const saveUsingPOST_2 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1462,20 +1694,11 @@ export const saveUsingPOST_2 = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['merchantIds'] !== undefined) {
-    queryParameters['merchantIds'] = parameters['merchantIds']
+  if (parameters['request'] !== undefined) {
+    body = parameters['request']
   }
-  if (parameters['noticeName'] !== undefined) {
-    queryParameters['noticeName'] = parameters['noticeName']
-  }
-  if (parameters['noticeName'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: noticeName'))
-  }
-  if (parameters['noticeContent'] !== undefined) {
-    queryParameters['noticeContent'] = parameters['noticeContent']
-  }
-  if (parameters['createDate'] !== undefined) {
-    queryParameters['createDate'] = parameters['createDate']
+  if (parameters['request'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: request'))
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1494,18 +1717,6 @@ export const saveUsingPOST_2URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/sys/notice/save'
-  if (parameters['merchantIds'] !== undefined) {
-    queryParameters['merchantIds'] = parameters['merchantIds']
-  }
-  if (parameters['noticeName'] !== undefined) {
-    queryParameters['noticeName'] = parameters['noticeName']
-  }
-  if (parameters['noticeContent'] !== undefined) {
-    queryParameters['noticeContent'] = parameters['noticeContent']
-  }
-  if (parameters['createDate'] !== undefined) {
-    queryParameters['createDate'] = parameters['createDate']
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1520,14 +1731,15 @@ export const saveUsingPOST_2URL = function(parameters = {}) {
  * url: listUsingGET_3URL
  * method: listUsingGET_3_TYPE
  * raw_url: listUsingGET_3_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param userId - 操作人id
  * @param userName - 操作人姓名
  * @param operationLogTypeName - 操作类型名
  * @param operationLogTypeId - 操作类型id
- * @param operationDate - 操作时间_开始
- * @param createDate - 操作时间_结束
+ * @param startDate - 操作时间_开始
+ * @param endDate - 操作时间_结束
  */
 export const listUsingGET_3 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1554,11 +1766,11 @@ export const listUsingGET_3 = function(parameters = {}) {
   if (parameters['operationLogTypeId'] !== undefined) {
     queryParameters['operationLogTypeId'] = parameters['operationLogTypeId']
   }
-  if (parameters['operationDate'] !== undefined) {
-    queryParameters['operationDate'] = parameters['operationDate']
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
   }
-  if (parameters['createDate'] !== undefined) {
-    queryParameters['createDate'] = parameters['createDate']
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1595,11 +1807,11 @@ export const listUsingGET_3URL = function(parameters = {}) {
   if (parameters['operationLogTypeId'] !== undefined) {
     queryParameters['operationLogTypeId'] = parameters['operationLogTypeId']
   }
-  if (parameters['operationDate'] !== undefined) {
-    queryParameters['operationDate'] = parameters['operationDate']
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
   }
-  if (parameters['createDate'] !== undefined) {
-    queryParameters['createDate'] = parameters['createDate']
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1615,6 +1827,7 @@ export const listUsingGET_3URL = function(parameters = {}) {
  * url: listUsingGET_4URL
  * method: listUsingGET_4_TYPE
  * raw_url: listUsingGET_4_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param id - 
@@ -1625,7 +1838,7 @@ export const listUsingGET_3URL = function(parameters = {}) {
 export const listUsingGET_4 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/sys/operationLog/type/List'
+  let path = '/sys/operationLog/type/list'
   let body
   let queryParameters = {}
   let form = {}
@@ -1655,7 +1868,7 @@ export const listUsingGET_4 = function(parameters = {}) {
   return request('get', domain + path, body, queryParameters, form, config)
 }
 export const listUsingGET_4_RAW_URL = function() {
-  return '/sys/operationLog/type/List'
+  return '/sys/operationLog/type/list'
 }
 export const listUsingGET_4_TYPE = function() {
   return 'get'
@@ -1663,7 +1876,7 @@ export const listUsingGET_4_TYPE = function() {
 export const listUsingGET_4URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/sys/operationLog/type/List'
+  let path = '/sys/operationLog/type/list'
   if (parameters['pageNum'] !== undefined) {
     queryParameters['pageNum'] = parameters['pageNum']
   }
@@ -1696,6 +1909,7 @@ export const listUsingGET_4URL = function(parameters = {}) {
  * url: deletePhyUsingDELETE_3URL
  * method: deletePhyUsingDELETE_3_TYPE
  * raw_url: deletePhyUsingDELETE_3_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deletePhyUsingDELETE_3 = function(parameters = {}) {
@@ -1741,6 +1955,7 @@ export const deletePhyUsingDELETE_3URL = function(parameters = {}) {
  * url: deleteUsingDELETE_2URL
  * method: deleteUsingDELETE_2_TYPE
  * raw_url: deleteUsingDELETE_2_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deleteUsingDELETE_2 = function(parameters = {}) {
@@ -1786,9 +2001,11 @@ export const deleteUsingDELETE_2URL = function(parameters = {}) {
  * url: listUsingGET_5URL
  * method: listUsingGET_5_TYPE
  * raw_url: listUsingGET_5_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 职位名称或编码
+ * @param marketId - 购物中心id
  */
 export const listUsingGET_5 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1805,6 +2022,9 @@ export const listUsingGET_5 = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
+  }
+  if (parameters['marketId'] !== undefined) {
+    queryParameters['marketId'] = parameters['marketId']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1832,6 +2052,9 @@ export const listUsingGET_5URL = function(parameters = {}) {
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
   }
+  if (parameters['marketId'] !== undefined) {
+    queryParameters['marketId'] = parameters['marketId']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1846,6 +2069,7 @@ export const listUsingGET_5URL = function(parameters = {}) {
  * url: queryPositionUsingGETURL
  * method: queryPositionUsingGET_TYPE
  * raw_url: queryPositionUsingGET_RAW_URL
+ * @param token - token
  * @param id - 部门Id
  */
 export const queryPositionUsingGET = function(parameters = {}) {
@@ -1891,6 +2115,7 @@ export const queryPositionUsingGETURL = function(parameters = {}) {
  * url: byIdUsingGET_3URL
  * method: byIdUsingGET_3_TYPE
  * raw_url: byIdUsingGET_3_RAW_URL
+ * @param token - token
  * @param id - 职位Id
  */
 export const byIdUsingGET_3 = function(parameters = {}) {
@@ -1936,6 +2161,7 @@ export const byIdUsingGET_3URL = function(parameters = {}) {
  * url: saveUsingPOST_3URL
  * method: saveUsingPOST_3_TYPE
  * raw_url: saveUsingPOST_3_RAW_URL
+ * @param token - token
  * @param request - 职位信息主体
  */
 export const saveUsingPOST_3 = function(parameters = {}) {
@@ -1982,6 +2208,7 @@ export const saveUsingPOST_3URL = function(parameters = {}) {
  * url: updateUsingPOST_2URL
  * method: updateUsingPOST_2_TYPE
  * raw_url: updateUsingPOST_2_RAW_URL
+ * @param token - token
  * @param request - 职位信息主体
  */
 export const updateUsingPOST_2 = function(parameters = {}) {
@@ -2028,6 +2255,7 @@ export const updateUsingPOST_2URL = function(parameters = {}) {
  * url: deletePhyUsingDELETE_4URL
  * method: deletePhyUsingDELETE_4_TYPE
  * raw_url: deletePhyUsingDELETE_4_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deletePhyUsingDELETE_4 = function(parameters = {}) {
@@ -2073,6 +2301,7 @@ export const deletePhyUsingDELETE_4URL = function(parameters = {}) {
  * url: deleteUsingDELETE_3URL
  * method: deleteUsingDELETE_3_TYPE
  * raw_url: deleteUsingDELETE_3_RAW_URL
+ * @param token - token
  * @param id - 主键
  */
 export const deleteUsingDELETE_3 = function(parameters = {}) {
@@ -2118,6 +2347,7 @@ export const deleteUsingDELETE_3URL = function(parameters = {}) {
  * url: listUsingGET_6URL
  * method: listUsingGET_6_TYPE
  * raw_url: listUsingGET_6_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 区域名称或英文缩写
@@ -2178,6 +2408,7 @@ export const listUsingGET_6URL = function(parameters = {}) {
  * url: byIdUsingGET_4URL
  * method: byIdUsingGET_4_TYPE
  * raw_url: byIdUsingGET_4_RAW_URL
+ * @param token - token
  * @param id - 区域Id
  */
 export const byIdUsingGET_4 = function(parameters = {}) {
@@ -2223,6 +2454,7 @@ export const byIdUsingGET_4URL = function(parameters = {}) {
  * url: queryTreeUsingGETURL
  * method: queryTreeUsingGET_TYPE
  * raw_url: queryTreeUsingGET_RAW_URL
+ * @param token - token
  */
 export const queryTreeUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2262,6 +2494,7 @@ export const queryTreeUsingGETURL = function(parameters = {}) {
  * url: saveUsingPOST_4URL
  * method: saveUsingPOST_4_TYPE
  * raw_url: saveUsingPOST_4_RAW_URL
+ * @param token - token
  * @param request - 区域信息主体
  */
 export const saveUsingPOST_4 = function(parameters = {}) {
@@ -2308,6 +2541,7 @@ export const saveUsingPOST_4URL = function(parameters = {}) {
  * url: updateUsingPOST_3URL
  * method: updateUsingPOST_3_TYPE
  * raw_url: updateUsingPOST_3_RAW_URL
+ * @param token - token
  * @param request - 区域信息主体
  */
 export const updateUsingPOST_3 = function(parameters = {}) {
@@ -2354,6 +2588,7 @@ export const updateUsingPOST_3URL = function(parameters = {}) {
  * url: addUsingPOST_1URL
  * method: addUsingPOST_1_TYPE
  * raw_url: addUsingPOST_1_RAW_URL
+ * @param token - token
  * @param role - Role角色实体
  */
 export const addUsingPOST_1 = function(parameters = {}) {
@@ -2400,19 +2635,18 @@ export const addUsingPOST_1URL = function(parameters = {}) {
  * url: deleteUsingDELETE_5URL
  * method: deleteUsingDELETE_5_TYPE
  * raw_url: deleteUsingDELETE_5_RAW_URL
+ * @param token - token
  * @param roleId - 要被删除的角色的ID
  * @param  - 
  */
 export const deleteUsingDELETE_5 = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/sys/role/delete'
+  let path = '/sys/role/delete/{roleId}'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['roleId'] !== undefined) {
-    body = parameters['roleId']
-  }
+  path = path.replace('{roleId}', `${parameters['roleId']}`)
   if (parameters['roleId'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: roleId'))
   }
@@ -2424,7 +2658,7 @@ export const deleteUsingDELETE_5 = function(parameters = {}) {
   return request('delete', domain + path, body, queryParameters, form, config)
 }
 export const deleteUsingDELETE_5_RAW_URL = function() {
-  return '/sys/role/delete'
+  return '/sys/role/delete/{roleId}'
 }
 export const deleteUsingDELETE_5_TYPE = function() {
   return 'delete'
@@ -2432,7 +2666,8 @@ export const deleteUsingDELETE_5_TYPE = function() {
 export const deleteUsingDELETE_5URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/sys/role/delete'
+  let path = '/sys/role/delete/{roleId}'
+  path = path.replace('{roleId}', `${parameters['roleId']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2447,17 +2682,19 @@ export const deleteUsingDELETE_5URL = function(parameters = {}) {
  * url: selectAllMenusForUpdateUsingGETURL
  * method: selectAllMenusForUpdateUsingGET_TYPE
  * raw_url: selectAllMenusForUpdateUsingGET_RAW_URL
+ * @param token - token
  * @param roleId - 角色的ID
  */
 export const selectAllMenusForUpdateUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/sys/role/detail'
+  let path = '/sys/role/detail/{roleId}'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['roleId'] !== undefined) {
-    body = parameters['roleId']
+  path = path.replace('{roleId}', `${parameters['roleId']}`)
+  if (parameters['roleId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: roleId'))
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2467,7 +2704,7 @@ export const selectAllMenusForUpdateUsingGET = function(parameters = {}) {
   return request('get', domain + path, body, queryParameters, form, config)
 }
 export const selectAllMenusForUpdateUsingGET_RAW_URL = function() {
-  return '/sys/role/detail'
+  return '/sys/role/detail/{roleId}'
 }
 export const selectAllMenusForUpdateUsingGET_TYPE = function() {
   return 'get'
@@ -2475,7 +2712,8 @@ export const selectAllMenusForUpdateUsingGET_TYPE = function() {
 export const selectAllMenusForUpdateUsingGETURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/sys/role/detail'
+  let path = '/sys/role/detail/{roleId}'
+  path = path.replace('{roleId}', `${parameters['roleId']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2485,11 +2723,12 @@ export const selectAllMenusForUpdateUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 查询角色
+ * 查询角色，按照条件查询，结果有分页
  * request: listUsingGET_8
  * url: listUsingGET_8URL
  * method: listUsingGET_8_TYPE
  * raw_url: listUsingGET_8_RAW_URL
+ * @param token - token
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param name - 角色名字，或者角色描述
@@ -2545,11 +2784,52 @@ export const listUsingGET_8URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 查询全部的角色。结果没有分页
+ * request: listAllUsingGET
+ * url: listAllUsingGETURL
+ * method: listAllUsingGET_TYPE
+ * raw_url: listAllUsingGET_RAW_URL
+ * @param token - token
+ */
+export const listAllUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/role/list/all'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const listAllUsingGET_RAW_URL = function() {
+  return '/sys/role/list/all'
+}
+export const listAllUsingGET_TYPE = function() {
+  return 'get'
+}
+export const listAllUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/role/list/all'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 角色的权限菜单列表
  * request: selectMenusUsingGET
  * url: selectMenusUsingGETURL
  * method: selectMenusUsingGET_TYPE
  * raw_url: selectMenusUsingGET_RAW_URL
+ * @param token - token
  * @param roleId - roleId
  */
 export const selectMenusUsingGET = function(parameters = {}) {
@@ -2596,6 +2876,7 @@ export const selectMenusUsingGETURL = function(parameters = {}) {
  * url: updateUsingPUT_1URL
  * method: updateUsingPUT_1_TYPE
  * raw_url: updateUsingPUT_1_RAW_URL
+ * @param token - token
  * @param role - role
  */
 export const updateUsingPUT_1 = function(parameters = {}) {
@@ -2642,6 +2923,7 @@ export const updateUsingPUT_1URL = function(parameters = {}) {
  * url: addUsingPOST_2URL
  * method: addUsingPOST_2_TYPE
  * raw_url: addUsingPOST_2_RAW_URL
+ * @param token - token
  * @param newUser - 新添加用户的信息，角色ID不能少
  */
 export const addUsingPOST_2 = function(parameters = {}) {
@@ -2683,11 +2965,139 @@ export const addUsingPOST_2URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 添加商户用户信息,并返回该商户的信息
+ * request: addMerchantUsingPOST
+ * url: addMerchantUsingPOSTURL
+ * method: addMerchantUsingPOST_TYPE
+ * raw_url: addMerchantUsingPOST_RAW_URL
+ * @param token - token
+ * @param addMerchantUserParam - 新添商户用户
+ */
+export const addMerchantUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/user/addMerchant'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['addMerchantUserParam'] !== undefined) {
+    body = parameters['addMerchantUserParam']
+  }
+  if (parameters['addMerchantUserParam'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: addMerchantUserParam'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const addMerchantUsingPOST_RAW_URL = function() {
+  return '/sys/user/addMerchant'
+}
+export const addMerchantUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const addMerchantUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/user/addMerchant'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 管理员重置用户的密码
+ * request: adminResetPasswordUsingPUT
+ * url: adminResetPasswordUsingPUTURL
+ * method: adminResetPasswordUsingPUT_TYPE
+ * raw_url: adminResetPasswordUsingPUT_RAW_URL
+ * @param token - token
+ * @param userId - 用户ID
+ * @param newPassword - 新密码
+ * @param repeatNewPassword - 重复输入的新密码
+ * @param validationCode - 验证码
+ */
+export const adminResetPasswordUsingPUT = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/user/adminresetpassword'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['userId'] !== undefined) {
+    queryParameters['userId'] = parameters['userId']
+  }
+  if (parameters['userId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: userId'))
+  }
+  if (parameters['newPassword'] !== undefined) {
+    queryParameters['newPassword'] = parameters['newPassword']
+  }
+  if (parameters['newPassword'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: newPassword'))
+  }
+  if (parameters['repeatNewPassword'] !== undefined) {
+    queryParameters['repeatNewPassword'] = parameters['repeatNewPassword']
+  }
+  if (parameters['repeatNewPassword'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: repeatNewPassword'))
+  }
+  if (parameters['validationCode'] !== undefined) {
+    queryParameters['validationCode'] = parameters['validationCode']
+  }
+  if (parameters['validationCode'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: validationCode'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const adminResetPasswordUsingPUT_RAW_URL = function() {
+  return '/sys/user/adminresetpassword'
+}
+export const adminResetPasswordUsingPUT_TYPE = function() {
+  return 'put'
+}
+export const adminResetPasswordUsingPUTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/user/adminresetpassword'
+  if (parameters['userId'] !== undefined) {
+    queryParameters['userId'] = parameters['userId']
+  }
+  if (parameters['newPassword'] !== undefined) {
+    queryParameters['newPassword'] = parameters['newPassword']
+  }
+  if (parameters['repeatNewPassword'] !== undefined) {
+    queryParameters['repeatNewPassword'] = parameters['repeatNewPassword']
+  }
+  if (parameters['validationCode'] !== undefined) {
+    queryParameters['validationCode'] = parameters['validationCode']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 删除用户
  * request: deleteUsingDELETE_6
  * url: deleteUsingDELETE_6URL
  * method: deleteUsingDELETE_6_TYPE
  * raw_url: deleteUsingDELETE_6_RAW_URL
+ * @param token - token
  * @param userId - userId
  */
 export const deleteUsingDELETE_6 = function(parameters = {}) {
@@ -2729,12 +3139,61 @@ export const deleteUsingDELETE_6URL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 禁用商户用户
+ * request: forBiddenMerchantUserUsingPOST
+ * url: forBiddenMerchantUserUsingPOSTURL
+ * method: forBiddenMerchantUserUsingPOST_TYPE
+ * raw_url: forBiddenMerchantUserUsingPOST_RAW_URL
+ * @param token - token
+ * @param addMerchantUserParam - 新添商户用户
+ */
+export const forBiddenMerchantUserUsingPOST = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/user/forBiddenMerchantUser'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['addMerchantUserParam'] !== undefined) {
+    body = parameters['addMerchantUserParam']
+  }
+  if (parameters['addMerchantUserParam'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: addMerchantUserParam'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const forBiddenMerchantUserUsingPOST_RAW_URL = function() {
+  return '/sys/user/forBiddenMerchantUser'
+}
+export const forBiddenMerchantUserUsingPOST_TYPE = function() {
+  return 'post'
+}
+export const forBiddenMerchantUserUsingPOSTURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/user/forBiddenMerchantUser'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 设置禁用用户
  * request: setForbiddenUsingGET
  * url: setForbiddenUsingGETURL
  * method: setForbiddenUsingGET_TYPE
  * raw_url: setForbiddenUsingGET_RAW_URL
+ * @param token - token
  * @param id - id
+ * @param  - 
  */
 export const setForbiddenUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2780,7 +3239,9 @@ export const setForbiddenUsingGETURL = function(parameters = {}) {
  * url: getByIdUsingGETURL
  * method: getByIdUsingGET_TYPE
  * raw_url: getByIdUsingGET_RAW_URL
+ * @param token - token
  * @param userId - userId
+ * @param  - 
  */
 export const getByIdUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2826,7 +3287,9 @@ export const getByIdUsingGETURL = function(parameters = {}) {
  * url: listUsingGET_9URL
  * method: listUsingGET_9_TYPE
  * raw_url: listUsingGET_9_RAW_URL
+ * @param token - token
  * @param name - 用户名称
+ * @param departmentId - 部门ID
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  */
@@ -2839,6 +3302,9 @@ export const listUsingGET_9 = function(parameters = {}) {
   let form = {}
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
+  }
+  if (parameters['departmentId'] !== undefined) {
+    queryParameters['departmentId'] = parameters['departmentId']
   }
   if (parameters['pageNum'] !== undefined) {
     queryParameters['pageNum'] = parameters['pageNum']
@@ -2866,6 +3332,9 @@ export const listUsingGET_9URL = function(parameters = {}) {
   if (parameters['name'] !== undefined) {
     queryParameters['name'] = parameters['name']
   }
+  if (parameters['departmentId'] !== undefined) {
+    queryParameters['departmentId'] = parameters['departmentId']
+  }
   if (parameters['pageNum'] !== undefined) {
     queryParameters['pageNum'] = parameters['pageNum']
   }
@@ -2886,6 +3355,7 @@ export const listUsingGET_9URL = function(parameters = {}) {
  * url: loginUsingPOSTURL
  * method: loginUsingPOST_TYPE
  * raw_url: loginUsingPOST_RAW_URL
+ * @param token - token
  * @param request - request
  */
 export const loginUsingPOST = function(parameters = {}) {
@@ -2932,6 +3402,7 @@ export const loginUsingPOSTURL = function(parameters = {}) {
  * url: logoutUsingGETURL
  * method: logoutUsingGET_TYPE
  * raw_url: logoutUsingGET_RAW_URL
+ * @param token - token
  */
 export const logoutUsingGET = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2966,13 +3437,16 @@ export const logoutUsingGETURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 重置密码
+ * 用户本人重置自己的密码
  * request: resetPasswordUsingPUT
  * url: resetPasswordUsingPUTURL
  * method: resetPasswordUsingPUT_TYPE
  * raw_url: resetPasswordUsingPUT_RAW_URL
- * @param userId - userId
- * @param password - password
+ * @param token - token
+ * @param oldPassword - 旧密码
+ * @param newPassword - 新密码
+ * @param newPasswordRepeat - 重复输入的新密码
+ * @param validationCode - 验证码
  */
 export const resetPasswordUsingPUT = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2981,17 +3455,29 @@ export const resetPasswordUsingPUT = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['userId'] !== undefined) {
-    queryParameters['userId'] = parameters['userId']
+  if (parameters['oldPassword'] !== undefined) {
+    queryParameters['oldPassword'] = parameters['oldPassword']
   }
-  if (parameters['userId'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: userId'))
+  if (parameters['oldPassword'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: oldPassword'))
   }
-  if (parameters['password'] !== undefined) {
-    queryParameters['password'] = parameters['password']
+  if (parameters['newPassword'] !== undefined) {
+    queryParameters['newPassword'] = parameters['newPassword']
   }
-  if (parameters['password'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: password'))
+  if (parameters['newPassword'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: newPassword'))
+  }
+  if (parameters['newPasswordRepeat'] !== undefined) {
+    queryParameters['newPasswordRepeat'] = parameters['newPasswordRepeat']
+  }
+  if (parameters['newPasswordRepeat'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: newPasswordRepeat'))
+  }
+  if (parameters['validationCode'] !== undefined) {
+    queryParameters['validationCode'] = parameters['validationCode']
+  }
+  if (parameters['validationCode'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: validationCode'))
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3010,11 +3496,17 @@ export const resetPasswordUsingPUTURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/sys/user/resetpassword'
-  if (parameters['userId'] !== undefined) {
-    queryParameters['userId'] = parameters['userId']
+  if (parameters['oldPassword'] !== undefined) {
+    queryParameters['oldPassword'] = parameters['oldPassword']
   }
-  if (parameters['password'] !== undefined) {
-    queryParameters['password'] = parameters['password']
+  if (parameters['newPassword'] !== undefined) {
+    queryParameters['newPassword'] = parameters['newPassword']
+  }
+  if (parameters['newPasswordRepeat'] !== undefined) {
+    queryParameters['newPasswordRepeat'] = parameters['newPasswordRepeat']
+  }
+  if (parameters['validationCode'] !== undefined) {
+    queryParameters['validationCode'] = parameters['validationCode']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3030,6 +3522,7 @@ export const resetPasswordUsingPUTURL = function(parameters = {}) {
  * url: setUnForbiddenUsingGETURL
  * method: setUnForbiddenUsingGET_TYPE
  * raw_url: setUnForbiddenUsingGET_RAW_URL
+ * @param token - token
  * @param id - id
  * @param  - 
  */
@@ -3077,6 +3570,7 @@ export const setUnForbiddenUsingGETURL = function(parameters = {}) {
  * url: updateUsingPUT_2URL
  * method: updateUsingPUT_2_TYPE
  * raw_url: updateUsingPUT_2_RAW_URL
+ * @param token - token
  * @param request - request
  */
 export const updateUsingPUT_2 = function(parameters = {}) {
@@ -3109,6 +3603,100 @@ export const updateUsingPUT_2URL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/sys/user/update'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 添加商户用户信息,并返回该商户的信息
+ * request: addMerchantUsingPOST_1
+ * url: addMerchantUsingPOST_1URL
+ * method: addMerchantUsingPOST_1_TYPE
+ * raw_url: addMerchantUsingPOST_1_RAW_URL
+ * @param token - token
+ * @param addMerchantUserParam - 新添商户用户
+ */
+export const addMerchantUsingPOST_1 = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/userFeign/addMerchant'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['addMerchantUserParam'] !== undefined) {
+    body = parameters['addMerchantUserParam']
+  }
+  if (parameters['addMerchantUserParam'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: addMerchantUserParam'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const addMerchantUsingPOST_1_RAW_URL = function() {
+  return '/sys/userFeign/addMerchant'
+}
+export const addMerchantUsingPOST_1_TYPE = function() {
+  return 'post'
+}
+export const addMerchantUsingPOST_1URL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/userFeign/addMerchant'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 禁用商户用户
+ * request: forBiddenMerchantUserUsingPOST_1
+ * url: forBiddenMerchantUserUsingPOST_1URL
+ * method: forBiddenMerchantUserUsingPOST_1_TYPE
+ * raw_url: forBiddenMerchantUserUsingPOST_1_RAW_URL
+ * @param token - token
+ * @param addMerchantUserParam - 新添商户用户
+ */
+export const forBiddenMerchantUserUsingPOST_1 = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/sys/userFeign/forBiddenMerchantUser'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['addMerchantUserParam'] !== undefined) {
+    body = parameters['addMerchantUserParam']
+  }
+  if (parameters['addMerchantUserParam'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: addMerchantUserParam'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const forBiddenMerchantUserUsingPOST_1_RAW_URL = function() {
+  return '/sys/userFeign/forBiddenMerchantUser'
+}
+export const forBiddenMerchantUserUsingPOST_1_TYPE = function() {
+  return 'post'
+}
+export const forBiddenMerchantUserUsingPOST_1URL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/sys/userFeign/forBiddenMerchantUser'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

@@ -3,25 +3,24 @@
       :title.sync="title"
       :visible.sync="dialog.dialogVisible"
       :before-close="dialog.handleClose"
-      width="48%"
-      class="dialog_template">
+      custom-class="customdialog">
       <div class="dialogbox">
-        <div class="dialoginput searchselect" v-for="(model,index) in dialog.models" :key="index">
+        <div class="dialoginput" v-for="(model,index) in dialog.models" :key="index">
           <span class="inputname">{{model.label}}</span>
-          <span v-if="model.type==='onlyword'">{{dialog.param[model.name]}}</span>
-          <span v-if="model.type==='word'">{{model.options[dialog.param[model.name]] ? model.options[dialog.param[model.name]][model.valueLabel]:''}}</span>
+          <span class="inputname inputnameauto" v-if="model.type==='onlyword'">{{dialog.param[model.name]}}</span>
+          <span class="inputname inputnameauto" v-if="model.type==='word'">{{model.options[dialog.param[model.name]] ? model.options[dialog.param[model.name]][model.valueLabel]:''}}</span>
           <input class="inputtext" v-if="model.type==='number' || model.type==='text'" 
             v-model="dialog.param[model.name]" 
             :type="model.type" 
             @change="toggleVal(model, dialog.param[model.name])"
             :placeholder="model.placeholder">
           <span v-if="model.slot">{{model.slot}}</span>
-          <el-input v-if="model.type==='textarea'" class="dialog_area" 
+          <el-input v-if="model.type==='textarea'" class="inputtext dialog_area" 
             v-model="dialog.param[model.name]" 
             :type="model.type"
             @change="toggleVal(model, dialog.param[model.name])" 
             :placeholder="model.placeholder"></el-input>
-          <el-select v-if="model.type==='select'" clearable v-model="dialog.param[model.name]" 
+          <el-select v-if="model.type==='select'" filterable class="dialogselect" clearable v-model="dialog.param[model.name]" 
             @change="toggleVal(model, dialog.param[model.name])">
             <el-option
               v-for="(item, index) in model.options"
@@ -30,7 +29,7 @@
               :value="item[model.value]">
             </el-option>
           </el-select>
-          <el-select v-if="model.type==='custom_select'" v-model="dialog.param[model.name]" 
+          <el-select v-if="model.type==='custom_select'" filterable clearable class="dialogselect" v-model="dialog.param[model.name]" 
             @change="toggleVal(model, dialog.param[model.name])">
             <el-option-group v-for="(group, groupIndex) in model.optionsGroups"
               :key="groupIndex"
@@ -46,9 +45,12 @@
             
           </el-select>
           <el-date-picker
+            class="inputtext"
             v-if="(model.type==='daterange' || model.type==='date')"
             v-model="dialog.param[model.name]"
             :type="model.type"
+            :clearable="hideDate"
+            :picker-options="model.pickerOptions?model.pickerOptions: {}"
             @blur="toggleVal(model, dialog.param[model.name])"
             range-separator="至"
             start-placeholder="开始日期"
@@ -66,6 +68,11 @@
 export default {
   name: "erp-dialog",
   props: ["title", "dialog"],
+  data() {
+    return {
+      hideDate: true
+    }
+  },
   methods: {
     toggleVal(model, val) {
       if (model.event) {
@@ -77,7 +84,7 @@ export default {
       // })
     },
     filterSelect(data) {
-      // console.log(data);
+      // console.log(datasync);
     }
   },
   watch: {

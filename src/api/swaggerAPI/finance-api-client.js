@@ -13,7 +13,7 @@ export const request = (method, url, body, queryParameters, form, config) => {
     let keys = Object.keys(queryParameters)
     let queryUrl = url
     if (keys.length > 0) {
-        queryUrl = url + '?' + qs.stringify(queryParameters)
+        queryUrl = url + '?' + qs.stringify(queryParameters, { indices: false })
     }
     // let queryUrl = url+(keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
     if (body) {
@@ -122,13 +122,13 @@ export const confirmUsingPOSTURL = function (parameters = {}) {
 }
 /**
  * 删除
- * request: delUsingDELETE
- * url: delUsingDELETEURL
- * method: delUsingDELETE_TYPE
- * raw_url: delUsingDELETE_RAW_URL
+ * request: delUsingPOST
+ * url: delUsingPOSTURL
+ * method: delUsingPOST_TYPE
+ * raw_url: delUsingPOST_RAW_URL
  * @param id - 主键数组
  */
-export const delUsingDELETE = function (parameters = {}) {
+export const delUsingPOST = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/adjust/cost/del'
@@ -136,7 +136,7 @@ export const delUsingDELETE = function (parameters = {}) {
     let queryParameters = {}
     let form = {}
     if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
+        body = parameters['id']
     }
     if (parameters['id'] === undefined) {
         return Promise.reject(new Error('Missing required  parameter: id'))
@@ -146,21 +146,18 @@ export const delUsingDELETE = function (parameters = {}) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
         });
     }
-    return request('delete', domain + path, body, queryParameters, form, config)
+    return request('post', domain + path, body, queryParameters, form, config)
 }
-export const delUsingDELETE_RAW_URL = function () {
+export const delUsingPOST_RAW_URL = function () {
     return '/finance/adjust/cost/del'
 }
-export const delUsingDELETE_TYPE = function () {
-    return 'delete'
+export const delUsingPOST_TYPE = function () {
+    return 'post'
 }
-export const delUsingDELETEURL = function (parameters = {}) {
+export const delUsingPOSTURL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/adjust/cost/del'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -499,6 +496,9 @@ export const listUsingGET = function (parameters = {}) {
     if (parameters['contractId'] !== undefined) {
         queryParameters['contractId'] = parameters['contractId']
     }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
     if (parameters['settleGroupId'] !== undefined) {
         queryParameters['settleGroupId'] = parameters['settleGroupId']
     }
@@ -536,6 +536,9 @@ export const listUsingGETURL = function (parameters = {}) {
     }
     if (parameters['contractId'] !== undefined) {
         queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['settleGroupId'] !== undefined) {
         queryParameters['settleGroupId'] = parameters['settleGroupId']
@@ -648,85 +651,107 @@ export const confirmUsingPOST_3URL = function (parameters = {}) {
 }
 /**
  * 结算单调整确认列表
- * request: confirmListUsingGET_2
- * url: confirmListUsingGET_2URL
- * method: confirmListUsingGET_2_TYPE
- * raw_url: confirmListUsingGET_2_RAW_URL
+ * request: confirmListUsingGET
+ * url: confirmListUsingGETURL
+ * method: confirmListUsingGET_TYPE
+ * raw_url: confirmListUsingGET_RAW_URL
+ * @param token - token
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param settleNo - 结算单号
  * @param merchantId - 商户主键
  * @param contractId - 合同主键
+ * @param contractCode - 合同编号
  * @param status - 状态
  */
-export const confirmListUsingGET_2 = function (parameters = {}) {
+export const confirmListUsingGET_2 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/bill/adjust/confirm/list'
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
     if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
+      queryParameters['pageNum'] = parameters['pageNum']
     }
     if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
+      queryParameters['pageSize'] = parameters['pageSize']
     }
     if (parameters['settleNo'] !== undefined) {
-        queryParameters['settleNo'] = parameters['settleNo']
+      queryParameters['settleNo'] = parameters['settleNo']
     }
     if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
+      queryParameters['merchantId'] = parameters['merchantId']
     }
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
+      queryParameters['status'] = parameters['status']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
     }
     return request('get', domain + path, body, queryParameters, form, config)
-}
-export const confirmListUsingGET_2_RAW_URL = function () {
+  }
+  export const confirmListUsingGET_2_RAW_URL = function() {
     return '/finance/bill/adjust/confirm/list'
-}
-export const confirmListUsingGET_2_TYPE = function () {
+  }
+  export const confirmListUsingGET_2_TYPE = function() {
     return 'get'
-}
-export const confirmListUsingGET_2URL = function (parameters = {}) {
+  }
+  export const confirmListUsingGET_2URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/adjust/confirm/list'
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
     if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
+      queryParameters['pageNum'] = parameters['pageNum']
     }
     if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
+      queryParameters['pageSize'] = parameters['pageSize']
     }
     if (parameters['settleNo'] !== undefined) {
-        queryParameters['settleNo'] = parameters['settleNo']
+      queryParameters['settleNo'] = parameters['settleNo']
     }
     if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
+      queryParameters['merchantId'] = parameters['merchantId']
     }
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
+      queryParameters['status'] = parameters['status']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+  }
 /**
  * 根据ID查询明细
  * request: getDetailUsingGET
@@ -774,85 +799,107 @@ export const getDetailUsingGETURL = function (parameters = {}) {
 }
 /**
  * 结算单调整管理列表
- * request: manageListUsingGET_2
- * url: manageListUsingGET_2URL
- * method: manageListUsingGET_2_TYPE
- * raw_url: manageListUsingGET_2_RAW_URL
+ * request: manageListUsingGET
+ * url: manageListUsingGETURL
+ * method: manageListUsingGET_TYPE
+ * raw_url: manageListUsingGET_RAW_URL
+ * @param token - token
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param settleNo - 结算单号
  * @param merchantId - 商户主键
  * @param contractId - 合同主键
+ * @param contractCode - 合同编号
  * @param status - 状态
  */
-export const manageListUsingGET_2 = function (parameters = {}) {
+export const manageListUsingGET_2 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/bill/adjust/manage/list'
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
     if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
+      queryParameters['pageNum'] = parameters['pageNum']
     }
     if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
+      queryParameters['pageSize'] = parameters['pageSize']
     }
     if (parameters['settleNo'] !== undefined) {
-        queryParameters['settleNo'] = parameters['settleNo']
+      queryParameters['settleNo'] = parameters['settleNo']
     }
     if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
+      queryParameters['merchantId'] = parameters['merchantId']
     }
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
+      queryParameters['status'] = parameters['status']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
     }
     return request('get', domain + path, body, queryParameters, form, config)
-}
-export const manageListUsingGET_2_RAW_URL = function () {
+  }
+  export const manageListUsingGET_2_RAW_URL = function() {
     return '/finance/bill/adjust/manage/list'
-}
-export const manageListUsingGET_2_TYPE = function () {
+  }
+  export const manageListUsingGET_2_TYPE = function() {
     return 'get'
-}
-export const manageListUsingGET_2URL = function (parameters = {}) {
+  }
+  export const manageListUsingGET_2URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/adjust/manage/list'
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
     if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
+      queryParameters['pageNum'] = parameters['pageNum']
     }
     if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
+      queryParameters['pageSize'] = parameters['pageSize']
     }
     if (parameters['settleNo'] !== undefined) {
-        queryParameters['settleNo'] = parameters['settleNo']
+      queryParameters['settleNo'] = parameters['settleNo']
     }
     if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
+      queryParameters['merchantId'] = parameters['merchantId']
     }
     if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
+      queryParameters['status'] = parameters['status']
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+  }
 /**
  * 提交
  * request: saveUsingPOST_1
@@ -1134,6 +1181,33 @@ export const confirmListUsingGET = function (parameters = {}) {
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1151,6 +1225,33 @@ export const confirmListUsingGETURL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/confirm/list'
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1166,7 +1267,7 @@ export const confirmListUsingGETURL = function (parameters = {}) {
  * method: createUsingPOST_TYPE
  * raw_url: createUsingPOST_RAW_URL
  * @param request - request
- * @param  -
+ * @param  - 
  */
 export const createUsingPOST = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1212,6 +1313,15 @@ export const createUsingPOSTURL = function (parameters = {}) {
  * url: createListUsingGETURL
  * method: createListUsingGET_TYPE
  * raw_url: createListUsingGET_RAW_URL
+ * @param generatedStatus - 结算单生成状态
+ * @param auditState - 结算单审核状态
+ * @param settleNo - 结算单号
+ * @param propertyType - 物业性质
+ * @param merchantId - 商户主键
+ * @param contractId - 合同主键
+ * @param settleGroupId - 结算组别主键
+ * @param receiptState - 结算单收款状态
+ * @param whetherAdjust - 结算单是否调整
  */
 export const createListUsingGET = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1220,6 +1330,33 @@ export const createListUsingGET = function (parameters = {}) {
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1237,6 +1374,33 @@ export const createListUsingGETURL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/create/list'
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1291,12 +1455,22 @@ export const delUsingPOST_1URL = function (parameters = {}) {
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
+
 /**
  * 结算单管理列表
  * request: manageListUsingGET
  * url: manageListUsingGETURL
  * method: manageListUsingGET_TYPE
  * raw_url: manageListUsingGET_RAW_URL
+ * @param generatedStatus - 结算单生成状态
+ * @param auditState - 结算单审核状态
+ * @param settleNo - 结算单号
+ * @param propertyType - 物业性质
+ * @param merchantId - 商户主键
+ * @param contractCode - 合同code
+ * @param settleGroupId - 结算组别主键
+ * @param receiptState - 结算单收款状态
+ * @param whetherAdjust - 结算单是否调整
  */
 export const manageListUsingGET = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1305,6 +1479,33 @@ export const manageListUsingGET = function (parameters = {}) {
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1322,6 +1523,33 @@ export const manageListUsingGETURL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/manage/list'
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1435,6 +1663,33 @@ export const publishListUsingGET = function (parameters = {}) {
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1452,6 +1707,33 @@ export const publishListUsingGETURL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/publish/list'
+    if (parameters['generatedStatus'] !== undefined) {
+        queryParameters['generatedStatus'] = parameters['generatedStatus']
+    }
+    if (parameters['auditState'] !== undefined) {
+        queryParameters['auditState'] = parameters['auditState']
+    }
+    if (parameters['settleNo'] !== undefined) {
+        queryParameters['settleNo'] = parameters['settleNo']
+    }
+    if (parameters['propertyType'] !== undefined) {
+        queryParameters['propertyType'] = parameters['propertyType']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['receiptState'] !== undefined) {
+        queryParameters['receiptState'] = parameters['receiptState']
+    }
+    if (parameters['whetherAdjust'] !== undefined) {
+        queryParameters['whetherAdjust'] = parameters['whetherAdjust']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1895,7 +2177,9 @@ export const oneOffSaveUsingPOSTURL = function (parameters = {}) {
  * url: queryCostUsingGETURL
  * method: queryCostUsingGET_TYPE
  * raw_url: queryCostUsingGET_RAW_URL
+ * @param token - token
  * @param id - 结算单Id
+ * @param flag - 标识
  */
 export const queryCostUsingGET = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1905,8 +2189,8 @@ export const queryCostUsingGET = function (parameters = {}) {
     let queryParameters = {}
     let form = {}
     path = path.replace('{id}', `${parameters['id']}`)
-    if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
+    if (parameters['flag'] !== undefined) {
+        queryParameters['flag'] = parameters['flag']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
@@ -1926,6 +2210,9 @@ export const queryCostUsingGETURL = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/receipt/querycost/{id}'
     path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters['flag'] !== undefined) {
+        queryParameters['flag'] = parameters['flag']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2091,45 +2378,75 @@ export const listUsingGET_2URL = function (parameters = {}) {
  * url: resultUsingGETURL
  * method: resultUsingGET_TYPE
  * raw_url: resultUsingGET_RAW_URL
- * @param id - id
+ * @param token - token
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param id - 结算单任务主键
  */
-export const resultUsingGET = function (parameters = {}) {
+export const resultUsingGET = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
-    let path = '/finance/bill/task/result/{id}'
+    let path = '/finance/bill/task/result/' + parameters.id
     let body
     let queryParameters = {}
     let form = {}
-    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
     if (parameters['id'] === undefined) {
-        return Promise.reject(new Error('Missing required  parameter: id'))
+      return Promise.reject(new Error('Missing required  parameter: id'))
     }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        });
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
     }
     return request('get', domain + path, body, queryParameters, form, config)
-}
-export const resultUsingGET_RAW_URL = function () {
+  }
+  export const resultUsingGET_RAW_URL = function() {
     return '/finance/bill/task/result/{id}'
-}
-export const resultUsingGET_TYPE = function () {
+  }
+  export const resultUsingGET_TYPE = function() {
     return 'get'
-}
-export const resultUsingGETURL = function (parameters = {}) {
+  }
+  export const resultUsingGETURL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/bill/task/result/{id}'
-    path = path.replace('{id}', `${parameters['id']}`)
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['id'] !== undefined) {
+      queryParameters['id'] = parameters['id']
+    }
     if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
+  }
 /**
  * 结算单详情
  * request: detailUsingGET_1
@@ -2439,10 +2756,10 @@ export const cancelsUsingPUTURL = function (parameters = {}) {
 }
 /**
  * 保证金处理确认列表
- * request: confirmlistUsingGET
- * url: confirmlistUsingGETURL
- * method: confirmlistUsingGET_TYPE
- * raw_url: confirmlistUsingGET_RAW_URL
+ * request: confirmlistUsingGET_8
+ * url: confirmlistUsingGET_8URL
+ * method: confirmlistUsingGET_8_TYPE
+ * raw_url: confirmlistUsingGET_8_RAW_URL
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param dealNumber - 处理单号
@@ -2451,7 +2768,7 @@ export const cancelsUsingPUTURL = function (parameters = {}) {
  * @param shopId - 店铺id
  * @param status - 状态：0新增 1已确认 2取消
  */
-export const confirmlistUsingGET = function (parameters = {}) {
+export const confirmlistUsingGET_8 = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/contractbond/operaterecord/confirmlist'
@@ -2486,13 +2803,13 @@ export const confirmlistUsingGET = function (parameters = {}) {
     }
     return request('get', domain + path, body, queryParameters, form, config)
 }
-export const confirmlistUsingGET_RAW_URL = function () {
+export const confirmlistUsingGET_8_RAW_URL = function () {
     return '/finance/contractbond/operaterecord/confirmlist'
 }
-export const confirmlistUsingGET_TYPE = function () {
+export const confirmlistUsingGET_8_TYPE = function () {
     return 'get'
 }
-export const confirmlistUsingGETURL = function (parameters = {}) {
+export const confirmlistUsingGET_8URL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/contractbond/operaterecord/confirmlist'
@@ -3123,46 +3440,46 @@ export const listUsingGET_4URL = function (parameters = {}) {
  * raw_url: merchantinfoUsingGET_RAW_URL
  * @param stage - 阶段
  */
-export const merchantinfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/merchantinfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['stage'] !== undefined) {
-    queryParameters['stage'] = parameters['stage']
-  }
-  if (parameters['stage'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: stage'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
+export const merchantinfoUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/receiverecord/merchantinfo'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['stage'] !== undefined) {
+        queryParameters['stage'] = parameters['stage']
+    }
+    if (parameters['stage'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: stage'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
 }
-export const merchantinfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/merchantinfo'
+export const merchantinfoUsingGET_RAW_URL = function () {
+    return '/finance/contractbond/receiverecord/merchantinfo'
 }
-export const merchantinfoUsingGET_TYPE = function() {
-  return 'get'
+export const merchantinfoUsingGET_TYPE = function () {
+    return 'get'
 }
-export const merchantinfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/merchantinfo'
-  if (parameters['stage'] !== undefined) {
-    queryParameters['stage'] = parameters['stage']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const merchantinfoUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/receiverecord/merchantinfo'
+    if (parameters['stage'] !== undefined) {
+        queryParameters['stage'] = parameters['stage']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
  * 收取页面合同信息下拉框
@@ -3173,55 +3490,55 @@ export const merchantinfoUsingGETURL = function(parameters = {}) {
  * @param stage - 阶段
  * @param merchantId - 商户id
  */
-export const contractinfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/contractinfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['stage'] !== undefined) {
-    queryParameters['stage'] = parameters['stage']
-  }
-  if (parameters['stage'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: stage'))
-  }
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters['merchantId'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: merchantId'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
+export const contractinfoUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/receiverecord/contractinfo'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['stage'] !== undefined) {
+        queryParameters['stage'] = parameters['stage']
+    }
+    if (parameters['stage'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: stage'))
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['merchantId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: merchantId'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
 }
-export const contractinfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/contractinfo'
+export const contractinfoUsingGET_RAW_URL = function () {
+    return '/finance/contractbond/receiverecord/contractinfo'
 }
-export const contractinfoUsingGET_TYPE = function() {
-  return 'get'
+export const contractinfoUsingGET_TYPE = function () {
+    return 'get'
 }
-export const contractinfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/contractinfo'
-  if (parameters['stage'] !== undefined) {
-    queryParameters['stage'] = parameters['stage']
-  }
-  if (parameters['merchantId'] !== undefined) {
-    queryParameters['merchantId'] = parameters['merchantId']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const contractinfoUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/receiverecord/contractinfo'
+    if (parameters['stage'] !== undefined) {
+        queryParameters['stage'] = parameters['stage']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
  * 列表商户信息下拉框
@@ -3230,76 +3547,83 @@ export const contractinfoUsingGETURL = function(parameters = {}) {
  * method: merinfoUsingGET_TYPE
  * raw_url: merinfoUsingGET_RAW_URL
  */
-export const merinfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/merinfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
+export const merinfoUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/receiverecord/merinfo'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
 }
-export const merinfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/merinfo'
+export const merinfoUsingGET_RAW_URL = function () {
+    return '/finance/contractbond/receiverecord/merinfo'
 }
-export const merinfoUsingGET_TYPE = function() {
-  return 'get'
+export const merinfoUsingGET_TYPE = function () {
+    return 'get'
 }
-export const merinfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/merinfo'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const merinfoUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/receiverecord/merinfo'
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 列表合同信息下拉框
+ * 列表页面合同信息下拉框
  * request: coninfoUsingGET
  * url: coninfoUsingGETURL
  * method: coninfoUsingGET_TYPE
  * raw_url: coninfoUsingGET_RAW_URL
+ * @param merchantId - 商户id
  */
-export const coninfoUsingGET = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/finance/contractbond/receiverecord/coninfo'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
+export const coninfoUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/receiverecord/coninfo'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
 }
-export const coninfoUsingGET_RAW_URL = function() {
-  return '/finance/contractbond/receiverecord/coninfo'
+export const coninfoUsingGET_RAW_URL = function () {
+    return '/finance/contractbond/receiverecord/coninfo'
 }
-export const coninfoUsingGET_TYPE = function() {
-  return 'get'
+export const coninfoUsingGET_TYPE = function () {
+    return 'get'
 }
-export const coninfoUsingGETURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/finance/contractbond/receiverecord/coninfo'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+export const coninfoUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/receiverecord/coninfo'
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
  * 保证金/诚意金收款提交
@@ -3430,6 +3754,52 @@ export const deleteUsingDELETE_1URL = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/contractbond/receiverecord/{receiptNumber}'
     path = path.replace('{receiptNumber}', `${parameters['receiptNumber']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 合同保证金页面商户下拉
+ * request: shopinfoUsingGET
+ * url: shopinfoUsingGETURL
+ * method: shopinfoUsingGET_TYPE
+ * raw_url: shopinfoUsingGET_RAW_URL
+ * @param merchantId - 商户id
+ */
+export const shopinfoUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/shopinfo'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const shopinfoUsingGET_RAW_URL = function () {
+    return '/finance/contractbond/shopinfo'
+}
+export const shopinfoUsingGET_TYPE = function () {
+    return 'get'
+}
+export const shopinfoUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/shopinfo'
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -4529,14 +4899,22 @@ export const getByIdUsingGET_1URL = function (parameters = {}) {
  * url: listUsingGET_12URL
  * method: listUsingGET_12_TYPE
  * raw_url: listUsingGET_12_RAW_URL
+ * @param token - token
+ * @param statuses - 状态列表
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  * @param costNo - 费用单号
  * @param merchantId - 商户主键
  * @param contractId - 合同主键
+ * @param contractCode - 合同编号
  * @param settleGroupId - 结算组别主键
  * @param status - 状态
- * @param  -
+ * @param adjustType - 费用调整类型
+ * @param tradeDateFrom - 开始时间
+ * @param tradeDateTo - 结束时间
+ * @param  - 
  */
 export const listUsingGET_12 = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -4545,6 +4923,15 @@ export const listUsingGET_12 = function (parameters = {}) {
     let body
     let queryParameters = {}
     let form = {}
+    if (parameters['statuses'] !== undefined) {
+        queryParameters['statuses'] = parameters['statuses']
+    }
+    if (parameters['marketId'] !== undefined) {
+        queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+        queryParameters['blocId'] = parameters['blocId']
+    }
     if (parameters['pageNum'] !== undefined) {
         queryParameters['pageNum'] = parameters['pageNum']
     }
@@ -4560,11 +4947,23 @@ export const listUsingGET_12 = function (parameters = {}) {
     if (parameters['contractId'] !== undefined) {
         queryParameters['contractId'] = parameters['contractId']
     }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
     if (parameters['settleGroupId'] !== undefined) {
         queryParameters['settleGroupId'] = parameters['settleGroupId']
     }
     if (parameters['status'] !== undefined) {
         queryParameters['status'] = parameters['status']
+    }
+    if (parameters['adjustType'] !== undefined) {
+        queryParameters['adjustType'] = parameters['adjustType']
+    }
+    if (parameters['tradeDateFrom'] !== undefined) {
+        queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+    }
+    if (parameters['tradeDateTo'] !== undefined) {
+        queryParameters['tradeDateTo'] = parameters['tradeDateTo']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
@@ -4581,37 +4980,59 @@ export const listUsingGET_12_TYPE = function () {
 }
 export const listUsingGET_12URL = function (parameters = {}) {
     let queryParameters = {}
-    const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/finance/irregular/cost/list'
-    if (parameters['pageNum'] !== undefined) {
-        queryParameters['pageNum'] = parameters['pageNum']
-    }
-    if (parameters['pageSize'] !== undefined) {
-        queryParameters['pageSize'] = parameters['pageSize']
-    }
-    if (parameters['costNo'] !== undefined) {
-        queryParameters['costNo'] = parameters['costNo']
-    }
-    if (parameters['merchantId'] !== undefined) {
-        queryParameters['merchantId'] = parameters['merchantId']
-    }
-    if (parameters['contractId'] !== undefined) {
-        queryParameters['contractId'] = parameters['contractId']
-    }
-    if (parameters['settleGroupId'] !== undefined) {
-        queryParameters['settleGroupId'] = parameters['settleGroupId']
-    }
-    if (parameters['status'] !== undefined) {
-        queryParameters['status'] = parameters['status']
-    }
-    if (parameters.$queryParameters) {
-        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
-            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-        })
-    }
-    let keys = Object.keys(queryParameters)
-    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/finance/irregular/cost/list'
+  if (parameters['statuses'] !== undefined) {
+    queryParameters['statuses'] = parameters['statuses']
+  }
+  if (parameters['marketId'] !== undefined) {
+    queryParameters['marketId'] = parameters['marketId']
+  }
+  if (parameters['blocId'] !== undefined) {
+    queryParameters['blocId'] = parameters['blocId']
+  }
+  if (parameters['pageNum'] !== undefined) {
+    queryParameters['pageNum'] = parameters['pageNum']
+  }
+  if (parameters['pageSize'] !== undefined) {
+    queryParameters['pageSize'] = parameters['pageSize']
+  }
+  if (parameters['costNo'] !== undefined) {
+    queryParameters['costNo'] = parameters['costNo']
+  }
+  if (parameters['merchantId'] !== undefined) {
+    queryParameters['merchantId'] = parameters['merchantId']
+  }
+  if (parameters['contractId'] !== undefined) {
+    queryParameters['contractId'] = parameters['contractId']
+  }
+  if (parameters['contractCode'] !== undefined) {
+    queryParameters['contractCode'] = parameters['contractCode']
+  }
+  if (parameters['settleGroupId'] !== undefined) {
+    queryParameters['settleGroupId'] = parameters['settleGroupId']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['status'] = parameters['status']
+  }
+  if (parameters['adjustType'] !== undefined) {
+    queryParameters['adjustType'] = parameters['adjustType']
+  }
+  if (parameters['tradeDateFrom'] !== undefined) {
+    queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+  }
+  if (parameters['tradeDateTo'] !== undefined) {
+    queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
+
 /**
  * 商户预付款列表
  * request: listUsingGET_8
@@ -6141,15 +6562,16 @@ export const confirmUsingPOST_5URL = function (parameters = {}) {
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
+
 /**
  * 删除
- * request: delUsingDELETE_7
- * url: delUsingDELETE_7URL
- * method: delUsingDELETE_7_TYPE
- * raw_url: delUsingDELETE_7_RAW_URL
+ * request: delUsingPOST_3
+ * url: delUsingPOST_3URL
+ * method: delUsingPOST_3_TYPE
+ * raw_url: delUsingPOST_3_RAW_URL
  * @param id - 主键数组
  */
-export const delUsingDELETE_7 = function (parameters = {}) {
+export const delUsingPOST_3 = function (parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
     let path = '/finance/reduce/cost/del'
@@ -6157,7 +6579,7 @@ export const delUsingDELETE_7 = function (parameters = {}) {
     let queryParameters = {}
     let form = {}
     if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
+        body = parameters['id']
     }
     if (parameters['id'] === undefined) {
         return Promise.reject(new Error('Missing required  parameter: id'))
@@ -6167,21 +6589,18 @@ export const delUsingDELETE_7 = function (parameters = {}) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
         });
     }
-    return request('delete', domain + path, body, queryParameters, form, config)
+    return request('post', domain + path, body, queryParameters, form, config)
 }
-export const delUsingDELETE_7_RAW_URL = function () {
+export const delUsingPOST_3_RAW_URL = function () {
     return '/finance/reduce/cost/del'
 }
-export const delUsingDELETE_7_TYPE = function () {
-    return 'delete'
+export const delUsingPOST_3_TYPE = function () {
+    return 'post'
 }
-export const delUsingDELETE_7URL = function (parameters = {}) {
+export const delUsingPOST_3URL = function (parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     let path = '/finance/reduce/cost/del'
-    if (parameters['id'] !== undefined) {
-        queryParameters['id'] = parameters['id']
-    }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
             queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -6520,6 +6939,9 @@ export const listUsingGET_16 = function (parameters = {}) {
     if (parameters['contractId'] !== undefined) {
         queryParameters['contractId'] = parameters['contractId']
     }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
     if (parameters['settleGroupId'] !== undefined) {
         queryParameters['settleGroupId'] = parameters['settleGroupId']
     }
@@ -6557,6 +6979,9 @@ export const listUsingGET_16URL = function (parameters = {}) {
     }
     if (parameters['contractId'] !== undefined) {
         queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
     }
     if (parameters['settleGroupId'] !== undefined) {
         queryParameters['settleGroupId'] = parameters['settleGroupId']
@@ -7025,4 +7450,698 @@ export const listAllUsingGET1URL = function (parameters = {}) {
     }
     let keys = Object.keys(queryParameters)
     return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+
+/**
+ * 结算单调整管理树
+ * request: latestSalesUsingGET
+ * url: latestSalesUsingGETURL
+ * method: latestSalesUsingGET_TYPE
+ * raw_url: latestSalesUsingGET_RAW_URL
+ * @param billId - ID主键
+ */
+export const latestSalesUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/bill/adjust/latest/sales/{billId}'
+    let body
+    let queryParameters = {}
+    let form = {}
+    path = path.replace('{billId}', `${parameters['billId']}`)
+    if (parameters['billId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: billId'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const latestSalesUsingGET_RAW_URL = function () {
+    return '/finance/bill/adjust/latest/sales/{billId}'
+}
+export const latestSalesUsingGET_TYPE = function () {
+    return 'get'
+}
+export const latestSalesUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/bill/adjust/latest/sales/{billId}'
+    path = path.replace('{billId}', `${parameters['billId']}`)
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+
+/**
+ * 根据合同的物业性质和结算组别的ID查询对应的费用项目
+ * request: getIrregularCostItemUsingGET
+ * url: getIrregularCostItemUsingGETURL
+ * method: getIrregularCostItemUsingGET_TYPE
+ * raw_url: getIrregularCostItemUsingGET_RAW_URL
+ * @param contractId - contractId
+ * @param settleGroupId - settleGroupId
+ */
+export const getIrregularCostItemUsingGET = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/cost/item/costItem'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: contractId'))
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['settleGroupId'] === undefined) {
+        return Promise.reject(new Error('Missing required  parameter: settleGroupId'))
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getIrregularCostItemUsingGET_RAW_URL = function () {
+    return '/finance/cost/item/costItem'
+}
+export const getIrregularCostItemUsingGET_TYPE = function () {
+    return 'get'
+}
+export const getIrregularCostItemUsingGETURL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/cost/item/costItem'
+    if (parameters['contractId'] !== undefined) {
+        queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+        queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+
+/**
+ * 保证金/诚意金收取审核列表
+ * request: confirmslistUsingGET_9
+ * url: confirmslistUsingGET_9URL
+ * method: confirmslistUsingGET_9_TYPE
+ * raw_url: confirmslistUsingGET_9_RAW_URL
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param shopCode - 店铺编号
+ * @param shopName - 店铺名称
+ * @param merchantId - 商鋪id
+ * @param shopId - 店铺id
+ * @param contractCode - 合同编号
+ * @param status - 状态：0新增 1已确认 2取消
+ * @param  - 
+ */
+export const confirmslistUsingGET_9 = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/contractbond/receiverecord/confirmslist'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['shopCode'] !== undefined) {
+        queryParameters['shopCode'] = parameters['shopCode']
+    }
+    if (parameters['shopName'] !== undefined) {
+        queryParameters['shopName'] = parameters['shopName']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['shopId'] !== undefined) {
+        queryParameters['shopId'] = parameters['shopId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const confirmslistUsingGET_9_RAW_URL = function () {
+    return '/finance/contractbond/receiverecord/confirmslist'
+}
+export const confirmslistUsingGET_9_TYPE = function () {
+    return 'get'
+}
+export const confirmslistUsingGET_9URL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/contractbond/receiverecord/confirmslist'
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['shopCode'] !== undefined) {
+        queryParameters['shopCode'] = parameters['shopCode']
+    }
+    if (parameters['shopName'] !== undefined) {
+        queryParameters['shopName'] = parameters['shopName']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['shopId'] !== undefined) {
+        queryParameters['shopId'] = parameters['shopId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+
+/**
+ * 预付款收取审核列表
+ * request: confirmslistUsingGET_2
+ * url: confirmslistUsingGET_2URL
+ * method: confirmslistUsingGET_2_TYPE
+ * raw_url: confirmslistUsingGET_2_RAW_URL
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param receiptNumber - 收款单号
+ * @param merchantId - 商户id
+ * @param contractCode - 合同编号
+ * @param status - 状态：0新增 1已确认 2取消
+ */
+export const confirmslistUsingGET_2 = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/prepayment/receiverecord/confirmslist'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['receiptNumber'] !== undefined) {
+        queryParameters['receiptNumber'] = parameters['receiptNumber']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const confirmslistUsingGET_2_RAW_URL = function () {
+    return '/finance/prepayment/receiverecord/confirmslist'
+}
+export const confirmslistUsingGET_2_TYPE = function () {
+    return 'get'
+}
+export const confirmslistUsingGET_2URL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/prepayment/receiverecord/confirmslist'
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['receiptNumber'] !== undefined) {
+        queryParameters['receiptNumber'] = parameters['receiptNumber']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+
+/**
+ * 预付款处理确认列表
+ * request: confirmslistUsingGET_1
+ * url: confirmslistUsingGET_1URL
+ * method: confirmslistUsingGET_1_TYPE
+ * raw_url: confirmslistUsingGET_1_RAW_URL
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param dealNumber - 处理单号
+ * @param merchantId - 商户id
+ * @param shopId - 店铺id
+ * @param contractCode - 合同编号
+ * @param status - 状态：0新增 1已确认 2取消
+ */
+export const confirmslistUsingGET_1 = function (parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/prepayment/operaterecord/confirmslist'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['dealNumber'] !== undefined) {
+        queryParameters['dealNumber'] = parameters['dealNumber']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['shopId'] !== undefined) {
+        queryParameters['shopId'] = parameters['shopId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+}
+export const confirmslistUsingGET_1_RAW_URL = function () {
+    return '/finance/prepayment/operaterecord/confirmslist'
+}
+export const confirmslistUsingGET_1_TYPE = function () {
+    return 'get'
+}
+export const confirmslistUsingGET_1URL = function (parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/prepayment/operaterecord/confirmslist'
+    if (parameters['pageNum'] !== undefined) {
+        queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+        queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['dealNumber'] !== undefined) {
+        queryParameters['dealNumber'] = parameters['dealNumber']
+    }
+    if (parameters['merchantId'] !== undefined) {
+        queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['shopId'] !== undefined) {
+        queryParameters['shopId'] = parameters['shopId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+        queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['status'] !== undefined) {
+        queryParameters['status'] = parameters['status']
+    }
+    if (parameters.$queryParameters) {
+        Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+            queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+        })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 查询新增和取消状态的费用列表
+ * request: getlistUsingGET
+ * url: getlistUsingGETURL
+ * method: getlistUsingGET_TYPE
+ * raw_url: getlistUsingGET_RAW_URL
+ * @param token - token
+ * @param statuses - 状态列表
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param costNo - 费用单号
+ * @param merchantId - 商户主键
+ * @param contractId - 合同主键
+ * @param contractCode - 合同编号
+ * @param settleGroupId - 结算组别主键
+ * @param status - 状态
+ * @param adjustType - 费用调整类型
+ * @param tradeDateFrom - 开始时间
+ * @param tradeDateTo - 结束时间
+ * @param  - 
+ */
+export const getlistUsingGET = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/adjust/cost/getList'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['statuses'] !== undefined) {
+      queryParameters['statuses'] = parameters['statuses']
+    }
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['costNo'] !== undefined) {
+      queryParameters['costNo'] = parameters['costNo']
+    }
+    if (parameters['merchantId'] !== undefined) {
+      queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['status'] !== undefined) {
+      queryParameters['status'] = parameters['status']
+    }
+    if (parameters['adjustType'] !== undefined) {
+      queryParameters['adjustType'] = parameters['adjustType']
+    }
+    if (parameters['tradeDateFrom'] !== undefined) {
+      queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+    }
+    if (parameters['tradeDateTo'] !== undefined) {
+      queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+    }
+    if (parameters.$queryParameters) {
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
+    }
+    let keys = Object.keys(parameters)
+    return request('get', domain + path, body, parameters, form, config)
+  }
+  export const getlistUsingGET_RAW_URL = function() {
+    return '/finance/adjust/cost/getList'
+  }
+  export const getlistUsingGET_TYPE = function() {
+    return 'get'
+  }
+  export const getlistUsingGETURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/adjust/cost/getList'
+    if (parameters['statuses'] !== undefined) {
+      queryParameters['statuses'] = parameters['statuses']
+    }
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['costNo'] !== undefined) {
+      queryParameters['costNo'] = parameters['costNo']
+    }
+    if (parameters['merchantId'] !== undefined) {
+      queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['status'] !== undefined) {
+      queryParameters['status'] = parameters['status']
+    }
+    if (parameters['adjustType'] !== undefined) {
+      queryParameters['adjustType'] = parameters['adjustType']
+    }
+    if (parameters['tradeDateFrom'] !== undefined) {
+      queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+    }
+    if (parameters['tradeDateTo'] !== undefined) {
+      queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+    }
+    if (parameters.$queryParameters) {
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(parameters[key])).join('&')) : '')
+  }
+
+/**
+ * 列表获取总计金额数
+ * request: getToteUsingGET
+ * url: getToteUsingGETURL
+ * method: getToteUsingGET_TYPE
+ * raw_url: getToteUsingGET_RAW_URL
+ * @param token - token
+ * @param statuses - 状态列表
+ * @param marketId - 购物中心id
+ * @param blocId - 集团id
+ * @param pageNum - 页码
+ * @param pageSize - 每页显示数量
+ * @param costNo - 费用单号
+ * @param merchantId - 商户主键
+ * @param contractId - 合同主键
+ * @param contractCode - 合同编号
+ * @param settleGroupId - 结算组别主键
+ * @param status - 状态
+ * @param adjustType - 费用调整类型
+ * @param tradeDateFrom - 开始时间
+ * @param tradeDateTo - 结束时间
+ * @param  - 
+ */
+export const getToteUsingGET = function(parameters = {}) {
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    const config = parameters.$config
+    let path = '/finance/irregular/cost/getTote'
+    let body
+    let queryParameters = {}
+    let form = {}
+    if (parameters['statuses'] !== undefined) {
+      queryParameters['statuses'] = parameters['statuses']
+    }
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['costNo'] !== undefined) {
+      queryParameters['costNo'] = parameters['costNo']
+    }
+    if (parameters['merchantId'] !== undefined) {
+      queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['status'] !== undefined) {
+      queryParameters['status'] = parameters['status']
+    }
+    if (parameters['adjustType'] !== undefined) {
+      queryParameters['adjustType'] = parameters['adjustType']
+    }
+    if (parameters['tradeDateFrom'] !== undefined) {
+      queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+    }
+    if (parameters['tradeDateTo'] !== undefined) {
+      queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+    }
+    if (parameters.$queryParameters) {
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      });
+    }
+    return request('get', domain + path, body, queryParameters, form, config)
+  }
+  export const getToteUsingGET_RAW_URL = function() {
+    return '/finance/irregular/cost/getTote'
+  }
+  export const getToteUsingGET_TYPE = function() {
+    return 'get'
+  }
+  export const getToteUsingGETURL = function(parameters = {}) {
+    let queryParameters = {}
+    const domain = parameters.$domain ? parameters.$domain : getDomain()
+    let path = '/finance/irregular/cost/getTote'
+    if (parameters['statuses'] !== undefined) {
+      queryParameters['statuses'] = parameters['statuses']
+    }
+    if (parameters['marketId'] !== undefined) {
+      queryParameters['marketId'] = parameters['marketId']
+    }
+    if (parameters['blocId'] !== undefined) {
+      queryParameters['blocId'] = parameters['blocId']
+    }
+    if (parameters['pageNum'] !== undefined) {
+      queryParameters['pageNum'] = parameters['pageNum']
+    }
+    if (parameters['pageSize'] !== undefined) {
+      queryParameters['pageSize'] = parameters['pageSize']
+    }
+    if (parameters['costNo'] !== undefined) {
+      queryParameters['costNo'] = parameters['costNo']
+    }
+    if (parameters['merchantId'] !== undefined) {
+      queryParameters['merchantId'] = parameters['merchantId']
+    }
+    if (parameters['contractId'] !== undefined) {
+      queryParameters['contractId'] = parameters['contractId']
+    }
+    if (parameters['contractCode'] !== undefined) {
+      queryParameters['contractCode'] = parameters['contractCode']
+    }
+    if (parameters['settleGroupId'] !== undefined) {
+      queryParameters['settleGroupId'] = parameters['settleGroupId']
+    }
+    if (parameters['status'] !== undefined) {
+      queryParameters['status'] = parameters['status']
+    }
+    if (parameters['adjustType'] !== undefined) {
+      queryParameters['adjustType'] = parameters['adjustType']
+    }
+    if (parameters['tradeDateFrom'] !== undefined) {
+      queryParameters['tradeDateFrom'] = parameters['tradeDateFrom']
+    }
+    if (parameters['tradeDateTo'] !== undefined) {
+      queryParameters['tradeDateTo'] = parameters['tradeDateTo']
+    }
+    if (parameters.$queryParameters) {
+      Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+        queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+      })
+    }
+    let keys = Object.keys(queryParameters)
+    return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+  }
+/**
+ * 生成提交请求用的token
+ * request: produceTokenUsingGET
+ * url: produceTokenUsingGETURL
+ * method: produceTokenUsingGET_TYPE
+ * raw_url: produceTokenUsingGET_RAW_URL
+ * @param token - token
+ */
+export const produceTokenUsingGET = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/finance/common/produce/token'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const produceTokenUsingGET_RAW_URL = function() {
+  return '/finance/common/produce/token'
+}
+export const produceTokenUsingGET_TYPE = function() {
+  return 'get'
+}
+export const produceTokenUsingGETURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/finance/common/produce/token'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }

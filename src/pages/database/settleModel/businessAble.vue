@@ -1,29 +1,27 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="商户结算（确认收入）">
-            <el-button type="primary" icon="el-icon-plus" slot="append" @click="exportHandler()">导出</el-button>
+            <el-button type="primary" slot="append" :disabled="showBtn" @click="exportHandler()">导出</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchinput">
                         <span class="inputname inputnameauto" style="width: 100px;">日期：</span>
                         <el-date-picker
-                            style="padding-left:30px;"
                             v-model="startMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 MM 月"
                             value-format="yyyy-MM"
-                            @change="pageHandler(1)">
+                            :picker-options="startPickerOptions"
+                            @change="pageHandler(1,pageSize)">
                         </el-date-picker>
                         <span style="line-height: 30px;">~</span>
                         <el-date-picker
-                            style="padding-left:30px;"
                             v-model="endMonth"
                             type="month"
                             placeholder="选择月"
-                            format="yyyy 年 MM 月"
                             value-format="yyyy-MM"
-                            @change="pageHandler(1)">
+                            :picker-options="endPickerOptions"
+                            @change="pageHandler(1,pageSize)">
                         </el-date-picker>
                     </div>
                 </el-col>
@@ -45,7 +43,7 @@
                 <el-col :span="9">
                     <div class="searchselect">
                         <span class="inputname inputnameauto">商户：</span>
-                        <el-select v-model="merchantId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-select v-model="merchantId" placeholder="请选择" filterable clearable class="dialogselect" @change="pageHandler(1,pageSize)">
                             <el-option label="全部" value=""></el-option>
                             <el-option
                                     v-for="item in merchantOptions"
@@ -59,7 +57,7 @@
                 <el-col :span="9" :offset="2">
                     <div class="searchselect">
                         <span class="inputname inputnameauto">合同：</span>
-                        <el-select v-model="contractCode" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                        <el-select v-model="contractCode" placeholder="请选择" filterable clearable class="dialogselect" @change="pageHandler(1,pageSize)">
                             <el-option label="全部" value=""></el-option>
                             <el-option
                                     v-for="item in contractOptions"
@@ -76,7 +74,7 @@
             <div class="mainbox">
                 <data-table :tableData="datalist" :colConfigs="columnData"></data-table>
             </div>
-            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
+            <rt-page ref="page" v-show="datalist.length>0" :cur="pageNum" :total="total" :pageSize="20" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
     </div>
 </template>
@@ -85,10 +83,12 @@
     import ConHead from '../../../components/ConHead'
     import RtPage from '../../../components/Pagination'
     import DataTable from '../../../components/DataTable'
+    import { reExport } from '@/utils/'
     export default {
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 startMonth: '',
                 endMonth: '',
@@ -100,6 +100,7 @@
                 status: '',
                 pageNum: Number(this.$route.params.pageId)||1,
                 total: 0,
+                showBtn: true,
                 selects:{
                     status:[]
                 },
@@ -111,9 +112,10 @@
                     { prop: 'merchantName', label: '商户名' },
                     { prop: 'area', label: '面积(㎡)' },
                     { prop: 'brandName', label: '品牌' },
-                    { prop: 'propertyType', label: '物业性质' },
+                    { prop: 'unitCode', label: '首单元' },
+                    { prop: 'propertyTypeName', label: '物业性质' },
                     { prop: 'cycleDate', label: '周期月份' },
-                    { prop: 'totalAmountReceivable', label: '应收合计'}
+                    // { prop: 'totalAmountReceivable', label: '应收合计'}
                 ],
                 afterData: [
                     // {prop: 'posRent', label: 'POS租金'},
@@ -126,7 +128,28 @@
                     // {prop: 'posRentDiffCost', label: 'POS租金补差'},
                     // {prop: 'generalizeDiffCost', label: '推广费用补差'},
                     // {prop: 'totalAmountReceivable', label: '应收合计'},
-                ]
+                ],
+                lastData: [
+                    { prop: 'totalAmountReceivable', label: '应收合计', format: 'fmoney'}
+                ],
+                startPickerOptions: {
+                    disabledDate: (time) => {
+                        if (this.endMonth) {
+                            let oneYear = 11 * 30 * 24 * 3600 * 1000;
+                            let oneYearNum = (new Date(this.endMonth)).getTime();
+                            return time.getTime() < oneYearNum - oneYear || time.getTime() > oneYearNum
+                        }
+                    }
+                },
+                endPickerOptions: {
+                    disabledDate: (time) => {
+                        if (this.startMonth) {
+                            let oneYear = 12 * 30 * 24 * 3600 * 1000;
+                            let oneYearNum = (new Date(this.startMonth)).getTime();
+                            return time.getTime() > oneYearNum + oneYear || time.getTime() < oneYearNum
+                        }
+                    }
+                }
             }
         },
         mounted(){
@@ -148,43 +171,86 @@
             this.getContractList();
         },
         methods:{
+            getSummaries(param) {
+                this.$api.reportapi.listSumUsingGET(param).then(res=>{
+                    if (res.data.status === 200) {
+                        let dataTotal = res.data.data;
+                        let data = {
+                            contractCode: '合计',
+                            salesAmount: dataTotal.salesAmount,
+                            totalAmountReceivable: dataTotal.totalAmount
+                        };
+                        dataTotal.itemList.forEach(item => {
+                            data[item.costItemName] = item.publicAmount;
+                        });
+                        if (JSON.stringify(this.datalist[this.datalist.length -1]).indexOf(data.contractCode) < 0) {
+                            this.datalist.push(data);
+                        }
+                        
+                    }
+                });
+            },
             pageHandler(pageNum, pageSize){
-                let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
-                    merchantId: this.merchantId,
-                    contractCode: this.contractCode,
-                    propertyType: this.status,
-                    cycleStartMonth: this.startMonth,
-                    cycleEndMonth: this.endMonth,
-                }
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
                 if(this.startMonth && this.endMonth){
+                    this.loading = true;
+                    let params = {
+                        pageNum: this.pageNum,
+                        pageSize: this.pageSize,
+                        merchantId: this.merchantId,
+                        contractCode: this.contractCode,
+                        propertyType: this.status,
+                        cycleStartMonth: this.startMonth,
+                        cycleEndMonth: this.endMonth,
+                    }
                     this.$api.reportapi.listUsingGET_1(params).then(res=>{
                         if(res.data.status === 200){
                             this.total = Number(res.data.data.total);
                             this.afterData = [];
-                            this.columnData = this.columnData.slice(0, 10);
+                            this.columnData = this.columnData.slice(0, 9);
                             if (res.data.data.list.length > 0) {
                                 res.data.data.list[0].someList.forEach(item => {
                                     this.afterData.push({
                                         prop: item.costItemName,
                                         label: item.costItemName,
-                                        value: item.publicAmount
+                                        format: 'fmoney'
                                     });
                                 });
+
                                 res.data.data.list.forEach(item => {
-                                    this.afterData.forEach(item1 => {
-                                        item[item1.prop] = item1.value
-                                    });
+                                    format(item);
                                 });
+                                function format(data) {
+                                    data.someList.forEach(item => {
+                                        data[item.costItemName] = item.publicAmount;
+                                    })
+                                }
                             }
                             this.datalist = res.data.data.list;
+                            if(this.datalist.length>0){
+                                this.showBtn = false;
+                            }
                             this.columnData = this.columnData.concat(this.afterData);
-                            console.log(1,this.afterData)
+                            this.columnData = this.columnData.concat(this.lastData);
+                            if (res.data.data.isLastPage) {
+                                this.getSummaries(params);
+                            }
+                            this.loading = false;                           
+                        }else{
+                            this.loading = false;
+                            this.$message.error(res.data.msg);
                         }
                     }).catch(res=>{
-                        this.$message.error(res.data.msg);
+                        this.loading = false;
+                        //this.$message.error(res.data.msg);
                     })
+                }else{
+                    if (!this.startMonth && !this.endMonth) {
+                        this.$message.info('请先选择开始时间和结束时间');
+                    }
+                    this.datalist = [];
+                    this.total = 0;
                 }
             },
             statusHandler(status){
@@ -193,7 +259,7 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.status = status.value;
-                this.pageHandler(1);
+                this.pageHandler(1,this.pageSize);
             },
             getMerchantList(){
                 this.$api.reportapi.merchantlistUsingGET().then(res=>{//商户结算（已收）里的商户接口
@@ -201,14 +267,15 @@
                 })
             },
             getContractList(){
-                this.$api.reportapi.selectUsingGET().then(res=>{//合同
+                this.$api.reportapi.selectAllUsingGET().then(res=>{//合同
                     this.contractOptions = res.data.data;
                 })
             },
             exportHandler(){
+                reExport(this, 'showBtn', true);
                 let params = {
-                    pageNum: this.pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    // pageNum: this.pageNum,
+                    // pageSize: this.$refs.page.pageSize,
                     merchantId: this.merchantId,
                     contractCode: this.contractCode,
                     propertyType: this.status,
@@ -216,7 +283,7 @@
                     cycleEndMonth: this.endMonth
                 }
                 if(this.datalist.length>0){
-                    this.$api.reportapi.exportBusinessSettlementConfirmUsingGET({params}).then(res=>{
+                    this.$api.reportapi.exportBusinessSettlementConfirmUsingGET(params).then(res=>{
                         if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                         }

@@ -1,21 +1,21 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/unit">单元管理</router-link>
-                <router-link to="/inner/unitaudit">单元审核</router-link>
+                <router-link to="/inner/unit" v-if="unit">单元管理</router-link>
+                <router-link to="/inner/unitaudit" v-if="unitaudit">单元审核</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
-                            <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                            <el-select v-model="floorValue" placeholder="请选择" filterable clearable class="dialogselect" @change="floorSelect()">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in dataFloorList"
@@ -66,9 +66,11 @@
         name: "unit",
         data(){
             return{
+                loading: false,
                 dataList:[],
                 searchText:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 columnData:[
                     { type: 'selection', width:'50'},
@@ -78,7 +80,8 @@
                     { prop: 'area', label: '建筑面积'},
                     { prop: 'useArea', label: '使用面积' },
                     { prop: 'statusName', label: '状态' },
-                    { prop: 'remark', label: '备注'}
+                    { prop: 'remark', label: '备注'},
+                    { prop: 'updateUser', label: '操作人'}
                 ],
                 dataFloorList:[],
                 floorValue:'',
@@ -97,16 +100,25 @@
                 }],
                 statusId:'',
                 statesId:[0,2],
-                multipleSelection:[]
+                multipleSelection:[],
+                buildId:''
             }
         },
         mounted(){
-            this.getFloorList();
+            this.getBuildList();
+        },
+        computed:{
+            unit(){
+                return this.$root.menus.indexOf('/inner/unit') >= 0;
+            },
+            unitaudit(){
+                return this.$root.menus.indexOf('/inner/unitaudit') >= 0;
+            }
         },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
@@ -123,12 +135,15 @@
                     this.statesId = '';
                     this.statusId = status.id;
                 }
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.listUsingGET_15({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     code:this.searchText,
                     buildId:'',
                     floorId:this.floorValue,
@@ -136,19 +151,39 @@
                     status:this.statusId,
                     states:this.statesId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
+                })
+            },
+            async getBuildList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
+                    res.data.data.forEach(item => {
+                        if (item.buildName == '商场') {
+                            this.buildId = item.id;
+                        }
+                    })
+                    this.getFloorList();
                 })
             },
             async getFloorList(){
                 await this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId:this.buildId
                 }).then(res=>{
                     this.dataFloorList = res.data.data;
                 })
             },
             floorSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -156,13 +191,12 @@
                 });
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.updateStatusUsingPOST({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
                         this.$message.error(res.data.msg);
                     }

@@ -6,6 +6,7 @@
 
 <script>
 import erpDetails from "@/components/Details";
+import { fmoney } from "@/utils/filter";
 export default {
   components: {
     erpDetails
@@ -52,7 +53,7 @@ export default {
           },
           {
             label: "录入日期",
-            name: "updateDate",
+            name: "createDate",
             left_span: 2,
             right_span: 18,
             type: "text"
@@ -60,14 +61,14 @@ export default {
           },
           {
             label: "状态",
-            name: "status",
+            name: "statusText",
             left_span: 2,
             right_span: 18,
-            type: "status",
+            type: "text",
             option: {
               10: "新增",
               20: "已确认",
-              30: "已取消"
+              30: "取消"
             }
           },
           {
@@ -99,7 +100,12 @@ export default {
               },
               {
                 label: "费用日期",
-                name: "expenseDate",
+                name: "cycleDate",
+                type: "text"
+              },
+              {
+                label: "生成结算单",
+                name: "generatedValue",
                 type: "text"
               },
               {
@@ -125,6 +131,11 @@ export default {
         this.$api.financeapi.detailUsingGET_6({ id }).then(returnObj => {
             if (returnObj.data.status === 200) {
                 let data = returnObj.data.data;
+                data.itemDetailVoList.forEach(item => {
+                  if (item.reduceType == 30) item.amount = item.amount + '%';
+                  if (item.reduceType == 10) item.amount = fmoney(item.amount);
+                  if (item.reduceType == 20) item.amount = '';
+                });
                 data.list = data.itemDetailVoList;
                 this.details = data;
             }

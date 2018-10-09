@@ -1,38 +1,29 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
-            <div slot="appendtab" class="tabmenu" v-if="this.$route.params.prototypeId==0">
-                <router-link :to="'/inner/shops/'+this.$route.params.prototypeId">合同管理</router-link>
-                <router-link :to="'/inner/shopsaudit/'+this.$route.params.prototypeId">合同确认</router-link>
-            </div>
-            <div slot="appendtab" class="tabmenu" v-if="this.$route.params.prototypeId==2">
-                <router-link :to="'/inner/field/'+this.$route.params.prototypeId">合同管理</router-link>
-                <router-link :to="'/inner/fidleaudit/'+this.$route.params.prototypeId">合同确认</router-link>
-            </div>
-            <div slot="appendtab" class="tabmenu" v-if="this.$route.params.prototypeId==3">
-                <router-link :to="'/inner/adposition/'+this.$route.params.prototypeId">合同管理</router-link>
-                <router-link :to="'/inner/adaudit/'+this.$route.params.prototypeId">合同确认</router-link>
-            </div>
-            <div slot="appendtab" class="tabmenu" v-if="this.$route.params.prototypeId==1">
-                <router-link :to="'/inner/coffice/'+this.$route.params.prototypeId">合同管理</router-link>
-                <router-link :to="'/inner/cofficeaudit/'+this.$route.params.prototypeId">合同确认</router-link>
+            <div slot="appendtab" class="tabmenu">
+                <router-link :to="routerUrl+this.$route.params.prototypeId" v-if="shops">合同管理</router-link>
+                <router-link :to="routerListUrl+this.$route.params.prototypeId" v-if="shopslist">合同管理</router-link>
+                <router-link :to="routerAuditUrl+this.$route.params.prototypeId" v-if="shopsaudit">合同确认</router-link>
+                <router-link :to="routerChangeUrl+this.$route.params.prototypeId" v-if="shopschange">合同变更</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
-                            <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
+                            <el-select v-model="merchantValue" placeholder="请选择" filterable clearable class="dialogselect" @change="merchantSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in merchantOptions"
-                                        :key="item.value"
-                                        :label="item.text"
-                                        :value="item.value">
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -42,11 +33,12 @@
                     <el-col :span="9" v-if="this.$route.params.prototypeId == 0 || !this.$route.params.prototypeId">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">店铺</span>
-                            <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
+                            <el-select v-model="shopValue" placeholder="请选择" filterable clearable class="dialogselect" @change="shopSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in shopOptions"
                                         :key="item.id"
-                                        :label="item.shopName+'('+item.shopCode+')'"
+                                        :label="item.name"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
@@ -55,7 +47,7 @@
                     <el-col :span="9" :offset="this.$route.params.prototypeId >= 1 ? 0:6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">状态</span>
-                            <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
+                            <el-select v-model="statusValue" placeholder="请选择" filterable clearable class="dialogselect" @change="statusSelect()">
                                 <el-option
                                         v-for="item in statusOptions"
                                         :key="item.id"
@@ -69,7 +61,7 @@
             </div>
         </con-head>
         <con-head>
-            <div class="btn"><button @click="auditbtn">确定</button></div>
+            <div class="btn"><button :disabled="isDisabled" @click="auditbtn">确定</button></div>
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData" @listSelected="childData">
                 </data-table>
@@ -87,12 +79,15 @@
         name: "index",
         data(){
             return{
+                loading: false,
+                isDisabled:false,
                 dataList:[],
                 searchText:'',
                 shopValue:'',
                 merchantValue:'',
                 statusValue:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 shopOptions:[],
                 merchantOptions:[],
@@ -125,6 +120,134 @@
             }
         },
         computed: {
+            shops(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shops') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/coffice') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/field') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adposition') >= 0;
+                        break;
+                }
+            },
+            shopslist(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shopslist') >= 0 && this.$root.menus.indexOf('/inner/shops') < 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/cofficelist') >= 0 && this.$root.menus.indexOf('/inner/coffice') < 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/fidlelist') >= 0 && this.$root.menus.indexOf('/inner/field') < 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adlist') >= 0 && this.$root.menus.indexOf('/inner/adposition') < 0;
+                        break;
+                }
+            },
+            shopsaudit(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shopsaudit') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/cofficeaudit') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/fidleaudit') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adaudit') >= 0;
+                        break;
+                }
+            },
+            shopschange(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shopschange') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/cofficechange') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/fidlechange') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adchange') >= 0;
+                        break;
+                }
+            },
+            routerUrl(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return '/inner/shops/'
+                        break;
+                    case '1':
+                        return '/inner/coffice/'
+                        break;
+                    case '2':
+                        return '/inner/field/'
+                        break;
+                    case '3':
+                        return '/inner/adposition/'
+                        break;
+                }
+            },
+            routerListUrl(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return '/inner/shopslist/'
+                        break;
+                    case '1':
+                        return '/inner/cofficelist/'
+                        break;
+                    case '2':
+                        return '/inner/fidlelist/'
+                        break;
+                    case '3':
+                        return '/inner/adlist/'
+                        break;
+                }
+            },
+            routerAuditUrl(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return '/inner/shopsaudit/'
+                        break;
+                    case '1':
+                        return '/inner/cofficeaudit/'
+                        break;
+                    case '2':
+                        return '/inner/fidleaudit/'
+                        break;
+                    case '3':
+                        return '/inner/adaudit/'
+                        break;
+                }
+            },
+            routerChangeUrl(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return '/inner/shopschange/'
+                        break;
+                    case '1':
+                        return '/inner/cofficechange/'
+                        break;
+                    case '2':
+                        return '/inner/fidlechange/'
+                        break;
+                    case '3':
+                        return '/inner/adchange/'
+                        break;
+                }
+            },
             columnData() {
                 switch (this.$route.params.prototypeId) {
                     case '1':
@@ -133,7 +256,8 @@
                             { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -145,7 +269,8 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -157,7 +282,8 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -170,7 +296,8 @@
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'shopName', label: '店铺名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ]
@@ -184,37 +311,49 @@
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.getCheckListForPageUsingGET({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     propertyType:this.$route.params.prototypeId,
                     contractCode:this.searchText,
                     shopId:this.shopValue,
                     merchantId:this.merchantValue,
                     status:this.statusValue
                 }).then(res=>{
-                    res.data.data.list.forEach(item => {
-                        item.validDate = item.validStartDate + '~' + item.validEndDate;
-                    }); 
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        res.data.data.list.forEach(item => {
+                            item.validDate = item.validStartDate + '~' + item.validEndDate;
+                        }); 
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getShopList(merchantId){
-                await this.$api.rentapi.getByStatusUsingPOST({
-                    status:[3,4,5]
+                await this.$api.rentapi.doweListUsingGETShop({
+                    request:{statusList:[3,4,5]}
                 }).then(res=>{
                     this.shopOptions = res.data.data;
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.getMerchantOption({
+                await this.$api.rentapi.doweListUsingGET({
                     type:this.$route.params.prototypeId
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
@@ -222,28 +361,37 @@
             },
             merchantSelect(){
                 this.getShopList(this.merchantValue);
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             shopSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             statusSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data;
             },
             async auditbtn(){
+                this.isDisabled = true;
+                this.loading = true;
                 await this.$api.rentapi.confirmUsingPUT({
                     contractVoList:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
+                        this.loading = false;
+                        this.isDisabled = false;
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
+                        this.loading = false;
+                        this.isDisabled = false;
                         this.$message.error(res.data.msg);
                     }
-                })
+                }).catch(res=>{
+                    this.loading = false;
+                    this.isDisabled = false;
+                });
             }
         },
         components:{

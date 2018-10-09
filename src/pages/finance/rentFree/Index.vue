@@ -1,5 +1,9 @@
 <template>
-  <con-head title="免租管理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/rentFree" v-if="rentFree">免租管理</router-link>
+        <router-link to="/finance/rentFreeAudit" v-if="rentFreeAudit">免租审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="linkTo('rentFree/addRentFree')">录入</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
@@ -9,8 +13,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" @change="getIrregularCost()" class="dialogselect">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" @change="query.contractCode='', getIrregularCost(),getMerchantId()" filterable clearable class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -31,30 +35,24 @@
                 :key="status.id" 
                 :class="{active:status.isStatus}" 
                 @click="statusHandler(status)">{{status.label}}</a>
-                <!-- <el-radio-button v-for="status in selects.status" :key="status.id" :class="{active:status.isStatus}">{{status.label}}</el-radio-button> -->
             </div>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" placeholder="请选择"  @change="getIrregularCost()" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" placeholder="请选择" filterable clearable  @change="getIrregularCost()" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
-                :key="item.id"
-                :label="item.contractCode"
-                :value="item.id">
+                :key="item.contractCode"
+                :label="item.contractAndShop"
+                :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-        <el-row slot="preappend">
-            <div class="global-block">
-                <button class="global-btn" @click="batchConfirm">确 定</button>   
-            </div>
-        </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
 
@@ -67,6 +65,7 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 import qs from 'qs'
+import { queryMerchant, queryMerchantContract } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -78,11 +77,11 @@ export default {
   data() {
     return {
         header: [
-            {
-              label: "",
-              name: "checked",
-              type: "checkbox"
-            },
+            // {
+            //   label: "",
+            //   name: "checked",
+            //   type: "checkbox"
+            // },
             {
               label: "费用单号",
               type: "link",
@@ -111,14 +110,14 @@ export default {
               type: "text",
               name: "settleGroupName"
             },
-            {
-              label: "免租金额",
-              type: "text",
-              name: "sum"
-            },
+            // {
+            //   label: "免租金额",
+            //   type: "text",
+            //   name: "sum"
+            // },
             {
               label: "录入日期",
-              name: "expenseDate",
+              name: "createDate",
               type: "text",
               filter: "yyyy-MM-dd hh:mm:ss.S"
             },
@@ -144,7 +143,8 @@ export default {
                   class: "edit",
                   click: function(item) {
                     Object.assign(this.dialog.param, item);
-                    this.$router.push({path: '/finance/rentFree/addRentFree', query: { id: item.id, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
+                    this.$router.push({path: '/finance/rentFree/addRentFree', 
+                    query: { id: item.id, contractCode: item.contractCode, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
                   }.bind(this)
                 },
                 {
@@ -195,29 +195,31 @@ export default {
           isStatus:false,
           label: '取消',
           id: 30
+        }, {
+            isStatus:false,
+            label: '部分生成',
+            id: 40
+        }, {
+            isStatus:false,
+            label: '全部生成',
+            id: 50
         }]
       },
       query: {
         costNo: '',
         merchantId: '',
-        contractId: '',
+        contractCode: '',
         status: ''
       }
     };
   },
-  mounted() {
-    this.$api.rentapi.listUsingGET_12({
-        status:1
-    }).then(res=>{ //商户列表 status:4 已确定状态没加
-        this.selects.merchants = res.data.data;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
-    this.$api.rentapi.getListForPageUsingGET({status:30}).then(res=>{//合同列表
-        this.selects.contracts = res.data.data.list;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
+  computed:{
+      rentFree(){
+          return this.$root.menus.indexOf('/finance/rentFree') >= 0;
+      },
+      rentFreeAudit(){
+          return this.$root.menus.indexOf('/finance/rentFreeAudit') >= 0;
+      }
   },
   methods: {
     linkTo(path) {
@@ -232,10 +234,12 @@ export default {
         this.getIrregularCost();
     },
     getCurrentPage(pageNum) {
-      this.getIrregularCost({pageNum});
+      this.query.pageNum = pageNum;
+      this.getIrregularCost();
     },
     getpageSize(pageSize) {
-      this.getIrregularCost({pageSize});
+      this.query.pageSize = pageSize;
+      this.getIrregularCost();
     },
     filterIds() {
       const param = this.content.list.filter(item => {
@@ -255,10 +259,10 @@ export default {
       let params = {
         costNo: this.query.costNo,
         merchantId: this.query.merchantId,
-        contractId: this.query.contractId,
+        contractCode: this.query.contractCode,
         status: this.query.status,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_16(params).then(res => {
         const data = res.data;
@@ -298,13 +302,13 @@ export default {
       });
     },
     async deleteIrregularCost(id) {
-      this.$confirm("此操作将永久删除该费用调整, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该数据，是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$api.financeapi.delUsingDELETE_7({id}).then(returnObj => {
+          this.$api.financeapi.delUsingDELETE_7({id: [id]}).then(returnObj => {
             if(returnObj.data.status === 200) {
               this.getIrregularCost({}, () => {
                 $message("success", "删除成功!");
@@ -313,27 +317,44 @@ export default {
               $message("error", returnObj.data.msg);
             }       
           });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
     async cancelIrregularCost(param) {
-      let params = {
-        id: param.id
-      };
-      await this.$api.financeapi.cancelUsingPUT_5(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getIrregularCost({}, () => {
-            $message("success", "取消成功!");
-          });
-        } else {
-          $message("error", returnObj.data.msg);
-        }       
-      });
+        this.$confirm("您确定继续当前操作？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          let params = {
+              id: param.id
+            }
+            this.$api.financeapi.cancelUsingPUT_5(params).then(returnObj => {
+              if(returnObj.data.status === 200) {
+                this.getIrregularCost({}, () => {
+                  $message("success", "取消成功!");
+                });
+              } else {
+                $message("error", returnObj.data.msg);
+              }       
+            })
+            .catch(res => {
+              this.$message.error(res.data.msg);
+            });
+        })
+    },
+    async getMerchantId(){
+      let [merchantsContracts] = await Promise.all([queryMerchantContract(this.query.merchantId)]);
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
+    },
+    async init() {
+      let [merchants, merchantsContracts] = await Promise.all([
+        queryMerchant(), queryMerchantContract()
+      ]);
+      this.selects.merchants = merchants.data;
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
+      this.getIrregularCost();
     }
   },
-  computed: {},
   watch:{
     'query.costNo': function(){
       this.$delay(()=>{
@@ -342,7 +363,7 @@ export default {
     }
   },
   created() {
-    this.getIrregularCost();
+    this.init();
   }
 };
 

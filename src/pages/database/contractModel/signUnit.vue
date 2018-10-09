@@ -24,7 +24,7 @@
                     </el-table-column>
                 </data-table>
             </div>
-            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
+            <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" :pageSize="20" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
                 :title="listid?'编辑区域':'添加区域'"
@@ -73,6 +73,7 @@
                 listid:'',
                 searchName: '',
                 pageNum: Number(this.$route.params.pageId)||1,
+                // pageSize: 20,
                 total: 0,
                 treeData: [],
                 add:{
@@ -102,15 +103,17 @@
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name: this.searchName
                 }
                 this.$api.systemapi.listUsingGET_6(params).then(res=>{
@@ -137,7 +140,7 @@
                         }}).then(res=>{
                             if(res.data.code==200){
                                 this.$message.success(res.data.msg);
-                                this.pageHandler(1);
+                                this.pageHandler(1,this.pageSize);
                             }else{
                                 this.$message.error(res.data.msg);
                             }
@@ -153,7 +156,7 @@
                     }}).then(res=>{
                         if(res.data.code==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }
@@ -192,7 +195,7 @@
                     this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
                         if(res.data.code==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }

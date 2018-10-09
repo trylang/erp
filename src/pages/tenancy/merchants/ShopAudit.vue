@@ -1,15 +1,15 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/shop">店铺管理</router-link>
-                <router-link to="/inner/shopaudit">店铺审核</router-link>
+                <router-link to="/inner/shop" v-if="shop">店铺管理</router-link>
+                <router-link to="/inner/shopaudit" v-if="shopaudit">店铺审核</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码/名称" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入店铺号/名称" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="10" :offset="5">
@@ -25,11 +25,12 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
-                            <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
+                            <el-select v-model="merchantValue" placeholder="请选择" filterable clearable class="dialogselect" @change="shopSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in merchantOptions"
                                         :key="item.id"
-                                        :label="item.merchantName"
+                                        :label="item.name"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
@@ -57,23 +58,26 @@
         name: "unit",
         data(){
             return{
+                loading: false,
                 dataList:[],
                 searchText:'',
                 merchantValue:'',
                 statusId:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 merchantOptions:[],
                 columnData:[
                     { type: 'selection', width:'50'},
                     { prop: 'shopCode', label: '编码'},
                     { prop: 'shopName', label: '名称' },
-                    { prop: 'shopBrandNames', label: '经营品牌'},
                     { prop: 'shopMainBrandName', label: '主品牌' },
                     { prop: 'merchantName', label: '商户名称' },
                     { prop: 'shopTypeName', label: '数据类型' },
                     { prop: 'floorStr', label: '楼层' },
                     { prop: 'centerCollectingOrNotStr', label: '中央收银' },
+                    { prop: 'shopRegionName', label: '店铺区域' },
+                    { prop: 'rentArea', label: '店铺面积(㎡)' },
                     { prop: 'statusStr', label: '状态'},
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
@@ -96,36 +100,50 @@
         mounted(){
             this.getMerchantList();
         },
+        computed:{
+            shop(){
+                return this.$root.menus.indexOf('/inner/shop') >= 0;
+            },
+            shopaudit(){
+                return this.$root.menus.indexOf('/inner/shopaudit') >= 0;
+            }
+        },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.auditListpgUsingGET_2({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     shopCode:this.searchText,
                     shopName:this.searchText,
-                    merchantId:this.shopValue,
+                    merchantId:this.merchantValue,
                     status:this.statusId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12({
-                    pageNum:'',
-                    pageSize:'',
-                    merchantCode:'',
-                    merchantName:'',
-                    merchantEnglishName:'',
-                    merchantType:'',
-                    status:''
+                await this.$api.rentapi.doweListUsingGET({
+                    type:4
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
@@ -136,10 +154,10 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.statusId = status.id;
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             shopSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -147,13 +165,12 @@
                 });
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.emptyUsingPOST_2({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
                         this.$message.error(res.data.msg);
                     }

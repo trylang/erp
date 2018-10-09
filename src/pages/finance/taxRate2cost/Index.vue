@@ -9,8 +9,8 @@
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content" @currentPage="getCurrentPage"></erp-table>
-    <erp-dialog :title="dialog.param.id>0? '修改项目税率应用': '添加项目税率应用'" :dialog="dialog"></erp-dialog>
+    <erp-table :header="header" :content="content" @pageSize="getpageSize" @currentPage="getCurrentPage"></erp-table>
+    <erp-dialog v-loading="dialog.loading" :title="dialog.param.id>0? '修改项目税率应用': '添加项目税率应用'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -97,6 +97,7 @@ export default {
               },
               class: "edit",
               click: item => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
                 this.getCostItemByCostType(item.costType)
@@ -166,6 +167,7 @@ export default {
           }
         ],
         dialogVisible: false,
+        loading: false,        
         param: {
           id: ""
         },
@@ -180,7 +182,6 @@ export default {
               });
             },
             click: () => {
-              console.log(this.dialog.param);
               this.confirmDialog();
             }
           },
@@ -207,16 +208,19 @@ export default {
   },
   methods: {
     getCurrentPage(pageNum) {
-      this.getTaxRate2cost({ pageNum });
+      this.query.pageNum = pageNum;
+      this.getTaxRate2cost();
     },
     getpageSize(pageSize) {
-      this.getTaxRate2cost({ pageSize });
+      this.query.pageSize = pageSize;
+      this.getTaxRate2cost();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.loading = true;
       if (this.dialog.param.id > 0) {
         // 修改
         this.editTaxRate2cost(this.dialog.param);
@@ -233,9 +237,6 @@ export default {
       })
         .then(() => {
           this.deleteTaxRate2cost(item);
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
     async getCostItemByCostType(costType) {
@@ -254,8 +255,8 @@ export default {
     async getTaxRate2cost(page = {}, callback) {
       const params = {
         costItemCode: this.query.costItemCode,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_6(params).then(res => {
         const data = res.data;
@@ -285,9 +286,11 @@ export default {
             this.getTaxRate2cost({}, () => {
               $message("success", "添加成功!");
               this.dialog.dialogVisible = false;
+              this.dialog.loading = false;
             });
           } else {
-            $message("error", "添加失败!");
+              this.dialog.loading = false;
+            $message("error", returnObj.data.msg);
           }
         });
     },
@@ -301,9 +304,11 @@ export default {
           this.getTaxRate2cost({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
-          $message("error", "修改失败!");
+            this.dialog.loading = false;
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -318,7 +323,7 @@ export default {
             $message("success", "删除成功");
           });
         } else {
-          $message("error", "删除失败");
+          $message("error", res.data.msg);
           return data.message;
         }
       });

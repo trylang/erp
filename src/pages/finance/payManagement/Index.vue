@@ -1,5 +1,9 @@
 <template>
-  <con-head title="收款管理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/payManagement" v-if="payManagement">收款管理</router-link>
+        <router-link to="/finance/payManagementAudit" v-if="payManagementAudit">收款审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="linkTo('payManagement/collectMoney')">收取</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
@@ -9,8 +13,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" @change="getReceptList" placeholder="商户名称" class="dialogselect">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" @change="query.contractId = '', getReceptList(), getMerchantId()" filterable clearable placeholder="商户名称" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -33,24 +37,19 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" @change="getReceptList" placeholder="" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractId" @change="getReceptList" filterable clearable placeholder="" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.contractCode"
+                :label="item.contractAndShop"
                 :value="item.id">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>	
-			</div>
-		</el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
     <erp-dialog :dialog="dialog"></erp-dialog>
   </con-head>
@@ -58,13 +57,16 @@
 </template>
 
 <script>
+Number.prototype.toPct = function(digits){
+  return this.toFixed(digits||0);
+}
 import { mapGetters, mapActions } from "vuex";
 import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryMerchant, queryContract } from "@/utils/rest/financeAPI";
+import { queryMerchant, queryContract, queryMerchantContract } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -76,11 +78,11 @@ export default {
   data() {
     return {
       header: [
-        {
-          label: "",
-          name: "checked",
-          type: "checkbox"
-        },
+        // {
+        //   label: "",
+        //   name: "checked",
+        //   type: "checkbox"
+        // },
         {
           label: "收款单号",
           linkStyle: {color: "#457fcf"},
@@ -106,24 +108,23 @@ export default {
         },
         {
           label: "应收金额",
-          type: "text",
+          type: "fmoney",
           name: "amountReceivable"
         },
         {
           label: "已收金额",
-          type: "text",
+          type: "fmoney",
           name: "amountReceived"
         },
         {
           label: "未收金额",
-          type: "text",
-          name: "name"
+          type: "fmoney",
+          name: "uncollectedMony"
         },
         {
           label: "收款日期",
           name: "createDate",
-          type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S"
+          type: "text"
         },
         {
           label: "状态",
@@ -132,7 +133,7 @@ export default {
           option: {
             0: '新增',
             1: '已确认',
-            2: '已取消',
+            2: '取消',
           }
         },
         {
@@ -154,7 +155,7 @@ export default {
               class: "edit",
               click: function(item) {
                 Object.assign(this.dialog.param, item);
-                this.$router.push({path: '/finance/payManagement/collectMoney', query: { financeId: item.financeId, shopId: item.shopId, merchantId: item.merchantId, contractId: item.contractId, merchantName: item.merchantName}})
+                this.$router.push({path: '/finance/payManagement/collectMoney', query: { id: item.id, financeId: item.financeId, receiptType: item.receiptType, settleNumber: item.settleNumber, shopId: item.shopId, merchantId: item.merchantId, contractId: item.contractId, merchantName: item.merchantName}})
               }.bind(this)
             },
             {
@@ -238,15 +239,15 @@ export default {
           label: '全部'
         }, {
           isStatus:false,
-          id: 10,
+          id: 0,
           label: '新增'
         }, {
           isStatus:false,
-          id: 20,
+          id: 1,
           label: '已确认'
         }, {
           isStatus:false,
-          id: 30,
+          id: 2,
           label: '取消'
         }]
       },
@@ -259,15 +260,25 @@ export default {
     };
   },
   mounted() {},
+  computed:{
+      payManagement(){
+          return this.$root.menus.indexOf('/finance/payManagement') >= 0;
+      },
+      payManagementAudit(){
+          return this.$root.menus.indexOf('/finance/payManagementAudit') >= 0;
+      }
+  },
   methods: {
     linkTo(path) {
       this.$router.push({ path });
     },
     getCurrentPage(pageNum) {
-      this.getReceptList({pageNum});
+      this.query.pageNum = pageNum;
+      this.getReceptList();
     },
     getpageSize(pageSize) {
-      this.getReceptList({pageSize});
+      this.query.pageSize = pageSize;
+      this.getReceptList();
     },
     statusHandler(status){
 			this.selects.status.forEach(function(obj){
@@ -282,7 +293,7 @@ export default {
       this.dialog.param = {};
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算调整条目, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该数据，是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -290,9 +301,7 @@ export default {
         .then(() => {
           this.deleteRecept(item);
         })
-        .catch(() => {
-          $message("info", "已取消删除!");
-        });
+        .catch(_ => {});
     },
     filterIds() {
       const param = this.content.list.filter(item => {
@@ -314,14 +323,15 @@ export default {
         merchantId: this.query.merchantId,
         contractId: this.query.contractId,
         status: this.query.status,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.manageListUsingGET_1(params).then(res => {
         const data = res.data;
         if(data.status === 200) {
           data.data.list.forEach(item => {
             item.checked = false;
+            // item.owed = Number((item.amountReceivable - item.amountReceived).toPct(2));
             if (item.receiptStatus === 0 || 2) {
               item.showEdit = true;
               item.showCancel = false;
@@ -367,30 +377,45 @@ export default {
       });
     },
     async cancelRecept(param) {
-      let params = {
-        id: param.id
-      };
-      await this.$api.financeapi.cancelUsingPUT_2(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getReceptList({}, () => {
-            $message("success", "取消成功!");
-          });
-        } else {
-          $message("error", returnObj.data.msg);
-        }       
-      });
+        this.$confirm("您确定继续当前操作？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          let params = {
+              id: param.id
+            }
+            this.$api.financeapi.cancelUsingPUT_2(params).then(returnObj => {
+              if(returnObj.data.status === 200) {
+                this.getReceptList({}, () => {
+                  $message("success", "取消成功!");
+                });
+              } else {
+                $message("error", returnObj.data.msg);
+              }       
+            })
+            .catch(res => {
+              this.$message.error(res.data.msg);
+            });
+        })
+    },
+    async getMerchantId(){
+      let [merchantsContracts] = await Promise.all([queryMerchantContract(this.query.merchantId)]);
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
     },
     async init() {
-      let [merchants, contracts] = await Promise.all([queryMerchant(), queryContract()]); 
+      let [merchants, merchantsContracts] = await Promise.all([
+        queryMerchant(), queryMerchantContract()
+      ]);
       this.selects.merchants = merchants.data;
-      this.selects.contracts = contracts.data.list;
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
       await this.getReceptList();
     }
   },
   watch:{
     'query.receiptId': function(){
       this.$delay(()=>{
-          this.getIrregularCost();
+          this.getReceptList();
       },300)
     }
   },

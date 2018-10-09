@@ -1,5 +1,9 @@
 <template>
-  <con-head title="预付款收取">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/takeadvancePay" v-if="takeadvancePay">预付款收取</router-link>
+        <router-link to="/finance/takeadvancePayAudit" v-if="takeadvancePayAudit">预付款审核</router-link>
+    </div>
     <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, dialog.param={merchantId: '',contractItem: '',paymentCode: '', receivedAmount: '',receivedDate: ''}">收取</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
@@ -9,8 +13,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="请选择商户名称" @change="checkShopNameList(query.merchantId)" class="dialogselect">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="请选择商户名称" filterable clearable @change="checkShopNameList(query.merchantId)" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -34,26 +38,21 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" placeholder="请选择合同" @change="getAdvanceList()" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractId" placeholder="请选择合同" filterable clearable @change="getAdvanceList()" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.contractCode"
+                :label="item.contractAndShop"
                 :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>
-			</div>
-		</el-row>
     <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog :title="dialog.param.id?'预付款编辑':'预付款收取'" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading.fullscreen="dialog.loading" :title="dialog.param.id?'预付款编辑':'预付款收取'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -76,11 +75,11 @@ export default {
     return {
       dataList: [],
       header: [
-        {
-          label: "",
-          name: "checked",
-          type: "checkbox"
-        },
+        // {
+        //   label: "",
+        //   name: "checked",
+        //   type: "checkbox"
+        // },
         {
           label: "收款单号",
           type: "text",
@@ -103,14 +102,19 @@ export default {
         },
         {
           label: "收款金额",
-          type: "text",
+          type: "fmoney",
           name: "receivedAmount"
         },
         {
           label: "收款日期",
           type: "time",
-          filter: "yyyy-MM-dd hh:mm:ss.S",
+          filter: "yyyy-MM-dd",
           name: "receivedDate"
+        },
+        {
+          label: "收款方式",
+          type: "text",
+          name: "paymentName"
         },
         {
           label: "备注",
@@ -220,6 +224,11 @@ export default {
             label: "收款日期",
             name: "receivedDate",
             type: "date",
+            pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              }
+            },
             placeholder: "请选择时间"
           },
           {
@@ -230,6 +239,7 @@ export default {
           }
         ],
         dialogVisible: false,
+        loading: false,
         param: {
           id: "",
           merchantId: "",
@@ -237,7 +247,7 @@ export default {
           paymentCode: "",
           receivedAmount: "",
           receivedDate: "",
-          remark: ""
+          // remark: ""
         },
         options: [
           {
@@ -245,7 +255,9 @@ export default {
             name: "submit",
             type: "primary",
             disabledFun: () => {
-              return Object.values(this.dialog.param).some(item => {
+              let param = Object.assign({}, this.dialog.param);
+              delete param.remark;
+              return Object.values(param).some(item => {
                 return item === (undefined || "");
               });
             },
@@ -309,9 +321,13 @@ export default {
   mounted() {
     this.getAdvanceList();
     // this.$api.rentapi.listUsingGET_12({status: 1}).then(res => {//商户列表 status:1 已确定状态
+    //     res.data.data.map(item => {
+    //       return item.merchantName = `${item.merchantCode}（${item.merchantName}）`;
+    //     });
     //     this.selects.merchants = res.data.data;
+    //     this.dialog.models[0].options = res.data.data;
     // })
-    this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {//已经确定过合同的商户列表
+    this.$api.rentapi.listForFormalUsingGET().then(res => {//已经确定过合同的商户列表
         this.selects.merchants = res.data.data;
         this.dialog.models[0].options = res.data.data;
     })
@@ -324,10 +340,19 @@ export default {
     });
     
   },
+  computed:{
+      takeadvancePay(){
+          return this.$root.menus.indexOf('/finance/takeadvancePay') >= 0;
+      },
+      takeadvancePayAudit(){
+          return this.$root.menus.indexOf('/finance/takeadvancePayAudit') >= 0;
+      }
+  },
   methods: {
     checkShopNameList(merchantId){  //根据商户id查合同
+        this.query.contractId = '';
         let merchantIds = merchantId==-1?'' : merchantId;
-        this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: merchantIds}).then(res => {
+        this.$api.rentapi.listFormalContractUsingGET({merchantId: merchantIds}).then(res => {
             this.selects.contracts = res.data.data;
             this.getAdvanceList();
         }).catch(res => {
@@ -340,8 +365,8 @@ export default {
         merchantId: this.query.merchantId,
         contractCode: this.query.contractId,
         status: this.query.status,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_15(params).then(res => {
           if (res.data.status === 200) {
@@ -399,10 +424,12 @@ export default {
       this.$router.push({ path });
     },
     getCurrentPage(pageNum) {
-      this.getAdvanceList({ pageNum });
+      this.query.pageNum = pageNum;
+      this.getAdvanceList();
     },
     getpageSize(pageSize) {
-      this.getAdvanceList({ pageSize });
+      this.query.pageSize = pageSize;
+      this.getAdvanceList();
     },
     statusHandler(status) {
       this.selects.status.forEach(function(obj) {
@@ -417,6 +444,7 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.loading = true;
       if (this.dialog.param.id) {
         // 修改
         this.editAccountGroup(this.dialog.param);
@@ -426,7 +454,7 @@ export default {
       }
     },
     async getSelectedcontracts(id) {
-      await this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: id}).then(res => {
+      await this.$api.rentapi.listFormalUsingGET({merchantId: id}).then(res => {
         if (res.data.status === 200) {
           this.selects.dialogGroupContracts = res.data.data;
           const contractsObj = Object.assign({label: '合同编号 店铺号 店铺'}, {options: res.data.data});
@@ -436,7 +464,6 @@ export default {
     },
     addAccountGroup(param) {
       const contractItem = this.selects.dialogGroupContracts.find(item => item.contractCode === this.dialog.param.contractItem);
-      console.log(contractItem);
       //收取 新增      
       let params = {
         merchantId: this.dialog.param.merchantId,
@@ -450,11 +477,14 @@ export default {
       this.$api.financeapi.saveUsingPOST_5({ request: params }).then(res => {
         if (res.data.status === 200) {
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           this.getAdvanceList({}, () => {
+              this.dialog.dialogVisible = false;
+              this.dialog.loading = false;
             $message("success", res.data.msg);
-            this.dialog.dialogVisible = false;
           });
         } else {
+            this.dialog.loading = false;
           $message("error", res.data.msg);
         }
       });
@@ -466,9 +496,11 @@ export default {
           this.getAdvanceList({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
-          $message("error", "修改失败!");
+            this.dialog.loading = false;
+          $message("error", res.data.msg);
         }
       });
     },
@@ -491,12 +523,10 @@ export default {
           .catch(res => {
             this.$message.error(res.data.msg);
           });
-      }).catch(() => {
-          $message("info", "已取消删除!");
-        });
+      });
     },
     cancelTakeAdPay: function(item) {//取消操作
-      this.$confirm("此操作将取消该条数据, 是否继续?", "提示", {
+      this.$confirm("您确定继续当前操作？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -513,12 +543,8 @@ export default {
             this.$message.error(res.data.msg);
           });
         })
-        .catch(() => {
-          $message("info", "已取消!");
-        });
     }
   },
-  computed: {},
   created() {}
 };
 </script>

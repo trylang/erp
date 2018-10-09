@@ -1,16 +1,20 @@
 <template>
-  <con-head title="费用调整管理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/costAdjust" v-if="costAdjust">费用调整管理</router-link>
+        <router-link to="/finance/costAdjustAudit" v-if="costAdjustAudit">费用调整审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="linkTo('costAdjust/addCostAdjust')">录入</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-          <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.costNo" @keyup.enter="getCostAdjust"><i class="iconfont icon-sousuo"></i>
+          <input type="text" placeholder="请输入费用单号/合同号" v-model="query.costNo" @keyup.enter="getCostAdjust"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" @change="getCostAdjust(),getMerchantId()" placeholder="商户名称" class="dialogselect">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" @change="query.contractCode='',getCostAdjust(),getMerchantId()" filterable clearable placeholder="商户名称" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -36,23 +40,19 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" @change="getCostAdjust" placeholder="合同" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" @change="getCostAdjust" filterable clearable placeholder="合同" class="dialogselect">
+              <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
-                :key="item.id"
-                :label="item.contractCode"
-                :value="item.id">
+                :key="item.contractCode"
+                :label="item.contractAndShop"
+                :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>	
-			</div>
-		</el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
   </con-head>
 
@@ -76,11 +76,11 @@ export default {
   data() {
     return {
       header: [
-        {
-          label: "",
-          name: "checked",
-          type: "checkbox"
-        },
+        // {
+        //   label: "",
+        //   name: "checked",
+        //   type: "checkbox"
+        // },
         {
           label: "费用单号",
           type: "link",
@@ -110,12 +110,12 @@ export default {
         },
         {
           label: "金额",
-          type: "text",
+          type: "fmoney",
           name: "sum"
         },
         {
           label: "录入日期",
-          name: "expenseDate",
+          name: "createDate",
           type: "text",
           filter: "yyyy-MM-dd hh:mm:ss.S"
         },
@@ -141,7 +141,8 @@ export default {
               class: "edit",
               click: function(item) {
                 Object.assign(this.dialog.param, item);
-                this.$router.push({path: '/finance/costAdjust/addCostAdjust', query: { id: item.id, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
+                this.$router.push({path: '/finance/costAdjust/addCostAdjust', 
+                query: { id: item.id, contractCode: item.contractCode, contractId: item.contractId, merchantId: item.merchantId, settleGroupId: item.settleGroupId }})
               }.bind(this)
             },
             {
@@ -192,17 +193,33 @@ export default {
           isStatus:false,
           id: 30,
           label: '取消'
+        }, {
+            isStatus:false,
+            label: '部分生成',
+            id: 40
+        }, {
+            isStatus:false,
+            label: '全部生成',
+            id: 50
         }]
       },
       query: {
         costNo: '',
         merchantId: '',
-        contractId: '',
+        contractCode: '',
         status: ''
       }
     };
   },
   mounted() {},
+  computed:{
+      costAdjust(){
+          return this.$root.menus.indexOf('/finance/costAdjust') >= 0;
+      },
+      costAdjustAudit(){
+          return this.$root.menus.indexOf('/finance/costAdjustAudit') >= 0;
+      }
+  },
   methods: {
     linkTo(path) {
       this.$router.push({ path });
@@ -216,10 +233,12 @@ export default {
       this.getCostAdjust();
     },
     getCurrentPage(pageNum) {
-      this.getCostAdjust({pageNum});
+      this.query.pageNum = pageNum;
+      this.getCostAdjust();
     },
     getpageSize(pageSize) {
-      this.getCostAdjust({pageSize});
+      this.query.pageSize = pageSize;
+      this.getCostAdjust();
     },
     filterIds() {
       const param = this.content.list.filter(item => {
@@ -239,10 +258,10 @@ export default {
       let params = {
         costNo: this.query.costNo,
         merchantId: this.query.merchantId,
-        contractId: this.query.contractId,
+        contractCode: this.query.contractCode,
         status: this.query.status,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET(params).then(res => {
         const data = res.data;
@@ -285,7 +304,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$api.financeapi.delUsingDELETE({id}).then(returnObj => {
+          this.$api.financeapi.delUsingDELETE({id: [id]}).then(returnObj => {
             if(returnObj.data.status === 200) {
               this.getCostAdjust({}, () => {
                 $message("success", "删除成功!");
@@ -294,37 +313,45 @@ export default {
               $message("error", returnObj.data.msg);
             }       
           });
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
       
     },
     async cancelCostAdjust(param) {
-      let params = {
-        id: param.id
-      };
-      await this.$api.financeapi.cancelUsingPUT(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getCostAdjust({}, () => {
-            $message("success", "取消成功!");
-          });
-        } else {
-          $message("error", returnObj.data.msg);
-        }       
-      });
+        this.$confirm("您确定继续当前操作？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          let params = {
+            id: param.id
+          }
+        this.$api.financeapi.cancelUsingPUT(params).then(returnObj => {
+            if(returnObj.data.status === 200) {
+              this.getCostAdjust({}, () => {
+                $message("success", "取消成功!");
+              });
+            } else {
+              $message("error", returnObj.data.msg);
+            }       
+          })
+            .catch(res => {
+              this.$message.error(res.data.msg);
+            });
+        })
     },
-      async getMerchantId(){
-          let [merchantsContracts] = await Promise.all([queryMerchantContract(this.query.merchantId)]);
-          this.selects.contracts = merchantsContracts.data;
-      },
+    async getMerchantId(){
+      let [merchantsContracts] = await Promise.all([queryMerchantContract(this.query.merchantId)]);
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
+    },
     async init() {
-      let [accountGroup, merchants, contracts,merchantsContracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract(),queryMerchantContract(8)]);
+      let [merchants, merchantsContracts] = await Promise.all([
+        queryMerchant(), queryMerchantContract()
+      ]);
       this.selects.merchants = merchants.data;
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
       await this.getCostAdjust();
     }
   },
-  computed: {},
   watch:{
     'query.costNo': function(){
       this.$delay(()=>{

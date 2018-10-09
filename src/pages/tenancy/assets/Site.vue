@@ -1,22 +1,22 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/site">场地管理</router-link>
-                <router-link to="/inner/siteaudit">场地审核</router-link>
+                <router-link to="/inner/site" v-if="site">场地管理</router-link>
+                <router-link to="/inner/siteaudit" v-if="siteaudit">场地审核</router-link>
             </div>
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="10">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="10" :offset="4">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼宇</span>
-                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                            <el-select v-model="buildValue" placeholder="请选择" filterable clearable class="dialogselect" @change="buildSelect(buildValue)">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in buildOptions"
@@ -32,7 +32,8 @@
                     <el-col :span="10">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
-                            <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                            <el-select v-model="floorValue" placeholder="请选择" filterable clearable class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in floorOptions"
                                         :key="item.id"
@@ -71,7 +72,7 @@
                             width="110"
                             slot="operation">
                         <template slot-scope="scope">
-                            <button class="btn_text" @click="getUnitInfo(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">编辑</button>
+                            <button class="btn_text" @click="getUnitInfo(scope.row.id,scope.row.status)" v-if="scope.row.status == 0 || scope.row.status == 2 || scope.row.status == 6">编辑</button>
                             <button class="btn_text" @click="deleteListData(scope.row.id)" v-if="scope.row.status == 0 || scope.row.status == 2">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 1" @click="cancelFailure(scope.row.id,2)">取消</button>
                             <button class="btn_text" v-if="scope.row.status == 6" @click="cancelFailure(scope.row.id,5)">失效</button>
@@ -82,17 +83,17 @@
             <rt-page ref="page" :cur="pageNum" :total="total" @change="getDataList" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
-                title="添加场地"
+                :title="listId?'编辑场地':'添加场地'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="unitInfoData.unitCode">
+                    <input class="inputtext" type="text" placeholder="请输入编码" v-model="unitInfoData.unitCode" :readonly="isStatus">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">购物中心</span>
-                    <el-select v-model="unitInfoData.marketId" placeholder="请选择" class="dialogselect" disabled>
+                    <el-select v-model="unitInfoData.marketId" placeholder="请选择" filterable clearable class="dialogselect" disabled>
                         <el-option
                                 v-for="item in marketOptions"
                                 :key="item.id"
@@ -103,7 +104,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼宇</span>
-                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" @change="getFloorList(unitInfoData.buildId)" class="dialogselect">
+                    <el-select v-model="unitInfoData.buildId" placeholder="请选择" filterable clearable @change="getFloorList(unitInfoData.buildId)" class="dialogselect" :disabled="isStatus">
                         <el-option
                                 v-for="item in buildOptions"
                                 :key="item.id"
@@ -114,7 +115,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">楼层</span>
-                    <el-select v-model="unitInfoData.floorId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="unitInfoData.floorId" placeholder="请选择" filterable clearable class="dialogselect" :disabled="isStatus">
                         <el-option
                                 v-for="item in floorOptions"
                                 :key="item.id"
@@ -137,7 +138,7 @@
                     <div>
                         <span class="inputname">备注</span>
                     </div>
-                    <textarea class="textareabox" placeholder="选填" v-model="unitInfoData.remark"></textarea>
+                    <textarea class="textareabox" placeholder="选填" v-model="unitInfoData.remark"  :readonly="isStatus"></textarea>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -156,10 +157,12 @@
         name: "site",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataList:[],
                 searchText:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 listId:'',
                 buildValue: '',
@@ -170,7 +173,8 @@
                     { prop: 'area', label: '建筑面积'},
                     { prop: 'useArea', label: '使用面积' },
                     { prop: 'statusName', label: '状态' },
-                    { prop: 'remark', label: '备注'}
+                    { prop: 'remark', label: '备注'},
+                    { prop: 'updateUser', label: '操作人'}
                 ],
                 floorValue:'',
                 statusData:[{
@@ -182,7 +186,7 @@
                     isStatus:false,
                     id:0
                 },{
-                    name:"空置",
+                    name:"已确认",
                     isStatus:false,
                     id:1
                 },{
@@ -201,6 +205,10 @@
                     name:"失效",
                     isStatus:false,
                     id:5
+                },{
+                    name:"空置",
+                    isStatus:false,
+                    id:6
                 }],
                 statusId:'',
                 multipleSelection:[],
@@ -209,7 +217,7 @@
                     area: '',
                     buildId: '',
                     floorId: '',
-                    marketId: 1,
+                    marketId: this.$userInfo.marketId,
                     remark: '',
                     rentAdvertisingTypeId: '',
                     type: 2,
@@ -217,39 +225,44 @@
                     useArea: ''
                 },
                 marketOptions:[{
-                    marketName:'西单大悦城',
-                    id:1
+                    marketName:this.$userInfo.marketName,
+                    id:this.$userInfo.marketId
                 }],
-                buildOptions:[{
-                    buildName:'商场',
-                    id:1
-                }, {
-                    buildName:'写字楼',
-                    id:2
-                }],
+                buildOptions:[],
                 floorOptions:[],
-                statesId:'',
+                isStatus:false,
             }
         },
         mounted(){
+            this.getBuildList();
             this.getFloorList(null);
+        },
+        computed:{
+            site(){
+                return this.$root.menus.indexOf('/inner/site') >= 0;
+            },
+            siteaudit(){
+                return this.$root.menus.indexOf('/inner/siteaudit') >= 0;
+            }
         },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             handleOpen(){
+                this.listId = '';
                 this.dialogVisible = true;
+                this.isStatus = false;
                 this.unitInfoData={
                     advertisingStandard: '',
                     area: '',
                     buildId: '',
                     floorId: '',
-                    marketId: 1,
+                    marketId: this.$userInfo.marketId,
                     remark: '',
                     rentAdvertisingTypeId: '',
                     type: 2,
@@ -262,26 +275,23 @@
                     obj.isStatus = false;
                 });
                 status.isStatus = !status.isStatus;
-                if(status.id == 1){
-                    this.statesId = [1,6],
-                        this.statusId = '';
-                }else{
-                    this.statesId = '';
-                    this.statusId = status.id;
-                }
-                this.getDataList(1);
+                this.statusId = status.id;
+                this.getDataList(1,this.pageSize);
             },
             handleClose(){
                 this.dialogVisible = false;
             },
             buildSelect(buildId){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
                 this.getFloorList(buildId);
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.listUsingGET_15({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     code:this.searchText,
                     buildId:this.buildValue,
                     floorId:this.floorValue,
@@ -289,8 +299,22 @@
                     status:this.statusId,
                     states:this.statesId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
+                })
+            },
+            async getBuildList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
                 })
             },
             async getFloorList(buildId){
@@ -312,17 +336,22 @@
                     this.$message.error('建筑面积不能小于使用面积');
                     return false;
                 }
+                this.loading = true;
                 if(this.listId == '') {
                     await this.$api.rentapi.addUsingPOST_10({
                         param: this.unitInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     await this.$api.rentapi.updateUsingPUT_12({
@@ -330,16 +359,25 @@
                         param: this.unitInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
-            async getUnitInfo(id){
+            async getUnitInfo(id,status){
+                if(status == 6){
+                    this.isStatus = true;
+                }else{
+                    this.isStatus = false;
+                }
                 this.dialogVisible = true;
                 this.listId = id;
                 this.unitInfoData={
@@ -347,7 +385,7 @@
                     area: '',
                     buildId: '',
                     floorId: '',
-                    marketId: 1,
+                    marketId: this.$userInfo.marketId,
                     remark: '',
                     rentAdvertisingTypeId: '',
                     type: 2,
@@ -370,7 +408,7 @@
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.$message.success(res.data.msg);
                         } else {
                             this.$message.error(res.data.msg);
@@ -379,20 +417,26 @@
                 })
             },
             async cancelFailure(id,stauts){
-                await this.$api.rentapi.updateCancelFailure({
-                    id:id,
-                    stauts:stauts
-                }).then(res=>{
-                    if (res.data.status == 200) {
-                        this.getDataList(1);
-                        this.$message.success(res.data.msg);
-                    } else {
-                        this.$message.error(res.data.msg);
-                    }
-                })
+                this.$confirm('您确定继续当前操作？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.rentapi.updateCancelFailure({
+                        id: id,
+                        stauts: stauts
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.getDataList(1,this.pageSize);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                });
             },
             floorSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             }
         },
         components:{

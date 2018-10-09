@@ -12,7 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.1.235:30013',//设置你调用的接口域名和端口号 别忘了加http
+        target: 'http://10.10.10.235:30013/api',//设置你调用的接口域名和端口号 别忘了加http
+        // target: 'http://10.10.10.211:8777',// 杜鑫端口号
         // target: 'http://192.168.1.138:8111/',//设置你调用的接口域名和端口号 别忘了加http
         changeOrigin: true,
         pathRewrite: {
@@ -53,10 +54,11 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '',
+    assetsPublicPath: './',
     proxyTable: {
       '/api': {
-          target: 'http://192.168.1.235:30013/',//设置你调用的接口域名和端口号
+          target: 'http://10.10.10.235:30013/api',//设置你调用的接口域名和端口号
+          // target: 'http://10.10.10.211:8777',//设置你调用的接口域名和端口号
           changeOrigin: true,
           pathRewrite: {
               '^/api': '/'//这里理解成用‘/api’代替target里面的地址
@@ -95,7 +97,7 @@ module.exports = {
         assetsPublicPath: '',
         proxyTable: {
             '/api': {
-                target: 'http://192.168.1.235:30013/',//设置你调用的接口域名和端口号
+                target: 'http://10.10.10.235:30013/api',//设置你调用的接口域名和端口号
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': '/'//这里理解成用‘/api’代替target里面的地址

@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="操作日志">
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入操作人" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入操作人" v-model="searchName" @keyup.enter="pageHandler(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="12" :offset="2">
@@ -16,7 +16,6 @@
                                 type="daterange"
                                 range-separator="~"
                                 placeholder="选择日期"
-                                format="yyyy 年 MM 月 dd 日"
                                 value-format="yyyy-MM-dd"
                                 @change="pageHandler(1)">
                             </el-date-picker>
@@ -27,7 +26,7 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">操作类型</span>
-                            <el-select v-model="operationLogTypeId" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-select v-model="operationLogTypeId" placeholder="请选择" filterable clearable class="dialogselect" @change="pageHandler">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in options"
@@ -57,9 +56,11 @@
     export default {
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 datalist:[],
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 searchName: '',
                 searchData: [],
@@ -77,31 +78,46 @@
             this.$api.systemapi.listUsingGET_4().then(res=>{
                 this.options = res.data.data.list;
             }).catch(res=>{
-                this.$message.error(res.data.msg);
+                this.$message.error(res.data);
             })
         },
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     userName: this.searchName,
-                    operationDate: this.searchData[0],
-                    createDate: this.searchData[1],
+                    startDate: this.searchData[0],
+                    endDate: this.searchData[1],
                     operationLogTypeId: this.operationLogTypeId
                 }
                 this.$api.systemapi.listUsingGET_3(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        if(res.data.data) {
+                            this.datalist = res.data.data.list;
+                            this.total = Number(res.data.data.total);
+                        }else{
+                            this.datalist = [];
+                            this.total = 0;
+                        }
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
                 }).catch(res=>{
-                    this.$message.error(res.data.msg);
+                    this.loading = false;
+                    this.$message.error(res.data);
                 })
             },
         },

@@ -1,7 +1,7 @@
 <template>
   <con-head title="账单处理任务">
     <el-row slot="preappend">
-        <el-col :span="9">
+        <el-col :span="12">
         <div class="texttitle">
             <span class="inputname">状态：</span>
             <div class="line-nav">
@@ -11,7 +11,7 @@
         </div>
       </el-col>
     </el-row>
-    <erp-table :header="header" :content="content"></erp-table>
+    <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
 
     <!-- <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog> -->
   </con-head>
@@ -106,7 +106,6 @@ export default {
           type: "primary",
           disabledFun: () => {
             return Object.values(this.dialog.param).some(item => {
-              console.log(item);
               return item === (undefined || "");
             });
           },
@@ -130,15 +129,19 @@ export default {
         }, {
           isStatus:false,
           id: 30,
-          label: '成功'
+          label: '全部成功'
         }, {
           isStatus:false,
           id: 0,
           label: '进行中'
         }, {
           isStatus:false,
+          id: 10,
+          label: '全部失败'
+        }, {
+          isStatus:false,
           id: 20,
-          label: '失败'
+          label: '部分失败'
         }]
       },
       query: {
@@ -156,9 +159,15 @@ export default {
 			});
       status.isStatus = !status.isStatus;
       this.query.status = status.id;
+      this.getBillList();
     },
     async getBillList() {
-      await this.$api.financeapi.listUsingGET_2().then(res => {
+      let param = {
+        status:this.query.status,
+        pageSize: this.query.pageSize,
+        pageNum: this.query.pageNum
+      };
+      await this.$api.financeapi.listUsingGET_2(param).then(res => {
         if (res.data.status === 200) {
           res.data.data.list.forEach(item => {
             if (item.status === 10 || item.status === 20) {
@@ -170,7 +179,15 @@ export default {
           $message('error', res.data.msg);
         }
       })
-    }
+    },
+    getCurrentPage(pageNum) {
+      this.query.pageNum = pageNum;
+      this.getBillList();
+    },
+    getpageSize(pageSize) {
+      this.query.pageSize = pageSize;
+      this.getBillList();
+    },
   },
   computed: {},
   created() {

@@ -1,28 +1,32 @@
 <template>
-    <div class="savebox">
+    <div class="savebox" v-loading.fullscreen="loading">
         <div class="savecont">
             <con-head title="添加店铺"></con-head>
             <el-row class="commonbox">
                 <el-col :span="12" class="dialogbox">
                     <div class="dialoginput">
+                        <span class="inputname inputnameWidth">店铺号</span>
+                        <input class="inputtext" type="text" placeholder="请输入店铺号" v-model="shopInfoData.shopCode" :readonly="this.$route.params.shopId != 0">
+                    </div>
+                    <div class="dialoginput">
                         <span class="inputname inputnameWidth">店铺名称</span>
-                        <input class="inputtext" type="text" placeholder="请输入店铺名称" v-model="shopInfoData.shopName">
+                        <input class="inputtext" type="text" placeholder="请输入店铺名称" v-model="shopInfoData.shopName" :readonly="isdisabled">
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">所属商户</span>
-                        <el-select v-model="shopInfoData.merchantId" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.merchantId" placeholder="请选择" filterable clearable class="dialogselect" :disabled="isdisabled">
                             <el-option
                                     v-for="item in merchantOptions"
                                     :key="item.id"
-                                    :label="item.merchantName"
+                                    :label="item.merchantCode+'('+item.merchantName+')'"
                                     :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth" style="line-height: 40px;">经营品牌</span>
-                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" class="dialogselect" 
-                            @change="selectshopBrand()" @remove-tag="deleteTag">
+                        <el-select v-model="shopBrand" value-key="id" multiple placeholder="请选择" filterable clearable class="dialogselect" 
+                            @change="selectshopBrand()" @remove-tag="deleteTag" :disabled="isdisabled">
                             <el-option
                                     v-for="item in shopBrandOptions"
                                     :key="item.id"
@@ -33,7 +37,7 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">主品牌</span>
-                        <el-select v-model="shopInfoData.shopMainBrandId" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.shopMainBrandId" placeholder="请选择" filterable clearable class="dialogselect" :disabled="isdisabled">
                             <el-option
                                     v-for="item in shopMainBrandOptions"
                                     :key="item.id"
@@ -44,7 +48,7 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">选择楼层</span>
-                        <el-select v-model="shopInfoData.floorId" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.floorId" placeholder="请选择" filterable clearable class="dialogselect" :disabled="isdisabled">
                             <el-option
                                     v-for="item in floorOptions"
                                     :key="item.id"
@@ -55,7 +59,7 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">数据类型</span>
-                        <el-select v-model="shopInfoData.shopType" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.shopType" placeholder="请选择" filterable clearable class="dialogselect" :disabled="isdisabled">
                             <el-option
                                     v-for="item in shopTypeOptions"
                                     :key="item.id"
@@ -70,7 +74,7 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">是否主力店</span>
-                        <el-select v-model="shopInfoData.mainStoreOrNot" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.mainStoreOrNot" placeholder="请选择" filterable clearable class="dialogselect">
                             <el-option
                                     v-for="item in mainStoreOptions"
                                     :key="item.value"
@@ -81,12 +85,23 @@
                     </div>
                     <div class="dialoginput">
                         <span class="inputname inputnameWidth">是否中央收银</span>
-                        <el-select v-model="shopInfoData.centerCollectingOrNot" placeholder="请选择" class="dialogselect">
+                        <el-select v-model="shopInfoData.centerCollectingOrNot" placeholder="请选择" filterable clearable class="dialogselect">
                             <el-option
                                     v-for="item in centerCollectingOptions"
                                     :key="item.value"
                                     :label="item.centerCollectingName"
                                     :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="dialoginput">
+                        <span class="inputname inputnameWidth">店铺区域</span>
+                        <el-select v-model="shopInfoData.shopRegionId" placeholder="选填" filterable clearable class="dialogselect">
+                            <el-option
+                                    v-for="item in shopAreaOptions"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
@@ -104,6 +119,7 @@
         name: "add-user",
         data(){
             return{
+                loading: false,
                 shopInfoData:{
                     centerCollectingOrNot: '',
                     floorId: '',
@@ -112,10 +128,11 @@
                     merchantId: '',
                     posNum:'',
                     shopBrandId: [],
-                    // shopCode: '',
+                    shopCode: '',
                     shopMainBrandId: '',
                     shopName: '',
-                    shopType: ''
+                    shopType: '',
+                    shopRegionId:''
                 },
                 shopBrand:[],
                 centerCollectingOptions:[{
@@ -145,43 +162,64 @@
                 merchantOptions:[],
                 shopBrandOptions:[],
                 shopMainBrandOptions:[],
+                shopAreaOptions:[],
                 floorOptions:[],
                 shopBrandData:{
                     id:'',
                     brandName:''
-                }
+                },
+                buildId:''
             }
         },
         mounted(){
+            this.getBaseDataOptions();
             this.getMerchantList();
             this.getShopBrandList();
-            this.getFloorList();
-            this.getUnitInfo();
+            this.getBuildList();
+        },
+        computed:{
+            isdisabled(){
+                if(localStorage.getItem('shopStatusNum') != 0 && localStorage.getItem('shopStatusNum') != 2) {
+                    return true
+                }else{
+                    return false
+                }
+            }
         },
         methods:{
             async submitFormData(){
+                this.loading = true;
                 if(this.$route.params.shopId == 0) {
                     await this.$api.rentapi.addUsingPOST_9({
                         request: this.shopInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/inner/shop');
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.shopInfoData.id = this.$route.params.shopId;
+                    this.shopInfoData.posNum = this.shopInfoData.shopType != 0?0:this.shopInfoData.posNum;
                     await this.$api.rentapi.updateUsingPUT_11({
                         request: this.shopInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
+                            this.loading = false;
                             this.$message.success(res.data.msg);
                             this.$router.push('/inner/shop');
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
@@ -201,6 +239,13 @@
                     })
                 }
             },
+            async getBaseDataOptions(){
+                await this.$api.systemapi.availItemListUsingGET({
+                    code:'0020'
+                }).then(res=>{
+                    this.shopAreaOptions = res.data.data;
+                })
+            },
             async getMerchantList(){
                 this.$api.rentapi.listUsingGET_12({merchantType: 0, status: 1}).then(res=>{
                     this.merchantOptions = res.data.data;
@@ -209,11 +254,23 @@
             async getShopBrandList(){
                 this.$api.rentapi.listUsingGET_3({status: 1}).then(res=>{//已确认状态
                     this.shopBrandOptions = res.data.data;
+                    this.getUnitInfo();
+                })
+            },
+            async getBuildList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
+                    res.data.data.forEach(item => {
+                        if (item.buildName == '商场') {
+                            this.buildId = item.id;
+                        }
+                    })
+                    this.getFloorList();
                 })
             },
             async getFloorList(){
                 this.$api.rentapi.selectByBuildIdUsingGET({
-                    buildId:1
+                    buildId:this.buildId
                 }).then(res=>{
                     this.floorOptions = res.data.data;
                 })

@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="区域管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="pageHandler(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -47,6 +47,7 @@
                         :data="treeData"
                         node-key="id"
                         ref="tree"
+                        :highlight-current="true"
                         @node-click="checkHandler"
                         :props="defaultProps">
                     </el-tree>
@@ -68,11 +69,13 @@
         name: "index",
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 datalist:[],
                 listid:'',
                 searchName: '',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 treeData: [],
                 add:{
@@ -102,32 +105,42 @@
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name: this.searchName
                 }
                 this.$api.systemapi.listUsingGET_6(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
             addbuilding(id){
                 if(id){
                     if(!this.add.regionName){
-                        this.$message.warning('区域名称不能为空');
+                        this.$message.error('区域名称不能为空');
                     }else if(!this.add.regionEnglishName){
-                        this.$message.warning('英文缩写不能为空');
+                        this.$message.error('英文缩写不能为空');
                     }else{
-                        console.log(123,this.add)
+                        this.loading = true;
                         this.$api.systemapi.putRegion({request:{
                             regionId: this.add.id,
                             pid: this.add.pid,
@@ -135,36 +148,43 @@
                             regionEnglishName: this.add.regionEnglishName
                         }}).then(res=>{
                             if(res.data.status==200){
+                                this.loading = false;
                                 this.$message.success(res.data.msg);
-                                this.pageHandler(1);
+                                this.pageHandler(1,this.pageSize);
                             }else{
+                                this.loading = false;
                                 this.$message.error(res.data.msg);
                             }
                         }).catch(res=>{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         });
                         this.dialogVisible = false;
                     }
                 }else{
                     if(!this.add.regionName){
-                        this.$message.warning('区域名称不能为空');
+                        this.$message.error('区域名称不能为空');
                     }else if(!this.add.regionEnglishName){
-                        this.$message.warning('英文缩写不能为空');
+                        this.$message.error('英文缩写不能为空');
                     }else if(!this.add.treeId){
-                        this.$message.warning('上级区域不能为空');
+                        this.$message.error('上级区域不能为空');
                     }else{
+                        this.loading = true;
                         this.$api.systemapi.saveUsingPOST_4({request:{
                             pid: this.add.treeId,
                             regionName: this.add.regionName,
                             regionEnglishName: this.add.regionEnglishName
                         }}).then(res=>{
                             if(res.data.status==200){
+                                this.loading = false;
                                 this.$message.success(res.data.msg);
-                                this.pageHandler(1);
+                                this.pageHandler(1,this.pageSize);
                             }else{
+                                this.loading = false;
                                 this.$message.error(res.data.msg);
                             }
                         }).catch(res=>{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         });
                         this.dialogVisible = false;
@@ -200,7 +220,7 @@
                     this.$api.systemapi.deleteUsingDELETE_3({id: id}).then(res =>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }

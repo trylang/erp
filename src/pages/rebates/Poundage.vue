@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/rebates/poundage">手续费设置</router-link>
-                <router-link to="/rebates/poundageOut">例外店手续费设置</router-link>
+                <router-link to="/rebates/poundage" v-if="poundage">手续费设置</router-link>
+                <router-link to="/rebates/poundageOut" v-if="poundageOut">例外店手续费设置</router-link>
             </div>
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="addHandler">添加</el-button>
             <div slot="preappend">
@@ -25,7 +25,7 @@
                     <el-col :span="9" :offset="2">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">类型：</span>
-                            <el-select v-model="cardType" placeholder="请选择" class="dialogselect" @change="pageHandler(1)">
+                            <el-select v-model="cardType" placeholder="请选择" filterable clearable class="dialogselect" @change="pageHandler(1,pageSize)">
                                 <!-- <el-option label="全部" value=""></el-option> -->
                                 <el-option
                                         v-for="item in cardTypeOptions"
@@ -56,13 +56,14 @@
             <rt-page ref="page" :cur="pageNum" :total="total" @change="pageHandler" style="margin-bottom:30px"></rt-page>
         </con-head>
         <el-dialog
-                :title="listid?'编辑终端号':'添加终端号'"
+                :title="listid?'编辑手续费':'添加手续费'"
                 :visible.sync="dialogVisible"
-                custom-class="customdialog">
+                custom-class="customdialog"
+                v-loading="loading">
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">渠道</span>
-                    <el-select v-model="add.channel" placeholder="请选择" class="dialogselect" @change="checkCardtypeHandler(add.channel)" :disabled="!!add.id">
+                    <el-select v-model="add.channel" placeholder="请选择" filterable clearable class="dialogselect" @change="checkCardtypeHandler(add.channel)" :disabled="!!add.id">
                         <el-option
                                 v-for="item in channelOptions"
                                 :key="item.value"
@@ -73,10 +74,10 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">类型</span>
-                    <el-select v-model="add.cardType" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="add.cardType" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in cardTypeDialog"
-                                :key="item.value"
+                                :key="item.id"
                                 :label="item.text"
                                 :value="item.value">
                         </el-option>
@@ -85,9 +86,10 @@
                 <div class="dialoginput">
                     <span class="inputname">手续费</span>
                     <input class="inputtext" type="number" min="0" max="100" placeholder="请输入手续费" v-model="add.feeRate">
+                    <span>‰</span>
                 </div>
                 <div class="dialoginput">
-                    <span class="inputname inputnameauto">有效期截止</span>
+                    <span class="inputname inputnameauto">有效期</span>
                     <el-date-picker
                         class="inputtext"
                         v-model="add.validStartDate"
@@ -114,6 +116,7 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 datalist:[],
                 listid:'',
@@ -123,6 +126,7 @@
                 cardTypeOptions: [],
                 cardTypeDialog: [],
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 add:{
                     id: '',
@@ -134,7 +138,7 @@
                 },
                 columnData:[
                     { prop: 'channelText', label: '渠道'},
-                    { prop: 'feeRate', label: '手续费率' },
+                    { prop: 'feeRate', label: '手续费率‰' },
                     { prop: 'cardTypeText', label: '类型' },
                     { prop: 'validDate', label: '有效期' },
                     { prop: 'updateDate', label: '更新时间' },
@@ -145,11 +149,22 @@
             this.getChannelList();
             // this.cardTypeList();
         },
+        computed:{
+            poundage(){
+                return this.$root.menus.indexOf('/rebates/poundage') >= 0;
+            },
+            poundageOut(){
+                return this.$root.menus.indexOf('/rebates/poundageOut') >= 0;
+            }
+        },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     type: 0,
                     channel: this.channelId,
                     cardType: this.cardType
@@ -158,49 +173,71 @@
                     if(res.data.status === 200){
                         this.datalist = res.data.data.list;
                         this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
                     }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
             addbuilding(id){
+                this.loading = true;
                 if(id){
-                    this.$api.refundapi.updateUsingPUT({request:{
-                        id: this.add.id,
-                        type: 0,
-                        channel: this.add.channel,
-                        cardType: this.add.cardType,
-                        feeRate: this.add.feeRate,
-                        validStartDate: this.add.validStartDate
-                    }}).then(res=>{
-                        if(res.data.status === 200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
+                    if(this.add.feeRate > 0 && this.add.feeRate <= 1000){
+                        this.$api.refundapi.updateUsingPUT({request:{
+                            id: this.add.id,
+                            type: 0,
+                            channel: this.add.channel,
+                            cardType: this.add.cardType,
+                            feeRate: this.add.feeRate,
+                            validStartDate: this.add.validStartDate
+                        }}).then(res=>{
+                            if(res.data.status === 200){
+                                this.$message.success(res.data.msg);
+                                this.dialogVisible = false;
+                                this.loading = false;
+                                this.pageHandler(1,this.pageSize);
+                            }else{
+                                this.loading = false;
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                        });
+                    }else{
+                        this.$message.warning('手续费的值是在0～1000之间！');
+                    }
                 }else{
-                    this.$api.refundapi.addUsingPOST({request:{
-                        type: 0,
-                        channel: this.add.channel,
-                        cardType: this.add.cardType,
-                        feeRate: this.add.feeRate,
-                        validStartDate: this.add.validStartDate
-                    }}).then(res=>{
-                        if(res.data.status === 200){
-                            this.$message.success(res.data.msg);
-                            this.pageHandler(1);
-                        }else{
+                    if(this.add.feeRate > 0 && this.add.feeRate <= 1000){
+                        this.$api.refundapi.addUsingPOST({request:{
+                            type: 0,
+                            channel: this.add.channel,
+                            cardType: this.add.cardType,
+                            feeRate: this.add.feeRate,
+                            validStartDate: this.add.validStartDate
+                        }}).then(res=>{
+                            if(res.data.status === 200){
+                                this.$message.success(res.data.msg);
+                                this.dialogVisible = false;
+                                this.loading = false;
+                                this.pageHandler(1,this.pageSize);
+                            }else{
+                                this.loading = false;
+                                this.$message.error(res.data.msg);
+                            }
+                        }).catch(res=>{
+                            this.loading = false;
                             this.$message.error(res.data.msg);
-                        }
-                    }).catch(res=>{
-                        this.$message.error(res.data.msg);
-                    });
+                        });
+                    }else{
+                        this.loading = false;
+                        this.$message.warning('手续费的值是在0～1000之间！');
+                    }
                 }
-                this.dialogVisible = false;
             },
             dialogData(id, data){
                 this.listid = id;
@@ -216,6 +253,11 @@
                                 feeRate: data.feeRate,
                                 validStartDate: data.validStartDate
                             }
+                            this.$api.refundapi.getCardTypeUsingGET({type: this.add.channel}).then(res=>{
+                                if(res.data.status === 200){
+                                    this.cardTypeDialog = res.data.data;
+                                }
+                            })
                         }else{
                             this.$message.warning(res.data.msg);
                         }
@@ -236,15 +278,13 @@
                             this.$api.refundapi.deleteUsingDELETE({id: id}).then(res =>{
                                 if(res.data.status==200){
                                     this.$message.success(res.data.msg);
-                                    this.pageHandler(1);
+                                    this.pageHandler(1,this.pageSize);
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
                             }).catch(res => {
                                 this.$message.error(res.data.msg);
                             });
-                        }).catch(() => {
-                            $message("info", "已取消删除!");
                         });
                     }else{
                         this.$message.warning(res.data.msg);
@@ -257,15 +297,23 @@
                 })
             },
             cardTypeList(channelId){
-                this.$api.refundapi.getCardTypeUsingGET({type: channelId}).then(res=>{//列表类型
+                this.cardType='';
+                var param = { type: '' };
+                if(channelId >= 0 ){
+                    param.type = channelId;
+                } else {
+                    param.type = '';
+                }
+                this.$api.refundapi.getCardTypeUsingGET(param).then(res=>{//列表类型
                     if(res.data.status === 200){
                         this.cardTypeOptions = res.data.data;
-                        this.pageHandler(1);
+                        this.pageHandler(1,this.pageSize);
                     }
                 })
             },
-            checkCardtypeHandler(channelId){
-                this.$api.refundapi.getCardTypeUsingGET({type: channelId}).then(res=>{//添加和编辑根据渠道查类型
+            async checkCardtypeHandler(channelId){
+                this.add.cardType = '';
+                await this.$api.refundapi.getCardTypeUsingGET({type: channelId}).then(res=>{//添加和编辑根据渠道查类型
                     if(res.data.status === 200){
                         this.cardTypeDialog = res.data.data;
                     }
@@ -273,7 +321,14 @@
             },
             addHandler(){
                 this.dialogVisible = true;
-                this.add = {};
+                this.add = {
+                    id: '',
+                    type: 0,
+                    channel: '',
+                    cardType: '',
+                    feeRate: '',
+                    validStartDate: ''
+                };
             },
         },
         components:{

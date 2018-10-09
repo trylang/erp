@@ -1,22 +1,23 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="货品管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码/名称" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码/名称" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
-                            <span class="inputname">店铺</span>
-                            <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
+                            <span class="inputname inputnameauto">店铺</span>
+                            <el-select v-model="shopValue" placeholder="请选择" filterable clearable class="dialogselect" @change="shopSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in shopOptions"
                                         :key="item.id"
-                                        :label="item.shopName"
+                                        :label="item.shopCode+'('+item.shopName+')'"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
@@ -26,8 +27,9 @@
                 <el-row>
                     <el-col :span="9">
                         <div class="searchselect">
-                            <span class="inputname">货品组别</span>
-                            <el-select v-model="goodsValue" placeholder="请选择" class="dialogselect" @change="goodsSelect()">
+                            <span class="inputname inputnameauto">货品组别</span>
+                            <el-select v-model="goodsValue" placeholder="请选择" filterable clearable class="dialogselect" @change="goodsSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in goodsOptions"
                                         :key="item.id"
@@ -83,11 +85,11 @@
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
-                    <input class="inputtext" type="text" placeholder="请输入区域名称" v-model="goodsInfoData.goodsName">
+                    <input class="inputtext" type="text" placeholder="请输入名称" v-model="goodsInfoData.goodsName">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">货品组别</span>
-                    <el-select v-model="goodsInfoData.goodsTypeId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="goodsInfoData.goodsTypeId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in goodsOptions"
                                 :key="item.id"
@@ -98,7 +100,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">店铺</span>
-                    <el-select v-model="goodsInfoData.shopId" multiple placeholder="请选择" class="dialogselect">
+                    <el-select v-model="goodsInfoData.shopId" multiple placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in shopOptions"
                                 :key="item.id"
@@ -128,9 +130,11 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataList:[],
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 searchText:'',
                 shopValue:'',
@@ -163,7 +167,7 @@
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
@@ -178,21 +182,34 @@
                     id: '',
                     shopId: []
                 }
+                this.listId = '';
             },
             handleClose(){
                 this.dialogVisible = false;
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.listpgUsingGET_2({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     goodsCode:this.searchText,
                     goodsName:this.searchText,
                     goodsTypeId:this.goodsValue,
                     shopId:this.shopValue
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getShopList(){
@@ -230,17 +247,22 @@
                 })
             },
             async submitFormData(){
+                this.loading = true;
                 if(this.listId == '') {
                     await this.$api.rentapi.addUsingPOST_5({
                         request: this.goodsInfoData
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.goodsInfoData.id = this.listId;
@@ -249,11 +271,15 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },
@@ -267,7 +293,7 @@
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.$message.success(res.data.msg);
                         } else {
                             this.$message.error(res.data.msg);
@@ -276,10 +302,10 @@
                 })
             },
             shopSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             goodsSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             }
         },
         components:{

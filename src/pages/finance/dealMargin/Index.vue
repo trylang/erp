@@ -1,5 +1,9 @@
 <template>
-  <con-head title="保证金处理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/dealMargin" v-if="dealMargin">保证金处理</router-link>
+        <router-link to="/finance/dealMarginAudit" v-if="dealMarginAudit">保证金处理审核</router-link>
+    </div>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
@@ -8,8 +12,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getDealMarginList">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" filterable clearable class="dialogselect" @change="checkContractList(query.merchantId)">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -37,26 +41,21 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractCode" placeholder="请选择合同" @change="getDealMarginList()" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" placeholder="请选择合同" filterable clearable @change="getDealMarginList()" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.contractCode"
+                :label="item.contractAndShop"
                 :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>
-			</div>
-		</el-row>
     <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog title="保证金处理" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" title="保证金处理" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -77,11 +76,6 @@ export default {
   data() {
     return {
       header: [
-        {
-          label: "",
-          name: "checked",
-          type: "checkbox"
-        },
         {
           label: "处理单号",
           type: "text",
@@ -104,7 +98,7 @@ export default {
         },
         {
           label: "金额",
-          type: "text",
+          type: "fmoney",
           name: "dealAmount"
         },
         {
@@ -159,8 +153,8 @@ export default {
               class: "delete",
               click: (item) => {
                 Object.assign(this.dialog.param, item);
-                this.dialog.dialogVisible = true;
-                this.cancelsDialog(item, data);
+                // this.dialog.dialogVisible = true;
+                this.cancelsDialog(item);
               }
             },
             {
@@ -181,12 +175,12 @@ export default {
       ],
       dialog: {
         models: [{
-          label: '处理方式：',
+          label: '处理方式',
           name: 'typeText',
           type: 'text',
           placeholder: ''
         }, {
-          label: '处理金额：',
+          label: '处理金额',
           name: 'dealAmount',
           type: 'text',
           placeholder: '请输入'
@@ -197,6 +191,7 @@ export default {
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
+        loading: false,
         param: {
           typeText: "",
           dealAmount: "",
@@ -207,8 +202,10 @@ export default {
           name: "submit",
           type: "primary",
           disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              return item === (undefined || "");
+            let param = Object.assign({}, this.dialog.param);
+            delete param.remark;
+            return Object.values(param).some(item => {
+                return item === (undefined || "");
             });
           },
           click: () => {
@@ -261,28 +258,38 @@ export default {
           },300)
       }
   },
+  computed:{
+      dealMargin(){
+          return this.$root.menus.indexOf('/finance/dealMargin') >= 0;
+      },
+      dealMarginAudit(){
+          return this.$root.menus.indexOf('/finance/dealMarginAudit') >= 0;
+      }
+  },
   mounted() {
     this.getDealMarginList();
-    this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表 status:1 已确定
+    this.$api.rentapi.listIntentAndFormalUsingGET().then(res=>{ //商户列表
         this.selects.merchants = res.data.data;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
-    this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表 status:30 已确定
-        this.selects.contracts = res.data.data.list;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
+    })
+    this.checkContractList(-1); //合同下拉
   },
   methods: {
+    checkContractList(merchantId){
+        this.query.contractCode = '';
+        this.getDealMarginList();
+        let merchantIds = merchantId==-1?'' : merchantId;
+        this.$api.rentapi.listIntentAndFormalContractUsingGET({merchantId: merchantIds}).then(res=>{//合同列表
+            this.selects.contracts = res.data.data;
+        })
+    },
     getDealMarginList(page={}, callback){
         let params ={
             dealNumber: this.searchName,
             contractCode: this.query.contractCode,
             merchantId: this.query.merchantId,
             status: this.query.status,
-            pageNum: page.pageNum,
-            pageSize: page.pageSize
+            pageNum: this.query.pageNum,
+            pageSize: this.query.pageSize
         }
         this.$api.financeapi.listUsingGET_3(params).then(res=>{
             if(res.data.status === 200){
@@ -312,10 +319,12 @@ export default {
         })
     },
     getCurrentPage(pageNum) {
-      this.getDealMarginList({pageNum});
+      this.query.pageNum = pageNum;
+      this.getDealMarginList();
     },
     getpageSize(pageSize) {
-      this.getDealMarginList({pageSize});
+      this.query.pageSize = pageSize;
+      this.getDealMarginList();
     },
     filterIds() {
       const param = this.dataList.list.filter(item => {
@@ -361,18 +370,27 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog: function() {//编辑
-        this.dialog.dialogVisible = false;
+        this.dialog.loading = true;
         let params = {
             request: this.dialog.param
+        }
+        if(this.dialog.param.dealAmount < 0){
+          this.$message.info('处理金额不能小于0！');
+          this.dialog.loading = false;
+          return;
         }
         this.$api.financeapi.updateUsingPUT_1(params).then(res=>{
             if(res.data.status === 200){
                 this.$message.success(res.data.msg);
                 this.getDealMarginList();
+                this.dialog.dialogVisible = false;
+                this.dialog.loading = false;
             }else{
+                this.dialog.loading = false;
                 this.$message.error(res.data.msg);
             }
         }).catch(res=>{
+            this.dialog.loading = false;
             this.$message.error(res.data.msg);
         });
     },
@@ -392,12 +410,10 @@ export default {
         }).catch(res => {
             this.$message.error(res.data.msg);
         });
-      }).catch(() => {
-          $message("info", "已取消删除!");
-        });
+      });
     },
     cancelsDialog: function(item) {
-      this.$confirm("是否要取消该条数据?", "提示", {
+      this.$confirm("您确定继续当前操作？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -412,9 +428,7 @@ export default {
         }).catch(res => {
             this.$message.error(res.data.msg);
         });
-      }).catch(() => {
-          $message("info", "已取消!");
-        });
+      })
     }
   }
 };

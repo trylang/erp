@@ -4,7 +4,7 @@
       <el-col :span="15">
         <h3 :style="title.title_style" class="sleeping_rent">{{title.label}}<i v-if="title.ifIcon===true" class="iconfont icon-cir-qian icon-qian"></i></h3>
       </el-col>
-      <el-col :span="9">
+      <el-col :span="9" style="text-align: right; padding-right: .5rem;">
         <slot name="btn"></slot>
       </el-col>
     </el-row>
@@ -53,7 +53,7 @@ $cardsDeepColor: (
     background: #353c5f;
     vertical-align: baseline;
     display: inline-block;
-  }
+  } 
 }
 .rent_container {
   .rent_cash {
@@ -101,9 +101,16 @@ $cardsDeepColor: (
   }
 }
 
+@media print {
+  .sleeping_rent {
+    -webkit-print-color-adjust: exact;  
+  }
+}
+
 .icon-qian {
   color: nth($cardsDeepColor, 3);
   padding-left: .3rem
 }
+
 </style>
 

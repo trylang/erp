@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="业态管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <el-button type="primary" slot="append" @click="getInfoData()">修改</el-button>
@@ -17,13 +17,13 @@
             </div>
         </con-head>
         <el-dialog
-                :title="listId?'编辑业态':'添加业态'"
+                :title="addInfoData.id?'编辑业态':'添加业态'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname">编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
+                    <input class="inputtext" type="text" placeholder="请输入编码" v-model="addInfoData.businessCode" :disabled="addInfoData.id != ''">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">名称</span>
@@ -46,6 +46,7 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataTreeList:[],
                 addInfoData:{
@@ -99,6 +100,7 @@
                 }
             },
             async addTreeData(){
+                this.loading = true;
                 if(this.addInfoData.id == '') {
                     this.addInfoData.pid = this.treeData.id;
                     await this.$api.rentapi.addUsingPOST_2({
@@ -115,9 +117,13 @@
                             this.$message.success(res.data.msg);
                             this.getDataList();
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     await this.$api.rentapi.updateUsingPUT_4({
@@ -133,9 +139,13 @@
                             this.$message.success(res.data.msg);
                             this.getDataList();
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
             },

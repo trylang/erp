@@ -55,7 +55,7 @@ export default {
             name: "totalAmount",
             left_span: 2,
             right_span: 18,
-            type: "text"
+            type: "fmoney"
           },
           {
             label: "收款时间",
@@ -89,7 +89,7 @@ export default {
             }
           },
           {
-            label: "调整内容",
+            label: "收款方式",
             name: "methods",
             left_span: 2,
             right_span: 18,
@@ -97,13 +97,13 @@ export default {
             table: [
               {
                 label: "收款方式",
-                name: "paymentCode",
+                name: "paymentName",
                 type: "text"
               },
               {
                 label: "收款金额",
                 name: "receivedAmount",
-                type: "text"
+                type: "fmoney"
               },
               {
                 label: "收款日期",
@@ -133,7 +133,7 @@ export default {
         this.$api.financeapi.detailUsingGET_3({ receiptNumber: id }).then(returnObj => {
             if (returnObj.data.status === 200) {
                 let data = returnObj.data.data;
-                data.list = data.detailList;
+                data.list = data.list;
                 this.details = data;
             }
       });

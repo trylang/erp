@@ -1,21 +1,21 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/admanage">广告位管理</router-link>
-                <router-link to="/inner/adaudit">广告位审核</router-link>
+                <router-link to="/inner/admanage" v-if="admanage">广告位管理</router-link>
+                <router-link to="/inner/examine" v-if="adaudit">广告位审核</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入单元号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼宇</span>
-                            <el-select v-model="buildValue" placeholder="请选择" class="dialogselect" @change="buildSelect(buildValue)">
+                            <el-select v-model="buildValue" placeholder="请选择" filterable clearable class="dialogselect" @change="buildSelect(buildValue)">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in buildOptions"
@@ -31,7 +31,8 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">楼层</span>
-                            <el-select v-model="floorValue" placeholder="请选择" class="dialogselect" @change="floorSelect()">
+                            <el-select v-model="floorValue" placeholder="请选择" filterable clearable class="dialogselect" @change="floorSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in floorOptions"
                                         :key="item.id"
@@ -79,9 +80,11 @@
         name: "unit",
         data(){
             return{
+                loading: false,
                 dataList:[],
                 searchText:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 columnData:[
                     { type: 'selection', width:'50'},
@@ -91,15 +94,10 @@
                     { prop: 'rentAdvertisingTypeName', label: '类型'},
                     { prop: 'advertisingStandard', label: '规格' },
                     { prop: 'remark', label: '备注'},
-                    { prop: 'statusName', label: '状态' }
+                    { prop: 'statusName', label: '状态' },
+                    { prop: 'updateUser', label: '操作人'}
                 ],
-                buildOptions:[{
-                    buildName:'商场',
-                    id:1
-                }, {
-                    buildName:'写字楼',
-                    id:2
-                }],
+                buildOptions:[],
                 floorOptions:[],
                 buildValue:'',
                 floorValue:'',
@@ -122,12 +120,21 @@
             }
         },
         mounted(){
+            this.getBuildingList();
             // this.getFloorList();
+        },
+        computed:{
+            admanage(){
+                return this.$root.menus.indexOf('/inner/admanage') >= 0;
+            },
+            adaudit(){
+                return this.$root.menus.indexOf('/inner/examine') >= 0;
+            }
         },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
@@ -144,12 +151,15 @@
                     this.statesId = '';
                     this.statusId = status.id;
                 }
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
-            async getDataList(pageNum,pageSize){
+            async getDataList(p,pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.listUsingGET_15({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     code:this.searchText,
                     buildId:this.buildValue,
                     floorId:this.floorValue,
@@ -157,8 +167,22 @@
                     status:this.statusId,
                     states:this.statesId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
+                })
+            },
+            async getBuildingList(){
+                await this.$api.rentapi.listUsingGET_4().then(res=>{
+                    this.buildOptions = res.data.data;
                 })
             },
             async getFloorList(buildId){
@@ -169,11 +193,11 @@
                 })
             },
             buildSelect(buildId){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
                 this.getFloorList(buildId);
             },
             floorSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -181,13 +205,12 @@
                 });
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.updateStatusUsingPOST({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
                         this.$message.error(res.data.msg);
                     }

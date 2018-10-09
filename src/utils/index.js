@@ -46,12 +46,19 @@ export function _uuid() {
 }
 
 export function formatTree(tree, param = {}) {
+  if (Object.keys(tree).length === 0) return [];
   let formatTree = [];
+  const obj = {
+    '����': 0,
+    '����':2,
+    '���λ': 3,
+    'д��¥': 1
+  };
   for (let key in tree) {
     formatTree.push({
       id: _uuid(),
       label: key,
-      children: tree[key].length > 0 ? tree[key] : null,
+      children: tree[key] && tree[key].length > 0 ? tree[key] : null,
       disabled: param.onlyChild
     });
   };
@@ -109,38 +116,8 @@ export function filterTree(tree, name) {
     }    
   };
   
-  func(tree, name);
+  func(tree, name.trim());
   return treeAry;
-}
-
-export function throttle(fn,context,delay,text,mustApplyTime){
-  clearTimeout(fn.timer);
-  fn._cur=Date.now();  //记录当前时间
-
-  if(!fn._start){      //若该函数是第一次调用，则直接设置_start,即开始时间，为_cur，即此刻的时间
-    fn._start=fn._cur;
-  }
-  if(fn._cur-fn._start>mustApplyTime){ 
-  //当前时间与上一次函数被执行的时间作差，与mustApplyTime比较，若大于，则必须执行一次函数，若小于，则重新设置计时器
-     fn.call(context,text);
-     fn._start=fn._cur;
-  }else{
-    fn.timer=setTimeout(function(){
-    fn.call(context,text);
-    },delay);
-  }
-}
-
-export function changImg(dom, cb){  
-  const file = dom.files[0];
-  if (!(/^image\/.*$/i.test(file.type))) {  
-    return; 
-  }
-  var freader = new FileReader();  
-  freader.readAsDataURL(file);  
-  freader.onload = function(e) {
-    if(cb) cb(file, e.target.result);    
-  };
 }
 
 export function onlyNumWord(value) {
@@ -165,4 +142,15 @@ export function numPartmax2(value) {
   const val = value + '';
   if (val.indexOf('.') >= 0 && val.split('.')[1].length > 2) return false;
   else return true;
+}
+
+export function reExport(content, string, value, time=120) {
+  content[string] = value;
+  var timer = setInterval(function () {
+      time--;
+      if (time === 0) {
+          content[string] = !value;
+          clearInterval(timer)
+      }
+  }, 1000)
 }

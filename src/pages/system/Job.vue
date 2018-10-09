@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="职位管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">所属部门</span>
-                    <el-select v-model="add.departmentId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="add.departmentId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in options"
                                 :key="item.id"
@@ -63,11 +63,13 @@
         name: "job",
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 datalist:[],
                 listid:'',
                 searchName: '',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 add:{
                     id: '',
@@ -90,26 +92,35 @@
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name: this.searchName
                 }
                 this.$api.systemapi.listUsingGET_5(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
             addbuilding(id){
-                console.log(11,id)
               var reg=/^[\u4E00-\u9FA5A-Za-z0-9]{2,20}$/;
               if(!this.add.positionName){
                 this.$message.error('职位名称不能为空');
@@ -117,6 +128,7 @@
                 this.$message.error('职位名称只能输入汉字字母数字，输入至少1位最多20位');
               }else {
                 if (id) {
+                    this.loading = true;
                   this.$api.systemapi.putJob({
                     request: {
                       id: this.add.id,
@@ -125,16 +137,20 @@
                     }
                   }).then(res => {
                     if (res.data.status == 200) {
+                        this.loading = false;
+                        this.dialogVisible = false;
                       this.$message.success(res.data.msg);
-                      this.pageHandler(1);
-                      this.dialogVisible = false;
+                      this.pageHandler(1,this.pageSize);
                     } else {
+                        this.loading = false;
                       this.$message.error(res.data.msg);
                     }
                   }).catch(res => {
+                      this.loading = false;
                     this.$message.error(res.data.msg);
                   });
                 } else {
+                    this.loading = true;
                   this.$api.systemapi.saveUsingPOST_3({
                     request: {
                       positionName: this.add.positionName,
@@ -142,13 +158,16 @@
                     }
                   }).then(res => {
                     if (res.data.status == 200) {
+                        this.loading = false;
+                        this.dialogVisible = false;
                       this.$message.success(res.data.msg);
-                      this.pageHandler(1);
-                      this.dialogVisible = false;
+                      this.pageHandler(1,this.pageSize);
                     } else {
+                        this.loading = false;
                       this.$message.error(res.data.msg);
                     }
                   }).catch(res => {
+                      this.loading = false;
                     this.$message.error(res.data.msg);
                   });
                 }
@@ -181,7 +200,7 @@
                     this.$api.systemapi.deleteUsingDELETE_2({id: id}).then(res =>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }

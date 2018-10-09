@@ -1,5 +1,5 @@
 <template>
-    <div class="savebox">
+    <div class="savebox" v-loading.fullscreen="loading">
         <div class="savecont">
         <blank-head title="添加商户"></blank-head>
         <el-row class="commonbox">
@@ -14,7 +14,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">商户类型</span>
-                    <el-select v-model="merchantInfoData.merchantType" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="merchantInfoData.merchantType" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in merchantTypeOption"
                                 :key="item.id"
@@ -25,7 +25,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">商户性质</span>
-                    <el-select v-model="merchantInfoData.merchantNature" placeholder="选填" class="dialogselect">
+                    <el-select v-model="merchantInfoData.merchantNature" placeholder="选填" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in merchantNatureOption"
                                 :key="item.id"
@@ -104,11 +104,13 @@
                     <el-upload
                         :action="Upload()"
                         :data="{type: 0}"
+                        :headers="headers"
                         multiple
                         list-type="picture-card"
+                        :before-upload="beforeAvatarUpload"
                         :on-success="handleSuccess"
                         :on-error="handleError"
-                        :on-remove="handleRemove"
+                        :on-remove="handleRemove"                       
                         :file-list="merchantInfoData.businessLicenseImg">
                         <i class="el-icon-plus"></i>
                     </el-upload>
@@ -130,8 +132,10 @@
                         <el-upload
                             :action="Upload()"
                             :data="{type: 1}"
+                            :headers="headers"
                             multiple
                             list-type="picture-card"
+                            :before-upload="beforeAvatarUpload"
                             :on-success="handleSuccess"
                             :on-error="handleError"
                             :on-remove="handleRemove"
@@ -157,8 +161,10 @@
                         <el-upload
                             :action="Upload()"
                             :data="{type: 2}"
+                            :headers="headers"
                             multiple
                             list-type="picture-card"
+                            :before-upload="beforeAvatarUpload"
                             :on-success="handleSuccess"
                             :on-error="handleError"
                             :on-remove="handleRemove"
@@ -183,9 +189,11 @@
                     <div class="uploadlist">
                         <el-upload
                             :action="Upload()"
-                            :data="{type: 2}"
+                            :data="{type: 3}"
+                            :headers="headers"
                             multiple
                             list-type="picture-card"
+                            :before-upload="beforeAvatarUpload"
                             :on-success="handleSuccess"
                             :on-error="handleError"
                             :on-remove="handleRemove"
@@ -210,9 +218,11 @@
                     <div class="uploadlist">
                         <el-upload
                             :action="Upload()"
-                            :data="{type: 2}"
+                            :data="{type: 4}"
+                            :headers="headers"
                             multiple
                             list-type="picture-card"
+                            :before-upload="beforeAvatarUpload"
                             :on-success="handleSuccess"
                             :on-error="handleError"
                             :on-remove="handleRemove"
@@ -229,196 +239,225 @@
 </template>
 
 <script>
-    import BlankHead from '../../../components/BlankHead';
-    import { changImg } from '@/utils/';
-    export default {
-        name: "add-merchant",
-        data(){
-            return{
-                imgIdObjs: {},
-                merchantInfoData:{
-                    contactLstParams:[],
-                    id:'',
-                    merchantCode:'',
-                    merchantName:'',
-                    merchantEnglishName:'',
-                    merchantType:'',
-                    merchantNature:'',
-                    companyName:'',
-                    adress:'',
-                    businessLicenseNumber:'',
-                    businessPermitNumber:'',
-                    trademarkRegistrationNumber:'',
-                    legalPersonId:'',
-                    otherCertificate:'',
-                    mainContractId:'',
-                    imgIds: [],
-                    businessLicenseImg:[],
-                    businessPermitImg:[],
-                    trademarkRegistrationImg:[],
-                    legalPersonIdImg:[],
-                    otherCertificateImg:[],
-                },
-                merchantTypeOption:[{
-                    name:'商场',
-                    id:0
-                },{
-                    name:'写字楼',
-                    id:1
-                },{
-                    name:'广告位',
-                    id:3
-                },{
-                    name:'场地',
-                    id:2
-                }],
-                merchantNatureOption:[{
-                    name:'法人',
-                    id:0
-                },{
-                    name:'个体',
-                    id:1
-                }],
-          }
+import BlankHead from "../../../components/BlankHead";
+import { changImg } from "@/utils/";
+export default {
+  name: "add-merchant",
+  data() {
+    return {
+      loading: false,
+      imgIdObjs: {},
+      merchantInfoData: {
+        contactLstParams: [],
+        id: "",
+        merchantCode: "",
+        merchantName: "",
+        merchantEnglishName: "",
+        merchantType: "",
+        merchantNature: "",
+        companyName: "",
+        adress: "",
+        businessLicenseNumber: "",
+        businessPermitNumber: "",
+        trademarkRegistrationNumber: "",
+        legalPersonId: "",
+        otherCertificate: "",
+        mainContractId: "",
+        imgIds: [],
+        businessLicenseImg: [],
+        businessPermitImg: [],
+        trademarkRegistrationImg: [],
+        legalPersonIdImg: [],
+        otherCertificateImg: []
+      },
+      merchantTypeOption: [
+        {
+          name: "商场",
+          id: 0
         },
-        mounted(){
-            this.getMerchantInfo();
+        {
+          name: "写字楼",
+          id: 1
         },
-        methods:{
-            Upload() {
-                return this.HOST + "/rent/merchant/uploads";
-            },
-            handleSuccess(res, file, fileList) {
-                if (res.status === 200) {
-                    this.$message.success('上传成功');
-                    let type = res.data[0].type;
-                    if (!this.imgIdObjs[type]) {
-                       this.imgIdObjs[type] = [];
-                    }
-                    switch(type) {
-                        case 0:
-                            this.businessLicenseImg = res.data;
-                            break;
-                        case 1:
-                            this.businessPermitImg = res.data;
-                            break;
-                        case 2:
-                            this.trademarkRegistrationImg = res.data;
-                            break;
-                        case 3:
-                            this.legalPersonIdImg = res.data;
-                            break;
-                        case 4:
-                            this.otherCertificateImg = res.data;
-                            break;
-                    }
-                    this.imgIdObjs[type] = res.data;
-
-                } else {
-                    // businessLicenseImg.splice(fileList.indexOf(file),1);
-                    // this.businessLicenseImg = fileList;
-                    this.$message.error(res.msg);
-                }
-            },
-            handleError(err) {
-                this.$message.error(err.message);
-            },
-            async handleRemove(file, fileList) {
-                await this.$api.rentapi.deleteImgUsingDELETE_1({id: file.id}).then(res => {
-                    if(res.data.status === 200) {
-                        switch(file.type) {
-                            case 0:
-                                this.businessLicenseImg = fileList;
-                                break;
-                            case 1:
-                                this.businessPermitImg = fileList;
-                                break;
-                            case 2:
-                                this.trademarkRegistrationImg = fileList;
-                                break;
-                            case 3:
-                                this.legalPersonIdImg = fileList;
-                                break;
-                            case 4:
-                                this.otherCertificateImg = fileList;
-                                break;
-                        }
-                    }
-                });
-
-            },
-            addItem(){
-                if(!this.merchantInfoData.contactLstParams) this.merchantInfoData.contactLstParams = [];
-                this.merchantInfoData.contactLstParams.push({
-                    id:'',
-                    responsiblePerson:'',
-                    contactNumber:'',
-                    fax:'',
-                    mainOrNot:false
-                });
-            },
-            async submitFormData(){
-                console.log(this.merchantInfoData);
-                console.log(this.imgIdObjs);
-                if (!this.merchantInfoData.imgIds) this.merchantInfoData.imgIds = [];
-                for(let key in this.imgIdObjs) {
-                    let imgs = this.imgIdObjs[key].map(item => item.id);
-                    this.merchantInfoData.imgIds.push(...imgs);
-                }
-
-                if(this.$route.params.merchantId == 0) {
-                    await this.$api.rentapi.addUsingPOST_8({
-                        // $config:{ headers: { 'Content-Type':'multipart/form-data'}},
-                        request: this.merchantInfoData
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.$message.success(res.data.msg);
-                            this.$router.push('/inner/merchants');
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
-                }else{
-                    this.merchantInfoData.id = this.$route.params.merchantId;
-                    await this.$api.rentapi.updateUsingPUT_9({
-                        request: this.merchantInfoData
-                    }).then(res => {
-                        if (res.data.status == 200) {
-                            this.$message.success(res.data.msg);
-                            this.$router.push('/inner/merchants');
-                        } else {
-                            this.$message.error(res.data.msg);
-                        }
-                    })
-                }
-            },
-            async delContactLists(contactLists){
-                let index = this.merchantInfoData.contactLstParams.indexOf(contactLists)
-                if (index !== -1) {
-                    this.merchantInfoData.contactLstParams.splice(index, 1)
-                }
-            },
-            async getMerchantInfo(){
-                if(this.$route.params.merchantId != 0) {
-                    this.$api.rentapi.detailUsingGET_6({
-                        id: this.$route.params.merchantId
-                    }).then(res => {
-                        console.log('detail',res.data.data);
-                        this.merchantInfoData = res.data.data;
-                    })
-                }
-            },
-            mainOrNotChange(_index,listAry){
-                this.merchantInfoData.contactLstParams.forEach((item,index)=>{
-                    item.mainOrNot = false;
-                });
-                listAry.mainOrNot = true;
-            }
+        {
+          name: "广告位",
+          id: 3
         },
-        components:{
-            BlankHead
+        {
+          name: "场地",
+          id: 2
         }
+      ],
+      merchantNatureOption: [
+        {
+          name: "法人",
+          id: 0
+        },
+        {
+          name: "个体",
+          id: 1
+        }
+      ],
+      headers: {
+        token: localStorage.getItem("erp_token")
+      }
+    };
+  },
+  mounted() {
+    this.getMerchantInfo();
+  },
+  methods: {
+    beforeAvatarUpload(file) {
+      const types = ["image/jpeg", "image/png", "image/gif", "image/svg"];
+      const isJPG = types.indexOf(file.type) >= 0;
+      if (!isJPG) {
+        this.$message.error("只能上传图片格式!");
+      }    
+      return isJPG;
+    },
+    Upload() {
+      return this.HOST + "/rent/merchant/upload";
+    },
+    handleSuccess(res, file, fileList) {
+      if (res.status === 200) {
+        this.$message.success("上传成功");
+        let type = res.data.type;
+        switch (type) {
+          case 0:
+            this.merchantInfoData.businessLicenseImg.push(res.data);
+            break;
+          case 1:
+            this.merchantInfoData.businessPermitImg.push(res.data);
+            break;
+          case 2:
+            this.merchantInfoData.trademarkRegistrationImg.push(res.data);
+            break;
+          case 3:
+            this.merchantInfoData.legalPersonIdImg.push(res.data);
+            break;
+          case 4:
+            this.merchantInfoData.otherCertificateImg.push(res.data);
+            break;
+        }
+        if (!this.merchantInfoData.imgIds) {
+          this.merchantInfoData.imgIds = [];
+        }
+        this.merchantInfoData.imgIds.push(res.data.id);
+      } else {
+        this.$message.error(res.msg);
+      }
+    },
+    handleError(err) {
+      this.$message.error(err.message);
+    },
+    async handleRemove(file, fileList) {
+      if (file.status === 'ready') return;
+      await this.$api.rentapi
+        .deleteImgUsingDELETE_1({ id: file.id })
+        .then(res => {
+          if (res.data.status === 200) {
+            switch (file.type) {
+              case 0:
+                this.merchantInfoData.businessLicenseImg = fileList;
+                break;
+              case 1:
+                this.merchantInfoData.businessPermitImg = fileList;
+                break;
+              case 2:
+                this.merchantInfoData.trademarkRegistrationImg = fileList;
+                break;
+              case 3:
+                this.merchantInfoData.legalPersonIdImg = fileList;
+                break;
+              case 4:
+                this.merchantInfoData.otherCertificateImg = fileList;
+                break;
+            }
+            this.merchantInfoData.imgIds = fileList.map(item => item.id);
+          }
+        });
+    },
+    addItem() {
+      if (!this.merchantInfoData.contactLstParams)
+        this.merchantInfoData.contactLstParams = [];
+      this.merchantInfoData.contactLstParams.push({
+        id: "",
+        responsiblePerson: "",
+        contactNumber: "",
+        fax: "",
+        mainOrNot: false
+      });
+    },
+    async submitFormData() {
+      this.loading = true;
+      if (this.$route.params.merchantId == 0) {
+        await this.$api.rentapi
+          .addUsingPOST_8({
+            // $config:{ headers: { 'Content-Type':'multipart/form-data'}},
+            request: this.merchantInfoData
+          })
+          .then(res => {
+            if (res.data.status == 200) {
+              this.loading = false;
+              this.$message.success(res.data.msg);
+              this.$router.push("/inner/merchants");
+            } else {
+              this.loading = false;
+              this.$message.error(res.data.msg);
+            }
+          })
+          .catch(res => {
+            this.loading = false;
+          });
+      } else {
+        this.merchantInfoData.id = this.$route.params.merchantId;
+        await this.$api.rentapi
+          .updateUsingPUT_9({
+            request: this.merchantInfoData
+          })
+          .then(res => {
+            if (res.data.status == 200) {
+              this.loading = false;
+              this.$message.success(res.data.msg);
+              this.$router.push("/inner/merchants");
+            } else {
+              this.loading = false;
+              this.$message.error(res.data.msg);
+            }
+          })
+          .catch(res => {
+            this.loading = false;
+          });
+      }
+    },
+    async delContactLists(contactLists) {
+      let index = this.merchantInfoData.contactLstParams.indexOf(contactLists);
+      if (index !== -1) {
+        this.merchantInfoData.contactLstParams.splice(index, 1);
+      }
+    },
+    async getMerchantInfo() {
+      if (this.$route.params.merchantId != 0) {
+        this.$api.rentapi
+          .detailUsingGET_6({
+            id: this.$route.params.merchantId
+          })
+          .then(res => {
+            this.merchantInfoData = res.data.data;
+          });
+      }
+    },
+    mainOrNotChange(_index, listAry) {
+      this.merchantInfoData.contactLstParams.forEach((item, index) => {
+        item.mainOrNot = false;
+      });
+      listAry.mainOrNot = true;
     }
+  },
+  components: {
+    BlankHead
+  }
+};
 </script>
 
 <style scoped>

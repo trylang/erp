@@ -1,26 +1,26 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/intention">合同管理</router-link>
-                <router-link to="/inner/intentionaudit">合同确认</router-link>
+                <router-link to="/inner/intention" v-if="intention">合同管理</router-link>
+                <router-link to="/inner/intentionaudit" v-if="intentionaudit">合同确认</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
-                            <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
+                            <el-select v-model="merchantValue" placeholder="请选择" filterable clearable class="dialogselect" @change="merchantSelect()">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in merchantOptions"
                                         :key="item.id"
-                                        :label="item.merchantName"
+                                        :label="item.name"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
@@ -31,7 +31,7 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">品牌</span>
-                            <el-select v-model="brandValue" placeholder="请选择" class="dialogselect" @change="brandSelect()">
+                            <el-select v-model="brandValue" placeholder="请选择" filterable clearable class="dialogselect" @change="brandSelect()">
                                 <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in brandOptions"
@@ -54,7 +54,7 @@
             </div>
         </con-head>
         <con-head>
-            <div class="btn"><button @click="postConfirmData">确定</button></div>
+            <div class="btn"><button :disabled="isDisabled" @click="postConfirmData">确定</button></div>
             <div class="mainbox">
                 <data-table :tableData="dataList" :colConfigs="columnData" @listSelected="childData">
                 </data-table>
@@ -72,12 +72,15 @@
         name: "index",
         data(){
             return{
+                loading: false,
+                isDisabled:false,
                 dataList:[],
                 searchText:'',
                 merchantValue:'',
                 brandValue:'',
                 statusId:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 merchantOptions:[],
                 brandOptions:[],
@@ -112,10 +115,18 @@
             this.getBrandList();
             this.activeNameSwitch();
         },
+        computed:{
+            intention(){
+                return this.$root.menus.indexOf('/inner/intention') >= 0;
+            },
+            intentionaudit(){
+                return this.$root.menus.indexOf('/inner/intentionaudit') >= 0;
+            }
+        },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
@@ -124,21 +135,33 @@
                 localStorage.setItem('activeName',1)
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.confirmByStatusUsingGET({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     contractCode: this.searchText,
                     merchantId: this.merchantValue,
                     brandId: this.brandValue,
                     status:this.statusId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.listUsingGET_12({
-                    status:1
+                await this.$api.rentapi.doweListUsingGET({
+                    type:4
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
                 })
@@ -156,13 +179,13 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.statusId = status.id;
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             merchantSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             brandSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -170,16 +193,21 @@
                 });
             },
             async postConfirmData(){
+                this.isDisabled = true;
                 await this.$api.rentapi.confirmUsingPOST({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
+                        this.isDisabled = false;
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
+                        this.isDisabled = false;
                         this.$message.error(res.data.msg);
                     }
-                })
+                }).catch(res=>{
+                    this.isDisabled = false;
+                });
             }
         },
         components:{

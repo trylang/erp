@@ -160,7 +160,6 @@
                     });
                     this.itemList = res.data.data;
                 });
-                console.log(this.itemList)
             },
             async selectChange(index,id,value){
                 await this.$api.systemapi.availItemUsingPUT({
@@ -195,8 +194,8 @@
                         this.$message.success(res.data.msg);
                         this.getItemList(this.addDict.dictTypeCode);
                         this.addDict = {
-                            dictTypeId: null,
-                            dictTypeCode: '',
+                            dictTypeId: this.addDict.dictTypeId,
+                            dictTypeCode: this.addDict.dictTypeCode,
                             name: '',
                             value: '',
                             sort: null

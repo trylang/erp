@@ -1,16 +1,20 @@
 <template>
-  <con-head title="结算单调整管理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/accountAdjust" v-if="accountAdjust">结算单调整管理</router-link>
+        <router-link to="/finance/accountAdjustAudit" v-if="accountAdjustAudit">结算单调整审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="linkTo('accountAdjust/addAdjustment')">调整</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
-          <input type="text" placeholder="请输入收款单号\合同号\票据号" v-model="query.settleNo" @keyup.enter="getCostAdjust"><i class="iconfont icon-sousuo"></i>
+          <input type="text" placeholder="请输入结算单号/合同号" v-model="query.settleNo" @keyup.enter="getCostAdjust"><i class="iconfont icon-sousuo"></i>
         </div>
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" @change="getCostAdjust" placeholder="商户名称" class="dialogselect">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" @change="query.contractCode='',getCostAdjust(), getMerchantId()" filterable clearable placeholder="商户名称" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -33,24 +37,19 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractId" @change="getCostAdjust" placeholder="合同" class="dialogselect">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" @change="getCostAdjust" placeholder="合同" filterable clearable class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
-                :key="item.id"
-                :label="item.contractCode"
-                :value="item.id">
+                :key="item.contractCode"
+                :label="item.contractAndShop"
+                :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>	
-			</div>
-		</el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
 
     <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
@@ -64,7 +63,7 @@ import { $message } from "../../../utils/notice";
 import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
-import { queryAccountGroup, queryMerchant, queryContract } from "@/utils/rest/financeAPI";
+import { queryMerchant, queryContract, queryMerchantContract } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
@@ -76,11 +75,11 @@ export default {
   data() {
     return {
       header: [
-        {
-          label: "",
-          name: "checked",
-          type: "checkbox"
-        },
+        // {
+        //   label: "",
+        //   name: "checked",
+        //   type: "checkbox"
+        // },
         {
           label: "结算单号",
           type: "text",
@@ -115,9 +114,9 @@ export default {
           type: "status",
           name: "status",
           option: {
-            '0': '新增',
-            '1': '已确认',
-            '2': '取消',
+            '10': '新增',
+            '20': '已确认',
+            '30': '取消',
           }
         },
         {
@@ -139,7 +138,7 @@ export default {
               class: "edit",
               click: function(item) {
                 Object.assign(this.dialog.param, item);
-                this.$router.push({path: '/finance/accountAdjust/addAdjustment', query: { billId: item.billId }})
+                this.$router.push({path: '/finance/accountAdjust/addAdjustment', query: { billId: item.billId, settleNumber: item.settleNumber }})
               }.bind(this)
             },
             {
@@ -197,12 +196,20 @@ export default {
       query: {
         settleNo: '',
         merchantId: '',
-        contractId: '',
+        contractCode: '',
         status: ''
       }
     };
   },
   mounted() {},
+  computed:{
+      accountAdjust(){
+          return this.$root.menus.indexOf('/finance/accountAdjust') >= 0;
+      },
+      accountAdjustAudit(){
+          return this.$root.menus.indexOf('/finance/accountAdjustAudit') >= 0;
+      }
+  },
   methods: {
     linkTo(path) {
       this.$router.push({ path });
@@ -216,22 +223,21 @@ export default {
       this.getCostAdjust();
     },
     getCurrentPage(pageNum) {
-      this.getCostAdjust({pageNum});
+      this.query.pageNum = pageNum;
+      this.getCostAdjust();
     },
     getpageSize(pageSize) {
-      this.getCostAdjust({pageSize});
+      this.query.pageSize = pageSize;
+      this.getCostAdjust();
     },
     deleteDialog: function(item) {
-      this.$confirm("此操作将永久删除该结算调整, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该数据，是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
           this.deleteCostAdjust(item.id);
-        })
-        .catch(() => {
-          $message("info", "已取消删除!");
         });
     },
     filterIds() {
@@ -252,21 +258,21 @@ export default {
       let params = {
         settleNo: this.query.settleNo,
         merchantId: this.query.merchantId,
-        contractId: this.query.contractId,
+        contractCode: this.query.contractCode,
         status: this.query.status,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.manageListUsingGET_2(params).then(res => {
         const data = res.data;
         if(data.status === 200) {
           data.data.list.forEach(item => {
             item.checked = false;
-            if (item.status === 0 || item.status === 2) {
+            if (item.status === 10 || item.status === 30) {
               item.showEdit = true;
               item.showCancel = false;
             }
-            if (item.status === 1) {
+            if (item.status === 20) {
               item.showEdit = false;
               item.showCancel = true;
             }
@@ -304,27 +310,44 @@ export default {
       });
     },
     async cancelCostAdjust(param) {
-      let params = {
-        id: param.id
-      };
-      await this.$api.financeapi.cancelUsingPUT_3(params).then(returnObj => {
-        if(returnObj.data.status === 200) {
-          this.getCostAdjust({}, () => {
-            $message("success", "取消成功!");
-          });
-        } else {
-          $message("error", returnObj.data.msg);
-        }       
-      });
+        this.$confirm("您确定继续当前操作？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          let params = {
+            id: param.id
+          }
+        this.$api.financeapi.cancelUsingPUT_3(params).then(returnObj => {
+            if(returnObj.data.status === 200) {
+              this.getCostAdjust({}, () => {
+                $message("success", "取消成功!");
+              });
+            } else {
+              $message("error", returnObj.data.msg);
+            }       
+          })
+            .catch(res => {
+              this.$message.error(res.data.msg);
+            });
+        })
+    },
+    async getMerchantId(){
+      this.$api.rentapi
+        .getContractShopByMerchantUsingGET({ merchantId: this.query.merchantId })
+        .then(res => {
+          this.selects.contracts = res.data.data;
+        });
     },
     async init() {
-      let [accountGroup, merchants, contracts] = await Promise.all([queryAccountGroup(), queryMerchant(), queryContract()]); 
+      let [merchants, merchantsContracts] = await Promise.all([
+        queryMerchant(), queryMerchantContract()
+      ]);
       this.selects.merchants = merchants.data;
-      this.selects.contracts = contracts.data.list;
+      this.selects.contracts = merchantsContracts ? merchantsContracts.data : [];
       await this.getCostAdjust();
     }
   },
-  computed: {},
   watch:{
     'query.settleNo': function(){
       this.$delay(()=>{

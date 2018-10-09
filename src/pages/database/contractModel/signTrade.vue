@@ -1,7 +1,7 @@
 <template>
     <div>
         <con-head title="签约统计（商铺业态）">
-            <div class="echarts" style="width:100%; height:450px;">
+            <div class="echarts" style="width:100%; height:550px;">
                 <IEcharts :option="pie" :loading="loading" />
             </div>
         </con-head>
@@ -14,20 +14,26 @@
     import 'echarts/lib/chart/pie';
     import 'echarts/lib/component/legend';
     import 'echarts/lib/component/tooltip';
+    import 'echarts/lib/component/title';
     export default {
         data(){
             return{
                 loading: false,
                 pie: {
+                    title : {
+                        text: '签约业态占比',
+                        x:'center'
+                    },
                     tooltip : {
                         trigger: 'item',
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
                     legend: {
                         orient: 'vertical',
-                        left: 'right',
                         top:'center',
-                        data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎'],
+                        right: 20,
+                        bottom: 20,
+                        data: [],
                         padding: [0,20,10,10]
                     },
                     series : [
@@ -35,14 +41,8 @@
                             name: '签约统计',
                             type: 'pie',
                             radius : '70%',
-                            center: ['50%', '50%'],
-                            data:[
-                                {value:335, name:'直接访问'},
-                                {value:310, name:'邮件营销'},
-                                {value:234, name:'联盟广告'},
-                                {value:135, name:'视频广告'},
-                                {value:1548, name:'搜索引擎'}
-                            ],
+                            center: ['50%', '55%'],
+                            data:[],
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -57,12 +57,14 @@
         },
         mounted(){
             this.$api.reportapi.signTypeUsingGET().then(res=>{
-                let newLegend = [];
-                this.pie.series[0].data = res.data.data;
-                res.data.data.forEach((item)=>{
-                    newLegend.push(item.name);
-                })
-                this.pie.legend.data = newLegend;
+                if(res.data.status === 200){
+                    let newLegend = [];
+                    this.pie.series[0].data = res.data.data;
+                    res.data.data.forEach((item)=>{
+                        newLegend.push(item.name);
+                    })
+                    this.pie.legend.data = newLegend;
+                }
             }).catch(res=>{
                 this.$message.error(res.data.msg);
             })

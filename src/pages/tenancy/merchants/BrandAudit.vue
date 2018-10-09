@@ -1,20 +1,20 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/brand">品牌管理</router-link>
-                <router-link to="/inner/brandaudit">品牌审核</router-link>
+                <router-link to="/inner/brand" v-if="brand">品牌管理</router-link>
+                <router-link to="/inner/brandaudit" v-if="brandaudit">品牌审核</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
@@ -22,7 +22,8 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">业态</span>
-                            <el-select v-model="formatsValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
+                            <el-select v-model="formatsValue" placeholder="请选择" filterable clearable class="dialogselect" @change="typeSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in formatsOptions"
                                         :key="item.value"
@@ -62,12 +63,14 @@
         name: "unit",
         data(){
             return{
+                loading: false,
                 dataList:[],
                 searchText:'',
                 searchName:'',
                 formatsValue:'',
                 statusId:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 columnData:[
                     { type: 'selection', width:'50'},
@@ -77,7 +80,7 @@
                     { prop: 'busSecondName', label: '二级业态' },
                     { prop: 'businessIdThreeLevel', label: '三级业态' },
                     { prop: 'investSoursStatus', label: '状态' },
-                    { prop: 'country.countryName', label: '国别' },
+                    { prop: 'countryName', label: '国别' },
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
                 statusData:[{
@@ -102,30 +105,53 @@
             this.getBusinessList();
             this.getCountryList();
         },
+        computed:{
+            brand(){
+                return this.$root.menus.indexOf('/inner/brand') >= 0;
+            },
+            brandaudit(){
+                return this.$root.menus.indexOf('/inner/brandaudit') >= 0;
+            }
+        },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             },
             searchName(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.auditListpgUsingGET({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     brandCode:this.searchText,
                     brandName:this.searchName,
                     status:this.statusId,
                     businessId:this.formatsValue
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        res.data.data.list.forEach(item=>{
+                            item.countryName = item.country.countryName
+                        });
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getBusinessList(){
@@ -144,10 +170,10 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.statusId = status.id;
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             typeSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -155,13 +181,12 @@
                 });
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.emptyUsingPOST({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
                         this.$message.error(res.data.msg);
                     }

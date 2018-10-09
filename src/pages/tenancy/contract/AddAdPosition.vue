@@ -20,7 +20,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">意向合同</span>
-                                    <el-select v-model="value" placeholder="选填" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="选填" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -34,7 +34,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">合同分类</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -48,7 +48,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname inputnameWidth">销售计税类型</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -82,7 +82,7 @@
                             <el-col :span="10">
                                 <div class="dialoginput">
                                     <span class="inputname">商户</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">店铺</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -106,7 +106,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">经营方式</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -116,7 +116,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">结算等级</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -126,7 +126,7 @@
                                 </div>
                                 <div class="dialoginput">
                                     <span class="inputname">收银模式</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -351,7 +351,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -363,7 +363,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -375,7 +375,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameCenter">结算组别</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -387,7 +387,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">结算方式</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -405,7 +405,7 @@
                                 </el-col>
                                 <el-col :span="6" :offset="2">
                                     <div class="rentcontent">
-                                        <el-select v-model="datevalue" class="dialogselect">
+                                        <el-select filterable clearable v-model="datevalue" class="dialogselect">
                                             <el-option
                                                     v-for="item in dateoption"
                                                     :key="item.value"
@@ -441,7 +441,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="value" placeholder="选填" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="选填" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -507,7 +507,7 @@
                                             <div>
                                                 <div class="rentcontent">
                                                     <span class="inputname">固定类型</span>
-                                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                                         <el-option
                                                                 v-for="item in options"
                                                                 :key="item.value"
@@ -565,7 +565,7 @@
                                             <div>
                                                 <div class="rentcontent">
                                                     <span class="inputname">固定类型</span>
-                                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                                         <el-option
                                                                 v-for="item in options"
                                                                 :key="item.value"
@@ -636,7 +636,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">费用类型</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -648,7 +648,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">费用项目</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -660,7 +660,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameCenter">结算组别</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -672,7 +672,7 @@
                             <el-col :span="6">
                                 <div class="rentcontent">
                                     <span class="inputname inputnameWidth">结算方式</span>
-                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -690,7 +690,7 @@
                                 </el-col>
                                 <el-col :span="6" :offset="2">
                                     <div class="rentcontent">
-                                        <el-select v-model="datevalue" class="dialogselect">
+                                        <el-select filterable clearable v-model="datevalue" class="dialogselect">
                                             <el-option
                                                     v-for="item in dateoption"
                                                     :key="item.value"
@@ -726,7 +726,7 @@
                             <el-col :span="6" :offset="3">
                                 <div class="rentcontent">
                                     <span class="inputname">计算方式</span>
-                                    <el-select v-model="value" placeholder="选填" class="dialogselect">
+                                    <el-select filterable clearable v-model="value" placeholder="选填" class="dialogselect">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -792,7 +792,7 @@
                                             <div>
                                                 <div class="rentcontent">
                                                     <span class="inputname">固定类型</span>
-                                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                                         <el-option
                                                                 v-for="item in options"
                                                                 :key="item.value"
@@ -814,7 +814,7 @@
                                             <div>
                                                 <div class="rentcontent">
                                                     <span class="inputname">抽成类型</span>
-                                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                                         <el-option
                                                                 v-for="item in options"
                                                                 :key="item.value"
@@ -930,7 +930,7 @@
                                             <div>
                                                 <div class="rentcontent">
                                                     <span class="inputname">固定类型</span>
-                                                    <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                                                    <el-select filterable clearable v-model="value" placeholder="请选择" class="dialogselect">
                                                         <el-option
                                                                 v-for="item in options"
                                                                 :key="item.value"
@@ -1140,7 +1140,6 @@
                 localStorage.setItem('activeName2', this.activeName2);
                 localStorage.setItem('step',0);
                 this.stepNumber = 0;
-                console.log(this.activeName2)
                 if (this.activeName2 == '6') {
                     this.isShow = true;
                 } else {
@@ -1162,12 +1161,10 @@
                 this.datalist = list;
             },
             rentChildData(data){
-                console.log(data);
                 this.stepNumber = 31;
                 localStorage.setItem('step',31);
             },
             childData(data){
-                console.log(data);
                 this.stepNumber = 41;
                 localStorage.setItem('step',41);
             }

@@ -1378,7 +1378,7 @@ export const byMerchantIdUsingGETURL = function(parameters = {}) {
 export const deletePhyUsingDELETE_2 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
-    let path = '/sys/notice/delete/physical/{id}'
+    let path = '/sys/notice/delete/physical'
     let body
     let queryParameters = {}
     let form = {}
@@ -1396,7 +1396,7 @@ export const deletePhyUsingDELETE_2 = function(parameters = {}) {
     return request('delete', domain + path, body, queryParameters, form, config)
 }
 export const deletePhyUsingDELETE_2_RAW_URL = function() {
-    return '/sys/notice/delete/physical/{id}'
+    return '/sys/notice/delete/physical'
 }
 export const deletePhyUsingDELETE_2_TYPE = function() {
     return 'delete'
@@ -1404,7 +1404,7 @@ export const deletePhyUsingDELETE_2_TYPE = function() {
 export const deletePhyUsingDELETE_2URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/sys/notice/delete/physical/{id}'
+    let path = '/sys/notice/delete/physical'
     if (parameters['ids'] !== undefined) {
         queryParameters['ids'] = parameters['ids']
     }
@@ -1445,6 +1445,9 @@ export const listUsingGET_2 = function(parameters = {}) {
     if (parameters['noticeName'] !== undefined) {
         queryParameters['noticeName'] = parameters['noticeName']
     }
+    if (parameters['merchantName'] !== undefined) {
+        queryParameters['merchantName'] = parameters['merchantName']
+    }
     if (parameters['merchantId'] !== undefined) {
         queryParameters['merchantId'] = parameters['merchantId']
     }
@@ -1479,6 +1482,9 @@ export const listUsingGET_2URL = function(parameters = {}) {
     }
     if (parameters['noticeName'] !== undefined) {
         queryParameters['noticeName'] = parameters['noticeName']
+    }
+    if (parameters['merchantName'] !== undefined) {
+        queryParameters['merchantName'] = parameters['merchantName']
     }
     if (parameters['merchantId'] !== undefined) {
         queryParameters['merchantId'] = parameters['merchantId']
@@ -1600,8 +1606,8 @@ export const saveUsingPOST_2URL = function(parameters = {}) {
  * @param userName - 操作人姓名
  * @param operationLogTypeName - 操作类型名
  * @param operationLogTypeId - 操作类型id
- * @param operationDate - 操作时间_开始
- * @param createDate - 操作时间_结束
+ * @param startDate - 操作时间_开始
+ * @param endDate - 操作时间_结束
  */
 export const listUsingGET_3 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1628,11 +1634,11 @@ export const listUsingGET_3 = function(parameters = {}) {
     if (parameters['operationLogTypeId'] !== undefined) {
         queryParameters['operationLogTypeId'] = parameters['operationLogTypeId']
     }
-    if (parameters['operationDate'] !== undefined) {
-        queryParameters['operationDate'] = parameters['operationDate']
+    if (parameters['startDate'] !== undefined) {
+        queryParameters['startDate'] = parameters['startDate']
     }
-    if (parameters['createDate'] !== undefined) {
-        queryParameters['createDate'] = parameters['createDate']
+    if (parameters['endDate'] !== undefined) {
+        queryParameters['endDate'] = parameters['endDate']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1669,11 +1675,11 @@ export const listUsingGET_3URL = function(parameters = {}) {
     if (parameters['operationLogTypeId'] !== undefined) {
         queryParameters['operationLogTypeId'] = parameters['operationLogTypeId']
     }
-    if (parameters['operationDate'] !== undefined) {
-        queryParameters['operationDate'] = parameters['operationDate']
+    if (parameters['startDate'] !== undefined) {
+        queryParameters['startDate'] = parameters['startDate']
     }
-    if (parameters['createDate'] !== undefined) {
-        queryParameters['createDate'] = parameters['createDate']
+    if (parameters['endDate'] !== undefined) {
+        queryParameters['endDate'] = parameters['endDate']
     }
     if (parameters.$queryParameters) {
         Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1699,7 +1705,7 @@ export const listUsingGET_3URL = function(parameters = {}) {
 export const listUsingGET_4 = function(parameters = {}) {
     const domain = parameters.$domain ? parameters.$domain : getDomain()
     const config = parameters.$config
-    let path = '/sys/operationLog/type/List'
+    let path = '/sys/operationLog/type/list'
     let body
     let queryParameters = {}
     let form = {}
@@ -1729,7 +1735,7 @@ export const listUsingGET_4 = function(parameters = {}) {
     return request('get', domain + path, body, queryParameters, form, config)
 }
 export const listUsingGET_4_RAW_URL = function() {
-    return '/sys/operationLog/type/List'
+    return '/sys/operationLog/type/list'
 }
 export const listUsingGET_4_TYPE = function() {
     return 'get'
@@ -1737,7 +1743,7 @@ export const listUsingGET_4_TYPE = function() {
 export const listUsingGET_4URL = function(parameters = {}) {
     let queryParameters = {}
     const domain = parameters.$domain ? parameters.$domain : getDomain()
-    let path = '/sys/operationLog/type/List'
+    let path = '/sys/operationLog/type/list'
     if (parameters['pageNum'] !== undefined) {
         queryParameters['pageNum'] = parameters['pageNum']
     }
@@ -3021,7 +3027,9 @@ export const getByIdUsingGETURL = function(parameters = {}) {
  * url: listUsingGET_9URL
  * method: listUsingGET_9_TYPE
  * raw_url: listUsingGET_9_RAW_URL
+ * @param token - token
  * @param name - 用户名称
+ * @param departmentId - 部门ID
  * @param pageNum - 页码
  * @param pageSize - 每页显示数量
  */
@@ -3034,6 +3042,9 @@ export const listUsingGET_9 = function(parameters = {}) {
     let form = {}
     if (parameters['name'] !== undefined) {
         queryParameters['name'] = parameters['name']
+    }
+    if (parameters['departmentId'] !== undefined) {
+        queryParameters['departmentId'] = parameters['departmentId']
     }
     if (parameters['pageNum'] !== undefined) {
         queryParameters['pageNum'] = parameters['pageNum']
@@ -3060,6 +3071,9 @@ export const listUsingGET_9URL = function(parameters = {}) {
     let path = '/sys/user/list'
     if (parameters['name'] !== undefined) {
         queryParameters['name'] = parameters['name']
+    }
+    if (parameters['departmentId'] !== undefined) {
+        queryParameters['departmentId'] = parameters['departmentId']
     }
     if (parameters['pageNum'] !== undefined) {
         queryParameters['pageNum'] = parameters['pageNum']

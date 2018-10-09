@@ -26,6 +26,7 @@
                             <!-- <span>图标</span> -->
                             <el-upload
                                 class="upload-demo"
+                                :headers="headers"
                                 :action="$downLoadUrl+'/refund/billfile/import'"
                                 :file-list="fileList"
                                 :on-change="uploadFile">
@@ -37,7 +38,7 @@
             </div>
         </div>
         <div class="savebtn">
-            <button @click="uploadHandler">保存</button>
+            <button @click="uploadHandler" v-loading.fullscreen="loading">保存</button>
         </div>
     </div>
 </template>
@@ -54,14 +55,14 @@
                 fileName: '',
                 type: '',
                 fileList: [],
-                fileId: ''
+                fileId: '',
+                loading: false,
+                headers: {
+                    token: localStorage.getItem('erp_token')
+                }
             };
         },
-        created(){
-            // setTimeout(()=>{
-            //     this.activeName2 = localStorage.getItem('activeName2')
-            // },0);
-        },
+        created(){},
         mounted(){
             this.$api.refundapi.getChannelUsingGET().then(res=>{//渠道
                 this.channelOptions = res.data.data;
@@ -69,44 +70,37 @@
         },
         methods: {
             uploadHandler(){
+                this.loading = true;
                 let params = {
                     id: this.fileId,
                     fileName: this.fileName,
                     type: this.type
                 }
-                console.log(123)
-                console.log(params)
                 this.$api.refundapi.saveBillFileUsingPOST(params).then(res=>{//提交
                     if(res.data.status === 200){
+                        this.loading = false;
                         this.$message.success(res.data.msg);
+                        this.$router.push('/rebates/account')
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
                     }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
             uploadFile(file, fileList){
                 if(file.response){
-                    this.fileId = file.response.data;
+                    if(file.response.status === 200){
+                        this.fileId = file.response.data;
+                        this.fileList = fileList.slice(-3);
+                    }else{
+                        this.fileList = [];
+                        this.$message.error(file.response.msg);
+                    }
                 }
-                this.fileList = fileList.slice(-3);
             }
-            // next(number) {
-            //     this.activeName2 = parseInt(this.activeName2) + 1 + '';
-            //     localStorage.setItem('activeName2', this.activeName2);
-            //     if (this.activeName2 == '6') {
-            //         this.isShow = true;
-            //     } else {
-            //         this.isShow = false;
-            //     }
-            // },
-            // handleClick() {
-            //     localStorage.setItem('activeName2', this.activeName2);
-            //     if (this.activeName2 == '6') {
-            //         this.isShow = true;
-            //     } else {
-            //         this.isShow = false;
-            //     }
-            // },
         },
         components: {
             BlankHead

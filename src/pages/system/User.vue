@@ -1,11 +1,25 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="用户管理">
             <router-link to="/system/adduser/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model.trim="searchText" @keyup.enter="getUserList(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model.trim="searchText" @keyup.enter="getUserList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
+                    </div>
+                </el-col>
+                <el-col :span="9" :offset="6">
+                    <div class="searchselect">
+                        <span class="inputname inputnameauto">部门</span>
+                        <el-select v-model="departmentId" placeholder="请选择" filterable clearable class="dialogselect" @change="departmentChange()">
+                            <el-option label="全部" value=""></el-option>
+                            <el-option
+                                    v-for="item in departmentOptions"
+                                    :key="item.id"
+                                    :label="item.departmentName"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
                     </div>
                 </el-col>
             </el-row>
@@ -47,7 +61,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="el-table__empty-block" v-if="dataList == null">
+                <div class="el-table__empty-block" v-if="dataList.length<=0">
                     <span class="el-table__empty-text">暂无数据</span>
                 </div>
             </div>
@@ -82,6 +96,7 @@
         name: "user",
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 dataList:[],
                 searchText:'',
@@ -89,33 +104,49 @@
                 newPassword:'',
                 confirmNewPassword:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
+                departmentId:'',
+                departmentOptions:''
             }
         },
         created(){
         },
         mounted(){
             //this.getUserList();
+            this.getDepartment();
         },
         watch:{
             searchText() {
                 this.$delay(() => {
-                    this.getUserList(1);
+                    this.getUserList(1,this.pageSize);
                 }, 1000);
             }
         },
         methods:{
             async getUserList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.systemapi.listUsingGET_9({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
-                    name:this.searchText
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
+                    name:this.searchText,
+                    departmentId:this.departmentId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.dataList.forEach(item=>{
-                        item.forbiddenText = item.forbidden==true?'禁用':'启用'
-                    })
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        this.dataList = res.data.data.list;
+                        this.dataList.forEach(item=>{
+                            item.forbiddenText = item.forbidden==true?'禁用':'启用'
+                        })
+                        this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
                 })
             },
             handleClose(){
@@ -126,6 +157,13 @@
                     this.userid = id;
                 }
                 this.dialogVisible = true;
+            },
+            async getDepartment(){
+                this.$api.systemapi.listUsingGET().then(res=>{
+                    if(res.data.status === 200){
+                        this.departmentOptions = res.data.data.list;
+                    }
+                });
             },
             async resetPassword(){
                 if(this.newPassword && this.confirmNewPassword){
@@ -138,7 +176,7 @@
                         if(res.data.status == 200){
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
-                            this.getUserList(1);
+                            this.getUserList(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }
@@ -149,8 +187,13 @@
                 
             },
             async userStutas(userstate,userid){
-                if(userstate == false) {
-                    await this.$api.systemapi.setForbiddenUsingGET({
+                this.$confirm('您确定继续当前操作？', '提示', {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                }).then(() => {
+                    if(userstate == false) {
+                    this.$api.systemapi.setForbiddenUsingGET({
                         id: userid
                     }).then(res => {
                         if(res.data.status == 200){
@@ -158,10 +201,10 @@
                         }else{
                             this.$message.error(res.data.msg);
                         }
-                        this.getUserList();
+                        this.getUserList(1,this.pageSize);
                     });
                 }else{
-                    await this.$api.systemapi.setUnForbiddenUsingGET({
+                    this.$api.systemapi.setUnForbiddenUsingGET({
                         id: userid
                     }).then(res => {
                         if(res.data.status == 200){
@@ -169,9 +212,14 @@
                         }else{
                             this.$message.error(res.data.msg);
                         }
-                        this.getUserList();
+                        this.getUserList(1,this.pageSize);
                     });
                 }
+                }).catch(_ => {});
+                
+            },
+            departmentChange(){
+                this.getUserList(1,this.pageSize);
             }
         },
         components:{
@@ -182,5 +230,23 @@
 </script>
 
 <style scoped>
-
+    .gray{
+        color: #606266;
+    }
+    .green{
+        color: green;
+    }
+    .red{
+        color: red;
+    }
+    table tbody tr{
+        background-color: #fff;
+    }
+    table tbody tr:hover{
+        background-color: #f5f7fa;
+    }
+    table tbody tr:nth-of-type(2n){
+        width: 100%;
+        background-color: #FAFAFA;
+    }
 </style>

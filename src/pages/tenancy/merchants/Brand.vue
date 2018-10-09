@@ -1,21 +1,21 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/brand">品牌管理</router-link>
-                <router-link to="/inner/brandaudit">品牌审核</router-link>
+                <router-link to="/inner/brand" v-if="brand">品牌管理</router-link>
+                <router-link to="/inner/brandaudit" v-if="brandaudit">品牌审核</router-link>
             </div>
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="handleOpen()">添加</el-button>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
@@ -23,7 +23,8 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">业态</span>
-                            <el-select v-model="formatsValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
+                            <el-select v-model="formatsValue" placeholder="请选择" filterable clearable class="dialogselect" @change="typeSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in formatsOptions"
                                         :key="item.value"
@@ -72,7 +73,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">一级业态</span>
-                    <el-select v-model="addInfoData.businessId" placeholder="请选择" class="dialogselect" @change="getBusinessTypeSList(addInfoData.businessId)">
+                    <el-select v-model="addInfoData.businessId" placeholder="请选择" filterable clearable class="dialogselect" @change="getBusinessTypeSList(addInfoData.businessId)">
                         <el-option
                                 v-for="item in formatsOptions"
                                 :key="item.value"
@@ -83,7 +84,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">二级业态</span>
-                    <el-select v-model="addInfoData.businessIdSecondLevel" placeholder="请选择" class="dialogselect" @change="getBusinessTypeTList(addInfoData.businessIdSecondLevel)">
+                    <el-select v-model="addInfoData.businessIdSecondLevel" placeholder="请选择" filterable clearable class="dialogselect" @change="getBusinessTypeTList(addInfoData.businessIdSecondLevel)">
                         <el-option
                                 v-for="item in formatsOptionsS"
                                 :key="item.id"
@@ -94,7 +95,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">三级业态</span>
-                    <el-select v-model="addInfoData.businessIdThreeLevel" multiple placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addInfoData.businessIdThreeLevel" multiple placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in formatsOptionsT"
                                 :key="item.id"
@@ -105,7 +106,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">国别</span>
-                    <el-select v-model="addInfoData.countryId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addInfoData.countryId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in countryOptions"
                                 :key="item.id"
@@ -131,6 +132,7 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataList:[],
                 searchText:'',
@@ -138,6 +140,7 @@
                 formatsValue:'',
                 statusId:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 addInfoData:{
                     brandCode: '',
@@ -155,7 +158,7 @@
                     { prop: 'busNames', label: '一级业态' },
                     { prop: 'busSecondName', label: '二级业态' },
                     { prop: 'businessIdThreeLevel', label: '三级业态' },
-                    { prop: 'country.countryName', label: '国别' },
+                    { prop: 'countryName', label: '国别' },
                     { prop: 'investSoursStatus', label: '状态' },
                     { prop: 'updateDateStr', label: '更新时间' }
                 ],
@@ -187,15 +190,23 @@
             this.getBusinessList();
             this.getCountryList();
         },
+        computed:{
+            brand(){
+                return this.$root.menus.indexOf('/inner/brand') >= 0;
+            },
+            brandaudit(){
+                return this.$root.menus.indexOf('/inner/brandaudit') >= 0;
+            }
+        },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             },
             searchName(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
@@ -212,21 +223,39 @@
                     id: '',
                     remark: ''
                 }
+                this.listId = '';
+                this.formatsOptionsS = [];
+                this.formatsOptionsT = [];
             },
             handleClose(){
                 this.dialogVisible = false;
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.listpgUsingGET({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     brandCode:this.searchText,
                     brandName:this.searchName,
                     status:this.statusId,
                     businessId:this.formatsValue
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        res.data.data.list.forEach(item=>{
+                            item.countryName = item.country?item.country.countryName:''
+                        });
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async getBusinessList(){
@@ -235,14 +264,24 @@
                 })
             },
             getBusinessTypeSList(id){
-                this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res=>{
-                    this.formatsOptionsS = res.data.data;
-                })
+                this.addInfoData.businessIdSecondLevel = '';
+                this.addInfoData.businessIdThreeLevel = [];
+                this.formatsOptionsS = [];
+                this.formatsOptionsT = [];
+                if(id) {
+                    this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res => {
+                        this.formatsOptionsS = res.data.data;
+                    })
+                }
             },
             getBusinessTypeTList(id){
-                this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res=>{
-                    this.formatsOptionsT = res.data.data;
-                })
+                this.addInfoData.businessIdThreeLevel = [];
+                this.formatsOptionsT = [];
+                if(id) {
+                    this.$api.rentapi.getListByPidUsingGET({pid: id}).then(res => {
+                        this.formatsOptionsT = res.data.data;
+                    })
+                }
             },
             async getCountryList(){
                 await this.$api.rentapi.listUsingGET_2().then(res=>{
@@ -265,6 +304,7 @@
                 if(this.addInfoData.countryId == ''){
                     return this.$message.error('国别不能为空');
                 }
+                this.loading = true;
                 this.addInfoData.businessIdThreeLevel = this.addInfoData.businessIdThreeLevel.join(',');
                 if(this.listId == '') {
                     await this.$api.rentapi.addUsingPOST_1({
@@ -272,11 +312,15 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }else{
                     this.addInfoData.id = this.listId;
@@ -285,11 +329,15 @@
                     }).then(res => {
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.dialogVisible = false;
+                            this.loading = false;
                         } else {
+                            this.loading = false;
                             this.$message.error(res.data.msg);
                         }
+                    }).catch(res=>{
+                        this.loading = false;
                     })
                 }
                 this.addInfoData.businessIdThreeLevel = this.addInfoData.businessIdThreeLevel.split(',');
@@ -326,7 +374,7 @@
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.$message.success(res.data.msg);
                         } else {
                             this.$message.error(res.data.msg);
@@ -335,17 +383,23 @@
                 })
             },
             async cancelBrand(id,status){
-                await this.$api.rentapi.updateBrandStatus({
-                    id:id,
-                    status:status
-                }).then(res=>{
-                    if (res.data.status == 200) {
-                        this.getDataList(1);
-                        this.$message.success(res.data.msg);
-                    } else {
-                        this.$message.error(res.data.msg);
-                    }
-                })
+                this.$confirm('您确定继续当前操作？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$api.rentapi.updateBrandStatus({
+                        id: id,
+                        status: status
+                    }).then(res => {
+                        if (res.data.status == 200) {
+                            this.getDataList(1,this.pageSize);
+                            this.$message.success(res.data.msg);
+                        } else {
+                            this.$message.error(res.data.msg);
+                        }
+                    })
+                });
             },
             statusHandler(status){
                 this.statusData.forEach(function(obj){
@@ -353,10 +407,10 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.statusId = status.id;
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             typeSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             }
         },
         components:{

@@ -8,8 +8,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="getContractList">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" filterable clearable class="dialogselect" @change="checkShopList(query.merchantId)">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -37,21 +37,21 @@
         </el-col>
         <el-col :span="9" :offset="6">
             <div class="searchselect">
-                <span class="inputname">店铺</span>
-                <el-select v-model="query.shopId" placeholder="请选择店铺" @change="getContractList()" class="dialogselect">
+                <span class="inputname inputnameauto">店铺</span>
+                <el-select v-model="query.shopId" placeholder="请选择店铺" filterable clearable @change="getContractList()" class="dialogselect">
                   <el-option label="全部" value=""></el-option>
                   <el-option
                     v-for="item in selects.shopIds"
                     :key="item.id"
-                    :label="item.shopName"
-                    :value="item.id">
+                    :label="item.codeInfo"
+                    :value="item.shopId">
                   </el-option>
                 </el-select>
             </div>
         </el-col>
     </el-row>
     <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog title='保证金处理' :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" title='保证金处理' :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -94,22 +94,23 @@ export default {
         },
         {
           label: "应收金额",
-          type: "text",
+          type: "fmoney",
           name: "receivableAmount"
         },
         {
           label: "已收金额",
-          type: "text",
+          type: "fmoney",
           name: "receivedAmount"
         },
         {
-          label: "处理金额",
+          label: "处理金额（待确认）",
           type: "text",
-          name: "dealtAmount"
+          name: "concatAmount",
+          // name: "dealtAmount"
         },
         {
           label: "剩余金额",
-          type: "text",
+          type: "fmoney",
           name: "restAmount"
         },
         {
@@ -131,7 +132,13 @@ export default {
               click: (item) => {
                 Object.assign(this.dialog.param, item);
                 this.dialog.param.type = 0; // 罚没
-                this.dialog.dialogVisible = true;
+                this.dialog.param.id = item.id;
+                if(item.restAmount<=0){
+                    this.$message.warning('无可用金额！');
+                }else{
+                    this.dialog.param.dealtAmounts = '';
+                    this.dialog.dialogVisible = true;
+                }
               }
             },
             {
@@ -146,7 +153,13 @@ export default {
               click: (item, data) => {
                 Object.assign(this.dialog.param, item);
                 this.dialog.param.type = 1; // 归还
-                this.dialog.dialogVisible = true;
+                this.dialog.param.id = item.id;
+                if(item.restAmount<=0){
+                    this.$message.warning('无可用金额！');
+                }else{
+                    this.dialog.param.dealtAmounts = '';
+                    this.dialog.dialogVisible = true;
+                }
               }
             }
           ]
@@ -171,7 +184,7 @@ export default {
       },
       dialog: {
         models: [{
-          label: '处理方式：',
+          label: '处理方式',
           name: 'type',
           type: 'word',
           valueLabel: 'label',
@@ -183,8 +196,8 @@ export default {
             label: '归还'
           }]
         }, {
-          label: '处理金额：',
-          name: 'dealtAmount',
+          label: '处理金额',
+          name: 'dealtAmounts',
           type: 'text',
           placeholder: '请输入'
         }, {
@@ -194,17 +207,21 @@ export default {
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
+        loading: false,
         param: {
-          dealtAmount: "",
-          type: ""
+            id: '',
+            dealtAmounts: '',
+            type: ''
         },
         options: [{
           label: "确 定",
           name: "submit",
           type: "primary",
           disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              return item === (undefined || "");
+            let param = Object.assign({}, this.dialog.param);
+            delete param.remark;
+            return Object.values(param).some(item => {
+                return item === (undefined || "");
             });
           },
           click: () => {
@@ -237,28 +254,30 @@ export default {
   },
   mounted() {
     this.getContractList();
-    this.$api.rentapi.listUsingGET_12({
-        status:1
-    }).then(res=>{ //商户列表 status:4 已确定状态没加
+    this.$api.rentapi.listIntentAndFormalUsingGET().then(res=>{ //商户列表
         this.selects.merchants = res.data.data;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
-    this.$api.rentapi.listUsingGET_14({}).then(res=>{ //店铺列表
-        this.selects.shopIds = res.data.data;
-    }).catch(res=>{
-        this.$message.error(res.data.msg);
-    });
+    })
+    this.checkShopList(-1);
   },
   methods: {
+    checkShopList(merchantId){
+        this.query.shopId = '';
+        this.getContractList();
+        let merchantIds = merchantId==-1?'' : merchantId;
+        this.$api.financeapi.shopinfoUsingGET({merchantId: merchantIds}).then(res=>{ //店铺列表
+            this.selects.shopIds = res.data.data;
+        }).catch(res=>{
+            this.$message.error(res.data.msg);
+        });
+    },
     getContractList(page={}, callback){
         let params ={
             contractCode: this.searchName,
             merchantId: this.query.merchantId,
             shopId: this.query.shopId,
             stage: this.query.stage,
-            pageNum: page.pageNum,
-            pageSize: page.pageSize
+            pageNum: this.query.pageNum,
+            pageSize: this.query.pageSize
         }
         this.$api.financeapi.listUsingGET_5(params).then(res=>{
             if(res.data.status === 200){
@@ -281,10 +300,12 @@ export default {
         })
     },
     getCurrentPage(pageNum) {
-      this.getContractList({pageNum});
+      this.query.pageNum = pageNum;
+      this.getContractList();
     },
     getpageSize(pageSize) {
-      this.getContractList({pageSize});
+      this.query.pageSize = pageSize;
+      this.getContractList();
     },
     statusHandler(status){
 		this.selects.status.forEach(function(obj){
@@ -299,18 +320,30 @@ export default {
       this.dialog.param = {};
     },
     confirmDialog() {
+        this.dialog.loading = true;
         let params = {
-            request: this.dialog.param
+            id: this.dialog.param.id,
+            dealtAmount: Number(this.dialog.param.dealtAmounts),
+            type: this.dialog.param.type,
+            remark: this.dialog.param.remark
         }
-        this.$api.financeapi.givebackUsingPOST(params).then(res=>{ //罚没，归还
+        if(params.dealtAmount < 0){
+          this.$message.info('处理金额不能小于0！');
+          this.dialog.loading = false;
+          return;
+        }
+        this.$api.financeapi.givebackUsingPOST({request: params}).then(res=>{ //罚没，归还
             if(res.data.status === 200){
                 this.dialog.dialogVisible = false;
+                this.dialog.loading = false;
                 this.$message.success(res.data.msg);
                 this.getContractList();
             }else{
+                this.dialog.loading = false;
                 this.$message.error(res.data.msg);
             }
         }).catch(res=>{
+            this.dialog.loading = false;
             this.$message.error(res.data.msg);
         });
     },

@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="部门管理">
             <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialogData()">添加</el-button>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchName" @keyup.enter="pageHandler(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameWidth">所属购物中心</span>
-                    <el-select v-model="add.marketId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="add.marketId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in options"
                                 :key="item.id"
@@ -54,7 +54,7 @@
         </el-dialog>
     </div>
 </template>
-<script type="text/javascript"></script>
+
 <script>
     import ConHead from '../../components/ConHead'
     import RtPage from '../../components/Pagination'
@@ -63,11 +63,13 @@
         name: "dept",
         data(){
             return{
+                loading: true,
                 dialogVisible:false,
                 datalist:[],
                 listid: '',
                 searchName: '',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 add:{
                     id: '',
@@ -75,7 +77,10 @@
                     departmentName: '',
                     marketName: ''
                 },
-                options: [],
+                options: [{
+                    marketName:this.$userInfo.marketName,
+                    id:this.$userInfo.marketId
+                }],
                 columnData:[
                     { prop: 'departmentCode', label: '部门编码'},
                     { prop: 'departmentName', label: '部门名称' },
@@ -90,21 +95,31 @@
         watch:{
             searchName(){
                 this.$delay(()=>{
-                    this.pageHandler(1);
+                    this.pageHandler(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             pageHandler(pageNum, pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 let params = {
-                    pageNum: pageNum,
-                    pageSize: this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name: this.searchName
                 }
                 this.$api.systemapi.listUsingGET(params).then(res=>{
-                    this.datalist = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.loading = false;
+                        this.datalist = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
                 }).catch(res=>{
+                    this.loading = false;
                     this.$message.error(res.data.msg);
                 })
             },
@@ -116,6 +131,7 @@
                      this.$message.error('部门名称可能存在非法字符或长度不符');
                  }else {
                  if (id) {
+                     this.loading = true;
                    this.$api.systemapi.putDepartment({
                      request: {
                        id: this.add.id,
@@ -124,15 +140,20 @@
                      }
                    }).then(res => {
                      if (res.data.status == 200) {
+                         this.loading = false;
+                         this.dialogVisible = false;
                        this.$message.success(res.data.msg);
-                       this.pageHandler(1);
+                       this.pageHandler(1,this.pageSize);
                      } else {
+                         this.loading = false;
                        this.$message.error(res.data.msg);
                      }
                    }).catch(res => {
+                       this.loading = false;
                      this.$message.error(res.data.msg);
                    })
                  } else {
+                     this.loading = true;
                    this.$api.systemapi.saveUsingPOST({
                      request: {
                        marketId: this.add.marketId,
@@ -140,17 +161,20 @@
                      }
                    }).then(res => {
                      if (res.data.status == 200) {
+                         this.loading = false;
+                         this.dialogVisible = false;
                        this.$message.success(res.data.msg);
-                       this.pageHandler(1);
+                       this.pageHandler(1,this.pageSize);
                      } else {
+                         this.loading = false;
                        this.$message.error(res.data.msg);
                      }
                    }).catch(res => {
+                       this.loading = false;
                      this.$message.error(res.data.msg);
                    })
                  }
                }
-                this.dialogVisible = false;
             },
             dialogData(id, data){
                 this.listid = id;
@@ -165,11 +189,11 @@
                 }else{
                     this.add = {};
                 }
-                this.$api.systemapi.listUsingGET_1().then(res=>{
+                /*this.$api.systemapi.listUsingGET_1().then(res=>{
                     this.options = res.data.data.list;
                 }).catch(res=>{
                     this.$message.error(res.data.msg);
-                })
+                })*/
             },
             deleteList(id){
                 this.$confirm('是否删除该条数据?', '提示', {
@@ -180,7 +204,7 @@
                     this.$api.systemapi.deleteUsingDELETE({id: id}).then(res =>{
                         if(res.data.status==200){
                             this.$message.success(res.data.msg);
-                            this.pageHandler(1);
+                            this.pageHandler(1,this.pageSize);
                         }else{
                             this.$message.error(res.data.msg);
                         }

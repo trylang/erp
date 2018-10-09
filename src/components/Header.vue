@@ -14,8 +14,9 @@
                         <span @click="logoutHandler">退出</span>
                     </div>
                     <div class="profile">
-                        <router-link tag="li" to="/">
-                            <img :src="user.imgLogoUrl">
+                        <!--<img src="../assets/touxiang.png" style="cursor: auto">-->
+                        <router-link tag="li" to="/system/password">
+                            <img src="../assets/touxiang.png">
                             <!--<el-badge value="12">
                                 <img :src="user.imgLogoUrl">
                             </el-badge>-->
@@ -35,12 +36,13 @@
         data(){
             return {
                 user:{
-                    imgLogoUrl:'http://res.rtmap.com/sences/images/20170811/1502434441299.jpg'
+                    imgLogoUrl:'../assets/logo.png'
                 }
             }
         },
         computed:{
             menuList(){
+              let menus=this.$root.menus
                 let menuData = [/*{
                     path:'/',
                     title:'首页'
@@ -69,13 +71,26 @@
                     path:'/system',
                     title:'系统管理'
                 }];
-                return menuData
+                let filterData=menuData.filter(item=>{
+                  return menus.indexOf(item.path)>=0
+                })
+                return filterData
             },
             ...mapGetters(['menuActiveIndex'])
         },
         methods: {
             logoutHandler(){
-                console.log('退出登录');
+              this.$api.systemapi.logoutUsingGET().then(
+                res=>{
+                  if (res.data.status==200) {
+                    window.localStorage.removeItem('erp_token');
+                    this.$router.push({path: '/login'})
+                  } else {
+                       this.$message.error(res.data.msg);
+
+                  }
+                }
+              )
             }
         }
     }
@@ -112,8 +127,10 @@
         height: 90px;
         line-height: 90px;
         padding: 0;
-        flex: 1;
+        /*flex: 1;*/
         text-align: center;
+        width: 20%;
+        flex-shrink: 1;
     }
     .el-menu .el-menu-item.is-active{
         border-bottom: #fff;

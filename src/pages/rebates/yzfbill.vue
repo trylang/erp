@@ -1,131 +1,83 @@
 <template>
-  <item-tab :tabs="tabs">
-    <el-button slot="buttton_first" type="primary" @click="exportList">导出</el-button>
-    <el-button slot="buttton_second" type="primary" @click="exportetail">导出</el-button>
-    <div slot="content_first">
-      <el-row>
-        <el-col :span="11">
-          <div class="searchselect">
-            <span class="inputname">店铺范围：</span>
-            <el-select v-model="query.shopCodeFrom" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.shopCode"
-                :label="item.shopCode"
-                :value="item.shopCode">
-              </el-option>
-            </el-select>
-            <span>~</span>
-            <el-select v-model="query.shopCodeTo" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.shopCode"
-                :label="item.shopCode"
-                :value="item.shopCode">
-              </el-option>
-            </el-select>
+  <div v-loading.fullscreen="loading">
+      <con-head tab="tab">
+          <div slot="appendtab" class="tabmenu">
+              <router-link to="/rebates/yzfbill" v-if="yzfbill">翼支付账单</router-link>
+              <router-link to="/rebates/yzfbillDetailed" v-if="yzfbillDetailed">翼支付账单明细</router-link>
           </div>
-        </el-col>
-        <el-col :span="12" :offset="1">
-          <div class="searchselect">
-            <span class="inputname">消费时间：</span>
-            <el-date-picker
-              @change="getList"
-              value-format="yyyy-MM-dd"
-              v-model="query.time"
-              type="daterange"
-              range-separator="~"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
+          <el-button type="primary" slot="append" :disabled="showBtn" @click="exportList">导出</el-button>
+            <div slot="preappend">
+              <el-row>
+                <el-col :span="11">
+                  <div class="searchselect">
+                    <span class="inputname">店铺范围：</span>
+                    <el-select v-model="query.shopCodeFrom" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
+                      <el-option
+                        v-for="item in selects.shops"
+                        :key="item.shopCode"
+                        :label="item.shopCode"
+                        :value="item.shopCode">
+                      </el-option>
+                    </el-select>
+                    <span>~</span>
+                    <el-select v-model="query.shopCodeTo" clearable filterable @change="getList" placeholder="请输入店铺号" class="dialogselect">
+                      <el-option
+                        v-for="item in selects.shops"
+                        :key="item.shopCode"
+                        :label="item.shopCode"
+                        :value="item.shopCode">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </el-col>
+                <el-col :span="12" :offset="1">
+                  <div class="searchinput">
+                    <span class="inputname inputnameauto">消费时间：</span>
+                    <el-date-picker
+                      @change="getList"
+                      value-format="yyyy-MM-dd"
+                      v-model="query.time"
+                      type="daterange"
+                      range-separator="~"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期">
+                    </el-date-picker>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+        </con-head>
+        <con-head>
+          <div class="mainbox" style="padding: 15px 10px;">
+            <el-row :gutter="20">
+              <erp-table :header="header" :content="content" @currentPage="getListCurrentPage" @pageSize="getListpageSize">
+                <tr class="last_tr" slot="lastTr" v-if="this.detail.hasDetail === 200">
+                  <td colspan="2"><div class="cell"><span>合计</span></div></td>           
+                  <td><div class="cell"><span>{{detail.paymentAmount}}</span></div></td>
+                  <td><div class="cell"><span>{{detail.fee}}</span></div></td>
+                  <td><div class="cell"><span>{{detail.feeMarket}}</span></div></td>
+                  <td><div class="cell"><span>{{detail.feeTotal}}</span></div></td>
+                  <td><div class="cell"><span>{{detail.refundAmount}}</span></div></td>
+                </tr>
+              </erp-table>
+            </el-row>
           </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <erp-table :header="header" :content="content" @currentPage="getListCurrentPage" @pageSize="getListpageSize">
-          <tr class="last_tr" slot="lastTr" v-if="this.detail.hasDetail === 200">
-            <td colspan="3"><div class="cell"><span>合计</span></div></td>           
-            <td><div class="cell"><span>{{detail.paymentAmount}}</span></div></td>
-            <td><div class="cell"><span>{{detail.fee}}</span></div></td>
-            <td><div class="cell"><span>{{detail.feeMarket}}</span></div></td>
-            <td><div class="cell"><span>{{detail.feeTotal}}</span></div></td>
-            <td><div class="cell"><span>{{detail.refundAmount}}</span></div></td>
-          </tr>
-        </erp-table>
-      </el-row>
-    </div>
-    <div slot="content_second">
-      <el-row>
-        <el-col :span="10">
-          <div class="searchselect">
-            <span class="inputname">店铺范围：</span>
-            <el-select v-model="query2.shopCodeFrom" clearable filterable @change="getListDetail" placeholder="请输入店铺号" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.shopCode"
-                :label="item.shopCode"
-                :value="item.shopCode">
-              </el-option>
-            </el-select>
-            <span>~</span>
-            <el-select v-model="query2.shopCodeTo" clearable filterable @change="getListDetail" placeholder="请输入店铺号" class="dialogselect">
-              <el-option
-                v-for="item in selects.shops"
-                :key="item.shopCode"
-                :label="item.shopCode"
-                :value="item.shopCode">
-              </el-option>
-            </el-select>
-          </div>
-        </el-col>
-        <el-col :span="12" :offset="2">
-          <div class="searchselect">
-            <span class="inputname">交易时间：</span>
-            <el-date-picker
-              @change="getListDetail"
-              value-format="yyyy-MM-dd"
-              v-model="query2.time"
-              type="daterange"
-              range-separator="~"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </div>
-        </el-col>
-        
-      </el-row>
-      <el-row :gutter="20">
-        <erp-table :header="header2" :content="content2" @currentPage="getDetailCurrentPage" @pageSize="getDetailpageSize">
-          <tr class="last_tr" slot="lastTr" v-if="this.detail2.hasDetail === 200">
-            <td colspan="2"><div class="cell"><span>合计</span></div></td>           
-            <td><div class="cell"><span>{{detail2.paymentAmount}}</span></div></td>
-            <td><div class="cell"><span>{{detail2.fee}}</span></div></td>
-            <td><div class="cell"><span>{{detail2.feeMarket}}</span></div></td>
-            <td><div class="cell"><span>{{detail2.feeTotal}}</span></div></td>
-            <td><div class="cell"><span>{{detail2.refundAmount}}</span></div></td>
-            <td><div class="cell"><span></span></div></td>
-            <td><div class="cell"><span></span></div></td>
-            <td><div class="cell"><span></span></div></td>
-            <td><div class="cell"><span></span></div></td>
-          </tr>
-        </erp-table>
-      </el-row>
-    </div>
-  </item-tab>
+        </con-head>
+  </div>
 </template>
 
 <script>
 import { $message } from "../../utils/notice";
 import erpTable from "../../components/Table";
-import itemTab from "../../components/ItemTab";
-import { formatTree } from "@/utils";
+import ConHead from '../../components/ConHead'
+import { reExport } from "@/utils";
 import { saleTQueryShop } from "@/utils/rest/financeAPI";
 
 export default {
   name: "account-group",
   components: {
     erpTable,
-    itemTab
+    ConHead
   },
   data() {
     return {
@@ -142,200 +94,113 @@ export default {
         },
         {
           label: "购买金额",
-          type: "text",
+          type: "fmoney",
           name: "paymentAmount"
         },
         {
           label: "手续费（渠道）",
-          type: "text",
+          type: "fmoney",
           name: "fee"
         },
         {
           label: "手续费（商场）",
-          type: "text",
+          type: "fmoney",
           name: "feeMarket"
         },
         {
           label: "手续费（合计）",
-          type: "text",
+          type: "fmoney",
           name: "feeTotal"
         },
         {
           label: "租户返款",
           name: "refundAmount",
-          type: "text",
+          type: "fmoney",
           // filter: "yyyy-MM-dd hh:mm:ss.S"
-        }
-      ],
-      header2: [
-        {
-          label: "店铺号",
-          type: "text",
-          name: "shopCode"
-        },
-        {
-          label: "品牌",
-          type: "text",
-          name: "brandName"
-        },
-        {
-          label: "购买金额",
-          type: "text",
-          name: "paymentAmount"
-        },
-        {
-          label: "手续费（渠道）",
-          type: "text",
-          name: "fee"
-        },
-        {
-          label: "手续费（商场）",
-          type: "text",
-          name: "feeMarket"
-        },
-        {
-          label: "手续费（合计）",
-          type: "text",
-          name: "feeTotal"
-        },
-        {
-          label: "租户返款",
-          name: "refundAmount",
-          type: "text",
-          // filter: "yyyy-MM-dd hh:mm:ss.S"
-        },
-        {
-          label: "交易参考流水号",
-          type: "text",
-          name: "serialNum"
-        },
-        {
-          label: "买家账号",
-          type: "text",
-          name: "buyerAccount"
-        },
-        {
-          label: "交易日期",
-          type: "text",
-          name: "tradeDate"
-        },
-        {
-          label: "交易类型",
-          type: "text",
-          name: "tradeTypeText"
         }
       ],
       content: [],
-      content2: [],
       detail: {
-        hasDetail: ''
-      },
-      detail2: {
         hasDetail: ''
       },
       selects: {
         shops: [],
-        cards: [
-          {
-            isStatus: true,
-            label: "全部",
-            id: ""
-          },
-          {
-            isStatus: false,
-            label: "卡内",
-            id: 0
-          },
-          {
-            isStatus: false,
-            label: "卡外",
-            id: 1
-          }
-        ],
-        methods: [
-          {
-            isStatus: true,
-            label: "全部",
-            id: ""
-          },
-          {
-            isStatus: false,
-            label: "销售",
-            id: 0
-          },
-          {
-            isStatus: false,
-            label: "退款",
-            id: 1
-          }
-        ]
       },
       query: {
         channel: 3
       },
-      query2: {
-        channel: 3
-      },
-      tabs: [
-        {
-          id: "first",
-          label: "翼支付账单"
-        },
-        {
-          id: "second",
-          label: "翼支付账单明细"
-        }
-      ]
+      showBtn: true,
+      loading: false,
     };
   },
   mounted() {},
+  computed:{
+    yzfbill(){
+        return this.$root.menus.indexOf('/rebates/yzfbill') >= 0;
+    },
+    yzfbillDetailed(){
+        return this.$root.menus.indexOf('/rebates/yzfbillDetailed') >= 0;
+    }
+  },
   methods: {
     exportList() {
-      console.log('list');
-    },
-    exportetail() {
-      console.log('detail');
+      reExport(this, 'showBtn', true);
+      let params = {
+          pageNum: this.query.pageNum,
+          pageSize: this.query.pageSize,
+          channel: 3,
+          shopCodeFrom: this.query.shopCodeFrom,
+          shopCodeTo: this.query.shopCodeTo,
+          tradeDateFrom: this.query.tradeDateFrom,
+          tradeDateTo: this.query.tradeDateTo
+      }
+      if(this.content.list.length>0){
+          this.$api.refundapi.toExcelUsingGET_2(params).then(res=>{
+              if(res.data.status == 200){
+                  this.$message.success(res.data.msg);
+              }
+          }).catch(res=>{
+              this.$message.error(res.data.msg);
+          })
+      }
     },
     getListCurrentPage(pageNum) {
-      this.getList({ pageNum });
+      this.query.pageNum = pageNum;
+      this.getList();
     },
     getListpageSize(pageSize) {
-      this.getList({ pageSize });
-    },
-    getDetailCurrentPage(pageNum) {
-      this.getListDetail({ pageNum });
-    },
-    getDetailpageSize(pageSize) {
-      this.getListDetail({ pageSize });
-    },
-    statusHandler(status) {
-      this.selects.cards.forEach(function(obj) {
-        obj.isStatus = false;
-      });
-      status.isStatus = !status.isStatus;
-      this.query2.cardType = status.id;
-      this.getListDetail();
-    },
-    methodsHandler(method) {
-      this.selects.methods.forEach(function(obj) {
-        obj.isStatus = false;
-      });
-      method.isStatus = !method.isStatus;
-      this.query2.tradeType = method.id;
-      this.getListDetail();
+      this.query.pageSize = pageSize;
+      this.getList();
     },
     // 列表
     async getList(page={}) {
       this.query.tradeDateFrom = this.query.time ? this.query.time[0]: '';
       this.query.tradeDateTo = this.query.time ? this.query.time[1]: '';
-      this.query.pageNum = page.pageNum;
-      this.query.pageSize = page.pageSize;
-      console.log(this.query);
+      if(!this.query.tradeDateFrom) {
+          this.$message.info('请选择时间范围!');
+          this.content.list = [];
+          this.detail = {};
+          return;
+      } 
+      if(this.query.shopCodeTo && !this.query.shopCodeFrom) {
+          this.$message.info('请选择店铺开始范围!');
+          return;
+      }
+      if(this.query.shopCodeFrom && !this.query.shopCodeTo) {
+          this.$message.info('请选择店铺结束范围!');
+          return;
+      }
+      this.loading = true;
       await this.$api.refundapi.getListForPageUsingGET_3(this.query).then(returnObj => {
         if (returnObj.data.status === 200) {
           this.content = returnObj.data.data;
+          if(this.content.list.length > 0){
+              this.showBtn = false;
+          }else{
+            this.showBtn = true;
+          }
           if (returnObj.data.data.isLastPage) {
-            this.$api.refundapi.billTotalUsingGET_2(this.query2).then(returnObj => {
+            this.$api.refundapi.billTotalUsingGET_2(this.query).then(returnObj => {
               if (returnObj.data.status === 200) {             
                 this.detail = returnObj.data.data;
                 this.detail.hasDetail = 200;
@@ -344,32 +209,15 @@ export default {
           } else {            
             this.detail.hasDetail = '';
           }
+          this.loading = false;
+        }else{
+            this.loading = false;
+            this.$message.error(res.data.msg);
         }
-      });
-    },
-
-    // 明细列表
-    async getListDetail(page={}) {
-      this.query2.tradeDateFrom = this.query2.time ? this.query2.time[0]: '';
-      this.query2.tradeDateTo = this.query2.time ? this.query2.time[1]: '';
-      this.query2.pageNum = page.pageNum;
-      this.query2.pageSize = page.pageSize;
-      console.log(this.query2);
-       await this.$api.refundapi.getDetailListForPageUsingGET_2(this.query2).then(returnObj => {
-        if (returnObj.data.status === 200) {
-          this.content2 = returnObj.data.data;
-          if (returnObj.data.data.isLastPage) {
-            this.$api.refundapi.billDetailTotalUsingGET_2(this.query2).then(returnObj => {
-              if (returnObj.data.status === 200) {             
-                this.detail2 = returnObj.data.data;
-                this.detail2.hasDetail = 200;
-              }
-            });
-          } else {            
-            this.detail2.hasDetail = '';
-          }
-        }
-      });
+      }).catch(res=>{
+            this.loading = false;
+            this.$message.error(res.data.msg);
+        });;
     },
 
     async init() {
@@ -379,9 +227,9 @@ export default {
       this.selects.shops = shop.data || [];
     }
   },
-  computed: {},
   created() {
     this.init();
+    this.content.list = [];
   }
 };
 </script>

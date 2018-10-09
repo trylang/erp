@@ -1,27 +1,29 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link :to="routerUrl+this.$route.params.prototypeId">合同管理</router-link>
-                <router-link :to="routerAuditUrl+this.$route.params.prototypeId">合同确认</router-link>
+                <router-link :to="routerUrl+this.$route.params.prototypeId" v-if="shops">合同管理</router-link>
+                <router-link :to="routerAuditUrl+this.$route.params.prototypeId" v-if="shopsaudit">合同确认</router-link>
+                <router-link :to="routerChangeUrl+this.$route.params.prototypeId" v-if="shopschange">合同变更</router-link>
             </div>
             <router-link class="el-button" slot="append" :to="routerAddUrl+'0/'+this.$route.params.prototypeId+'/0'">录入</router-link>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入合同号" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
-                            <el-select v-model="merchantValue" placeholder="请选择" class="dialogselect" @change="merchantSelect()">
+                            <el-select v-model="merchantValue" placeholder="请选择" filterable clearable class="dialogselect" @change="merchantSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in merchantOptions"
-                                        :key="item.value"
-                                        :label="item.text"
-                                        :value="item.value">
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                 </el-option>
                             </el-select>
                         </div>
@@ -31,11 +33,12 @@
                     <el-col :span="9" v-if="this.$route.params.prototypeId == 0">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">店铺</span>
-                            <el-select v-model="shopValue" placeholder="请选择" class="dialogselect" @change="shopSelect()">
+                            <el-select v-model="shopValue" placeholder="请选择" filterable clearable class="dialogselect" @change="shopSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in shopOptions"
                                         :key="item.id"
-                                        :label="item.shopName+'('+item.shopCode+')'"
+                                        :label="item.name"
                                         :value="item.id">
                                 </el-option>
                             </el-select>
@@ -44,7 +47,7 @@
                     <el-col :span="9" :offset="6" v-if="this.$route.params.prototypeId == 0">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">状态</span>
-                            <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
+                            <el-select v-model="statusValue" placeholder="请选择" filterable clearable class="dialogselect" @change="statusSelect()">
                                 <el-option
                                         v-for="item in statusOptions"
                                         :key="item.id"
@@ -57,7 +60,7 @@
                     <el-col :span="9" v-if="this.$route.params.prototypeId != 0">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">状态</span>
-                            <el-select v-model="statusValue" placeholder="请选择" class="dialogselect" @change="statusSelect()">
+                            <el-select v-model="statusValue" placeholder="请选择" filterable clearable class="dialogselect" @change="statusSelect()">
                                 <el-option
                                         v-for="item in statusOptions"
                                         :key="item.id"
@@ -75,7 +78,7 @@
                 <data-table :tableData="dataList" :colConfigs="columnData">
                     <el-table-column
                             label="操作"
-                            width="154"
+                            width="160"
                             slot="operation">
                         <template slot-scope="scope">
                             <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+0" class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20">编辑</router-link>
@@ -84,9 +87,9 @@
                             <button class="btn_text" v-if="scope.row.status == 61" @click="stopInfoBtn(scope.row.id,2)">编辑</button>
                             <button class="btn_text" v-if="scope.row.status == 10 || scope.row.status == 20" @click="deleteContract(scope.row.id)">删除</button>
                             <button class="btn_text" v-if="scope.row.status == 30 || scope.row.status == 40" @click="stopContract(scope.row.id,1)">终止</button>
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 40">延期</router-link>
-                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+2" class="btn_text" v-if="scope.row.status == 40">变更</router-link>
-                            <button class="btn_text" v-if="scope.row.status == 30" @click="cancelContract(scope.row.id)">取消</button>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+1" class="btn_text" v-if="scope.row.status == 40 || scope.row.status == 30">延期</router-link>
+                            <router-link :to="routerAddUrl+scope.row.id+'/'+prototypeId+'/'+2" class="btn_text" v-if="scope.row.status == 40 || scope.row.status == 30">变更</router-link>
+                            <!--<button class="btn_text" v-if="scope.row.status == 30" @click="cancelContract(scope.row.id)">取消</button>-->
                         </template>
                     </el-table-column>
                 </data-table>
@@ -110,7 +113,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">退租性质</span>
-                    <el-select v-model="stopContractData.stopType" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="stopContractData.stopType" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in stopTypeOption"
                                 :key="item.value"
@@ -140,6 +143,7 @@
         name: "index",
         data(){
             return{
+                loading: false,
                 dialogVisible:false,
                 dataList:[],
                 searchText:'',
@@ -147,6 +151,7 @@
                 merchantValue:'',
                 statusValue:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 shopOptions:[],
                 merchantOptions:[],
@@ -207,20 +212,68 @@
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             },
             '$route'(to,from){
-                this.getDataList(1);
                 this.getMerchantList();
                 this.prototypeId=this.$route.params.prototypeId;
                 this.searchText = '';
                 this.merchantValue = '';
                 this.shopValue = '';
                 this.statusValue = '';
+                this.getDataList(1,this.pageSize);
             }
         },
         computed:{
+            shops(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shops') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/coffice') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/field') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adposition') >= 0;
+                        break;
+                }
+            },
+            shopsaudit(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shopsaudit') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/cofficeaudit') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/fidleaudit') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adaudit') >= 0;
+                        break;
+                }
+            },
+            shopschange(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return this.$root.menus.indexOf('/inner/shopschange') >= 0;
+                        break;
+                    case '1':
+                        return this.$root.menus.indexOf('/inner/cofficechange') >= 0;
+                        break;
+                    case '2':
+                        return this.$root.menus.indexOf('/inner/fidlechange') >= 0;
+                        break;
+                    case '3':
+                        return this.$root.menus.indexOf('/inner/adchange') >= 0;
+                        break;
+                }
+            },
             routerUrl(){
                 switch (this.$route.params.prototypeId) {
                     case '0':
@@ -269,6 +322,22 @@
                         break;
                 }
             },
+            routerChangeUrl(){
+                switch (this.$route.params.prototypeId) {
+                    case '0':
+                        return '/inner/shopschange/'
+                        break;
+                    case '1':
+                        return '/inner/cofficechange/'
+                        break;
+                    case '2':
+                        return '/inner/fidlechange/'
+                        break;
+                    case '3':
+                        return '/inner/adchange/'
+                        break;
+                }
+            },
             columnData(){
                 switch (this.$route.params.prototypeId){
                     case '0':
@@ -278,7 +347,8 @@
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'shopName', label: '店铺名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -288,7 +358,8 @@
                             { prop: 'contractCode', label: '合同号',link:'/inner/shopsinfo/1',param:'id'},
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -299,7 +370,8 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -310,7 +382,8 @@
                             { prop: 'version', label: '版本号' },
                             { prop: 'merchantName', label: '商户名称' },
                             { prop: 'brandName', label: '经营品牌' },
-                            { prop: 'validDate', label: '合同有效期' },
+                            { prop: 'contractKindName', label: '合同类型' },
+                            { prop: 'validDate', label: '合同有效期', width:'100'},
                             { prop: 'statusText', label: '状态' },
                             { prop: 'updateDate', label: '更新时间' }
                         ];
@@ -327,20 +400,32 @@
                 localStorage.setItem('step',0)
             },
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.getListForPageUsingGET({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     propertyType:this.$route.params.prototypeId,
                     contractCode:this.searchText,
                     shopId:this.shopValue,
                     merchantId:this.merchantValue,
                     status:this.statusValue
                 }).then(res=>{
-                    res.data.data.list.forEach(item => {
-                        item.validDate = item.validStartDate + '~' + item.validEndDate;
-                    }); 
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        res.data.data.list.forEach(item => {
+                            item.validDate = item.validStartDate + '~' + item.validEndDate;
+                        }); 
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             async deleteContract(id){
@@ -353,7 +438,7 @@
                         id:id
                     }).then(res=>{
                         if (res.data.status == 200) {
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.$message.success(res.data.msg);
                         } else {
                             this.$message.error(res.data.msg);
@@ -367,14 +452,14 @@
                 })
             },
             async getShopList(merchantId){
-                await this.$api.rentapi.getByStatusUsingPOST({
-                    status:[3,4,5]
+                await this.$api.rentapi.doweListUsingGETShop({
+                    request:{statusList:[3,4,5]}
                 }).then(res=>{
                     this.shopOptions = res.data.data;
                 })
             },
             async getMerchantList(){
-                await this.$api.rentapi.getMerchantOption({
+                await this.$api.rentapi.doweListUsingGET({
                     type:this.$route.params.prototypeId
                 }).then(res=>{
                     this.merchantOptions = res.data.data;
@@ -411,7 +496,7 @@
                         }).then(res => {
                             if (res.data.status == 200) {
                                 this.dialogVisible = false;
-                                this.getDataList(1);
+                                this.getDataList(1,this.pageSize);
                                 this.$message.success(res.data.msg);
                             } else {
                                 this.$message.error(res.data.msg);
@@ -423,7 +508,7 @@
                         }).then(res => {
                             if (res.data.status == 200) {
                                 this.dialogVisible = false;
-                                this.getDataList(1);
+                                this.getDataList(1,this.pageSize);
                                 this.$message.success(res.data.msg);
                             } else {
                                 this.$message.error(res.data.msg);
@@ -432,8 +517,8 @@
                     }
                 });
             },
-            async cancelContract(id){
-                await this.$confirm('是否取消确认?', '提示', {
+            /*async cancelContract(id){  //暂时删除该功能，后期会变别的功能
+                await this.$confirm('您确定继续当前操作？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -442,23 +527,23 @@
                         id: id
                     }).then(res => {
                         if (res.data.status == 200) {
-                            this.getDataList(1);
+                            this.getDataList(1,this.pageSize);
                             this.$message.success(res.data.msg);
                         } else {
                             this.$message.error(res.data.msg);
                         }
                     })
                 });
-            },
+            },*/
             merchantSelect(){
                 //this.getShopList(this.merchantValue);
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             shopSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             statusSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             stopContract(id,num){
                 this.dialogVisible = true;

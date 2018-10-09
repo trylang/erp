@@ -18,13 +18,14 @@
             </div>
         </con-head>
         <el-dialog
-                title="添加楼层"
+                v-loading.fullscreen="loading"
+                :title="!addBuild.id ? '添加楼层': '修改楼层'"
                 :visible.sync="dialogVisible"
                 custom-class="customdialog">
             <div class="dialogbox">
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">楼层编码</span>
-                    <input class="inputtext" type="text" placeholder="请输入编号" v-model="addBuild.floorCode">
+                    <input class="inputtext" type="text" placeholder="请输入编码" v-model="addBuild.floorCode">
                 </div>
                 <div class="dialoginput">
                     <span class="inputname inputnameauto">楼层名称</span>
@@ -32,7 +33,7 @@
                 </div>
                 <div class="dialoginput">
                     <span class="inputname">所属楼宇</span>
-                    <el-select v-model="addBuild.buildId" placeholder="请选择" class="dialogselect">
+                    <el-select v-model="addBuild.buildId" placeholder="请选择" filterable clearable class="dialogselect">
                         <el-option
                                 v-for="item in dataList"
                                 :key="item.id"
@@ -56,6 +57,7 @@
         name: "floor-manage",
         data() {
             return {
+                loading: false,
                 dialogVisible:false,
                 dataTreeList:[],
                 dataList:[],
@@ -106,9 +108,13 @@
             async getBuildingList(){
                 await this.$api.rentapi.listUsingGET_4().then(res=>{
                     this.dataList = res.data.data;
+                    if(this.buildingData.level == 2){
+                        this.addBuild.buildId = this.buildingData.id;
+                    }
                 })
             },
             async postAddBuild(){
+                this.loading = true;
                 if(this.addBuild.id == 0) {
                     await this.$api.rentapi.addUsingPOST_4({
                         param: this.addBuild
@@ -116,6 +122,7 @@
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
+                            this.loading = false;
                             this.getBuildingTreeList();
                             this.addBuild = {
                                 buildId: '',
@@ -126,6 +133,7 @@
                             }
                         } else {
                             this.$message.error(res.data.msg);
+                            this.loading = false;
                         }
                     })
                 }else{
@@ -135,6 +143,7 @@
                         if (res.data.status == 200) {
                             this.$message.success(res.data.msg);
                             this.dialogVisible = false;
+                            this.loading = false;
                             this.getBuildingTreeList();
                             this.addBuild = {
                                 buildId: '',
@@ -145,13 +154,13 @@
                             }
                         } else {
                             this.$message.error(res.data.msg);
+                            this.loading = false;
                         }
                     })
                 }
             },
             handleNodeClick(data){
                 this.buildingData = data;
-                console.log(data)
             },
             formatTree (tree) {
                 tree.forEach(item => {

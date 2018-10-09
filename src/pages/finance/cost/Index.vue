@@ -1,7 +1,7 @@
 <template>
   <con-head title="合同费用项目">
     <el-button type="primary" icon="el-icon-plus" slot="append" @click="dialog.dialogVisible = true, 
-      dialog.param={costItemCode:'', costItemName:'', settleGroupId: '', costType:'',propertyType:''}">添加</el-button>
+      dialog.param={costItemCode:'', costItemName:'', settleGroupId: '', costType:'',propertyType:''}, dialog.models[0].type = 'text';">添加</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchbox">
@@ -10,8 +10,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">结算组别</span>
-            <el-select v-model="query.settleGroupId" @change="getCost()" placeholder="结算组别" class="dialogselect">
+            <span class="inputname inputnameauto">结算组别</span>
+            <el-select v-model="query.settleGroupId" @change="getCost()" filterable clearable placeholder="结算组别" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.accountGroup"
@@ -26,8 +26,8 @@
     <el-row slot="preappend">
       <el-col :span="9">
         <div class="searchselect">
-            <span class="inputname">费用类型</span>
-            <el-select v-model="query.costType" @change="getCost()" placeholder="费用类型" class="dialogselect">
+            <span class="inputname inputnameauto">费用类型</span>
+            <el-select v-model="query.costType" @change="getCost()" filterable clearable placeholder="费用类型" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.costType"
@@ -40,8 +40,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">物业性质</span>
-            <el-select v-model="query.propertyType" @change="getCost()" placeholder="商铺" class="dialogselect">
+            <span class="inputname inputnameauto">物业性质</span>
+            <el-select v-model="query.propertyType" @change="getCost()" filterable clearable placeholder="商铺" class="dialogselect">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.shops"
@@ -54,7 +54,7 @@
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改合同费用组别': '添加合同费用组别'" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" :title="dialog.param.id? '修改合同费用': '添加合同费用'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -198,6 +198,7 @@ export default {
           }
         ],
         dialogVisible: false,
+        loading: false,
         param: {
           costItemCode: '',
           costItemName: '',
@@ -259,16 +260,19 @@ export default {
   mounted() {},
   methods: {
     getCurrentPage(pageNum) {
-      this.getCost({pageNum});
+      this.query.pageNum = pageNum;
+      this.getCost();
     },
     getpageSize(pageSize) {
-      this.getCost({pageSize});
+      this.query.pageSize = pageSize;
+      this.getCost();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.loading = true;
       if (this.dialog.param.id) {
         // 修改
         this.editCost(this.dialog.param);
@@ -293,8 +297,7 @@ export default {
               $message("success", "删除成功");
             });
           } else {
-            $message("error", "删除失败");
-            return data.message;
+            $message("error", data.msg);
           }
         });
       });
@@ -305,8 +308,8 @@ export default {
         settleGroupId: this.query.settleGroupId,
         costType: this.query.costType,
         propertyType: this.query.propertyType,
-        pageNum: param.pageNum,
-        pageSize: param.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_7(params).then(res => {
         const data = res.data;
@@ -334,9 +337,11 @@ export default {
           this.getCost({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
-          $message("error", "添加失败!");
+            this.dialog.loading = false;
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -350,9 +355,11 @@ export default {
           this.getCost({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
-          $message("error", "修改失败!");
+            this.dialog.loading = false;
+          $message("error", returnObj.data.msg);
         }
       });
     },
@@ -370,7 +377,7 @@ export default {
       this.selects.costType = costType.data.cost_type;
       this.selects.propertyTypeJson = _changeJson(this.selects.shops, "id");
       await this.getCost();
-      this.selects.accountGroup = accountGroup.data.list;
+      this.selects.accountGroup = accountGroup.data;
       this.dialog.models[4].options = this.selects.costType;
       this.dialog.models[2].options = this.selects.shops;
     }

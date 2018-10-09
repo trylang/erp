@@ -1,5 +1,9 @@
 <template>
-  <con-head title="预付款处理">
+  <con-head tab="tab">
+    <div slot="appendtab" class="tabmenu">
+        <router-link to="/finance/dealAdvancePay" v-if="dealAdvancePay">预付款处理</router-link>
+        <router-link to="/finance/dealAdvancePayAudit" v-if="dealAdvancePayAudit">预付款处理审核</router-link>
+    </div>
     <el-button type="primary" slot="append" @click="dialog.dialogVisible = true, dialog.param={merchantId: '', contractCode: '', dealAmount: ''}">处理</el-button>
     <el-row slot="preappend">
       <el-col :span="9">
@@ -9,8 +13,8 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">商户</span>
-            <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="checkShopNameList(query.merchantId)">
+            <span class="inputname inputnameauto">商户</span>
+            <el-select v-model="query.merchantId" placeholder="商户名称" filterable clearable class="dialogselect" @change="checkShopNameList(query.merchantId)">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.merchants"
@@ -38,27 +42,22 @@
       </el-col>
       <el-col :span="9" :offset="6">
         <div class="searchselect">
-            <span class="inputname">合同</span>
-            <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="getDealList()">
+            <span class="inputname inputnameauto">合同</span>
+            <el-select v-model="query.contractCode" placeholder="请选择合同" filterable clearable class="dialogselect" @change="getDealList()">
               <el-option label="全部" value=""></el-option>
               <el-option
                 v-for="item in selects.contracts"
                 :key="item.id"
-                :label="item.contractCode"
+                :label="item.contractAndShop"
                 :value="item.contractCode">
               </el-option>
             </el-select>
         </div>
       </el-col>
     </el-row>
-		<el-row slot="preappend">
-			<div class="global-block">
-				<button class="global-btn" @click="batchConfirm">确 定</button>
-			</div>
-		</el-row>
     <erp-table :header="header" :content="dataList" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
 
-    <erp-dialog title="预付款收取" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading.fullscreen="dialog.loading" title="预付款处理" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -80,11 +79,11 @@ export default {
     let _this = this;
     return {
         header: [
-            {
-              label: "",
-              name: "checked",
-              type: "checkbox"
-            },
+            // {
+            //   label: "",
+            //   name: "checked",
+            //   type: "checkbox"
+            // },
             {
               label: "处理单号",
               type: "text",
@@ -107,7 +106,7 @@ export default {
             },
             {
               label: "金额",
-              type: "text",
+              type: "fmoney",
               name: "dealAmount"
             },
             {
@@ -193,7 +192,7 @@ export default {
                   options: [],
                   placeholder: '请选择商户',
                   async event(id) {//dialog 根据商户id查询合同
-                      await _this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: id}).then(res => {
+                      await _this.$api.rentapi.listFormalUsingGET({merchantId: id}).then(res => {
                           if (res.data.status === 200) {
                               _this.dialog.models[1].options = res.data.data;
                           } 
@@ -220,19 +219,23 @@ export default {
                 }
             ],
             dialogVisible: false,
+            loading: false,
             param: {
               id: "",
               merchantId: '',
               contractCode: '',
               dealAmount: '',
-              remark: ''
+              // remark: '',
+              // receivedAmount: ''
             },
             options: [{
               label: "确 定",
               name: "submit",
               type: "primary",
               disabledFun: () => {
-                return Object.values(this.dialog.param).some(item => {
+                let param = Object.assign({}, this.dialog.param);
+                delete param.remark;
+                return Object.values(param).some(item => {
                   return item === (undefined || "");
                 });
               },
@@ -289,28 +292,31 @@ export default {
     mounted() {
         this.getDealList();
         // this.$api.rentapi.listUsingGET_12({status: 1}).then(res=>{ //商户列表
+        //     res.data.data.map(item => {
+        //       return item.merchantName = `${item.merchantCode}（${item.merchantName}）`;
+        //     });
         //     this.selects.merchants = res.data.data;
-        //     // this.dialog.models[0].options = res.data.data;
+        //     this.dialog.models[0].options = res.data.data;
         // })
-        this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {//已经确定过合同的商户列表
+        this.$api.rentapi.listForFormalUsingGET().then(res => {//已经确定过合同的商户列表
             this.selects.merchants = res.data.data;
             this.dialog.models[0].options = res.data.data;
         })
         this.checkShopNameList(-1); //合同下拉
-        // this.$api.rentapi.getListForPageUsingGET({status: 30}).then(res=>{//合同列表
-        //     this.selects.contracts = res.data.data.list;
-        //     // this.dialog.models[1].options = res.data.data.list;
-        // })
-        // this.$api.rentapi.getMerchantForAdvancePaymentUsingGET().then(res => {
-        //     this.dialog.models[0].options = res.data.data;//已经确定过合同的商户列表
-        // }).catch(res => {
-        //     this.$message.error(res.data.msg);
-        // });
+    },
+    computed:{
+        dealAdvancePay(){
+            return this.$root.menus.indexOf('/finance/dealAdvancePay') >= 0;
+        },
+        dealAdvancePayAudit(){
+            return this.$root.menus.indexOf('/finance/dealAdvancePayAudit') >= 0;
+        }
     },
     methods: {
         checkShopNameList(merchantId){  //根据商户id查合同
+            this.query.contractCode = '';
             let merchantIds = merchantId==-1?'' : merchantId;
-            this.$api.rentapi.getContractShopByMerchantUsingGET({merchantId: merchantIds}).then(res => {
+            this.$api.rentapi.listFormalContractUsingGET({merchantId: merchantIds}).then(res => {
                 this.selects.contracts = res.data.data;
                 this.getDealList();
             }).catch(res => {
@@ -323,8 +329,8 @@ export default {
                 merchantId: this.query.merchantId,
                 contractCode: this.query.contractCode,
                 status: this.query.status,
-                pageNum: page.pageNum,
-                pageSize: page.pageSize
+                pageNum: this.query.pageNum,
+                pageSize: this.query.pageSize
             }
             this.$api.financeapi.listUsingGET_14(params).then(res=>{
                 if(res.data.status === 200){
@@ -354,10 +360,12 @@ export default {
             })
         },
         getCurrentPage(pageNum) {
-          this.getDealList({pageNum});
+          this.query.pageNum = pageNum;
+          this.getDealList();
         },
         getpageSize(pageSize) {
-          this.getDealList({pageSize});
+          this.query.pageSize = pageSize;
+          this.getDealList();
         },
         filterIds() {
           const param = this.dataList.list.filter(item => {
@@ -402,17 +410,26 @@ export default {
             this.dialog.param = {};
         },
         confirmDialog() {
+          this.dialog.loading = true;
           if (this.dialog.param.id) { // 修改
-            this.dialog.dialogVisible = false;
-            let params = {
-                param: this.dialog.param
-            };
+            this.dialog.param.receivedAmount = this.dialog.param.dealAmount;
+            if(this.dialog.param.dealAmount < 0){
+              this.$message.info('处理金额不能小于0！');
+              this.dialog.loading = false;
+              return;
+            }
             this.$api.financeapi.updateUsingPUT_9( this.dialog.param ).then(res=>{
                 if(res.data.status === 200){
                     this.$message.success(res.data.msg);
+                    this.dialog.dialogVisible = false;
+                    this.dialog.loading = false;
                     this.getDealList();
+                }else{
+                    this.dialog.loading = false;
+                    this.$message.error(res.data.msg);
                 }
             }).catch(res=>{
+                this.dialog.loading = false;
                 this.$message.error(res.data.msg);
             });
           } else { // 新增
@@ -422,10 +439,23 @@ export default {
                 dealAmount: this.dialog.param.dealAmount,
                 remark: this.dialog.param.remark
             };
+            if(params.dealAmount < 0){
+              this.$message.info('处理金额不能小于0！');
+              this.dialog.loading = false;
+              return;
+            }
             this.$api.financeapi.saveUsingPOST_4({request: this.dialog.param}).then(res=>{
-                this.$message.success(res.data.msg);
-                this.getDealList();
+                if(res.data.status === 200){
+                    this.$message.success(res.data.msg);
+                    this.dialog.dialogVisible = false;
+                    this.dialog.loading = false;
+                    this.getDealList();
+                }else{
+                    this.dialog.loading = false;
+                    this.$message.error(res.data.msg);
+                }
             }).catch(res=>{
+                this.dialog.loading = false;
                 this.$message.error(res.data.msg);
             });
           }
@@ -446,19 +476,15 @@ export default {
               }).catch(res => {
                   this.$message.error(res.data.msg);
               });
-            })
-         .catch(() => {
-            $message("info", "已取消删除!");
-         });
+            });
         },
         cancelsDialog: function(item) {
-          this.$confirm("是否要取消该条数据?", "提示", {
+          this.$confirm("您确定继续当前操作？", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning"
           }).then(()=>{
             this.$api.financeapi.cancelsUsingPUT_2({ id: item.id }).then(res => {
-                console.log(222,res)
                 if (res.data.status == 200) {
                   this.$message.success(res.data.msg);
                   this.getDealList();
@@ -466,12 +492,9 @@ export default {
                   this.$message.error(res.data.msg);
                 }
             }).catch(res => {
-                console.log(123,res)
                 this.$message.error(res.data.msg);
             });
-          }).catch(() => {
-              $message("info", "已取消!");
-            });
+          });
         }
     }
 };

@@ -2,8 +2,8 @@
   <el-form class="cash_table" :model="cash" :rules="rules" ref="ruleForm">
     <p>
       <span>{{cash.title}}</span>
-      <strong v-if="type==='text'">{{cash.money}}</strong>
-      <el-form-item prop="money">
+      <strong v-if="type==='text'">{{cash.money | fmoney}}</strong>
+      <el-form-item prop="money" class="form-item">
         <el-input v-if="type==='input'" type="text" @blur="paramFun" v-model="cash.money" placeholder="请输入金额"></el-input>
       </el-form-item>
     </p>
@@ -23,7 +23,8 @@ export default {
         } else {
           if (value < 0) {
             callback(new Error("请输入大于0的数值"));
-          } else {
+          } 
+          else {
             callback();
           }
         }
@@ -31,7 +32,7 @@ export default {
     };
     return {
       rules: {
-        money: [{ validator: checkMoney, trigger: "blur" }]
+        // money: [{ validator: checkMoney, trigger: "blur" }]
       }
     };
   },
@@ -56,7 +57,12 @@ export default {
     justify-content: space-between;
     padding: 0.5rem;
     border-bottom: 0.8rem solid #f5f5f5;
+    .form-item {
+      margin-bottom: 0;
+    }
     strong {
+      flex: 1;
+      text-align: right;
       color: #666;
     }
     input {

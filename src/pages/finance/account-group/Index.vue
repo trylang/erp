@@ -10,7 +10,7 @@
       </el-col>
     </el-row>
     <erp-table :header="header" :content="content" @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
-    <erp-dialog :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
+    <erp-dialog v-loading="dialog.loading" :title="dialog.param.id? '修改结算组别': '添加结算组别'" :dialog="dialog"></erp-dialog>
   </con-head>
 
 </template>
@@ -22,7 +22,6 @@ import conHead from "../../../components/ConHead";
 import erpTable from "../../../components/Table";
 import erpDialog from "../../../components/Dialog";
 
-import { queryAccountGroups } from '@/utils/rest/financeAPI';
 export default {
   name: "account-group",
   components: {
@@ -76,6 +75,7 @@ export default {
               },
               class: "edit",
               click: (item) => {
+                this.dialog.param = {};
                 Object.assign(this.dialog.param, item);
                 this.dialog.dialogVisible = true;
               }
@@ -123,6 +123,7 @@ export default {
           placeholder: '请输入备注'
         }],
         dialogVisible: false,
+        loading: false,
         param: {
           id: "",
           settleGroupCode: "",
@@ -160,16 +161,19 @@ export default {
   },
   methods: {
     getCurrentPage(pageNum) {
-      this.getAccountGroups({pageNum});
+      this.query.pageNum = pageNum;
+      this.getAccountGroups();
     },
     getpageSize(pageSize) {
-      this.getAccountGroups({pageSize});
+      this.query.pageSize = pageSize;
+      this.getAccountGroups();
     },
     cancelDialog: function() {
       this.dialog.dialogVisible = false;
       this.dialog.param = {};
     },
     confirmDialog: function() {
+      this.dialog.loading = true;
       if (this.dialog.param.id) {
         // 修改
         this.editAccountGroup(this.dialog.param);
@@ -202,8 +206,8 @@ export default {
     async getAccountGroups(page={}, callback) {
       let params = {
         settleGroupName: this.query.settleGroupName,
-        pageNum: page.pageNum,
-        pageSize: page.pageSize
+        pageNum: this.query.pageNum,
+        pageSize: this.query.pageSize
       };
       this.$api.financeapi.listUsingGET_11(params).then(res => {
         const data = res.data;
@@ -224,8 +228,10 @@ export default {
           this.getAccountGroups({}, () => {
             $message("success", "添加成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });         
         } else {
+          this.dialog.loading = false;
           $message("error", returnObj.data.msg);
         }       
       });
@@ -240,8 +246,10 @@ export default {
           this.getAccountGroups({}, () => {
             $message("success", "修改成功!");
             this.dialog.dialogVisible = false;
+            this.dialog.loading = false;
           });
         } else {
+          this.dialog.loading = false;
           $message("error", returnObj.data.msg);
         }       
       });

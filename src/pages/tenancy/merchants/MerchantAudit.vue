@@ -1,20 +1,21 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head tab="tab">
             <div slot="appendtab" class="tabmenu">
-                <router-link to="/inner/merchants">商户管理</router-link>
-                <router-link to="/inner/merchantaudit">商户审核</router-link>
+                <router-link to="/inner/merchants" v-if="merchants">商户管理</router-link>
+                <router-link to="/inner/merchantlist" v-if="merchantlist">商户管理</router-link>
+                <router-link to="/inner/merchantaudit" v-if="merchantaudit">商户审核</router-link>
             </div>
             <div slot="preappend">
                 <el-row>
                     <el-col :span="9">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入编码" v-model.trim="searchText" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                     <el-col :span="9" :offset="6">
                         <div class="searchbox">
-                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1)"><i class="iconfont icon-sousuo"></i>
+                            <input type="text" placeholder="请输入名称" v-model.trim="searchName" @keyup.enter="getDataList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                         </div>
                     </el-col>
                 </el-row>
@@ -22,7 +23,8 @@
                     <el-col :span="9">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">类型</span>
-                            <el-select v-model="typeValue" placeholder="请选择" class="dialogselect" @change="typeSelect()">
+                            <el-select v-model="typeValue" placeholder="请选择" filterable clearable class="dialogselect" @change="typeSelect()">
+                                <el-option label="全部" value=""></el-option>
                                 <el-option
                                         v-for="item in typeOptions"
                                         :key="item.id"
@@ -62,12 +64,14 @@
         name: "unit",
         data(){
             return{
+                loading: false,
                 dataList:[],
                 searchText:'',
                 searchName:'',
                 typeValue:'',
                 statusId:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0,
                 columnData:[
                     { type: 'selection', width:'50'},
@@ -111,31 +115,54 @@
         },
         mounted(){
         },
+        computed:{
+            merchants(){
+                return this.$root.menus.indexOf('/inner/merchants') >= 0;
+            },
+            merchantlist(){
+                return this.$root.menus.indexOf('/inner/merchantlist') >= 0 && this.$root.menus.indexOf('/inner/merchants') < 0
+            },
+            merchantaudit(){
+                return this.$root.menus.indexOf('/inner/merchantaudit') >= 0;
+            }
+        },
         watch:{
             searchText(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             },
             searchName(){
                 this.$delay(()=>{
-                    this.getDataList(1);
+                    this.getDataList(1,this.pageSize);
                 },300)
             }
         },
         methods:{
             async getDataList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.rentapi.auditListpgUsingGET_1({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     merchantCode:this.searchText,
                     merchantName:this.searchName,
                     merchantEnglishName:'',
                     merchantType:this.typeValue,
                     status:this.statusId
                 }).then(res=>{
-                    this.dataList = res.data.data.list;
-                    this.total = Number(res.data.data.total);
+                    if(res.data.status === 200){
+                        this.dataList = res.data.data.list;
+                        this.total = Number(res.data.data.total);
+                        this.loading = false;
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch(res=>{
+                    this.loading = false;
+                    this.$message.error(res.data.msg);
                 })
             },
             statusHandler(status){
@@ -144,10 +171,10 @@
                 });
                 status.isStatus = !status.isStatus;
                 this.statusId = status.id;
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             typeSelect(){
-                this.getDataList(1);
+                this.getDataList(1,this.pageSize);
             },
             childData(data){
                 this.multipleSelection = data.map(item=>{
@@ -155,13 +182,12 @@
                 });
             },
             async auditbtn(){
-                console.log(this.multipleSelection)
                 await this.$api.rentapi.emptyUsingPOST_1({
                     ids:this.multipleSelection
                 }).then(res=>{
                     if (res.data.status == 200) {
                         this.$message.success(res.data.msg);
-                        this.getDataList(1);
+                        this.getDataList(1,this.pageSize);
                     } else {
                         this.$message.error(res.data.msg);
                     }

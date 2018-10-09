@@ -6,7 +6,16 @@
 
 <script>
     export default {
-        name: 'app'
+        name: 'app',
+        created(){
+          if (localStorage.getItem('erp_userinfo')) {
+            if (JSON.parse(localStorage.getItem('erp_userinfo')).menus.length>0) {
+            this.$root.menus = JSON.parse(localStorage.getItem('erp_userinfo')).menus.map(item=>{
+                return item.url
+                })
+            }
+          }
+        }
     }
 </script>
 
@@ -386,6 +395,15 @@
     .rightcompany {
         margin-left: 5px;
     }
+    .dialogbox .htinfoinput{
+        border:none;
+    }
+    .htinfoinput .inputname{
+        width: 104px;
+    }
+    .htinfoinput .inputnameWidth{
+        width: 118px;
+    }
 
     /*合同日期*/
     .dialoginput .el-range-editor.el-input__inner {
@@ -469,7 +487,10 @@
         -ms-transform: rotate(45deg) scaleY(0);
         transform: rotate(45deg) scaleY(0);
     }
-
+    .el-radio__input.is-disabled.is-checked .el-radio__inner::after{
+        border-color: #c0c4cc;
+        background-color: #f5f7fa;
+    }
     .el-radio__input.is-checked .el-radio__inner::after {
         webkit-transform: rotate(45deg) scaleY(1);
         transform: rotate(45deg) scaleY(1);
@@ -485,6 +506,7 @@
         width: 16px;
         height: 16px;
         border-radius: 4px;
+        border: 1px solid #999;
     }
 
     .el-checkbox__inner::after {
@@ -549,7 +571,7 @@
         border: none;
         border-bottom: 1px solid #e5e5e5;
         padding: 3px 35px 3px 35px;
-        color: #ccc;
+        color: #666;
         width: 100%;
         height: 32px;
     }
@@ -576,7 +598,7 @@
     }
 
     .searchinput .inputname {
-        width: 110px;
+        width: 114px;
         padding: 0 5px;
         line-height: 30px;
         display: inline-block;
@@ -588,7 +610,7 @@
 
     .searchinput .el-input__inner {
         height: 30px;
-        padding: 0;
+        /*padding: 0;*/
         border: 0;
         flex: 1;
     }
@@ -605,6 +627,19 @@
         float: right;
     }
 
+    .searchinput .el-date-editor.el-range-editor .el-input__icon{
+        line-height: 24px;
+    }
+
+    .searchinput .el-input__prefix .el-input__icon{
+        line-height: 30px;
+    }
+    .searchinput .el-input__suffix{
+        top:-5px;
+    }
+    .searchdatepicker .el-date-editor.el-input{
+        width: 142px;
+    }
     .searchselect {
         border-bottom: 1px solid #e5e5e5;
         display: flex;
@@ -1007,7 +1042,7 @@
     .rentcontent .inputname {
         width: 82px;
         padding: 0 15px 0 10px;
-        line-height: 30px;
+        line-height: 40px;
         display: inline-block;
     }
 
@@ -1031,8 +1066,8 @@
     .rentcontent .el-select .el-input__inner {
         border: none;
         font-size: 14px;
-        height: 30px;
-        line-height: 30px;
+        height: 40px;
+        line-height: 40px;
         padding-left: 0;
     }
 
@@ -1047,7 +1082,7 @@
     }
 
     .rentcontent .rightcompany {
-        line-height: 30px;
+        line-height: 40px;
     }
 
     .renttitle .h3 {
@@ -1077,7 +1112,7 @@
         border: 1px solid #e5e5e5;
         position: absolute;
         width: 70px;
-        line-height: 30px;
+        line-height: 40px;
         color: #333;
         font-size: 16px;
         font-weight: bold;
@@ -1098,7 +1133,7 @@
     }
 
     .stagecontent .inputtext .el-input__inner {
-        height: 30px;
+        height: 40px;
         padding: 0;
         border: 0;
     }
@@ -1110,7 +1145,7 @@
     }
 
     .stagecontent .inputtext .el-input__icon {
-        line-height: 30px;
+        line-height: 40px;
     }
 
     .stagecontent .inputtext .el-input__suffix {
@@ -1154,7 +1189,7 @@
     }
 
     .stagelineheight {
-        line-height: 30px;
+        line-height: 40px;
     }
 
     .stagebutton {
@@ -1175,7 +1210,7 @@
         line-height: 24px;
         text-align: center;
         border-radius: 12px;
-        margin-top: 3px;
+        margin-top: 8px;
     }
 
     .stagesale .stagesaletitle {
@@ -1186,7 +1221,7 @@
     .stagesale .stagesalelist {
         display: flex;
         text-align: center;
-        line-height: 30px;
+        line-height: 40px;
     }
 
     .stagesale .stagesalelist .flexwidth {
@@ -1226,7 +1261,7 @@
     }
 
     .lineheight {
-        line-height: 30px;
+        line-height: 40px;
     }
 
     /*保证金*/
@@ -1332,7 +1367,7 @@
     }
 
     .small-btn {
-        width: 90%;
+        width: 86%;
         height: 1.6rem;
         border-radius: .8rem;
         padding: 0;
@@ -1459,5 +1494,55 @@
 
     .el-message {
         z-index: 3000 !important;
+    }
+    /*购物中心树形样式*/
+    .dialoginput .shopinputtext .el-tree__empty-block{
+        min-height: 30px;
+    }
+    .dialoginput .shopinputtext .el-tree__empty-text{
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translate(0,0);
+        min-height: 30px;
+    }
+
+    /** 小table的样式*/
+    .last_tr {
+        font-weight: 600;
+        font-size: 12px;
+        color: #8a8a8a,;
+    }
+    .last_tr .cell {
+        padding: 5px 8px !important;
+    }
+
+    /** 收款管理对input的样式处理*/
+    .cash_table .form-item .el-form-item__content {
+        line-height: 24px;
+    }
+    .cash_table .form-item .el-form-item__content .el-input {
+        padding: 0;
+    }
+    .cash_table .form-item .el-form-item__content .el-input .el-input__inner {
+        height: 24px;
+        line-height: 24px;
+        border: 0;
+        /* border-bottom: 1px solid #dcdfe6; */
+        text-align: right;
+    }
+    .cash_table .form-item .el-form-item__content .el-form-item__error {
+        top: 112%;
+        left: 120px;
+    }
+    .erpsearchbtn{
+        font-size:14px;
+        color:#457fcf;
+        border:1px solid #89acdd;
+        border-radius: 4px;
+        margin-top: 30px;
+        padding: 3px 10px;
+        float: right;
+        cursor: pointer;
     }
 </style>

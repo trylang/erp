@@ -12,7 +12,7 @@
                     <el-col :span="9" :offset="6">
                         <div class="searchselect">
                             <span class="inputname inputnameauto">商户</span>
-                            <el-select v-model="value" placeholder="请选择" class="dialogselect">
+                            <el-select v-model="value" filterable clearable placeholder="请选择" class="dialogselect">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"

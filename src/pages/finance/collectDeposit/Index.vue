@@ -6,8 +6,8 @@
           <el-row slot="preappend">
             <el-col :span="9">
               <div class="searchselect">
-                  <span class="inputname">商户</span>
-                  <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="checkContractHandler(query.merchantId)" :disabled="!!this.$route.query.merchantId">
+                  <span class="inputname inputnameauto">商户</span>
+                  <el-select v-model="query.merchantId" placeholder="商户名称" class="dialogselect" @change="checkContractHandler(query.merchantId)" filterable clearable :disabled="!!this.$route.query.merchantId">
                     <el-option
                       v-for="item in selects.merchants"
                       :key="item.id"
@@ -19,12 +19,12 @@
             </el-col>
             <el-col :span="9" :offset="6">
               <div class="searchselect">
-                <span class="inputname">正式合同</span>
-                <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="checkMoneyHandler" :disabled="!!this.$route.query.contractCode">
+                <span class="inputname inputnameauto">正式合同</span>
+                <el-select v-model="query.contractCode" placeholder="请选择合同" class="dialogselect" @change="checkMoneyHandler" filterable clearable :disabled="!!this.$route.query.contractCode">
                   <el-option
                     v-for="item in selects.contracts"
                     :key="item.contractCode"
-                    :label="item.codeInfo"
+                    :label="item.contractAndShop"
                     :value="item.contractCode">
                   </el-option>
                 </el-select>
@@ -34,13 +34,13 @@
         </con-head>
         
         <blank-head title="店铺履约保证金">
-          <cash-card :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.uncollectedAmount}]"></cash-card>
+          <cash-card :notCash="false" :cash="[{name:'应收金额', id:this.content.receivableAmount}, {name: '已收金额', id:this.content.receivedAmount}, {name: '未收金额', id:this.content.uncollectedAmount}]"></cash-card>
         </blank-head>
         
         <erp-table :header="header" :content="content"  @currentPage="getCurrentPage" @pageSize="getpageSize"></erp-table>
         <erp-dialog :title="dialog.param.id? '修改保证金': '保证金收取'" :dialog="dialog"></erp-dialog>
     </div>
-    <div class="savebtn"><button @click="addEntering">提交</button></div>
+    <div class="savebtn" v-loading.fullscreen="loading"><button @click="addEntering">提交</button></div>
   </div>
   
 </template>
@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       header: [
         {
           label: "收款方式",
@@ -76,7 +77,7 @@ export default {
         },
         {
           label: "收款金额",
-          type: "text",
+          type: "fmoney",
           name: "receivedAmount"
         },
         {
@@ -144,7 +145,12 @@ export default {
         }, {
             label: "收款日期",
             type: "date",
-            name: "receivedDate"
+            name: "receivedDate",
+            pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              }
+            }
         }, {
           label: '备注',
           name: 'remark',
@@ -166,8 +172,10 @@ export default {
           name: "submit",
           type: "primary",
           disabledFun: () => {
-            return Object.values(this.dialog.param).some(item => {
-              return item === (undefined || "");
+            let param = Object.assign({}, this.dialog.param);
+            delete param.remark;
+            return Object.values(param).some(item => {
+                return item === (undefined || "");
             });
           },
           click: () => {
@@ -207,7 +215,7 @@ export default {
         }else{
             this.query.stage = 1;
         }
-        this.$api.financeapi.getEarnestMerchant({stage: this.query.stage}).then(res=>{ //保证金下 的所有商户列表
+        this.$api.rentapi.listForFormalUsingGET().then(res=>{ //保证金下 的所有商户列表
             this.selects.merchants = res.data.data;
         }).catch(res=>{
             this.$message.error(res.data.msg);
@@ -222,14 +230,24 @@ export default {
     },
     methods: {
         checkContractHandler(merchantId){//根据商户id查询正式合同
-            this.$api.financeapi.contractinfoUsingGET({
-                stage: this.query.stage,
+            this.query.contractCode = '';
+            this.content.receivableAmount = '';
+            this.content.receivedAmount = '';
+            this.content.uncollectedAmount = '';
+            if(this.content.list.length>0){
+                 this.content.list = [];
+            }
+            this.$api.rentapi.listFormalUsingGET({
+                // stage: this.query.stage,
                 merchantId : merchantId
             }).then(res => {//根据code查询付款方式
                 this.selects.contracts = res.data.data;
             });
         },
         checkMoneyHandler(){
+            this.content.receivableAmount = '';
+            this.content.receivedAmount = '';
+            this.content.uncollectedAmount = '';
             let params = {
                 stage: 1,
                 merchantId: this.query.merchantId,
@@ -243,8 +261,9 @@ export default {
                 this.content.uncollectedAmount = data.uncollectedAmount;//未收金额
                 this.query.shopId = data.shopId;
                 this.query.bondId = data.id;
+                this.content.list = [];
             }).catch(res=>{
-                console.log(res)
+              this.$message.error(res.data.msg);
             });
         },
         getCurrentPage(pageNum) {
@@ -260,9 +279,38 @@ export default {
         confirmDialog: function() {
             if (this.dialog.param.id || this.dialog.param.itemId) {
               // 修改
+              let filterData = this.content.list.filter(item => {
+                if (item.id) {
+                  return item.id != this.dialog.param.id;
+                } else if (item.itemId) {
+                  return item.itemId != this.dialog.param.itemId;
+                }                
+              });
+              for(var i = 0; i<filterData.length; i++){
+                let singData = filterData[i];
+                if (singData.paymentCode == this.dialog.param.paymentCode){
+                  this.$message.info('不能添加重复的收款方式！');
+                  return;
+                }             
+              }
+              if(this.dialog.param.receivedAmount < 0){
+                this.$message.info('收款金额不能小于0！');
+                return;
+              }
               this.editItem(this.dialog.param);        
             } else {
               // 新增
+              for(var i = 0; i<this.content.list.length; i++){
+                let singData = this.content.list[i];
+                if (singData.paymentCode == this.dialog.param.paymentCode){
+                  this.$message.info('不能添加重复的收款方式！');
+                  return;
+                }             
+              }
+              if(this.dialog.param.receivedAmount < 0){
+                this.$message.info('收款金额不能小于0！');
+                return;
+              }
               this.dialog.param.itemId = _uuid();
               this.addItem(this.dialog.param);
             }
@@ -287,9 +335,6 @@ export default {
             })
               .then(() => {
                 this.deleteItem(item);
-              })
-              .catch(() => {
-                $message("info", "已取消删除!");
               });
         },
         async getEntering(page={}, callback) {
@@ -318,24 +363,33 @@ export default {
           }
         },
         async addEntering() {
+          this.loading = true;
           const param = {
             merchantId: this.query.merchantId,
             contractCode: this.query.contractCode,
-            shopId: this.querys.shopId,
+            shopId: this.query.shopId,
             stage: this.query.stage,
             receiptNumber: this.$route.query.receiptNumber?this.querys.receiptNumber:null,//编辑传收款单号，新增不用传
             id: this.query.bondId,    //保证金id
             list: this.content.list
           }
           const apiFunc = (api, param) => {
-            this.$api.financeapi[api]({request: param}).then(returnObj => {
-              if (returnObj.data.status === 200) {
-                $message("success", "提交成功!");
-                this.$router.push({path: '/finance/takeMargin'});
-              } else {
-                $message("error", "修改失败!");
-              }
-            });
+            let aTotal = param.list.reduce((a,b)=>{ return a + Number(b.receivedAmount) },0);
+            if(aTotal <= this.content.uncollectedAmount){ //收取金额必须小于未收金额
+                this.$api.financeapi[api]({request: param}).then(returnObj => {
+                  if (returnObj.data.status === 200) {
+                    this.loading = false;
+                    this.$message.success(returnObj.data.msg);
+                    this.$router.push({path: '/finance/takeMargin'});
+                  } else {
+                    this.loading = false;
+                    this.$message.error(returnObj.data.msg);
+                  }
+                });
+            }else{
+                this.loading = false;
+                this.$message.warning('收款金额不能大于未收金额！');
+            }
           };
 
           if (this.$route.query.receiptNumber) {

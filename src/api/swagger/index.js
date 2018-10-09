@@ -9,4 +9,4 @@ let opt = {
     className: 'api'
 }
 const codeResult = swaggerGen(opt)
-fs.writeFileSync(path.join(__dirname, './rent-api-client.js'), codeResult)
+fs.writeFileSync(path.join(__dirname, './report-api-client.js'), codeResult)

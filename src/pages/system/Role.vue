@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div v-loading.fullscreen="loading">
         <con-head title="角色管理">
             <router-link to="/system/addrole/0" class="el-button el-icon-plus" slot="append"><span>添加</span></router-link>
             <el-row slot="preappend">
                 <el-col :span="9">
                     <div class="searchbox">
-                        <input type="text" placeholder="请输入名称" v-model="searchText" @keyup.enter="getRoleList(1)"><i class="iconfont icon-sousuo"></i>
+                        <input type="text" placeholder="请输入名称" v-model="searchText" @keyup.enter="getRoleList(1,pageSize)"><i class="iconfont icon-sousuo"></i>
                     </div>
                 </el-col>
             </el-row>
@@ -34,7 +34,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="el-table__empty-block" v-if="dataList == null">
+                <div class="el-table__empty-block" v-if="dataList.length<=0">
                     <span class="el-table__empty-text">暂无数据</span>
                 </div>
             </div>
@@ -51,9 +51,11 @@
         name: "role",
         data(){
             return{
+                loading: true,
                 dataList:[],
                 searchText:'',
                 pageNum: Number(this.$route.params.pageId)||1,
+                pageSize: 10,
                 total: 0
             }
         },
@@ -63,21 +65,30 @@
         watch:{
             searchText() {
                 this.$delay(() => {
-                    this.getRoleList(1);
+                    this.getRoleList(1,this.pageSize);
                 }, 1000);
             }
         },
         methods:{
             async getRoleList(pageNum,pageSize){
+                this.pageNum = pageNum;
+                this.pageSize = pageSize;
+                this.loading = true;
                 await this.$api.systemapi.listUsingGET_8({
-                    pageNum:pageNum,
-                    pageSize:this.$refs.page.pageSize,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
                     name:this.searchText
                 }).then(res=>{
                     if(res.data.status === 200){
+                        this.loading = false;
                         this.dataList = res.data.data.list;
                         this.total = Number(res.data.data.total);
+                    }else{
+                        this.loading = false;
+                        this.$message.error(res.data.msg);
                     }
+                }).catch(res=>{
+                    this.loading = false;
                 })
             },
             async deleteRole(rId){
@@ -86,7 +97,6 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    console.log(rId)
                     this.$api.systemapi.deleteUsingDELETE_5({
                         roleId: rId
                     }).then(res=>{
@@ -109,5 +119,23 @@
 </script>
 
 <style scoped>
-
+    .gray{
+        color: #606266;
+    }
+    .green{
+        color: green;
+    }
+    .red{
+        color: red;
+    }
+    table tbody tr{
+        background-color: #fff;
+    }
+    table tbody tr:hover{
+        background-color: #f5f7fa;
+    }
+    table tbody tr:nth-of-type(2n){
+        width: 100%;
+        background-color: #FAFAFA;
+    }
 </style>

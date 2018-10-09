@@ -1,9 +1,10 @@
 <template>
   <el-row class="cards_row" :gutter="70" type="flex" justify="center">
 		<el-col class="card_col" :span="7" v-for="(item, index) in cash" :key="index">
-			<div class="erp_card">
+			<div class="erp_card" >
 				<span class="card_text">{{item.name}}</span>
-				<strong><label v-if="!notCash">￥</label>{{item.id}}</strong>
+				<strong v-if="!notCash"><label>￥</label>{{item.id | fmoney}}</strong>
+				<strong v-if="notCash">{{item.id}}</strong>
 			</div>
 		</el-col>
 	</el-row>

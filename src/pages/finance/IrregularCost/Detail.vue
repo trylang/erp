@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <erp-details :header="header" :details="details"></erp-details>
-  </div>
+    <div>
+        <erp-details :header="header" :details="details"></erp-details>
+    </div>
 </template>
 
 <script>
@@ -54,7 +54,7 @@ export default {
           },
           {
             label: "录入日期",
-            name: "updateDate",
+            name: "createDate",
             left_span: 2,
             right_span: 5,
             type: "text",
@@ -64,18 +64,18 @@ export default {
             name: "sum",
             left_span: 2,
             right_span: 18,
-            type: "text"
+            type: "fmoney"
           },
           {
             label: "状态",
-            name: "status",
+            name: "statusText",
             left_span: 2,
             right_span: 5,
-            type: "status",
+            type: "text",
             option: {
               10: "新增",
               20: "已确认",
-              30: "已取消"
+              30: "取消"
             }
           },
           {   
@@ -93,13 +93,18 @@ export default {
               {
                 label: "收款金额",
                 name: "amount",
-                type: "text"
+                type: "fmoney"
               },
               {
                 label: "费用日期",
                 name: "cycleDate",
-                type: "time",
+                type: "text",
                 filter: "yyyy-MM-dd"
+              },
+              {
+                label: "生成结算单",
+                name: "generatedValue",
+                type: "text"
               },
               {
                 label: "备注",
